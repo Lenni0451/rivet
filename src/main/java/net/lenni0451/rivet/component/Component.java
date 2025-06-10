@@ -13,11 +13,11 @@ import java.util.List;
 
 public abstract class Component {
 
-    protected final ExtendedVector2f minSize = new ExtendedVector2f(0, 0);
+    private final ExtendedVector2f minSize = new ExtendedVector2f(0, 0);
     protected final ExtendedVector2f preferredSize = new ExtendedVector2f(0, 0);
-    protected final ExtendedVector2f maxSize = new ExtendedVector2f(Float.MAX_VALUE, Float.MAX_VALUE);
-    protected final FloatPadding padding = new FloatPadding();
-    protected final List<ComponentListener> eventListeners = new ArrayList<>();
+    private final ExtendedVector2f maxSize = new ExtendedVector2f(Float.MAX_VALUE, Float.MAX_VALUE);
+    private final FloatPadding padding = new FloatPadding();
+    private final List<ComponentListener> eventListeners = new ArrayList<>();
 
     public Component() {
         this.computePreferredSize();

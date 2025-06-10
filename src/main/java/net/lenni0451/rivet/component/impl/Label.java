@@ -1,4 +1,6 @@
-package net.lenni0451.rivet.component;
+package net.lenni0451.rivet.component.impl;
+
+import net.lenni0451.rivet.component.Component;
 
 public class Label extends Component {
 
