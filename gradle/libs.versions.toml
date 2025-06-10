@@ -1,16 +1,25 @@
 [versions]
+lwjgl = "3.3.6"
 
 [libraries]
 findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.0.2" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.38" }
+thingl = { module = "net.raphimc:thingl", version = "0.0.6-20250610.184540-3" }
 
 junit-bom = { module = "org.junit:junit-bom", version = "5.12.2" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
+lwjgl = { module = "org.lwjgl:lwjgl", version.ref = "lwjgl" }
+lwjgl-opengl = { module = "org.lwjgl:lwjgl-opengl", version.ref = "lwjgl" }
+lwjgl-stb = { module = "org.lwjgl:lwjgl-stb", version.ref = "lwjgl" }
+lwjgl-glfw = { module = "org.lwjgl:lwjgl-glfw", version.ref = "lwjgl" }
+lwjgl-freetype = { module = "org.lwjgl:lwjgl-freetype", version.ref = "lwjgl" }
+lwjgl-harfbuzz = { module = "org.lwjgl:lwjgl-harfbuzz", version.ref = "lwjgl" }
+lwjgl-par = { module = "org.lwjgl:lwjgl-par", version.ref = "lwjgl" }
+
 [bundles]
+lwjgl = ["lwjgl", "lwjgl-opengl", "lwjgl-stb", "lwjgl-glfw", "lwjgl-freetype", "lwjgl-harfbuzz", "lwjgl-par"]
 
 [plugins]
-classTokenReplacer = { id = "net.raphimc.class-token-replacer", version = "1.1.6" }
-templateProcessor = { id = "net.lenni0451.template-processor", version = "1.0.1" }
