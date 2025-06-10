@@ -1,0 +1,72 @@
+plugins {
+    id "java"
+    id "base.java"
+    //id "base.application"
+    id "base.checkstyle"
+    id "base.junit"
+    id "base.maven_publish"
+    //id "publishing.maven_central"
+    //id "publishing.reposilite"
+    id "publishing.aggregating_publisher"
+    id "idea.exclude_run_dir"
+    id "extra.fill_build_constants"
+    id "extra.template_processor"
+    alias libs.plugins.classTokenReplacer
+    alias libs.plugins.templateProcessor
+}
+
+repositories {
+    maven {
+        name = "lenni0451"
+        url = "https://maven.lenni0451.net/everything"
+    }
+    maven {
+        name = "jitpack"
+        url = "https://jitpack.io"
+    }
+    maven {
+        name = "sonatype snapshots"
+        url = "https://central.sonatype.com/repository/maven-snapshots/"
+        //Old snapshot repository: https://oss.sonatype.org/content/repositories/snapshots/
+    }
+
+    //ivy { //include "waterfall:1.19:504@jar"
+    //    url "https://papermc.io/api/v2/projects"
+    //    patternLayout {
+    //        artifact "/[organisation]/versions/[module]/builds/[revision]/downloads/[organisation]-[module]-[revision].[ext]"
+    //    }
+    //    metadataSources {
+    //        artifact()
+    //    }
+    //}
+}
+
+dependencies {
+    //if (new File(projectDir, "libs").exists()) { //Include all jars in the libs folder
+    //    include fileTree(include: ["*.jar"], dir: "libs")
+    //}
+
+    compileOnly libs.findbugs
+    compileOnly libs.jetbrainsAnnotations
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+    //include "net.lenni0451:Reflect:1.0.0"
+
+    testCompileOnly libs.lombok
+    testAnnotationProcessor libs.lombok
+}
+
+processResources {
+    var projectMavenVersion = project.maven_version
+
+    //Config file: "version: ${version}"
+    inputs.properties(
+            "version": projectMavenVersion
+    )
+
+    filesMatching("config.yml") {
+        expand(
+                "version": projectMavenVersion
+        )
+    }
+}
