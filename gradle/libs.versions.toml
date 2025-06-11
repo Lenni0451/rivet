@@ -1,11 +1,18 @@
 [versions]
 lwjgl = "3.3.6"
+commons = "1.7.1"
 
 [libraries]
 findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.0.2" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.38" }
 thingl = { module = "net.raphimc:thingl", version = "0.0.6-20250610.184540-3" }
+
+joml = { module = "org.joml:joml", version = "1.10.8" }
+joml-primitives = { module = "org.joml:joml-primitives", version = "1.10.0" }
+
+commons-core = { module = "net.lenni0451.commons:core", version.ref = "commons" }
+commons-logging = { module = "net.lenni0451.commons:logging", version.ref = "commons" }
 
 junit-bom = { module = "org.junit:junit-bom", version = "5.12.2" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
@@ -20,6 +27,8 @@ lwjgl-harfbuzz = { module = "org.lwjgl:lwjgl-harfbuzz", version.ref = "lwjgl" }
 lwjgl-par = { module = "org.lwjgl:lwjgl-par", version.ref = "lwjgl" }
 
 [bundles]
+joml = ["joml", "joml-primitives"]
+commons = ["commons-core", "commons-logging"]
 lwjgl = ["lwjgl", "lwjgl-opengl", "lwjgl-stb", "lwjgl-glfw", "lwjgl-freetype", "lwjgl-harfbuzz", "lwjgl-par"]
 
 [plugins]

@@ -66,7 +66,7 @@ public class FloatPadding implements Padding {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         FloatPadding that = (FloatPadding) o;
-        return Float.compare(left, that.left) == 0 && Float.compare(top, that.top) == 0 && Float.compare(right, that.right) == 0 && Float.compare(bottom, that.bottom) == 0;
+        return Float.compare(this.left, that.left) == 0 && Float.compare(this.top, that.top) == 0 && Float.compare(this.right, that.right) == 0 && Float.compare(this.bottom, that.bottom) == 0;
     }
 
     @Override

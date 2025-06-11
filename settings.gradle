@@ -11,4 +11,4 @@ plugins {
 
 rootProject.name = "Rivet"
 
-//include(":subproject")
+include(":renderer-opengl")

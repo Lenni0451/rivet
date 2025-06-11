@@ -1,40 +1,11 @@
 plugins {
-    id "java-library"
-    id "base.java"
-    id "base.checkstyle"
-    id "base.junit"
-    id "base.maven_publish"
-    id "publishing.aggregating_publisher"
+    id "project.defaults"
     id "idea.exclude_run_dir"
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        name = "Lenni0451"
-        url = "https://maven.lenni0451.net/everything"
-    }
-}
-
 dependencies {
-    api(libs.thingl) {
-        exclude group: "org.slf4j", module: "slf4j-api"
+    api(libs.bundles.joml) {
+        exclude group: "org.jetbrains.kotlin"
     }
-    compileOnly libs.findbugs
-    compileOnly libs.jetbrainsAnnotations
-    compileOnly libs.lombok
-    annotationProcessor libs.lombok
-
-    testCompileOnly libs.lombok
-    testAnnotationProcessor libs.lombok
-    testImplementation libs.bundles.lwjgl
-    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
-        testImplementation(variantOf(libs.lwjgl) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.opengl) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.stb) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.glfw) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.freetype) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.harfbuzz) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.par) { classifier(natives) })
-    }
+    api libs.bundles.commons
 }
