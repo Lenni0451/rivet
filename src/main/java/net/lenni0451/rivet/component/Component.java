@@ -7,10 +7,12 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.impl.ExtendedVector2f;
 import net.lenni0451.rivet.math.impl.FloatPadding;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class Component {
 
     protected Rivet rivet;
+    @Nullable
     protected Container parent;
     private final ExtendedVector2f minSize = new ExtendedVector2f(0, 0);
     protected final ExtendedVector2f preferredSize = new ExtendedVector2f(); //Is immediately computed in the constructor
@@ -19,6 +21,13 @@ public abstract class Component {
 
     public Component() {
         this.computePreferredSize();
+    }
+
+    public Size getActualPreferredSize() {
+        return new ExtendedVector2f(
+                Math.max(this.minSize.x, this.preferredSize.x),
+                Math.max(this.minSize.y, this.preferredSize.y)
+        );
     }
 
     public Size getMinSize() {
@@ -55,7 +64,8 @@ public abstract class Component {
     public void onFocusLost() {
     }
 
-    protected abstract void computePreferredSize();
+    @ApiStatus.Internal
+    public abstract void computePreferredSize();
 
     @ApiStatus.Internal
     public void onAdded(final Rivet rivet, final Container parent) {

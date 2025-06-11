@@ -95,10 +95,14 @@ public abstract class Container extends Component implements Renderable, MouseLi
         });
     }
 
+    protected Set<Component> getChildren() {
+        return Collections.unmodifiableSet(this.children.keySet());
+    }
+
     protected void addChild(final Component child) {
         this.children.put(child, new Rectanglef());
         child.onAdded(this.rivet, this);
-        this.layoutChildren(this.parent.getChildSize(this));
+        this.relayoutChildren();
     }
 
     protected void removeChild(final Component child) {
@@ -106,7 +110,7 @@ public abstract class Container extends Component implements Renderable, MouseLi
         if (this.hoveredChildren.remove(child)) {
             ((MouseListener) child).onMouseLeave();
         }
-        this.layoutChildren(this.parent.getChildSize(this));
+        this.relayoutChildren();
     }
 
     protected void clearChildren() {
@@ -129,10 +133,10 @@ public abstract class Container extends Component implements Renderable, MouseLi
         return new Vector2f(bounds.lengthX(), bounds.lengthY());
     }
 
-    protected void setChildBounds(final Component child, final float minX, final float minY, final float maxX, final float maxY) {
+    protected void setChildBounds(final Component child, final float x, final float y, final float width, final float height) {
         Rectanglef bounds = this.children.get(child);
         if (bounds != null) {
-            bounds.setMin(minX, minY).setMax(maxX, maxY);
+            bounds.setMin(x, y).setMax(x + width, y + height);
         }
     }
 
@@ -156,6 +160,27 @@ public abstract class Container extends Component implements Renderable, MouseLi
         }
     }
 
+    protected void relayoutChildren() {
+        if (this.parent == null) {
+            this.layoutChildren(this.rivet.getSize());
+        } else {
+            this.layoutChildren(this.parent.getChildSize(this));
+        }
+    }
+
     protected abstract void layoutChildren(final Vector2f size);
+
+    @Override
+    public void computePreferredSize() {
+        if (this.children == null) return;
+        this.computePreferredSize0();
+        if (this.parent == null) {
+            this.relayoutChildren();
+        } else {
+            this.parent.computePreferredSize();
+        }
+    }
+
+    protected abstract void computePreferredSize0();
 
 }

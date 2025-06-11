@@ -26,6 +26,12 @@ public class Rivet {
         this.rootContainer = rootContainer;
     }
 
+    public Rivet(final Renderer renderer, final Container rootContainer, final float width, final float height) {
+        this.renderer = renderer;
+        this.setRootContainer(rootContainer);
+        this.size.set(width, height);
+    }
+
     public Vector2f getSize() {
         return this.size;
     }
@@ -40,6 +46,7 @@ public class Rivet {
 
     public void setRootContainer(final Container rootContainer) {
         this.rootContainer = rootContainer;
+        this.rootContainer.onAdded(this, null);
     }
 
     public Component getFocusedComponent() {
