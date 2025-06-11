@@ -1,6 +1,6 @@
 package net.lenni0451.rivet.component;
 
-import net.lenni0451.rivet.RootContainer;
+import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.container.Container;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 public abstract class Component {
 
-    protected RootContainer rootContainer;
+    protected Rivet rivet;
     protected Container parent;
     private final ExtendedVector2f minSize = new ExtendedVector2f(0, 0);
     protected final ExtendedVector2f preferredSize = new ExtendedVector2f(); //Is immediately computed in the constructor
@@ -58,8 +58,8 @@ public abstract class Component {
     protected abstract void computePreferredSize();
 
     @ApiStatus.Internal
-    public void onAdded(final RootContainer rootContainer, final Container parent) {
-        this.rootContainer = rootContainer;
+    public void onAdded(final Rivet rivet, final Container parent) {
+        this.rivet = rivet;
         this.parent = parent;
     }
 

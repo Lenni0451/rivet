@@ -2,6 +2,11 @@ package net.lenni0451.rivet.container;
 
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.MouseListener;
+import net.lenni0451.rivet.component.Renderable;
+import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.math.impl.ExtendedVector2f;
+import net.lenni0451.rivet.renderer.Renderer;
+import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 import org.joml.primitives.Rectanglef;
 
@@ -10,10 +15,24 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class Container extends Component implements MouseListener {
+public abstract class Container extends Component implements Renderable, MouseListener {
 
     private final Map<Component, Rectanglef> children = new IdentityHashMap<>();
     private final Set<Component> hoveredChildren = Collections.newSetFromMap(new IdentityHashMap<>());
+
+    @Override
+    public void render(final Renderer renderer, final Matrix4fStack positionMatrix, final Size size) {
+        for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
+            final Component child = entry.getKey();
+            final Rectanglef bounds = entry.getValue();
+            if (child instanceof Renderable renderable) {
+                positionMatrix.pushMatrix();
+                positionMatrix.translate(bounds.minX, bounds.minY, 0F);
+                renderable.render(renderer, positionMatrix, new ExtendedVector2f(bounds.lengthX(), bounds.lengthY()));
+                positionMatrix.popMatrix();
+            }
+        }
+    }
 
     @Override
     public void onMouseEnter() {
@@ -31,7 +50,7 @@ public abstract class Container extends Component implements MouseListener {
             if (child instanceof MouseListener mouseListener) {
                 if (bounds.containsPoint(mouseX, mouseY)) {
                     mouseListener.onMouseDown(mouseX - bounds.minX, mouseY - bounds.minY, button);
-                    this.rootContainer.setFocusedComponent(child);
+                    this.rivet.setFocusedComponent(child);
                 }
             }
         }
@@ -78,7 +97,7 @@ public abstract class Container extends Component implements MouseListener {
 
     protected void addChild(final Component child) {
         this.children.put(child, new Rectanglef());
-        child.onAdded(this.rootContainer, this);
+        child.onAdded(this.rivet, this);
         this.layoutChildren(this.parent.getChildSize(this));
     }
 
