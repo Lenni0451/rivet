@@ -1,5 +1,8 @@
-import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.logging.impl.SysoutLogger;
+import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.component.impl.Button;
+import net.lenni0451.rivet.container.impl.AbsoluteContainer;
+import net.lenni0451.rivet.renderer.opengl.OpenGLRenderer;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
@@ -63,7 +66,7 @@ public class Test implements Runnable {
         Blending.standardBlending();
         ThinGL.glStateManager().disable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateManager().setDepthFunc(GL11C.GL_LEQUAL);
-//        this.init(); // Initialize the example
+        this.init(); // Initialize the example
         final TextureFramebuffer mainFramebuffer = new TextureFramebuffer(); // Create the main framebuffer
         final Matrix4fStack positionMatrix = new Matrix4fStack(8);
 
@@ -73,8 +76,7 @@ public class Test implements Runnable {
             mainFramebuffer.clear(); // Clear the main framebuffer
 
             positionMatrix.pushMatrix();
-//            this.render(positionMatrix); // Render the example
-            ThinGL.renderer2D().filledRectangle(positionMatrix, 50, 50, 350, 250, Color.GREEN);
+            this.render(positionMatrix); // Render the example
             positionMatrix.popMatrix();
 
             mainFramebuffer.unbind();
@@ -89,6 +91,19 @@ public class Test implements Runnable {
         ThinGL.get().free(); // Destroy the ThinGL instance and free all resources
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
+    }
+
+    private Rivet rivet;
+
+    private void init() {
+        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
+        AbsoluteContainer rootContainer = new AbsoluteContainer();
+        this.rivet = new Rivet(new OpenGLRenderer(), rootContainer, 1280, 720);
+        rootContainer.add(button, 50, 50);
+    }
+
+    private void render(final Matrix4fStack positionMatrix) {
+        this.rivet.render(positionMatrix);
     }
 
 }
