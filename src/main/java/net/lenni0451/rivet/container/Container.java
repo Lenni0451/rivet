@@ -16,21 +16,21 @@ public abstract class Container extends Component implements MouseListener {
     private final Set<Component> hoveredChildren = Collections.newSetFromMap(new IdentityHashMap<>());
 
     @Override
-    public void mouseEnter() {
+    public void onMouseEnter() {
     }
 
     @Override
-    public void mouseLeave() {
+    public void onMouseLeave() {
     }
 
     @Override
-    public void mouseDown(float mouseX, float mouseY, int button) {
+    public void onMouseDown(float mouseX, float mouseY, int button) {
         for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectanglef bounds = entry.getValue();
             if (child instanceof MouseListener mouseListener) {
                 if (bounds.containsPoint(mouseX, mouseY)) {
-                    mouseListener.mouseDown(mouseX - bounds.minX, mouseY - bounds.minY, button);
+                    mouseListener.onMouseDown(mouseX - bounds.minX, mouseY - bounds.minY, button);
                     this.rootContainer.setFocusedComponent(child);
                 }
             }
@@ -38,20 +38,20 @@ public abstract class Container extends Component implements MouseListener {
     }
 
     @Override
-    public void mouseUp(float mouseX, float mouseY, int button) {
+    public void onMouseUp(float mouseX, float mouseY, int button) {
         for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectanglef bounds = entry.getValue();
             if (child instanceof MouseListener mouseListener) {
                 if (bounds.containsPoint(mouseX, mouseY)) {
-                    mouseListener.mouseUp(mouseX - bounds.minX, mouseY - bounds.minY, button);
+                    mouseListener.onMouseUp(mouseX - bounds.minX, mouseY - bounds.minY, button);
                 }
             }
         }
     }
 
     @Override
-    public void mouseMove(float mouseX, float mouseY) {
+    public void onMouseMove(float mouseX, float mouseY) {
         Set<Component> freshlyHoveredChildren = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
             Component child = entry.getKey();
@@ -61,15 +61,15 @@ public abstract class Container extends Component implements MouseListener {
                     if (!this.hoveredChildren.contains(mouseListener)) {
                         this.hoveredChildren.add(child);
                         freshlyHoveredChildren.add(child);
-                        mouseListener.mouseEnter();
+                        mouseListener.onMouseEnter();
                     }
-                    mouseListener.mouseMove(mouseX - bounds.minX, mouseY - bounds.minY);
+                    mouseListener.onMouseMove(mouseX - bounds.minX, mouseY - bounds.minY);
                 }
             }
         }
         this.hoveredChildren.removeIf(mouseListener -> {
             if (!freshlyHoveredChildren.contains(mouseListener)) {
-                ((MouseListener) mouseListener).mouseLeave();
+                ((MouseListener) mouseListener).onMouseLeave();
                 return true;
             }
             return false;
@@ -85,7 +85,7 @@ public abstract class Container extends Component implements MouseListener {
     protected void removeChild(final Component child) {
         this.children.remove(child);
         if (this.hoveredChildren.remove(child)) {
-            ((MouseListener) child).mouseLeave();
+            ((MouseListener) child).onMouseLeave();
         }
         this.layoutChildren(this.parent.getChildSize(this));
     }

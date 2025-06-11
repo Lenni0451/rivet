@@ -2,14 +2,14 @@ package net.lenni0451.rivet.component;
 
 public interface MouseListener {
 
-    void mouseEnter();
+    void onMouseEnter();
 
-    void mouseLeave();
+    void onMouseLeave();
 
-    void mouseDown(final float mouseX, final float mouseY, final int button);
+    void onMouseDown(final float mouseX, final float mouseY, final int button);
 
-    void mouseUp(final float mouseX, final float mouseY, final int button);
+    void onMouseUp(final float mouseX, final float mouseY, final int button);
 
-    void mouseMove(final float mouseX, final float mouseY);
+    void onMouseMove(final float mouseX, final float mouseY);
 
 }
