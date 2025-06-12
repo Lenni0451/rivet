@@ -13,10 +13,10 @@ public class Test {
     public static void main(String[] args) throws Throwable {
         BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
-        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         AbsoluteContainer rootContainer = new AbsoluteContainer();
-        Rivet rivet = new Rivet(new Graphics2DRenderer(g2d), rootContainer, image.getWidth(), image.getHeight());
+        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         rootContainer.add(button, 50, 50);
+        Rivet rivet = new Rivet(new Graphics2DRenderer(g2d), rootContainer, image.getWidth(), image.getHeight());
         rivet.render();
 
         ImageIO.write(image, "png", new File("test.png"));

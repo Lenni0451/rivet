@@ -23,10 +23,10 @@ public class Test extends StandaloneApplicationRunner {
         super.init();
         GLFW.glfwSetCursorPosCallback(this.window, (window, xpos, ypos) -> Test.this.rivet.onMouseMove((float) xpos, (float) ypos));
 
-        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         AbsoluteContainer rootContainer = new AbsoluteContainer();
-        this.rivet = new Rivet(new OpenGLRenderer(), rootContainer, 1280, 720);
+        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         rootContainer.add(button, 50, 50);
+        this.rivet = new Rivet(new OpenGLRenderer(), rootContainer, 1280, 720);
     }
 
     @Override

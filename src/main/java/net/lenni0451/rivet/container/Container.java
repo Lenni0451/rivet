@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.container;
 
+import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.MouseListener;
 import net.lenni0451.rivet.component.Renderable;
@@ -93,8 +94,10 @@ public abstract class Container extends Component implements Renderable, MouseLi
 
     protected void addChild(final Component child) {
         this.children.put(child, new Rectanglef());
-        child.onAdded(this.rivet, this);
-        this.relayoutChildren();
+        if (this.rivet != null) {
+            child.onAdded(this.rivet, this);
+            this.relayoutChildren();
+        }
     }
 
     protected void removeChild(final Component child) {
@@ -102,7 +105,9 @@ public abstract class Container extends Component implements Renderable, MouseLi
         if (this.hoveredChildren.remove(child)) {
             ((MouseListener) child).onMouseLeave();
         }
-        this.relayoutChildren();
+        if (this.rivet != null) {
+            this.relayoutChildren();
+        }
     }
 
     protected void clearChildren() {
@@ -158,18 +163,26 @@ public abstract class Container extends Component implements Renderable, MouseLi
         } else {
             this.layoutChildren(this.parent.getChildSize(this));
         }
+        this.computePreferredSize();
     }
 
     protected abstract void layoutChildren(final Vector2f size);
 
     @Override
+    public void onAdded(Rivet rivet, Container parent) {
+        super.onAdded(rivet, parent);
+        for (Component child : this.children.keySet()) {
+            child.onAdded(rivet, this);
+        }
+        this.relayoutChildren();
+    }
+
+    @Override
     protected void computePreferredSize() {
-        if (this.children == null) return;
+        if (this.rivet == null) return;
         this.computePreferredSize0();
-        if (this.parent == null) {
-            this.relayoutChildren();
-        } else {
-            this.parent.computePreferredSize();
+        if (this.parent != null) {
+            this.parent.relayoutChildren();
         }
     }
 

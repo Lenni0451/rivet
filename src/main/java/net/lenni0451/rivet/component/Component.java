@@ -19,10 +19,6 @@ public abstract class Component {
     private final ExtendedVector2f maxSize = new ExtendedVector2f(Float.MAX_VALUE, Float.MAX_VALUE);
     private final FloatPadding padding = new FloatPadding();
 
-    public Component() {
-        this.computePreferredSize();
-    }
-
     public Size getActualPreferredSize() {
         return new ExtendedVector2f(
                 Math.max(this.minSize.x, this.preferredSize.x),
@@ -68,6 +64,7 @@ public abstract class Component {
     public void onAdded(final Rivet rivet, final Container parent) {
         this.rivet = rivet;
         this.parent = parent;
+        this.computePreferredSize();
     }
 
     protected abstract void computePreferredSize();
