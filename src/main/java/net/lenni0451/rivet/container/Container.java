@@ -1,12 +1,12 @@
 package net.lenni0451.rivet.container;
 
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.MouseListener;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.impl.ExtendedVector2f;
-import net.lenni0451.rivet.renderer.Renderer;
 import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 import org.joml.primitives.Rectanglef;

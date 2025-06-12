@@ -2,11 +2,12 @@ package net.lenni0451.rivet;
 
 import net.lenni0451.commons.logging.Logger;
 import net.lenni0451.commons.logging.LoggerFactory;
+import net.lenni0451.rivet.backend.Backend;
+import net.lenni0451.rivet.backend.FontSet;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.KeyboardListener;
 import net.lenni0451.rivet.container.Container;
 import net.lenni0451.rivet.math.impl.ExtendedVector2f;
-import net.lenni0451.rivet.renderer.Renderer;
 import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 
@@ -16,23 +17,34 @@ public class Rivet {
 
     public static Logger LOGGER = LoggerFactory.getLogger("Rivet");
 
-    private final Renderer renderer;
+    private final Backend backend;
+    private final FontSet defaultFonts;
     private final Vector2f unscaledSize = new Vector2f();
     private final ExtendedVector2f scaledSize = new ExtendedVector2f();
     private Container rootContainer;
     private float scaleFactor;
     private Component focusedComponent;
 
-    public Rivet(final Renderer renderer, final Container rootContainer) {
-        this.renderer = renderer;
+    public Rivet(final Backend backend, final FontSet defaultFonts, final Container rootContainer) {
+        this.backend = backend;
+        this.defaultFonts = defaultFonts;
         this.rootContainer = rootContainer;
     }
 
-    public Rivet(final Renderer renderer, final Container rootContainer, final float width, final float height) {
-        this.renderer = renderer;
+    public Rivet(final Backend backend, final FontSet defaultFonts, final Container rootContainer, final float width, final float height) {
+        this.backend = backend;
+        this.defaultFonts = defaultFonts;
         this.setRootContainer(rootContainer);
         this.unscaledSize.set(width, height);
         this.setScaleFactor(1F);
+    }
+
+    public Backend getBackend() {
+        return this.backend;
+    }
+
+    public FontSet getDefaultFonts() {
+        return this.defaultFonts;
     }
 
     public Vector2f getUnscaledSize() {
@@ -88,7 +100,7 @@ public class Rivet {
     public void render(final Matrix4fStack positionMatrix) {
         positionMatrix.pushMatrix();
         positionMatrix.scale(this.scaleFactor);
-        this.rootContainer.render(this.renderer, positionMatrix, this.scaledSize);
+        this.rootContainer.render(this.backend.getRenderer(), positionMatrix, this.scaledSize);
         positionMatrix.popMatrix();
     }
 

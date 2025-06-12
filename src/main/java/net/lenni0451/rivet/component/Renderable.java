@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.component;
 
+import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.math.Size;
-import net.lenni0451.rivet.renderer.Renderer;
 import org.joml.Matrix4fStack;
 
 public interface Renderable {
