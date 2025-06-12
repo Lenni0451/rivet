@@ -35,14 +35,6 @@ public abstract class Container extends Component implements Renderable, MouseLi
     }
 
     @Override
-    public void onMouseEnter() {
-    }
-
-    @Override
-    public void onMouseLeave() {
-    }
-
-    @Override
     public void onMouseDown(float mouseX, float mouseY, int button) {
         for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
             Component child = entry.getKey();
@@ -171,7 +163,7 @@ public abstract class Container extends Component implements Renderable, MouseLi
     protected abstract void layoutChildren(final Vector2f size);
 
     @Override
-    public void computePreferredSize() {
+    protected void computePreferredSize() {
         if (this.children == null) return;
         this.computePreferredSize0();
         if (this.parent == null) {

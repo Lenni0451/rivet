@@ -4,6 +4,7 @@ import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.renderer.opengl.OpenGLRenderer;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import org.joml.Matrix4fStack;
+import org.lwjgl.glfw.GLFW;
 
 public class Test extends StandaloneApplicationRunner {
 
@@ -20,6 +21,8 @@ public class Test extends StandaloneApplicationRunner {
     @Override
     protected void init() {
         super.init();
+        GLFW.glfwSetCursorPosCallback(this.window, (window, xpos, ypos) -> Test.this.rivet.onMouseMove((float) xpos, (float) ypos));
+
         Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         AbsoluteContainer rootContainer = new AbsoluteContainer();
         this.rivet = new Rivet(new OpenGLRenderer(), rootContainer, 1280, 720);

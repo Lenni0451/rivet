@@ -65,12 +65,11 @@ public abstract class Component {
     }
 
     @ApiStatus.Internal
-    public abstract void computePreferredSize();
-
-    @ApiStatus.Internal
     public void onAdded(final Rivet rivet, final Container parent) {
         this.rivet = rivet;
         this.parent = parent;
     }
+
+    protected abstract void computePreferredSize();
 
 }
