@@ -17,8 +17,10 @@ public class Rivet {
     public static Logger LOGGER = LoggerFactory.getLogger("Rivet");
 
     private final Renderer renderer;
-    private final ExtendedVector2f size = new ExtendedVector2f();
+    private final Vector2f unscaledSize = new Vector2f();
+    private final ExtendedVector2f scaledSize = new ExtendedVector2f();
     private Container rootContainer;
+    private float scaleFactor;
     private Component focusedComponent;
 
     public Rivet(final Renderer renderer, final Container rootContainer) {
@@ -29,15 +31,21 @@ public class Rivet {
     public Rivet(final Renderer renderer, final Container rootContainer, final float width, final float height) {
         this.renderer = renderer;
         this.setRootContainer(rootContainer);
-        this.size.set(width, height);
+        this.unscaledSize.set(width, height);
+        this.setScaleFactor(1F);
     }
 
-    public Vector2f getSize() {
-        return this.size;
+    public Vector2f getUnscaledSize() {
+        return this.unscaledSize;
+    }
+
+    public Vector2f getScaledSize() {
+        return this.scaledSize;
     }
 
     public void setSize(final float width, final float height) {
-        this.size.set(width, height);
+        this.unscaledSize.set(width, height);
+        this.scaledSize.set(this.unscaledSize).div(this.scaleFactor);
     }
 
     public Container getRootContainer() {
@@ -47,6 +55,15 @@ public class Rivet {
     public void setRootContainer(final Container rootContainer) {
         this.rootContainer = rootContainer;
         this.rootContainer.onAdded(this, null);
+    }
+
+    public float getScaleFactor() {
+        return this.scaleFactor;
+    }
+
+    public void setScaleFactor(final float scaleFactor) {
+        this.scaleFactor = scaleFactor;
+        this.scaledSize.set(this.unscaledSize).div(scaleFactor);
     }
 
     public Component getFocusedComponent() {
@@ -69,22 +86,25 @@ public class Rivet {
     }
 
     public void render(final Matrix4fStack positionMatrix) {
-        this.rootContainer.render(this.renderer, positionMatrix, this.size);
+        positionMatrix.pushMatrix();
+        positionMatrix.scale(this.scaleFactor);
+        this.rootContainer.render(this.renderer, positionMatrix, this.scaledSize);
+        positionMatrix.popMatrix();
     }
 
     public void onMouseDown(final float mouseX, final float mouseY, final int button) {
-        if (mouseX < 0 || mouseX >= this.size.x || mouseY < 0 || mouseY >= this.size.y) return;
-        this.rootContainer.onMouseDown(mouseX, mouseY, button);
+        if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
+        this.rootContainer.onMouseDown(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button);
     }
 
     public void onMouseUp(final float mouseX, final float mouseY, final int button) {
-        if (mouseX < 0 || mouseX >= this.size.x || mouseY < 0 || mouseY >= this.size.y) return;
-        this.rootContainer.onMouseUp(mouseX, mouseY, button);
+        if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
+        this.rootContainer.onMouseUp(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button);
     }
 
     public void onMouseMove(final float mouseX, final float mouseY) {
-        if (mouseX < 0 || mouseX >= this.size.x || mouseY < 0 || mouseY >= this.size.y) return;
-        this.rootContainer.onMouseMove(mouseX, mouseY);
+        if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
+        this.rootContainer.onMouseMove(mouseX / this.scaleFactor, mouseY / this.scaleFactor);
     }
 
     public void onKeyDown(final int key, final int scancode, final int action, final int modifier) {

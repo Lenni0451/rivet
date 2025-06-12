@@ -159,7 +159,7 @@ public abstract class Container extends Component implements Renderable, MouseLi
 
     protected void relayoutChildren() {
         if (this.parent == null) {
-            this.layoutChildren(this.rivet.getSize());
+            this.layoutChildren(this.rivet.getScaledSize());
         } else {
             this.layoutChildren(this.parent.getChildSize(this));
         }
