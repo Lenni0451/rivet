@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public interface Backend {
 
@@ -23,14 +22,6 @@ public interface Backend {
 
     Font loadFont(final byte[] fontData, final int size);
 
-    default FontSet createFontSet(final Font... fonts) {
-        return this.createFontSet(List.of(fonts));
-    }
-
-    FontSet createFontSet(final List<Font> fonts);
-
     ShapedTextBuffer shapeTextBuffer(final TextBuffer textBuffer);
-
-    // TODO: free() method
 
 }

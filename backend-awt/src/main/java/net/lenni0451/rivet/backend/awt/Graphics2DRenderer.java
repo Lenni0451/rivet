@@ -34,7 +34,7 @@ public class Graphics2DRenderer implements Renderer {
         float currentX = x;
         float currentY = y;
         for (TextRun run : textBuffer.runs()) {
-            Font font = ((AWTFont) run.font()).font;
+            Font font = ((AWTFont) run.font()).font();
             FontMetrics metrics = this.g2d.getFontMetrics(font);
             this.g2d.setFont(font);
             for (TextSegment segment : run.segments()) {

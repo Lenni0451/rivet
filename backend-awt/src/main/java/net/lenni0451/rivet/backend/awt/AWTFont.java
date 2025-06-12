@@ -2,12 +2,11 @@ package net.lenni0451.rivet.backend.awt;
 
 import net.lenni0451.rivet.backend.Font;
 
-public class AWTFont implements Font {
+public record AWTFont(java.awt.Font font) implements Font {
 
-    final java.awt.Font font;
-
-    public AWTFont(final java.awt.Font font) {
-        this.font = font;
+    @Override
+    public boolean hasGlyph(int codePoint) {
+        return this.font.canDisplay(codePoint);
     }
 
     @Override

@@ -3,11 +3,11 @@ package net.lenni0451.rivet;
 import net.lenni0451.commons.logging.Logger;
 import net.lenni0451.commons.logging.LoggerFactory;
 import net.lenni0451.rivet.backend.Backend;
-import net.lenni0451.rivet.backend.FontSet;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.KeyboardListener;
 import net.lenni0451.rivet.container.Container;
 import net.lenni0451.rivet.math.impl.ExtendedVector2f;
+import net.lenni0451.rivet.text.FontSet;
 import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 

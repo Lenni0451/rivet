@@ -1,10 +1,10 @@
 package net.lenni0451.rivet.backend.awt;
 
-import net.lenni0451.rivet.backend.*;
+import net.lenni0451.rivet.backend.Backend;
+import net.lenni0451.rivet.backend.Font;
+import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AWTBackend implements Backend {
 
@@ -31,13 +31,6 @@ public class AWTBackend implements Backend {
         } catch (Throwable t) {
             throw new IllegalArgumentException("Failed to load font", t);
         }
-    }
-
-    @Override
-    public FontSet createFontSet(List<Font> fonts) {
-        List<AWTFont> awtFonts = new ArrayList<>();
-        for (Font font : fonts) awtFonts.add((AWTFont) font);
-        return new AWTFontSet(awtFonts);
     }
 
     @Override

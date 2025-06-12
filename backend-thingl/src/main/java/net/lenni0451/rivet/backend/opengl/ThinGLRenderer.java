@@ -26,7 +26,13 @@ public class ThinGLRenderer implements Renderer {
 
     @Override
     public void text(final Matrix4f positionMatrix, final ShapedTextBuffer shapedTextBuffer, final float x, final float y) {
-        ThinGL.rendererText().textBuffer(positionMatrix, ((ThinGLShapedTextBuffer) shapedTextBuffer).shapedTextBuffer, x, y);
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.rendererText().beginBuffering(this.targetMultiDrawBatchDataHolder);
+        }
+        ThinGL.rendererText().textBuffer(positionMatrix, ((ThinGLShapedTextBuffer) shapedTextBuffer).shapedTextBuffer(), x, y);
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.rendererText().endBuffering();
+        }
     }
 
     @Override

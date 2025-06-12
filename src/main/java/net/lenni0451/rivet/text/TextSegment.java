@@ -2,6 +2,7 @@ package net.lenni0451.rivet.text;
 
 import net.lenni0451.commons.color.Color;
 
+// https://github.com/RaphiMC/ThinGL/blob/fd9e6bd95a53b66f23842fac23205187399d22cf/src/main/java/net/raphimc/thingl/text/TextSegment.java
 public record TextSegment(String text, Color color, int styleFlags, Color outlineColor, float xVisualOffset, float yVisualOffset) {
 
     public static final int STYLE_SHADOW_BIT = 1 << 0;

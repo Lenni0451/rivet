@@ -1,15 +1,14 @@
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Font;
-import net.lenni0451.rivet.backend.FontSet;
 import net.lenni0451.rivet.backend.opengl.ThinGLBackend;
 import net.lenni0451.rivet.component.impl.Button;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
+import net.lenni0451.rivet.text.FontSet;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
-import java.util.List;
 
 public class Test extends StandaloneApplicationRunner {
 
@@ -68,17 +67,22 @@ public class Test extends StandaloneApplicationRunner {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        FontSet fontSet = backend.createFontSet(List.of(font));
 
         AbsoluteContainer rootContainer = new AbsoluteContainer();
         Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         rootContainer.add(button, 50, 50);
-        this.rivet = new Rivet(backend, fontSet, rootContainer, 1280, 720);
+        this.rivet = new Rivet(backend, new FontSet(font), rootContainer, 1280, 720);
     }
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
         this.rivet.render(positionMatrix);
+    }
+
+    @Override
+    protected void free() {
+        ((ThinGLBackend) this.rivet.getBackend()).free();
+        super.free();
     }
 
 }

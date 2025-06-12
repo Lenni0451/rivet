@@ -2,12 +2,11 @@ package net.lenni0451.rivet.backend.opengl;
 
 import net.lenni0451.rivet.backend.Font;
 
-public class ThinGLFont implements Font {
+public record ThinGLFont(net.raphimc.thingl.text.font.Font font) implements Font {
 
-    final net.raphimc.thingl.text.font.Font font;
-
-    public ThinGLFont(final net.raphimc.thingl.text.font.Font font) {
-        this.font = font;
+    @Override
+    public boolean hasGlyph(final int codePoint) {
+        return this.font.getGlyphByCodePoint(codePoint).glyphIndex() != 0;
     }
 
     @Override

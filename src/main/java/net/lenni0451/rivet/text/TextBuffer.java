@@ -3,11 +3,11 @@ package net.lenni0451.rivet.text;
 import net.lenni0451.commons.collections.Lists;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Font;
-import net.lenni0451.rivet.backend.FontSet;
 
 import java.util.ArrayList;
 import java.util.List;
 
+// https://github.com/RaphiMC/ThinGL/blob/fd9e6bd95a53b66f23842fac23205187399d22cf/src/main/java/net/raphimc/thingl/text/TextBuffer.java
 public record TextBuffer(List<TextRun> runs) {
 
     public static TextBuffer fromString(final Font font, final String text) {

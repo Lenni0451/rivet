@@ -6,6 +6,7 @@ import net.lenni0451.rivet.backend.awt.Graphics2DRenderer;
 import net.lenni0451.rivet.component.impl.Button;
 import net.lenni0451.rivet.constants.MouseConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
+import net.lenni0451.rivet.text.FontSet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +54,7 @@ public class Test extends Canvas {
         AbsoluteContainer rootContainer = new AbsoluteContainer();
         Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         rootContainer.add(button, 50, 50);
-        this.rivet = new Rivet(backend, backend.createFontSet(font), rootContainer, this.frame.getWidth(), this.frame.getHeight());
+        this.rivet = new Rivet(backend, new FontSet(font), rootContainer, this.frame.getWidth(), this.frame.getHeight());
     }
 
     private void initListeners() {

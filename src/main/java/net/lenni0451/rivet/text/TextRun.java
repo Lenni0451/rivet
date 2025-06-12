@@ -7,6 +7,7 @@ import net.lenni0451.rivet.backend.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+// https://github.com/RaphiMC/ThinGL/blob/fd9e6bd95a53b66f23842fac23205187399d22cf/src/main/java/net/raphimc/thingl/text/TextRun.java
 public record TextRun(Font font, List<TextSegment> segments, float xOffset, float yOffset) {
 
     public static TextRun fromString(final Font font, final String text) {
