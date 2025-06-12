@@ -7,9 +7,7 @@ import net.lenni0451.rivet.renderer.awt.Graphics2DRenderer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -113,6 +111,12 @@ public class Test extends Canvas {
             @Override
             public void mouseMoved(MouseEvent e) {
                 Test.this.rivet.onMouseMove(e.getX(), e.getY());
+            }
+        });
+        this.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                Test.this.rivet.onMouseScroll(e.getX(), e.getY(), 0, (float) -e.getPreciseWheelRotation());
             }
         });
     }
