@@ -119,6 +119,20 @@ public class Test extends Canvas {
                 Test.this.rivet.onMouseScroll(e.getX(), e.getY(), 0, (float) -e.getPreciseWheelRotation());
             }
         });
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Test.this.rivet.onCharTyped(e.getKeyChar());
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
     }
 
     private void run() {
