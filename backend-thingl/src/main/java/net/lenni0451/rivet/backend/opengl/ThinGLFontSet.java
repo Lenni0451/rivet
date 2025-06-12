@@ -2,6 +2,7 @@ package net.lenni0451.rivet.backend.opengl;
 
 import net.lenni0451.rivet.backend.Font;
 import net.lenni0451.rivet.backend.FontSet;
+import org.jetbrains.annotations.Nullable;
 
 public class ThinGLFontSet implements FontSet {
 
@@ -19,7 +20,7 @@ public class ThinGLFontSet implements FontSet {
     }
 
     @Override
-    public Font getFont(final int codePoint) {
+    public @Nullable Font getFont(final int codePoint) {
         return new ThinGLFont(this.fontSet.getFont(codePoint));
     }
 

@@ -1,16 +1,16 @@
+import lombok.SneakyThrows;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Font;
+import net.lenni0451.rivet.backend.awt.AWTBackend;
 import net.lenni0451.rivet.backend.awt.Graphics2DRenderer;
 import net.lenni0451.rivet.component.impl.Button;
 import net.lenni0451.rivet.constants.MouseConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.io.File;
 
 public class Test extends Canvas {
 
@@ -22,21 +22,11 @@ public class Test extends Canvas {
 
     public static void main(String[] args) throws Throwable {
         new Test().run();
-        BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = image.createGraphics();
-        AbsoluteContainer rootContainer = new AbsoluteContainer();
-        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
-        rootContainer.add(button, 50, 50);
-        Rivet rivet = new Rivet(new Graphics2DRenderer(g2d), rootContainer, image.getWidth(), image.getHeight());
-        rivet.render();
-
-        ImageIO.write(image, "png", new File("test.png"));
     }
 
 
     private JFrame frame;
     private Rivet rivet;
-    private Graphics2D g2d;
 
     public Test() {
         this.initFrame();
@@ -55,11 +45,15 @@ public class Test extends Canvas {
         this.frame.setVisible(true);
     }
 
+    @SneakyThrows
     private void initUI() {
+        AWTBackend backend = new AWTBackend(null);
+        Font font = backend.loadFont(this.getClass().getResourceAsStream("/Roboto-Regular.ttf"), 48);
+
         AbsoluteContainer rootContainer = new AbsoluteContainer();
         Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         rootContainer.add(button, 50, 50);
-        this.rivet = new Rivet(new Graphics2DRenderer(() -> this.g2d), rootContainer, this.frame.getWidth(), this.frame.getHeight());
+        this.rivet = new Rivet(backend, backend.createFontSet(font), rootContainer, this.frame.getWidth(), this.frame.getHeight());
     }
 
     private void initListeners() {
@@ -143,7 +137,10 @@ public class Test extends Canvas {
                 do {
                     final Graphics graphics = bufferStrategy.getDrawGraphics();
                     if (graphics == null) continue;
-                    this.g2d = (Graphics2D) graphics;
+                    Graphics2D g2d = (Graphics2D) graphics;
+                    g2d.setColor(Color.BLACK);
+                    g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+                    ((AWTBackend) this.rivet.getBackend()).setRenderer(new Graphics2DRenderer(g2d));
                     this.rivet.render();
                     graphics.dispose();
                 } while (bufferStrategy.contentsRestored());
