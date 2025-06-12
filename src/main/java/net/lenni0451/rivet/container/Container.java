@@ -64,15 +64,15 @@ public abstract class Container extends Component implements Renderable, MouseLi
 
     @Override
     public void onMouseMove(float mouseX, float mouseY) {
-        Set<Component> freshlyHoveredChildren = Collections.newSetFromMap(new IdentityHashMap<>());
+        Set<Component> hoveredChildren = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectanglef bounds = entry.getValue();
             if (child instanceof MouseListener mouseListener) {
                 if (bounds.containsPoint(mouseX, mouseY)) {
+                    hoveredChildren.add(child);
                     if (!this.hoveredChildren.contains(mouseListener)) {
                         this.hoveredChildren.add(child);
-                        freshlyHoveredChildren.add(child);
                         mouseListener.onMouseEnter();
                     }
                     mouseListener.onMouseMove(mouseX - bounds.minX, mouseY - bounds.minY);
@@ -80,7 +80,7 @@ public abstract class Container extends Component implements Renderable, MouseLi
             }
         }
         this.hoveredChildren.removeIf(mouseListener -> {
-            if (!freshlyHoveredChildren.contains(mouseListener)) {
+            if (!hoveredChildren.contains(mouseListener)) {
                 ((MouseListener) mouseListener).onMouseLeave();
                 return true;
             }
