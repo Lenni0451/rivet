@@ -92,14 +92,14 @@ public class Rivet {
         positionMatrix.popMatrix();
     }
 
-    public void onMouseDown(final float mouseX, final float mouseY, final int button) {
+    public void onMouseDown(final float mouseX, final float mouseY, final int button, final int modifiers) {
         if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
-        this.rootContainer.onMouseDown(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button);
+        this.rootContainer.onMouseDown(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
     }
 
-    public void onMouseUp(final float mouseX, final float mouseY, final int button) {
+    public void onMouseUp(final float mouseX, final float mouseY, final int button, final int modifiers) {
         if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
-        this.rootContainer.onMouseUp(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button);
+        this.rootContainer.onMouseUp(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
     }
 
     public void onMouseMove(final float mouseX, final float mouseY) {
@@ -107,15 +107,15 @@ public class Rivet {
         this.rootContainer.onMouseMove(mouseX / this.scaleFactor, mouseY / this.scaleFactor);
     }
 
-    public void onKeyDown(final int key, final int scancode, final int action, final int modifier) {
+    public void onKeyDown(final int key, final int scancode, final int action, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyDown(key, scancode, action, modifier);
+            keyboardListener.onKeyDown(key, scancode, action, modifiers);
         }
     }
 
-    public void onKeyUp(final int key, final int scancode, final int action, final int modifier) {
+    public void onKeyUp(final int key, final int scancode, final int action, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyUp(key, scancode, action, modifier);
+            keyboardListener.onKeyUp(key, scancode, action, modifiers);
         }
     }
 

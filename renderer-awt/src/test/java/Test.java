@@ -1,11 +1,13 @@
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.impl.Button;
+import net.lenni0451.rivet.constants.MouseConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.renderer.awt.Graphics2DRenderer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
@@ -66,12 +68,40 @@ public class Test extends Canvas {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                Test.this.rivet.onMouseDown(e.getX(), e.getY(), e.getButton());
+                int button = switch (e.getButton()) {
+                    case MouseEvent.BUTTON1 -> MouseConstants.BUTTON_LEFT;
+                    case MouseEvent.BUTTON2 -> MouseConstants.BUTTON_MIDDLE;
+                    case MouseEvent.BUTTON3 -> MouseConstants.BUTTON_RIGHT;
+                    default -> -1;
+                };
+                if (button == -1) return;
+
+                int modifiers = 0;
+                if ((e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_SHIFT;
+                if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_CONTROL;
+                if ((e.getModifiersEx() & InputEvent.ALT_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_ALT;
+                if ((e.getModifiersEx() & InputEvent.META_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_META;
+
+                Test.this.rivet.onMouseDown(e.getX(), e.getY(), button, modifiers);
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                Test.this.rivet.onMouseUp(e.getX(), e.getY(), e.getButton());
+                int button = switch (e.getButton()) {
+                    case MouseEvent.BUTTON1 -> MouseConstants.BUTTON_LEFT;
+                    case MouseEvent.BUTTON2 -> MouseConstants.BUTTON_MIDDLE;
+                    case MouseEvent.BUTTON3 -> MouseConstants.BUTTON_RIGHT;
+                    default -> -1;
+                };
+                if (button == -1) return;
+
+                int modifiers = 0;
+                if ((e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_SHIFT;
+                if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_CONTROL;
+                if ((e.getModifiersEx() & InputEvent.ALT_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_ALT;
+                if ((e.getModifiersEx() & InputEvent.META_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_META;
+
+                Test.this.rivet.onMouseDown(e.getX(), e.getY(), button, modifiers);
             }
         });
         this.addMouseMotionListener(new MouseAdapter() {

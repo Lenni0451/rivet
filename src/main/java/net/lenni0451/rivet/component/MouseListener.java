@@ -8,10 +8,10 @@ public interface MouseListener {
     default void onMouseLeave() {
     }
 
-    default void onMouseDown(final float mouseX, final float mouseY, final int button) {
+    default void onMouseDown(final float mouseX, final float mouseY, final int button, final int modifiers) {
     }
 
-    default void onMouseUp(final float mouseX, final float mouseY, final int button) {
+    default void onMouseUp(final float mouseX, final float mouseY, final int button, final int modifiers) {
     }
 
     default void onMouseMove(final float mouseX, final float mouseY) {

@@ -36,13 +36,13 @@ public abstract class Container extends Component implements Renderable, MouseLi
     }
 
     @Override
-    public void onMouseDown(float mouseX, float mouseY, int button) {
+    public void onMouseDown(float mouseX, float mouseY, int button, int modifiers) {
         for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectanglef bounds = entry.getValue();
             if (child instanceof MouseListener mouseListener) {
                 if (bounds.containsPoint(mouseX, mouseY)) {
-                    mouseListener.onMouseDown(mouseX - bounds.minX, mouseY - bounds.minY, button);
+                    mouseListener.onMouseDown(mouseX - bounds.minX, mouseY - bounds.minY, button, modifiers);
                     this.rivet.setFocusedComponent(child);
                 }
             }
@@ -50,13 +50,13 @@ public abstract class Container extends Component implements Renderable, MouseLi
     }
 
     @Override
-    public void onMouseUp(float mouseX, float mouseY, int button) {
+    public void onMouseUp(float mouseX, float mouseY, int button, int modifiers) {
         for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectanglef bounds = entry.getValue();
             if (child instanceof MouseListener mouseListener) {
                 if (bounds.containsPoint(mouseX, mouseY)) {
-                    mouseListener.onMouseUp(mouseX - bounds.minX, mouseY - bounds.minY, button);
+                    mouseListener.onMouseUp(mouseX - bounds.minX, mouseY - bounds.minY, button, modifiers);
                 }
             }
         }
