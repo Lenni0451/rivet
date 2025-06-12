@@ -8,7 +8,7 @@ public interface KeyboardListener {
     default void onKeyUp(final int key, final int scancode, final int action, final int modifiers) {
     }
 
-    default void onCharTyped(final int codepoint) {
+    default void onCharTyped(final char c) {
     }
 
 }

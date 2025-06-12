@@ -124,9 +124,9 @@ public class Rivet {
         }
     }
 
-    public void onCharTyped(final int codepoint) {
+    public void onCharTyped(final char c) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onCharTyped(codepoint);
+            keyboardListener.onCharTyped(c);
         }
     }
 

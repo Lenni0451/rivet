@@ -41,8 +41,19 @@ public class Test extends StandaloneApplicationRunner {
             Test.this.rivet.onMouseScroll((float) xpos[0], (float) ypos[0], (float) xoffset, (float) yoffset);
         });
         GLFW.glfwSetKeyCallback(this.window, (window, key, scancode, action, mods) -> {
+            if (action == GLFW.GLFW_PRESS) {
+            } else if (action == GLFW.GLFW_RELEASE) {
+            } else if (action == GLFW.GLFW_REPEAT) {
+            }
         });
-        GLFW.glfwSetCharCallback(this.window, (window, codepoint) -> Test.this.rivet.onCharTyped(codepoint));
+        GLFW.glfwSetCharCallback(this.window, (window, codepoint) -> {
+            if (Character.isBmpCodePoint(codepoint)) {
+                Test.this.rivet.onCharTyped((char) codepoint);
+            } else if (Character.isValidCodePoint(codepoint)) {
+                Test.this.rivet.onCharTyped(Character.highSurrogate(codepoint));
+                Test.this.rivet.onCharTyped(Character.lowSurrogate(codepoint));
+            }
+        });
 
         AbsoluteContainer rootContainer = new AbsoluteContainer();
         Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
