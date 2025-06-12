@@ -21,7 +21,28 @@ public class Test extends StandaloneApplicationRunner {
     @Override
     protected void init() {
         super.init();
-        GLFW.glfwSetCursorPosCallback(this.window, (window, xpos, ypos) -> Test.this.rivet.onMouseMove((float) xpos, (float) ypos));
+        GLFW.glfwSetCursorPosCallback(this.window, (window, xpos, ypos) -> {
+            Test.this.rivet.onMouseMove((float) xpos, (float) ypos);
+        });
+        GLFW.glfwSetMouseButtonCallback(this.window, (window, button, action, mods) -> {
+            final double[] xpos = new double[1];
+            final double[] ypos = new double[1];
+            GLFW.glfwGetCursorPos(window, xpos, ypos);
+            if (action == GLFW.GLFW_PRESS) {
+                Test.this.rivet.onMouseDown((float) xpos[0], (float) ypos[0], button, mods);
+            } else if (action == GLFW.GLFW_RELEASE) {
+                Test.this.rivet.onMouseUp((float) xpos[0], (float) ypos[0], button, mods);
+            }
+        });
+        GLFW.glfwSetScrollCallback(this.window, (window, xoffset, yoffset) -> {
+            final double[] xpos = new double[1];
+            final double[] ypos = new double[1];
+            GLFW.glfwGetCursorPos(window, xpos, ypos);
+            Test.this.rivet.onMouseScroll((float) xpos[0], (float) ypos[0], (float) xoffset, (float) yoffset);
+        });
+        GLFW.glfwSetKeyCallback(this.window, (window, key, scancode, action, mods) -> {
+        });
+        GLFW.glfwSetCharCallback(this.window, (window, codepoint) -> Test.this.rivet.onCharTyped(codepoint));
 
         AbsoluteContainer rootContainer = new AbsoluteContainer();
         Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));

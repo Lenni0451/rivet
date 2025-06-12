@@ -107,6 +107,11 @@ public class Rivet {
         this.rootContainer.onMouseMove(mouseX / this.scaleFactor, mouseY / this.scaleFactor);
     }
 
+    public void onMouseScroll(final float mouseX, final float mouseY, final float scrollX, final float scrollY) {
+        if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
+        this.rootContainer.onMouseScroll(mouseX / this.scaleFactor, mouseY / this.scaleFactor, scrollX, scrollY);
+    }
+
     public void onKeyDown(final int key, final int scancode, final int action, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
             keyboardListener.onKeyDown(key, scancode, action, modifiers);

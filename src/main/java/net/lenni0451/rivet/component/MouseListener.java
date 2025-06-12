@@ -17,4 +17,7 @@ public interface MouseListener {
     default void onMouseMove(final float mouseX, final float mouseY) {
     }
 
+    default void onMouseScroll(final float mouseX, final float mouseY, final float scrollX, final float scrollY) {
+    }
+
 }

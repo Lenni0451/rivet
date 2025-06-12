@@ -88,6 +88,19 @@ public abstract class Container extends Component implements Renderable, MouseLi
         });
     }
 
+    @Override
+    public void onMouseScroll(float mouseX, float mouseY, float scrollX, float scrollY) {
+        for (Map.Entry<Component, Rectanglef> entry : this.children.entrySet()) {
+            Component child = entry.getKey();
+            Rectanglef bounds = entry.getValue();
+            if (child instanceof MouseListener mouseListener) {
+                if (bounds.containsPoint(mouseX, mouseY)) {
+                    mouseListener.onMouseScroll(mouseX - bounds.minX, mouseY - bounds.minY, scrollX, scrollY);
+                }
+            }
+        }
+    }
+
     protected Set<Component> getChildren() {
         return Collections.unmodifiableSet(this.children.keySet());
     }
