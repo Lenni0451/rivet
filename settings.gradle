@@ -12,4 +12,4 @@ plugins {
 rootProject.name = "Rivet"
 
 include(":renderer-awt")
-include(":renderer-opengl")
+include(":renderer-thingl")
