@@ -18,7 +18,7 @@ public class ThinGLRenderer implements Renderer {
         if (this.targetMultiDrawBatchDataHolder != null) {
             ThinGL.renderer2D().beginBuffering(this.targetMultiDrawBatchDataHolder);
         }
-        ThinGL.renderer2D().filledRectangle(positionMatrix, x, y, width, height, color);
+        ThinGL.renderer2D().filledRectangle(positionMatrix, x, y, x + width, y + height, color);
         if (this.targetMultiDrawBatchDataHolder != null) {
             ThinGL.renderer2D().endBuffering();
         }
