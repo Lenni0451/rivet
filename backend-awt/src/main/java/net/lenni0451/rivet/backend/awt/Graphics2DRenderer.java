@@ -9,6 +9,7 @@ import net.lenni0451.rivet.text.TextSegment;
 import org.joml.Matrix4f;
 
 import java.awt.*;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
@@ -35,16 +36,13 @@ public class Graphics2DRenderer implements Renderer {
         float currentY = y;
         for (TextRun run : textBuffer.runs()) {
             Font font = ((AWTFont) run.font()).font();
-            FontMetrics metrics = this.g2d.getFontMetrics(font);
             this.g2d.setFont(font);
+            FontMetrics metrics = this.g2d.getFontMetrics(font);
+            FontRenderContext frc = this.g2d.getFontRenderContext();
             for (TextSegment segment : run.segments()) {
-                //TODO: Text height is wrong
-                Rectangle2D bounds = metrics.getStringBounds(segment.text(), this.g2d);
-                this.g2d.setColor(java.awt.Color.YELLOW);
-                this.g2d.drawRect((int) currentX, (int) currentY, (int) bounds.getWidth(), (int) bounds.getHeight());
+                Rectangle2D bounds = font.createGlyphVector(frc, segment.text()).getVisualBounds();
                 this.applyColor(segment.color());
-                float baselineOffset = metrics.getDescent() + metrics.getAscent();
-                this.g2d.drawString(segment.text(), currentX, (float) (currentY + baselineOffset));
+                this.g2d.drawString(segment.text(), currentX, (float) (currentY - bounds.getY()));
                 currentX += metrics.stringWidth(segment.text());
             }
         }
