@@ -41,15 +41,23 @@ public class AWTShapedTextBuffer implements ShapedTextBuffer {
             currentX += run.xOffset();
             currentY += run.yOffset();
 
-            Font font = ((AWTFont) run.font()).font();
             Rectanglef runBounds = new Rectanglef();
             for (TextSegment segment : run.segments()) {
+                int fontStyle = Font.PLAIN;
+                if ((segment.styleFlags() & TextSegment.STYLE_ITALIC_BIT) != 0) fontStyle |= Font.ITALIC;
+                if ((segment.styleFlags() & TextSegment.STYLE_BOLD_BIT) != 0) fontStyle |= Font.BOLD;
+                Font font = ((AWTFont) run.font()).font().deriveFont(fontStyle);
+
                 GlyphVector glyphVector = font.createGlyphVector(fontRenderContext, segment.text());
                 Rectangle2D bounds = font.createGlyphVector(fontRenderContext, segment.text()).getVisualBounds();
+                float shadowOffset = 0;
+                if ((segment.styleFlags() & TextSegment.STYLE_SHADOW_BIT) != 0) {
+                    shadowOffset = Graphics2DRenderer.SHADOW_OFFSET_FACTOR * font.getSize();
+                }
                 runBounds.minX = Math.min(runBounds.minX, currentX + (float) bounds.getX());
                 runBounds.minY = Math.min(runBounds.minY, currentY + (float) bounds.getY());
-                runBounds.maxX = Math.max(runBounds.maxX, currentX + (float) (bounds.getX() + bounds.getWidth()));
-                runBounds.maxY = Math.max(runBounds.maxY, currentY + (float) (bounds.getY() + bounds.getHeight()));
+                runBounds.maxX = Math.max(runBounds.maxX, currentX + (float) (bounds.getX() + bounds.getWidth() + shadowOffset));
+                runBounds.maxY = Math.max(runBounds.maxY, currentY + (float) (bounds.getY() + bounds.getHeight() + shadowOffset));
                 currentX += (float) glyphVector.getLogicalBounds().getWidth();
             }
             out.minX = Math.min(out.minX, runBounds.minX);

@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.text;
 
 import net.lenni0451.commons.color.Color;
+import org.intellij.lang.annotations.MagicConstant;
 
 // https://github.com/RaphiMC/ThinGL/blob/fd9e6bd95a53b66f23842fac23205187399d22cf/src/main/java/net/raphimc/thingl/text/TextSegment.java
 public record TextSegment(String text, Color color, int styleFlags, Color outlineColor, float xVisualOffset, float yVisualOffset) {
@@ -31,11 +32,11 @@ public record TextSegment(String text, Color color, int styleFlags, Color outlin
         return flags;
     }
 
-    public TextSegment(final String text, final Color color, final int styleFlags, final Color outlineColor) {
+    public TextSegment(final String text, final Color color, @MagicConstant(flagsFromClass = TextSegment.class) final int styleFlags, final Color outlineColor) {
         this(text, color, styleFlags, outlineColor, 0F, 0F);
     }
 
-    public TextSegment(final String text, final Color color, final int styleFlags) {
+    public TextSegment(final String text, final Color color, @MagicConstant(flagsFromClass = TextSegment.class) final int styleFlags) {
         this(text, color, styleFlags, Color.TRANSPARENT);
     }
 

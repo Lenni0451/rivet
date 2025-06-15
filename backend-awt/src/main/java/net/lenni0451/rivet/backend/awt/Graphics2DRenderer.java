@@ -10,15 +10,25 @@ import org.joml.Matrix4f;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 public class Graphics2DRenderer implements Renderer {
 
+    public static final float SHADOW_OFFSET_FACTOR = 0.075F;
+    public static final float SHADOW_COLOR_MULTIPLIER = 0.25F;
+
     private final Graphics2D g2d;
 
     public Graphics2DRenderer(final Graphics2D g2d) {
         this.g2d = g2d;
+        this.g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        this.g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        this.g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        this.g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        this.g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        this.g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
     }
 
     @Override
@@ -32,18 +42,33 @@ public class Graphics2DRenderer implements Renderer {
     public void text(Matrix4f positionMatrix, ShapedTextBuffer shapedTextBuffer, float x, float y) {
         this.applyTransform(positionMatrix);
         TextBuffer textBuffer = ((AWTShapedTextBuffer) shapedTextBuffer).textBuffer();
+        FontRenderContext fontRenderContext = this.g2d.getFontRenderContext();
         float currentX = x - shapedTextBuffer.bounds().minX;
         float currentY = y - shapedTextBuffer.bounds().minY;
         for (TextRun run : textBuffer.runs()) {
             currentX += run.xOffset();
             currentY += run.yOffset();
-            Font font = ((AWTFont) run.font()).font();
-            this.g2d.setFont(font);
-            FontRenderContext frc = this.g2d.getFontRenderContext();
             for (TextSegment segment : run.segments()) {
+                int fontStyle = Font.PLAIN;
+                if ((segment.styleFlags() & TextSegment.STYLE_ITALIC_BIT) != 0) fontStyle |= Font.ITALIC;
+                if ((segment.styleFlags() & TextSegment.STYLE_BOLD_BIT) != 0) fontStyle |= Font.BOLD;
+                Font font = ((AWTFont) run.font()).font().deriveFont(fontStyle);
+                this.g2d.setFont(font);
+                FontMetrics metrics = this.g2d.getFontMetrics(font);
+
+                Rectangle2D logicalBounds = font.createGlyphVector(fontRenderContext, segment.text()).getLogicalBounds();
+                float segmentX = currentX + segment.xVisualOffset();
+                float segmentY = currentY + segment.yVisualOffset();
+                if ((segment.styleFlags() & TextSegment.STYLE_SHADOW_BIT) != 0) {
+                    float shadowOffset = SHADOW_OFFSET_FACTOR * run.font().getSize();
+                    this.applyColor(segment.color().multiply(SHADOW_COLOR_MULTIPLIER));
+                    this.g2d.drawString(segment.text(), segmentX + shadowOffset, segmentY + shadowOffset);
+                    this.renderTextDecorations(segment, segmentX + shadowOffset, segmentY + shadowOffset, metrics, logicalBounds);
+                }
                 this.applyColor(segment.color());
-                this.g2d.drawString(segment.text(), currentX + segment.xVisualOffset(), currentY + segment.yVisualOffset());
-                currentX += (float) font.createGlyphVector(frc, segment.text()).getLogicalBounds().getWidth();
+                this.g2d.drawString(segment.text(), segmentX, segmentY);
+                this.renderTextDecorations(segment, segmentX, segmentY, metrics, logicalBounds);
+                currentX += (float) logicalBounds.getWidth();
             }
         }
     }
@@ -54,6 +79,29 @@ public class Graphics2DRenderer implements Renderer {
 
     @Override
     public void endBatch() {
+    }
+
+    protected void renderTextDecorations(final TextSegment segment, final float x, final float y, final FontMetrics metrics, final Rectangle2D logicalBounds) {
+        LineMetrics lineMetrics = metrics.getLineMetrics(segment.text(), this.g2d);
+        final int styleFlags = segment.styleFlags();
+        if ((styleFlags & TextSegment.STYLE_UNDERLINE_BIT) != 0 || (styleFlags & TextSegment.STYLE_STRIKETHROUGH_BIT) != 0) {
+            if ((styleFlags & TextSegment.STYLE_UNDERLINE_BIT) != 0) {
+                float halfLineThickness = lineMetrics.getUnderlineThickness() / 2F;
+                if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
+                    halfLineThickness *= 1.5F;
+                }
+                final float lineY = y + lineMetrics.getUnderlineOffset();
+                this.g2d.fill(new Rectangle2D.Float((float) (x + logicalBounds.getX()), lineY - halfLineThickness, (float) logicalBounds.getWidth(), halfLineThickness * 2));
+            }
+            if ((styleFlags & TextSegment.STYLE_STRIKETHROUGH_BIT) != 0) {
+                float lineThickness = lineMetrics.getStrikethroughThickness();
+                if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
+                    lineThickness *= 1.5F;
+                }
+                final float lineY = y + lineMetrics.getStrikethroughOffset();
+                this.g2d.fill(new Rectangle2D.Float((float) (x + logicalBounds.getX()), lineY, (float) logicalBounds.getWidth(), lineThickness));
+            }
+        }
     }
 
     private void applyColor(final Color color) {
