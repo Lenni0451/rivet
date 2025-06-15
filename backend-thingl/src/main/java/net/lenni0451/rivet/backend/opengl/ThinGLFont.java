@@ -14,4 +14,19 @@ public record ThinGLFont(net.raphimc.thingl.text.font.Font font) implements Font
         return this.font.getSize();
     }
 
+    @Override
+    public float getHeight() {
+        return this.font.getHeight();
+    }
+
+    @Override
+    public String getName() {
+        return this.font.getPostscriptName();
+    }
+
+    @Override
+    public String getFamily() {
+        return this.font.getFamily();
+    }
+
 }
