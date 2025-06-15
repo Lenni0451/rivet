@@ -36,7 +36,7 @@ public class ThinGLBackend implements Backend {
         for (TextRun run : textBuffer.runs()) {
             final List<net.raphimc.thingl.text.TextSegment> thinGlSegments = new ArrayList<>(run.segments().size());
             for (TextSegment segment : run.segments()) {
-                thinGlSegments.add(new net.raphimc.thingl.text.TextSegment(segment.text(), segment.color(), segment.styleFlags()));
+                thinGlSegments.add(new net.raphimc.thingl.text.TextSegment(segment.text(), segment.color(), segment.styleFlags(), segment.outlineColor(), segment.xVisualOffset(), segment.yVisualOffset()));
             }
             thinGlTextBuffer.add(new net.raphimc.thingl.text.TextRun(((ThinGLFont) run.font()).font(), thinGlSegments, run.xOffset(), run.yOffset()));
         }
