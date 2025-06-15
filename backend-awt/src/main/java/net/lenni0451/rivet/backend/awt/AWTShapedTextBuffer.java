@@ -56,7 +56,7 @@ public class AWTShapedTextBuffer implements ShapedTextBuffer {
                 }
                 float outlineOffset = 0;
                 if (segment.outlineColor().getAlpha() > 0) {
-                    outlineOffset = font.getSize() * Graphics2DRenderer.OUTLINE_WIDTH_FACTOR / 2;
+                    outlineOffset = Graphics2DRenderer.OUTLINE_WIDTH_FACTOR * font.getSize() / 2;
                 }
                 runBounds.minX = Math.min(runBounds.minX, currentX + (float) bounds.getX() - outlineOffset);
                 runBounds.minY = Math.min(runBounds.minY, currentY + (float) bounds.getY() - outlineOffset);

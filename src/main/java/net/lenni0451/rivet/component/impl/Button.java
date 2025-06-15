@@ -45,15 +45,16 @@ public class Button extends Component implements Renderable, MouseListener {
         } else {
             renderer.filledRectangle(positionMatrix, 0, 0, size.width(), size.height(), Color.RED);
         }*/
-        if (this.shapedText == null) {
+        if (this.shapedText == null || true) {
 //            this.shapedText = this.rivet.getBackend().shapeTextBuffer(TextBuffer.fromString(this.rivet.getDefaultFonts(), this.text));
             Font font = this.rivet.getDefaultFonts().getMainFont();
-//            int flags = TextSegment.STYLE_SHADOW_BIT | TextSegment.STYLE_UNDERLINE_BIT | TextSegment.STYLE_STRIKETHROUGH_BIT | TextSegment.STYLE_ITALIC_BIT | TextSegment.STYLE_BOLD_BIT;
-            int flags = 0;
+            Color outlineColor = Color.YELLOW;
+            int flags = TextSegment.STYLE_SHADOW_BIT | TextSegment.STYLE_UNDERLINE_BIT | TextSegment.STYLE_STRIKETHROUGH_BIT | TextSegment.STYLE_ITALIC_BIT | TextSegment.STYLE_BOLD_BIT;
+//            int flags = TextSegment.STYLE_SHADOW_BIT;
             this.shapedText = this.rivet.getBackend().shapeTextBuffer(new TextBuffer(
-                    new TextRun(font).addSegment(new TextSegment("Hello", Color.RED, flags, Color.YELLOW)),
+                    new TextRun(font).addSegment(new TextSegment("Hello", Color.RED, flags, outlineColor)),
                     new TextRun(font, 50, 50).addSegment(new TextSegment(" World", Color.GREEN, flags)),
-                    new TextRun(font).addSegment(new TextSegment("!", Color.BLUE, flags, Color.YELLOW))
+                    new TextRun(font).addSegment(new TextSegment("!", Color.BLUE, flags, outlineColor))
             ));
         }
         final Rectanglef textBounds = this.shapedText.bounds();

@@ -61,21 +61,29 @@ public class Graphics2DRenderer implements Renderer {
                 Rectangle2D logicalBounds = font.createGlyphVector(fontRenderContext, segment.text()).getLogicalBounds();
                 float segmentX = currentX + segment.xVisualOffset();
                 float segmentY = currentY + segment.yVisualOffset();
+                TextLayout textLayout = new TextLayout(segment.text(), font, fontRenderContext);
+                Shape outline = textLayout.getOutline(null);
                 if ((segment.styleFlags() & TextSegment.STYLE_SHADOW_BIT) != 0) {
                     float shadowOffset = SHADOW_OFFSET_FACTOR * run.font().getSize();
                     this.applyColor(segment.color().multiply(SHADOW_COLOR_MULTIPLIER));
+                    if (segment.outlineColor().getAlpha() > 0) {
+                        Stroke previousStroke = this.g2d.getStroke();
+                        this.g2d.setStroke(new BasicStroke(font.getSize() * OUTLINE_WIDTH_FACTOR, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                        this.g2d.translate(segmentX + shadowOffset, segmentY + shadowOffset);
+                        this.g2d.draw(outline);
+                        this.g2d.translate(-(segmentX + shadowOffset), -(segmentY + shadowOffset));
+                        this.g2d.setStroke(previousStroke);
+                    }
                     this.g2d.drawString(segment.text(), segmentX + shadowOffset, segmentY + shadowOffset);
                     this.renderTextDecorations(segment, segmentX + shadowOffset, segmentY + shadowOffset, metrics, logicalBounds);
                 }
                 if (segment.outlineColor().getAlpha() > 0) {
-                    TextLayout textLayout = new TextLayout(segment.text(), font, fontRenderContext);
-                    Shape outline = textLayout.getOutline(null);
                     this.applyColor(segment.outlineColor());
                     Stroke previousStroke = this.g2d.getStroke();
                     this.g2d.setStroke(new BasicStroke(font.getSize() * OUTLINE_WIDTH_FACTOR, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                     this.g2d.translate(segmentX, segmentY);
                     this.g2d.draw(outline);
-                    this.g2d.translate(-(segmentX), -(segmentY));
+                    this.g2d.translate(-segmentX, -segmentY);
                     this.g2d.setStroke(previousStroke);
                 }
                 this.applyColor(segment.color());
