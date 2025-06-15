@@ -54,10 +54,14 @@ public class AWTShapedTextBuffer implements ShapedTextBuffer {
                 if ((segment.styleFlags() & TextSegment.STYLE_SHADOW_BIT) != 0) {
                     shadowOffset = Graphics2DRenderer.SHADOW_OFFSET_FACTOR * font.getSize();
                 }
-                runBounds.minX = Math.min(runBounds.minX, currentX + (float) bounds.getX());
-                runBounds.minY = Math.min(runBounds.minY, currentY + (float) bounds.getY());
-                runBounds.maxX = Math.max(runBounds.maxX, currentX + (float) (bounds.getX() + bounds.getWidth() + shadowOffset));
-                runBounds.maxY = Math.max(runBounds.maxY, currentY + (float) (bounds.getY() + bounds.getHeight() + shadowOffset));
+                float outlineOffset = 0;
+                if (segment.outlineColor().getAlpha() > 0) {
+                    outlineOffset = font.getSize() * Graphics2DRenderer.OUTLINE_WIDTH_FACTOR / 2;
+                }
+                runBounds.minX = Math.min(runBounds.minX, currentX + (float) bounds.getX() - outlineOffset);
+                runBounds.minY = Math.min(runBounds.minY, currentY + (float) bounds.getY() - outlineOffset);
+                runBounds.maxX = Math.max(runBounds.maxX, currentX + (float) (bounds.getX() + bounds.getWidth() + shadowOffset + outlineOffset));
+                runBounds.maxY = Math.max(runBounds.maxY, currentY + (float) (bounds.getY() + bounds.getHeight() + shadowOffset + outlineOffset));
                 currentX += (float) glyphVector.getLogicalBounds().getWidth();
             }
             out.minX = Math.min(out.minX, runBounds.minX);

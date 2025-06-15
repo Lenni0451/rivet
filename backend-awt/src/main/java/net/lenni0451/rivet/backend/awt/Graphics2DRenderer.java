@@ -11,6 +11,7 @@ import org.joml.Matrix4f;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
@@ -18,6 +19,7 @@ public class Graphics2DRenderer implements Renderer {
 
     public static final float SHADOW_OFFSET_FACTOR = 0.075F;
     public static final float SHADOW_COLOR_MULTIPLIER = 0.25F;
+    public static final float OUTLINE_WIDTH_FACTOR = 0.125F;
 
     private final Graphics2D g2d;
 
@@ -64,6 +66,17 @@ public class Graphics2DRenderer implements Renderer {
                     this.applyColor(segment.color().multiply(SHADOW_COLOR_MULTIPLIER));
                     this.g2d.drawString(segment.text(), segmentX + shadowOffset, segmentY + shadowOffset);
                     this.renderTextDecorations(segment, segmentX + shadowOffset, segmentY + shadowOffset, metrics, logicalBounds);
+                }
+                if (segment.outlineColor().getAlpha() > 0) {
+                    TextLayout textLayout = new TextLayout(segment.text(), font, fontRenderContext);
+                    Shape outline = textLayout.getOutline(null);
+                    this.applyColor(segment.outlineColor());
+                    Stroke previousStroke = this.g2d.getStroke();
+                    this.g2d.setStroke(new BasicStroke(font.getSize() * OUTLINE_WIDTH_FACTOR, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    this.g2d.translate(segmentX, segmentY);
+                    this.g2d.draw(outline);
+                    this.g2d.translate(-(segmentX), -(segmentY));
+                    this.g2d.setStroke(previousStroke);
                 }
                 this.applyColor(segment.color());
                 this.g2d.drawString(segment.text(), segmentX, segmentY);

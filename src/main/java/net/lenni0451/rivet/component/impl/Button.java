@@ -48,11 +48,12 @@ public class Button extends Component implements Renderable, MouseListener {
         if (this.shapedText == null) {
 //            this.shapedText = this.rivet.getBackend().shapeTextBuffer(TextBuffer.fromString(this.rivet.getDefaultFonts(), this.text));
             Font font = this.rivet.getDefaultFonts().getMainFont();
-            int flags = TextSegment.STYLE_SHADOW_BIT | TextSegment.STYLE_UNDERLINE_BIT | TextSegment.STYLE_STRIKETHROUGH_BIT | TextSegment.STYLE_ITALIC_BIT | TextSegment.STYLE_BOLD_BIT;
+//            int flags = TextSegment.STYLE_SHADOW_BIT | TextSegment.STYLE_UNDERLINE_BIT | TextSegment.STYLE_STRIKETHROUGH_BIT | TextSegment.STYLE_ITALIC_BIT | TextSegment.STYLE_BOLD_BIT;
+            int flags = 0;
             this.shapedText = this.rivet.getBackend().shapeTextBuffer(new TextBuffer(
-                    new TextRun(font).addSegment(new TextSegment("Hello", Color.RED, flags)),
+                    new TextRun(font).addSegment(new TextSegment("Hello", Color.RED, flags, Color.YELLOW)),
                     new TextRun(font, 50, 50).addSegment(new TextSegment(" World", Color.GREEN, flags)),
-                    new TextRun(font).addSegment(new TextSegment("!", Color.BLUE, flags))
+                    new TextRun(font).addSegment(new TextSegment("!", Color.BLUE, flags, Color.YELLOW))
             ));
         }
         final Rectanglef textBounds = this.shapedText.bounds();
