@@ -32,18 +32,18 @@ public class Graphics2DRenderer implements Renderer {
     public void text(Matrix4f positionMatrix, ShapedTextBuffer shapedTextBuffer, float x, float y) {
         this.applyTransform(positionMatrix);
         TextBuffer textBuffer = ((AWTShapedTextBuffer) shapedTextBuffer).textBuffer();
-        float currentX = x;
-        float currentY = y;
+        float currentX = x - shapedTextBuffer.bounds().minX;
+        float currentY = y - shapedTextBuffer.bounds().minY;
         for (TextRun run : textBuffer.runs()) {
+            currentX += run.xOffset();
+            currentY += run.yOffset();
             Font font = ((AWTFont) run.font()).font();
             this.g2d.setFont(font);
-            FontMetrics metrics = this.g2d.getFontMetrics(font);
             FontRenderContext frc = this.g2d.getFontRenderContext();
             for (TextSegment segment : run.segments()) {
-                Rectangle2D bounds = font.createGlyphVector(frc, segment.text()).getVisualBounds();
                 this.applyColor(segment.color());
-                this.g2d.drawString(segment.text(), currentX, (float) (currentY - bounds.getY()));
-                currentX += metrics.stringWidth(segment.text());
+                this.g2d.drawString(segment.text(), currentX + segment.xVisualOffset(), currentY + segment.yVisualOffset());
+                currentX += (float) font.createGlyphVector(frc, segment.text()).getLogicalBounds().getWidth();
             }
         }
     }
