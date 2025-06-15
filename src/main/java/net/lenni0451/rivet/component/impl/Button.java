@@ -9,6 +9,7 @@ import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextBuffer;
 import org.joml.Matrix4fStack;
+import org.joml.primitives.Rectanglef;
 
 import java.util.function.IntConsumer;
 
@@ -36,14 +37,18 @@ public class Button extends Component implements Renderable, MouseListener {
 
     @Override
     public void render(Renderer renderer, Matrix4fStack positionMatrix, Size size) {
-        if (this.hovered) {
+        /*if (this.hovered) {
             renderer.filledRectangle(positionMatrix, 0, 0, size.width(), size.height(), Color.GREEN);
         } else {
             renderer.filledRectangle(positionMatrix, 0, 0, size.width(), size.height(), Color.RED);
-        }
+        }*/
         if (this.shapedText == null) {
             this.shapedText = this.rivet.getBackend().shapeTextBuffer(TextBuffer.fromString(this.rivet.getDefaultFonts(), this.text));
         }
+        final Rectanglef textBounds = this.shapedText.bounds();
+        renderer.filledRectangle(positionMatrix, 0, 0, textBounds.lengthX(), textBounds.lengthY(), Color.GRAY.withAlpha(100));
+        renderer.filledRectangle(positionMatrix, 0, -textBounds.minY, textBounds.lengthX(), -textBounds.minY + 1, Color.BLUE);
+        renderer.filledRectangle(positionMatrix, 0, textBounds.maxY, textBounds.lengthX(), textBounds.maxY - 1, Color.RED);
         renderer.text(positionMatrix, this.shapedText, 0, 0);
     }
 
