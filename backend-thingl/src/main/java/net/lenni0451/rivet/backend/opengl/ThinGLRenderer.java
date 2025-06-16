@@ -25,6 +25,39 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
+    public void outlinedRectangle(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height, final Color color, final float lineWidth) {
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.renderer2D().beginBuffering(this.targetMultiDrawBatchDataHolder);
+        }
+        ThinGL.renderer2D().outlinedRectangle(positionMatrix, x, y, x + width, y + height, color, lineWidth);
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.renderer2D().endBuffering();
+        }
+    }
+
+    @Override
+    public void filledRoundedRectangle(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height, final float radius, final Color color) {
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.renderer2D().beginBuffering(this.targetMultiDrawBatchDataHolder);
+        }
+        ThinGL.renderer2D().filledRoundedRectangle(positionMatrix, x, y, x + width, y + height, radius, color);
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.renderer2D().endBuffering();
+        }
+    }
+
+    @Override
+    public void outlinedRoundedRectangle(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height, final float radius, final Color color, final float lineWidth) {
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.renderer2D().beginBuffering(this.targetMultiDrawBatchDataHolder);
+        }
+        ThinGL.renderer2D().outlinedRoundedRectangle(positionMatrix, x, y, x + width, y + height, radius, color, lineWidth);
+        if (this.targetMultiDrawBatchDataHolder != null) {
+            ThinGL.renderer2D().endBuffering();
+        }
+    }
+
+    @Override
     public void text(final Matrix4f positionMatrix, final ShapedTextBuffer shapedTextBuffer, final float x, final float y) {
         if (this.targetMultiDrawBatchDataHolder != null) {
             ThinGL.rendererText().beginBuffering(this.targetMultiDrawBatchDataHolder);
