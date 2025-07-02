@@ -36,4 +36,8 @@ public interface Backend {
 
     ShapedTextBuffer shapeTextBuffer(final TextBuffer textBuffer);
 
+    String getClipboardText();
+
+    void setClipboardText(final String text);
+
 }

@@ -81,6 +81,16 @@ public class TextField extends Component implements Renderable, MouseListener, K
                 this.cursorX = null;
             }
         }
+
+        if (key == KeyboardConstants.KEY_V && (modifiers & KeyboardConstants.MODIFIER_CONTROL) != 0) {
+            final String clipboardText = this.rivet.getBackend().getClipboardText();
+            if (clipboardText != null) {
+                this.text.insert(this.cursor, clipboardText);
+                this.shapedText = null;
+                this.cursor += clipboardText.length();
+                this.cursorX = null;
+            }
+        }
     }
 
     @Override

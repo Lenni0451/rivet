@@ -13,12 +13,21 @@ import net.raphimc.thingl.resource.texture.AbstractTexture;
 import java.lang.ref.Cleaner;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ThinGLBackend implements Backend {
 
     public static final Cleaner CLEANER = Cleaner.create();
 
     private final Renderer renderer = new ThinGLRenderer();
+    private final Supplier<String> clipboardSupplier;
+    private final Consumer<String> clipboardConsumer;
+
+    public ThinGLBackend(final Supplier<String> clipboardSupplier, final Consumer<String> clipboardConsumer) {
+        this.clipboardSupplier = clipboardSupplier;
+        this.clipboardConsumer = clipboardConsumer;
+    }
 
     @Override
     public Renderer getRenderer() {
@@ -46,6 +55,16 @@ public class ThinGLBackend implements Backend {
     @Override
     public Texture loadTexture(final byte[] textureData) {
         return new ThinGLTexture(new net.raphimc.thingl.resource.texture.Texture2D(AbstractTexture.InternalFormat.RGBA8, textureData));
+    }
+
+    @Override
+    public String getClipboardText() {
+        return this.clipboardSupplier.get();
+    }
+
+    @Override
+    public void setClipboardText(final String text) {
+        this.clipboardConsumer.accept(text);
     }
 
 }

@@ -62,7 +62,7 @@ public class Test extends StandaloneApplicationRunner {
             }
         });
 
-        final ThinGLBackend backend = new ThinGLBackend();
+        final ThinGLBackend backend = new ThinGLBackend(() -> GLFW.glfwGetClipboardString(this.window), text -> GLFW.glfwSetClipboardString(this.window, text));
 
         Font font;
         try {
