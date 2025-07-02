@@ -19,13 +19,6 @@ public abstract class Component {
     private final ExtendedVector2f maxSize = new ExtendedVector2f(Float.MAX_VALUE, Float.MAX_VALUE);
     private final FloatPadding padding = new FloatPadding();
 
-    public Size getActualPreferredSize() {
-        return new ExtendedVector2f(
-                Math.max(this.minSize.x, this.preferredSize.x),
-                Math.max(this.minSize.y, this.preferredSize.y)
-        );
-    }
-
     public Size getMinSize() {
         return this.minSize;
     }
@@ -36,6 +29,13 @@ public abstract class Component {
 
     public ExtendedVector2f getPreferredSize() {
         return this.preferredSize;
+    }
+
+    public Size getActualPreferredSize() {
+        return new ExtendedVector2f(
+                Math.max(this.minSize.x, this.preferredSize.x),
+                Math.max(this.minSize.y, this.preferredSize.y)
+        );
     }
 
     public Size getMaxSize() {

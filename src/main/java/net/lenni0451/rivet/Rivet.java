@@ -8,6 +8,7 @@ import net.lenni0451.rivet.component.KeyboardListener;
 import net.lenni0451.rivet.container.Container;
 import net.lenni0451.rivet.math.impl.ExtendedVector2f;
 import net.lenni0451.rivet.text.FontSet;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 
@@ -67,6 +68,7 @@ public class Rivet {
     public void setRootContainer(final Container rootContainer) {
         this.rootContainer = rootContainer;
         this.rootContainer.onAdded(this, null);
+        this.computeLayout();
     }
 
     public float getScaleFactor() {
@@ -91,6 +93,11 @@ public class Rivet {
         if (component != null) {
             component.onFocusGained();
         }
+    }
+
+    @ApiStatus.Internal
+    public void computeLayout() {
+        this.rootContainer.computeLayout(this.getScaledSize());
     }
 
     public void render() {

@@ -29,7 +29,7 @@ public class AbsoluteContainer extends Container {
             float width = bounds.lengthX();
             float height = bounds.lengthY();
             bounds.setMin(x, y).setMax(x + width, y + height);
-            this.relayoutChildren();
+            this.triggerLayoutChange();
         }
     }
 
@@ -37,31 +37,42 @@ public class AbsoluteContainer extends Container {
         Rectanglef bounds = this.childParameters.get(component);
         if (bounds != null) {
             bounds.setMax(bounds.minX + width, bounds.minY + height);
-            this.relayoutChildren();
+            this.triggerLayoutChange();
         }
     }
 
     @Override
-    protected void layoutChildren(final Vector2f size) {
-        for (Component child : this.getChildren()) {
-            Rectanglef parameter = this.childParameters.get(child);
-            Size preferredSize = child.getActualPreferredSize();
-            float width = Float.isNaN(parameter.maxX) ? preferredSize.width() : parameter.lengthX();
-            float height = Float.isNaN(parameter.maxY) ? preferredSize.height() : parameter.lengthY();
-            this.setChildBounds(child, parameter.minX, parameter.minY, width, height);
+    protected void computePreferredSize() {
+        float maxWidth = 0;
+        float maxHeight = 0;
+        for (Map.Entry<Component, Rectanglef> entry : this.childParameters.entrySet()) {
+            Size preferredSize = entry.getKey().getActualPreferredSize();
+            if (Float.isNaN(entry.getValue().maxX)) {
+                maxWidth = Math.max(maxWidth, entry.getValue().minX + preferredSize.width());
+            } else {
+                maxWidth = Math.max(maxWidth, entry.getValue().maxX);
+            }
+            if (Float.isNaN(entry.getValue().maxY)) {
+                maxHeight = Math.max(maxHeight, entry.getValue().minY + preferredSize.height());
+            } else {
+                maxHeight = Math.max(maxHeight, entry.getValue().maxY);
+            }
         }
+        this.preferredSize.set(maxWidth, maxHeight);
     }
 
     @Override
-    public void computePreferredSize0() {
-        float width = 0;
-        float height = 0;
-        for (Component child : this.getChildren()) {
-            Rectanglef bounds = this.getChildBounds(child);
-            width = Math.max(width, bounds.minX + bounds.maxX);
-            height = Math.max(height, bounds.minY + bounds.maxY);
+    protected void computeLayout0(Vector2f size) {
+        for (Map.Entry<Component, Rectanglef> entry : this.childParameters.entrySet()) {
+            Size preferredSize = entry.getKey().getActualPreferredSize();
+            Rectanglef bounds = entry.getValue();
+            this.setChildBounds(entry.getKey(),
+                    bounds.minX,
+                    bounds.minY,
+                    Float.isNaN(bounds.maxX) ? preferredSize.width() : bounds.lengthX(),
+                    Float.isNaN(bounds.maxY) ? preferredSize.height() : bounds.lengthY()
+            );
         }
-        this.preferredSize.set(width, height);
     }
 
 }

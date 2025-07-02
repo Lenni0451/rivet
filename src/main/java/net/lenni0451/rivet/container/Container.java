@@ -7,6 +7,7 @@ import net.lenni0451.rivet.component.MouseListener;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.impl.ExtendedVector2f;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 import org.joml.primitives.Rectanglef;
@@ -109,7 +110,7 @@ public abstract class Container extends Component implements Renderable, MouseLi
         this.children.put(child, new Rectanglef());
         if (this.rivet != null) {
             child.onAdded(this.rivet, this);
-            this.relayoutChildren();
+            this.triggerLayoutChange();
         }
     }
 
@@ -118,13 +119,12 @@ public abstract class Container extends Component implements Renderable, MouseLi
         if (this.hoveredChildren.remove(child)) {
             ((MouseListener) child).onMouseLeave();
         }
-        if (this.rivet != null) {
-            this.relayoutChildren();
-        }
+        this.triggerLayoutChange();
     }
 
     protected void clearChildren() {
         this.children.clear();
+        this.triggerLayoutChange();
     }
 
     protected Rectanglef getChildBounds(final Component child) {
@@ -170,35 +170,34 @@ public abstract class Container extends Component implements Renderable, MouseLi
         }
     }
 
-    protected void relayoutChildren() {
-        if (this.parent == null) {
-            this.layoutChildren(this.rivet.getScaledSize());
-        } else {
-            this.layoutChildren(this.parent.getChildSize(this));
+    protected void triggerLayoutChange() {
+        if (this.rivet != null) {
+            this.computePreferredSize();
+            this.rivet.computeLayout();
         }
-        this.computePreferredSize();
     }
-
-    protected abstract void layoutChildren(final Vector2f size);
 
     @Override
     public void onAdded(Rivet rivet, Container parent) {
-        super.onAdded(rivet, parent);
         for (Component child : this.children.keySet()) {
             child.onAdded(rivet, this);
         }
-        this.relayoutChildren();
+        super.onAdded(rivet, parent);
     }
 
     @Override
-    protected void computePreferredSize() {
-        if (this.rivet == null) return;
-        this.computePreferredSize0();
-        if (this.parent != null) {
-            this.parent.relayoutChildren();
+    protected abstract void computePreferredSize();
+
+    @ApiStatus.Internal
+    public void computeLayout(final Vector2f size) {
+        this.computeLayout0(size);
+        for (Component child : this.children.keySet()) {
+            if (child instanceof Container container) {
+                container.computeLayout(this.getChildSize(child));
+            }
         }
     }
 
-    protected abstract void computePreferredSize0();
+    protected abstract void computeLayout0(final Vector2f size);
 
 }

@@ -3,7 +3,8 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.awt.AWTBackend;
 import net.lenni0451.rivet.backend.awt.Graphics2DRenderer;
 import net.lenni0451.rivet.backend.text.Font;
-import net.lenni0451.rivet.component.impl.Button;
+import net.lenni0451.rivet.component.base.Button;
+import net.lenni0451.rivet.component.impl.TextButton;
 import net.lenni0451.rivet.constants.MouseConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.text.FontSet;
@@ -52,7 +53,7 @@ public class Test extends Canvas {
         Font font = backend.loadFont(this.getClass().getResourceAsStream("/Roboto-Regular.ttf"), 48);
 
         AbsoluteContainer rootContainer = new AbsoluteContainer();
-        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
+        Button button = new TextButton("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         rootContainer.add(button, 50, 50);
         this.rivet = new Rivet(backend, new FontSet(font), rootContainer, this.frame.getWidth(), this.frame.getHeight());
     }
@@ -94,7 +95,7 @@ public class Test extends Canvas {
                 if ((e.getModifiersEx() & InputEvent.ALT_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_ALT;
                 if ((e.getModifiersEx() & InputEvent.META_DOWN_MASK) != 0) modifiers |= MouseConstants.MODIFIER_META;
 
-                Test.this.rivet.onMouseDown(e.getX(), e.getY(), button, modifiers);
+                Test.this.rivet.onMouseUp(e.getX(), e.getY(), button, modifiers);
             }
         });
         this.addMouseMotionListener(new MouseAdapter() {

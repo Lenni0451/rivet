@@ -1,7 +1,8 @@
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.opengl.ThinGLBackend;
 import net.lenni0451.rivet.backend.text.Font;
-import net.lenni0451.rivet.component.impl.TextField;
+import net.lenni0451.rivet.component.base.TextField;
+import net.lenni0451.rivet.component.impl.TextButton;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.text.FontSet;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
@@ -72,7 +73,7 @@ public class Test extends StandaloneApplicationRunner {
         }
 
         AbsoluteContainer rootContainer = new AbsoluteContainer();
-        //Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
+        //Button button = new TextButton("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         //rootContainer.add(button, 50, 50);
         TextField textField = new TextField();
         rootContainer.add(textField, 50, 50);
