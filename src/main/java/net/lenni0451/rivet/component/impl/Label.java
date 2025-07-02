@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.component.impl;
 
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.backend.ShapedTextBuffer;
+import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Size;

@@ -33,6 +33,11 @@ public class AWTShapedTextBuffer implements ShapedTextBuffer {
         return new Rectanglef(this.bounds);
     }
 
+    @Override
+    public float extendedWidth() {
+        return this.bounds.lengthX();
+    }
+
     private Rectanglef calculateBounds() {
         Rectanglef out = new Rectanglef(Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
         float currentX = 0;

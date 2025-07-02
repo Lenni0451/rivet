@@ -2,6 +2,7 @@ package net.lenni0451.rivet.backend.awt;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
 import net.lenni0451.rivet.text.TextRun;
@@ -14,6 +15,8 @@ import java.awt.font.LineMetrics;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 
 public class Graphics2DRenderer implements Renderer {
 
@@ -38,6 +41,36 @@ public class Graphics2DRenderer implements Renderer {
         this.applyColor(color);
         this.applyTransform(positionMatrix);
         this.g2d.fill(new Rectangle2D.Float(x, y, width, height));
+    }
+
+    @Override
+    public void outlinedRectangle(Matrix4f positionMatrix, float x, float y, float width, float height, Color color, float lineWidth) {
+        this.applyTransform(positionMatrix);
+        this.applyColor(color);
+        Stroke previousStroke = this.g2d.getStroke();
+        this.g2d.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
+        float halfLineWidth = lineWidth / 2;
+        this.g2d.draw(new Rectangle2D.Float(x - halfLineWidth, y - halfLineWidth, width + lineWidth, height + lineWidth));
+        this.g2d.setStroke(previousStroke);
+    }
+
+    @Override
+    public void filledRoundedRectangle(Matrix4f positionMatrix, float x, float y, float width, float height, float radius, Color color) {
+        this.applyTransform(positionMatrix);
+        this.applyColor(color);
+        this.g2d.fill(new RoundRectangle2D.Float(x, y, width, height, radius, radius));
+    }
+
+    @Override
+    public void outlinedRoundedRectangle(Matrix4f positionMatrix, float x, float y, float width, float height, float radius, Color color, float lineWidth) {
+        this.applyTransform(positionMatrix);
+        this.applyColor(color);
+        Stroke previousStroke = this.g2d.getStroke();
+        this.g2d.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
+        float halfLineWidth = lineWidth / 2;
+        //TODO: Rounded rect corners don't work correctly
+        this.g2d.draw(new RoundRectangle2D.Float(x - halfLineWidth, y - halfLineWidth, width + lineWidth, height + lineWidth, radius, radius));
+        this.g2d.setStroke(previousStroke);
     }
 
     @Override
@@ -92,6 +125,13 @@ public class Graphics2DRenderer implements Renderer {
                 currentX += (float) logicalBounds.getWidth();
             }
         }
+    }
+
+    @Override
+    public void texture(Matrix4f positionMatrix, Texture texture, float x, float y, float width, float height) {
+        this.applyTransform(positionMatrix);
+        BufferedImage image = ((AWTTexture) texture).image();
+        this.g2d.drawImage(image, (int) x, (int) y, (int) width, (int) height, null);
     }
 
     @Override

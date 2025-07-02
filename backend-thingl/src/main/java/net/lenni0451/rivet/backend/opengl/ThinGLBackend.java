@@ -8,6 +8,7 @@ import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
 import net.lenni0451.rivet.text.TextRun;
 import net.lenni0451.rivet.text.TextSegment;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 
 import java.lang.ref.Cleaner;
@@ -27,6 +28,11 @@ public class ThinGLBackend implements Backend {
     public ThinGLBackend(final Supplier<String> clipboardSupplier, final Consumer<String> clipboardConsumer) {
         this.clipboardSupplier = clipboardSupplier;
         this.clipboardConsumer = clipboardConsumer;
+    }
+
+    @Override
+    public boolean isOnRenderThread() {
+        return ThinGL.get().isOnRenderThread();
     }
 
     @Override
@@ -53,8 +59,8 @@ public class ThinGLBackend implements Backend {
     }
 
     @Override
-    public Texture loadTexture(final byte[] textureData) {
-        return new ThinGLTexture(new net.raphimc.thingl.resource.texture.Texture2D(AbstractTexture.InternalFormat.RGBA8, textureData));
+    public Texture loadTexture(final byte[] pngData) {
+        return new ThinGLTexture(new net.raphimc.thingl.resource.texture.Texture2D(AbstractTexture.InternalFormat.RGBA8, pngData));
     }
 
     @Override

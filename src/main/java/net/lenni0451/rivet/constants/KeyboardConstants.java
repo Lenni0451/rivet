@@ -50,8 +50,6 @@ public class KeyboardConstants {
     public static final int KEY_BACKSLASH = 92;
     public static final int KEY_RIGHT_BRACKET = 93;
     public static final int KEY_GRAVE_ACCENT = 96;
-    public static final int KEY_WORLD_1 = 161;
-    public static final int KEY_WORLD_2 = 162;
 
     public static final int KEY_ESCAPE = 256;
     public static final int KEY_ENTER = 257;
@@ -96,7 +94,6 @@ public class KeyboardConstants {
     public static final int KEY_F22 = 311;
     public static final int KEY_F23 = 312;
     public static final int KEY_F24 = 313;
-    public static final int KEY_F25 = 314;
     public static final int KEY_KP_0 = 320;
     public static final int KEY_KP_1 = 321;
     public static final int KEY_KP_2 = 322;
@@ -128,5 +125,21 @@ public class KeyboardConstants {
     public static final int MODIFIER_CONTROL = 1 << 1;
     public static final int MODIFIER_ALT = 1 << 2;
     public static final int MODIFIER_META = 1 << 3;
+
+    public static boolean isValidKey(final int key) {
+        return key == KEY_SPACE
+                || key == KEY_APOSTROPHE
+                || (key >= KEY_COMMA && key <= KEY_9)
+                || key == KEY_SEMICOLON
+                || key == KEY_EQUAL
+                || (key >= KEY_A && key <= KEY_RIGHT_BRACKET)
+                || key == KEY_GRAVE_ACCENT
+                || (key >= KEY_ESCAPE && key <= KEY_END)
+                || (key >= KEY_CAPS_LOCK && key <= KEY_PAUSE)
+                || (key >= KEY_F1 && key <= KEY_F24)
+                || (key >= KEY_KP_0 && key <= KEY_KP_EQUAL)
+                || (key >= KEY_LEFT_SHIFT && key <= KEY_MENU)
+                ;
+    }
 
 }

@@ -1,10 +1,12 @@
 import lombok.SneakyThrows;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.awt.AWTBackend;
+import net.lenni0451.rivet.backend.awt.AWTKeymap;
 import net.lenni0451.rivet.backend.awt.Graphics2DRenderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.impl.TextButton;
+import net.lenni0451.rivet.component.impl.TextField;
 import net.lenni0451.rivet.constants.MouseConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.text.FontSet;
@@ -55,6 +57,7 @@ public class Test extends Canvas {
         AbsoluteContainer rootContainer = new AbsoluteContainer();
         Button button = new TextButton("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
         rootContainer.add(button, 50, 50);
+        rootContainer.add(new TextField(), 50, 150);
         this.rivet = new Rivet(backend, new FontSet(font), rootContainer, this.frame.getWidth(), this.frame.getHeight());
     }
 
@@ -118,15 +121,23 @@ public class Test extends Canvas {
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.CHAR_UNDEFINED) return; // Ignore undefined characters
+                if (Character.isISOControl(e.getKeyChar())) return; // Ignore control characters
                 Test.this.rivet.onCharTyped(e.getKeyChar());
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
+                int mappedKeyCode = AWTKeymap.mapKeyCode(e.getExtendedKeyCode(), e.getKeyLocation());
+                if (mappedKeyCode == -1) return; // Ignore unmapped keys
+                Test.this.rivet.onKeyDown(mappedKeyCode, 0, e.getModifiersEx());
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+                int mappedKeyCode = AWTKeymap.mapKeyCode(e.getExtendedKeyCode(), e.getKeyLocation());
+                if (mappedKeyCode == -1) return; // Ignore unmapped keys
+                Test.this.rivet.onKeyUp(mappedKeyCode, 0, e.getModifiersEx());
             }
         });
     }

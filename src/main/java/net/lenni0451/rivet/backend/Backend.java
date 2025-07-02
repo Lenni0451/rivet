@@ -12,6 +12,8 @@ import java.nio.file.Path;
 
 public interface Backend {
 
+    boolean isOnRenderThread();
+
     Renderer getRenderer();
 
     default Font loadFont(final Path path, final int size) throws IOException {
@@ -32,7 +34,7 @@ public interface Backend {
         return this.loadTexture(is.readAllBytes());
     }
 
-    Texture loadTexture(final byte[] textureData);
+    Texture loadTexture(final byte[] pngData);
 
     ShapedTextBuffer shapeTextBuffer(final TextBuffer textBuffer);
 

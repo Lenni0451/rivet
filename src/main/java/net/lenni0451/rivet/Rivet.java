@@ -13,6 +13,8 @@ import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Rivet {
 
@@ -22,6 +24,7 @@ public class Rivet {
     private final FontSet defaultFonts;
     private final Vector2f unscaledSize = new Vector2f();
     private final ExtendedVector2f scaledSize = new ExtendedVector2f();
+    private final List<Runnable> eventQueue = new ArrayList<>();
     private Container rootContainer;
     private float scaleFactor;
     private Component focusedComponent;
@@ -105,6 +108,15 @@ public class Rivet {
     }
 
     public void render(final Matrix4fStack positionMatrix) {
+        List<Runnable> actions;
+        synchronized (this.eventQueue) {
+            actions = List.copyOf(this.eventQueue);
+            this.eventQueue.clear();
+        }
+        for (Runnable runnable : actions) {
+            runnable.run();
+        }
+
         positionMatrix.pushMatrix();
         positionMatrix.scale(this.scaleFactor);
         this.rootContainer.render(this.backend.getRenderer(), positionMatrix, this.scaledSize);
@@ -113,39 +125,95 @@ public class Rivet {
 
     public void onMouseDown(final float mouseX, final float mouseY, final int button, final int modifiers) {
         if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
-        this.rootContainer.onMouseDown(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
+        if (this.backend.isOnRenderThread()) {
+            this.rootContainer.onMouseDown(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
+        } else {
+            synchronized (this.eventQueue) {
+                this.eventQueue.add(() -> {
+                    this.rootContainer.onMouseDown(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
+                });
+            }
+        }
     }
 
     public void onMouseUp(final float mouseX, final float mouseY, final int button, final int modifiers) {
         if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
-        this.rootContainer.onMouseUp(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
+        if (this.backend.isOnRenderThread()) {
+            this.rootContainer.onMouseUp(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
+        } else {
+            synchronized (this.eventQueue) {
+                this.eventQueue.add(() -> {
+                    this.rootContainer.onMouseUp(mouseX / this.scaleFactor, mouseY / this.scaleFactor, button, modifiers);
+                });
+            }
+        }
     }
 
     public void onMouseMove(final float mouseX, final float mouseY) {
         if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
-        this.rootContainer.onMouseMove(mouseX / this.scaleFactor, mouseY / this.scaleFactor);
+        if (this.backend.isOnRenderThread()) {
+            this.rootContainer.onMouseMove(mouseX / this.scaleFactor, mouseY / this.scaleFactor);
+        } else {
+            synchronized (this.eventQueue) {
+                this.eventQueue.add(() -> {
+                    this.rootContainer.onMouseMove(mouseX / this.scaleFactor, mouseY / this.scaleFactor);
+                });
+            }
+        }
     }
 
     public void onMouseScroll(final float mouseX, final float mouseY, final float scrollX, final float scrollY) {
         if (mouseX < 0 || mouseX >= this.unscaledSize.x || mouseY < 0 || mouseY >= this.unscaledSize.y) return;
-        this.rootContainer.onMouseScroll(mouseX / this.scaleFactor, mouseY / this.scaleFactor, scrollX, scrollY);
+        if (this.backend.isOnRenderThread()) {
+            this.rootContainer.onMouseScroll(mouseX / this.scaleFactor, mouseY / this.scaleFactor, scrollX, scrollY);
+        } else {
+            synchronized (this.eventQueue) {
+                this.eventQueue.add(() -> {
+                    this.rootContainer.onMouseScroll(mouseX / this.scaleFactor, mouseY / this.scaleFactor, scrollX, scrollY);
+                });
+            }
+        }
     }
 
     public void onKeyDown(final int key, final int scancode, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyDown(key, scancode, modifiers);
+            if (this.backend.isOnRenderThread()) {
+                keyboardListener.onKeyDown(key, scancode, modifiers);
+            } else {
+                synchronized (this.eventQueue) {
+                    this.eventQueue.add(() -> {
+                        keyboardListener.onKeyDown(key, scancode, modifiers);
+                    });
+                }
+            }
         }
     }
 
     public void onKeyUp(final int key, final int scancode, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyUp(key, scancode, modifiers);
+            if (this.backend.isOnRenderThread()) {
+                keyboardListener.onKeyUp(key, scancode, modifiers);
+            } else {
+                synchronized (this.eventQueue) {
+                    this.eventQueue.add(() -> {
+                        keyboardListener.onKeyUp(key, scancode, modifiers);
+                    });
+                }
+            }
         }
     }
 
     public void onCharTyped(final char c) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onCharTyped(c);
+            if (this.backend.isOnRenderThread()) {
+                keyboardListener.onCharTyped(c);
+            } else {
+                synchronized (this.eventQueue) {
+                    this.eventQueue.add(() -> {
+                        keyboardListener.onCharTyped(c);
+                    });
+                }
+            }
         }
     }
 
