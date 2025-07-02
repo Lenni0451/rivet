@@ -18,10 +18,13 @@ public class AWTShapedTextBuffer implements ShapedTextBuffer {
 
     private final TextBuffer textBuffer;
     private final Rectanglef bounds;
+    private final float extendedWidth;
 
     public AWTShapedTextBuffer(final TextBuffer textBuffer) {
         this.textBuffer = textBuffer;
-        this.bounds = this.calculateBounds();
+        CalculatedBounds calculatedBounds = this.calculateBounds();
+        this.bounds = calculatedBounds.bounds;
+        this.extendedWidth = calculatedBounds.extendedWidth;
     }
 
     public TextBuffer textBuffer() {
@@ -35,13 +38,14 @@ public class AWTShapedTextBuffer implements ShapedTextBuffer {
 
     @Override
     public float extendedWidth() {
-        return this.bounds.lengthX();
+        return this.extendedWidth;
     }
 
-    private Rectanglef calculateBounds() {
+    private CalculatedBounds calculateBounds() {
         Rectanglef out = new Rectanglef(Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
         float currentX = 0;
         float currentY = 0;
+        float extendedWidth = 0;
         for (TextRun run : this.textBuffer.runs()) {
             currentX += run.xOffset();
             currentY += run.yOffset();
@@ -67,14 +71,20 @@ public class AWTShapedTextBuffer implements ShapedTextBuffer {
                 runBounds.minY = Math.min(runBounds.minY, currentY + (float) bounds.getY() - outlineOffset);
                 runBounds.maxX = Math.max(runBounds.maxX, currentX + (float) (bounds.getX() + bounds.getWidth() + shadowOffset + outlineOffset));
                 runBounds.maxY = Math.max(runBounds.maxY, currentY + (float) (bounds.getY() + bounds.getHeight() + shadowOffset + outlineOffset));
-                currentX += (float) glyphVector.getLogicalBounds().getWidth();
+                Rectangle2D logicalBounds = glyphVector.getLogicalBounds();
+                currentX += (float) logicalBounds.getWidth();
+                extendedWidth = (float) (logicalBounds.getX() + logicalBounds.getWidth() + shadowOffset + outlineOffset);
             }
             out.minX = Math.min(out.minX, runBounds.minX);
             out.minY = Math.min(out.minY, runBounds.minY);
             out.maxX = Math.max(out.maxX, runBounds.maxX);
             out.maxY = Math.max(out.maxY, runBounds.maxY);
         }
-        return out;
+        return new CalculatedBounds(out, extendedWidth);
+    }
+
+
+    private record CalculatedBounds(Rectanglef bounds, float extendedWidth) {
     }
 
 }
