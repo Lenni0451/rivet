@@ -136,7 +136,7 @@ public class Test extends Canvas {
                 if ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_CONTROL;
                 if ((e.getModifiersEx() & KeyEvent.ALT_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_ALT;
                 if ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_META;
-                Test.this.rivet.onKeyDown(mappedKeyCode, 0, modifiers);
+                Test.this.rivet.onKeyDown(mappedKeyCode, modifiers);
             }
 
             @Override
@@ -148,7 +148,7 @@ public class Test extends Canvas {
                 if ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_CONTROL;
                 if ((e.getModifiersEx() & KeyEvent.ALT_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_ALT;
                 if ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_META;
-                Test.this.rivet.onKeyUp(mappedKeyCode, 0, modifiers);
+                Test.this.rivet.onKeyUp(mappedKeyCode, modifiers);
             }
         });
     }
