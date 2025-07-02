@@ -15,6 +15,8 @@ public interface Renderer {
 
     void text(final Matrix4f positionMatrix, final ShapedTextBuffer shapedTextBuffer, final float x, final float y);
 
+    void texture(final Matrix4f positionMatrix, final Texture texture, final float x, final float y, final float width, final float height);
+
     void beginBatch();
 
     void endBatch();

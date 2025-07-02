@@ -79,10 +79,4 @@ public class Test extends StandaloneApplicationRunner {
         this.rivet.render(positionMatrix);
     }
 
-    @Override
-    protected void free() {
-        ((ThinGLBackend) this.rivet.getBackend()).free();
-        super.free();
-    }
-
 }
