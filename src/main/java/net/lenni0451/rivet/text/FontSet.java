@@ -1,6 +1,6 @@
 package net.lenni0451.rivet.text;
 
-import net.lenni0451.rivet.backend.Font;
+import net.lenni0451.rivet.backend.text.Font;
 
 import java.util.ArrayList;
 import java.util.List;

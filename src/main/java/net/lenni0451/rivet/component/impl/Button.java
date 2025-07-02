@@ -1,9 +1,9 @@
 package net.lenni0451.rivet.component.impl;
 
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Font;
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.backend.ShapedTextBuffer;
+import net.lenni0451.rivet.backend.text.Font;
+import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.MouseListener;
 import net.lenni0451.rivet.component.Renderable;

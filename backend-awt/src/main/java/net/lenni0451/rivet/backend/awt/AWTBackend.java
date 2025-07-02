@@ -1,9 +1,9 @@
 package net.lenni0451.rivet.backend.awt;
 
 import net.lenni0451.rivet.backend.Backend;
-import net.lenni0451.rivet.backend.Font;
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.backend.ShapedTextBuffer;
+import net.lenni0451.rivet.backend.text.Font;
+import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
 
 public class AWTBackend implements Backend {

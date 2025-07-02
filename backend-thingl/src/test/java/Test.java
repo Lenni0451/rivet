@@ -1,7 +1,7 @@
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.Font;
 import net.lenni0451.rivet.backend.opengl.ThinGLBackend;
-import net.lenni0451.rivet.component.impl.Button;
+import net.lenni0451.rivet.backend.text.Font;
+import net.lenni0451.rivet.component.impl.TextField;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.text.FontSet;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
@@ -46,8 +46,11 @@ public class Test extends StandaloneApplicationRunner {
         });
         GLFW.glfwSetKeyCallback(this.window, (window, key, scancode, action, mods) -> {
             if (action == GLFW.GLFW_PRESS) {
+                this.rivet.onKeyDown(key, scancode, mods);
             } else if (action == GLFW.GLFW_RELEASE) {
+                this.rivet.onKeyUp(key, scancode, mods);
             } else if (action == GLFW.GLFW_REPEAT) {
+                this.rivet.onKeyDown(key, scancode, mods);
             }
         });
         GLFW.glfwSetCharCallback(this.window, (window, codepoint) -> {
@@ -63,14 +66,16 @@ public class Test extends StandaloneApplicationRunner {
 
         Font font;
         try {
-            font = backend.loadFont(Test.class.getResourceAsStream("/Roboto-Regular.ttf").readAllBytes(), 48);
+            font = backend.loadFont(Test.class.getResourceAsStream("/Roboto-Regular.ttf").readAllBytes(), 30);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         AbsoluteContainer rootContainer = new AbsoluteContainer();
-        Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
-        rootContainer.add(button, 50, 50);
+        //Button button = new Button("Testing", mouseButton -> System.out.println("CLICKED! Button: " + mouseButton));
+        //rootContainer.add(button, 50, 50);
+        TextField textField = new TextField();
+        rootContainer.add(textField, 50, 50);
         this.rivet = new Rivet(backend, new FontSet(font), rootContainer, 1280, 720);
     }
 

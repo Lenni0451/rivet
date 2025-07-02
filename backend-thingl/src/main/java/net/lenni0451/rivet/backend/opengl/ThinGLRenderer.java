@@ -2,8 +2,8 @@ package net.lenni0451.rivet.backend.opengl;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.backend.ShapedTextBuffer;
 import net.lenni0451.rivet.backend.Texture;
+import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;

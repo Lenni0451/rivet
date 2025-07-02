@@ -1,6 +1,6 @@
 package net.lenni0451.rivet.backend.opengl;
 
-import net.lenni0451.rivet.backend.Font;
+import net.lenni0451.rivet.backend.text.Font;
 
 public record ThinGLFont(net.raphimc.thingl.text.font.Font font) implements Font {
 

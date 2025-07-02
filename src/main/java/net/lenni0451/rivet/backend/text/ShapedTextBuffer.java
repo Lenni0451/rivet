@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.backend;
+package net.lenni0451.rivet.backend.text;
 
 import org.joml.primitives.Rectanglef;
 

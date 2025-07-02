@@ -1,8 +1,8 @@
 import lombok.SneakyThrows;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.Font;
 import net.lenni0451.rivet.backend.awt.AWTBackend;
 import net.lenni0451.rivet.backend.awt.Graphics2DRenderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.impl.Button;
 import net.lenni0451.rivet.constants.MouseConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;

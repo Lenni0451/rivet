@@ -2,7 +2,7 @@ package net.lenni0451.rivet.backend.awt;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.backend.ShapedTextBuffer;
+import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
 import net.lenni0451.rivet.text.TextRun;
 import net.lenni0451.rivet.text.TextSegment;

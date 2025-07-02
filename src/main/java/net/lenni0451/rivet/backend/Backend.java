@@ -1,5 +1,7 @@
 package net.lenni0451.rivet.backend;
 
+import net.lenni0451.rivet.backend.text.Font;
+import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
 
 import javax.annotation.WillNotClose;

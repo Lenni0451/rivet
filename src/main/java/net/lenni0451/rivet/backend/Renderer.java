@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.backend;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import org.joml.Matrix4f;
 
 public interface Renderer {

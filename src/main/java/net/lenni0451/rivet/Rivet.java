@@ -124,15 +124,15 @@ public class Rivet {
         this.rootContainer.onMouseScroll(mouseX / this.scaleFactor, mouseY / this.scaleFactor, scrollX, scrollY);
     }
 
-    public void onKeyDown(final int key, final int scancode, final int action, final int modifiers) {
+    public void onKeyDown(final int key, final int scancode, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyDown(key, scancode, action, modifiers);
+            keyboardListener.onKeyDown(key, scancode, modifiers);
         }
     }
 
-    public void onKeyUp(final int key, final int scancode, final int action, final int modifiers) {
+    public void onKeyUp(final int key, final int scancode, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyUp(key, scancode, action, modifiers);
+            keyboardListener.onKeyUp(key, scancode, modifiers);
         }
     }
 
