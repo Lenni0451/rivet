@@ -2,25 +2,38 @@ package net.lenni0451.rivet.component.impl;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.KeyboardListener;
 import net.lenni0451.rivet.component.MouseListener;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.constants.KeyboardConstants;
+import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.math.impl.FloatPadding;
 import net.lenni0451.rivet.text.TextBuffer;
 import org.joml.Matrix4fStack;
 
 public class TextField extends Component implements Renderable, MouseListener, KeyboardListener {
 
     private final StringBuffer text = new StringBuffer();
+    private final FloatPadding innerPadding = new FloatPadding(5, 5, 5, 5);
     private ShapedTextBuffer shapedText;
     private int cursor;
     private Float cursorX;
     private boolean focused = false;
 
     public TextField() {
+    }
+
+    public Padding getInnerPadding() {
+        return this.innerPadding;
+    }
+
+    public void setInnerPadding(final int left, final int top, final int right, final int bottom) {
+        this.innerPadding.set(left, top, right, bottom);
+        this.triggerLayoutChange();
     }
 
     @Override
@@ -101,20 +114,24 @@ public class TextField extends Component implements Renderable, MouseListener, K
         if (this.shapedText == null) {
             this.shapedText = this.rivet.getBackend().shapeTextBuffer(TextBuffer.fromString(this.rivet.getDefaultFonts(), this.text.toString()));
         }
-        renderer.text(positionMatrix, this.shapedText, 0, 0, true);
+        Font mainFont = this.rivet.getDefaultFonts().getMainFont();
+        float textY = (size.height() - mainFont.getDescent()) / 2 + mainFont.getAscent() / 2;
+        renderer.text(positionMatrix, this.shapedText, 0, textY, true);
         if (this.focused) {
             if (this.cursorX == null) {
                 final ShapedTextBuffer cursorText = this.rivet.getBackend().shapeTextBuffer(TextBuffer.fromString(this.rivet.getDefaultFonts(), this.text.substring(0, this.cursor)));
                 this.cursorX = cursorText.extendedWidth();
             }
-            renderer.filledRectangle(positionMatrix, this.cursorX, 2, 2, this.shapedText.bounds().lengthY() - 2, Color.WHITE);
+            renderer.filledRectangle(positionMatrix, this.cursorX, textY - mainFont.getAscent(), 2, mainFont.getHeight(), Color.WHITE);
         }
     }
 
     @Override
     protected void computePreferredSize() {
-        //TODO: Measure the text size and set the preferred size accordingly
-        this.preferredSize.set(300, 30);
+        Font mainFont = this.rivet.getDefaultFonts().getMainFont();
+        float fontSize = mainFont.getSize();
+        float fontHeight = mainFont.getHeight();
+        this.preferredSize.set(fontSize * 10, fontHeight);
     }
 
 }

@@ -74,12 +74,12 @@ public class Graphics2DRenderer implements Renderer {
     }
 
     @Override
-    public void text(Matrix4f positionMatrix, ShapedTextBuffer shapedTextBuffer, float x, float y) {
+    public void text(Matrix4f positionMatrix, ShapedTextBuffer shapedTextBuffer, float x, float y, boolean baselineAligned) {
         this.applyTransform(positionMatrix);
         TextBuffer textBuffer = ((AWTShapedTextBuffer) shapedTextBuffer).textBuffer();
         FontRenderContext fontRenderContext = this.g2d.getFontRenderContext();
         float currentX = x - shapedTextBuffer.bounds().minX;
-        float currentY = y - shapedTextBuffer.bounds().minY;
+        float currentY = y - (baselineAligned ? 0 : shapedTextBuffer.bounds().minY);
         for (TextRun run : textBuffer.runs()) {
             currentX += run.xOffset();
             currentY += run.yOffset();

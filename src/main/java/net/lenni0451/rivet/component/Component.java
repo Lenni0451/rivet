@@ -60,6 +60,13 @@ public abstract class Component {
     public void onFocusLost() {
     }
 
+    protected void triggerLayoutChange() {
+        if (this.rivet != null) {
+            this.computePreferredSize();
+            this.rivet.computeLayout();
+        }
+    }
+
     @ApiStatus.Internal
     public void onAdded(final Rivet rivet, final Container parent) {
         this.rivet = rivet;

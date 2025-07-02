@@ -170,13 +170,6 @@ public abstract class Container extends Component implements Renderable, MouseLi
         }
     }
 
-    protected void triggerLayoutChange() {
-        if (this.rivet != null) {
-            this.computePreferredSize();
-            this.rivet.computeLayout();
-        }
-    }
-
     @Override
     public void onAdded(Rivet rivet, Container parent) {
         for (Component child : this.children.keySet()) {
