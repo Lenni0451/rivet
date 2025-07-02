@@ -7,6 +7,7 @@ import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.impl.TextButton;
 import net.lenni0451.rivet.component.impl.TextField;
+import net.lenni0451.rivet.constants.KeyboardConstants;
 import net.lenni0451.rivet.constants.MouseConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.text.FontSet;
@@ -130,14 +131,24 @@ public class Test extends Canvas {
             public void keyPressed(KeyEvent e) {
                 int mappedKeyCode = AWTKeymap.mapKeyCode(e.getExtendedKeyCode(), e.getKeyLocation());
                 if (mappedKeyCode == -1) return; // Ignore unmapped keys
-                Test.this.rivet.onKeyDown(mappedKeyCode, 0, e.getModifiersEx());
+                int modifiers = 0;
+                if ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_SHIFT;
+                if ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_CONTROL;
+                if ((e.getModifiersEx() & KeyEvent.ALT_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_ALT;
+                if ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_META;
+                Test.this.rivet.onKeyDown(mappedKeyCode, 0, modifiers);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 int mappedKeyCode = AWTKeymap.mapKeyCode(e.getExtendedKeyCode(), e.getKeyLocation());
                 if (mappedKeyCode == -1) return; // Ignore unmapped keys
-                Test.this.rivet.onKeyUp(mappedKeyCode, 0, e.getModifiersEx());
+                int modifiers = 0;
+                if ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_SHIFT;
+                if ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_CONTROL;
+                if ((e.getModifiersEx() & KeyEvent.ALT_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_ALT;
+                if ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) modifiers |= KeyboardConstants.MODIFIER_META;
+                Test.this.rivet.onKeyUp(mappedKeyCode, 0, modifiers);
             }
         });
     }
