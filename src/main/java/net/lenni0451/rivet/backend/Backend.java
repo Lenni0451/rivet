@@ -4,6 +4,7 @@ import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
 
+import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ public interface Backend {
 
     ShapedTextBuffer shapeTextBuffer(final TextBuffer textBuffer);
 
+    @Nullable
     String getClipboardText();
 
     void setClipboardText(final String text);

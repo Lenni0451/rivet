@@ -9,6 +9,10 @@ import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.lenni0451.rivet.text.TextBuffer;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.io.ByteArrayInputStream;
 
 public class AWTBackend implements Backend {
@@ -53,6 +57,26 @@ public class AWTBackend implements Backend {
     @Override
     public ShapedTextBuffer shapeTextBuffer(TextBuffer textBuffer) {
         return new AWTShapedTextBuffer(textBuffer);
+    }
+
+    @Override
+    public String getClipboardText() {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+            try {
+                return (String) clipboard.getData(DataFlavor.stringFlavor);
+            } catch (Throwable t) {
+                throw new RuntimeException("Failed to get clipboard text", t);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void setClipboardText(String text) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection selection = new StringSelection(text);
+        clipboard.setContents(selection, selection);
     }
 
 }
