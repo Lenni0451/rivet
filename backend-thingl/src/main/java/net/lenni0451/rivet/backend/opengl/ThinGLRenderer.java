@@ -7,6 +7,7 @@ import net.lenni0451.rivet.backend.text.ShapedTextBuffer;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
+import net.raphimc.thingl.text.renderer.TextRenderer;
 import org.joml.Matrix4f;
 
 public class ThinGLRenderer implements Renderer {
@@ -59,11 +60,15 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
-    public void text(final Matrix4f positionMatrix, final ShapedTextBuffer shapedTextBuffer, final float x, final float y) {
+    public void text(final Matrix4f positionMatrix, final ShapedTextBuffer shapedTextBuffer, final float x, final float y, final boolean baselineAligned) {
         if (this.targetMultiDrawBatchDataHolder != null) {
             ThinGL.rendererText().beginBuffering(this.targetMultiDrawBatchDataHolder);
         }
-        ThinGL.rendererText().textBuffer(positionMatrix, ((ThinGLShapedTextBuffer) shapedTextBuffer).shapedTextBuffer(), x, y);
+        int flags = 0;
+        if (baselineAligned) {
+            flags |= TextRenderer.FLAG_ORIGIN_BASELINE_BIT;
+        }
+        ThinGL.rendererText().textBuffer(positionMatrix, ((ThinGLShapedTextBuffer) shapedTextBuffer).shapedTextBuffer(), x, y, 0F, flags);
         if (this.targetMultiDrawBatchDataHolder != null) {
             ThinGL.rendererText().endBuffering();
         }

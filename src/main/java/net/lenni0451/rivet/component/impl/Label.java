@@ -34,7 +34,8 @@ public class Label extends Component implements Renderable {
     public void render(Renderer renderer, Matrix4fStack positionMatrix, Size size) {
         renderer.text(positionMatrix, this.shapedText,
                 (size.width() - this.shapedText.bounds().lengthX()) / 2F,
-                (size.height() - this.shapedText.bounds().lengthY()) / 2F
+                (size.height() - this.shapedText.bounds().lengthY()) / 2F,
+                false
         );
     }
 

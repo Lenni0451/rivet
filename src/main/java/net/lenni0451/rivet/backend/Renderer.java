@@ -14,7 +14,7 @@ public interface Renderer {
 
     void outlinedRoundedRectangle(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height, final float radius, final Color color, final float lineWidth);
 
-    void text(final Matrix4f positionMatrix, final ShapedTextBuffer shapedTextBuffer, final float x, final float y);
+    void text(final Matrix4f positionMatrix, final ShapedTextBuffer shapedTextBuffer, final float x, final float y, final boolean baselineAligned);
 
     void texture(final Matrix4f positionMatrix, final Texture texture, final float x, final float y, final float width, final float height);
 

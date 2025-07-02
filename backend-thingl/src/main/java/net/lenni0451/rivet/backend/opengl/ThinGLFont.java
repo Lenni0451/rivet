@@ -20,6 +20,16 @@ public record ThinGLFont(net.raphimc.thingl.text.font.Font font) implements Font
     }
 
     @Override
+    public float getAscent() {
+        return this.font.getAscent();
+    }
+
+    @Override
+    public float getDescent() {
+        return this.font.getDescent();
+    }
+
+    @Override
     public float getHeight() {
         return this.font.getHeight();
     }

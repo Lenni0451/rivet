@@ -6,6 +6,10 @@ public interface Font {
 
     int getSize();
 
+    float getAscent();
+
+    float getDescent();
+
     float getHeight();
 
     String getName();
