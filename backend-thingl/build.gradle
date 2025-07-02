@@ -11,7 +11,9 @@ repositories {
 
 dependencies {
     api project(":")
-    api libs.thingl
+    api (libs.thingl) {
+        exclude group: "org.jetbrains.kotlin"
+    }
 
     testImplementation libs.bundles.lwjgl
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
