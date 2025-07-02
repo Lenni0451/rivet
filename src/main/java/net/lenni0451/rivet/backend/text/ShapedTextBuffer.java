@@ -6,4 +6,6 @@ public interface ShapedTextBuffer {
 
     Rectanglef bounds();
 
+    float extendedWidth();
+
 }

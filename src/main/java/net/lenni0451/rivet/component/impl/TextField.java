@@ -95,7 +95,7 @@ public class TextField extends Component implements Renderable, MouseListener, K
         if (this.focused) {
             if (this.cursorX == null) {
                 final ShapedTextBuffer cursorText = this.rivet.getBackend().shapeTextBuffer(TextBuffer.fromString(this.rivet.getDefaultFonts(), this.text.substring(0, this.cursor)));
-                this.cursorX = cursorText.bounds().lengthX();
+                this.cursorX = cursorText.extendedWidth();
             }
             renderer.filledRectangle(positionMatrix, this.cursorX, 2, 2, this.shapedText.bounds().lengthY() - 2, Color.WHITE);
         }
