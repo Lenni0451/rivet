@@ -175,28 +175,28 @@ public class Rivet {
         }
     }
 
-    public void onKeyDown(final int key, final int scancode, final int modifiers) {
+    public void onKeyDown(final int key, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
             if (this.backend.isOnRenderThread()) {
-                keyboardListener.onKeyDown(key, scancode, modifiers);
+                keyboardListener.onKeyDown(key, modifiers);
             } else {
                 synchronized (this.eventQueue) {
                     this.eventQueue.add(() -> {
-                        keyboardListener.onKeyDown(key, scancode, modifiers);
+                        keyboardListener.onKeyDown(key, modifiers);
                     });
                 }
             }
         }
     }
 
-    public void onKeyUp(final int key, final int scancode, final int modifiers) {
+    public void onKeyUp(final int key, final int modifiers) {
         if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
             if (this.backend.isOnRenderThread()) {
-                keyboardListener.onKeyUp(key, scancode, modifiers);
+                keyboardListener.onKeyUp(key, modifiers);
             } else {
                 synchronized (this.eventQueue) {
                     this.eventQueue.add(() -> {
-                        keyboardListener.onKeyUp(key, scancode, modifiers);
+                        keyboardListener.onKeyUp(key, modifiers);
                     });
                 }
             }

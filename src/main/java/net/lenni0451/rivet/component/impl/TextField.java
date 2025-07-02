@@ -44,7 +44,7 @@ public class TextField extends Component implements Renderable, MouseListener, K
     }
 
     @Override
-    public void onKeyDown(final int key, final int scancode, final int modifiers) {
+    public void onKeyDown(final int key, final int modifiers) {
         switch (key) {
             case KeyboardConstants.KEY_BACKSPACE -> {
                 if (this.cursor > 0) {

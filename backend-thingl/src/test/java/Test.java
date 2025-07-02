@@ -1,8 +1,8 @@
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.opengl.ThinGLBackend;
 import net.lenni0451.rivet.backend.text.Font;
-import net.lenni0451.rivet.component.base.TextField;
-import net.lenni0451.rivet.component.impl.TextButton;
+import net.lenni0451.rivet.component.impl.TextField;
+import net.lenni0451.rivet.constants.KeyboardConstants;
 import net.lenni0451.rivet.container.impl.AbsoluteContainer;
 import net.lenni0451.rivet.text.FontSet;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
@@ -46,12 +46,13 @@ public class Test extends StandaloneApplicationRunner {
             Test.this.rivet.onMouseScroll((float) xpos[0], (float) ypos[0], (float) xoffset, (float) yoffset);
         });
         GLFW.glfwSetKeyCallback(this.window, (window, key, scancode, action, mods) -> {
+            if (!KeyboardConstants.isValidKey(key)) return;
             if (action == GLFW.GLFW_PRESS) {
-                this.rivet.onKeyDown(key, scancode, mods);
+                this.rivet.onKeyDown(key, mods);
             } else if (action == GLFW.GLFW_RELEASE) {
-                this.rivet.onKeyUp(key, scancode, mods);
+                this.rivet.onKeyUp(key, mods);
             } else if (action == GLFW.GLFW_REPEAT) {
-                this.rivet.onKeyDown(key, scancode, mods);
+                this.rivet.onKeyDown(key,  mods);
             }
         });
         GLFW.glfwSetCharCallback(this.window, (window, codepoint) -> {
