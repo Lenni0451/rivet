@@ -1,6 +1,6 @@
 [versions]
 lwjgl = "3.3.6"
-commons = "1.7.1"
+commons = "1.8.0"
 
 [libraries]
 findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
