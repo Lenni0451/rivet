@@ -1,0 +1,29 @@
+plugins {
+    id "project.defaults"
+}
+
+repositories {
+    maven {
+        name = "Lenni0451"
+        url = "https://maven.lenni0451.net/everything"
+    }
+}
+
+dependencies {
+    api project(":")
+    api (libs.thingl) {
+        exclude group: "org.jetbrains.kotlin"
+    }
+    api libs.lwjgl.glfw
+
+    testImplementation libs.bundles.lwjgl
+    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
+        testImplementation(variantOf(libs.lwjgl) { classifier(natives) })
+        testImplementation(variantOf(libs.lwjgl.opengl) { classifier(natives) })
+        testImplementation(variantOf(libs.lwjgl.stb) { classifier(natives) })
+        testImplementation(variantOf(libs.lwjgl.glfw) { classifier(natives) })
+        testImplementation(variantOf(libs.lwjgl.freetype) { classifier(natives) })
+        testImplementation(variantOf(libs.lwjgl.harfbuzz) { classifier(natives) })
+        testImplementation(variantOf(libs.lwjgl.par) { classifier(natives) })
+    }
+}

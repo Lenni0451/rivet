@@ -1,0 +1,11 @@
+plugins {
+    id "project.defaults"
+    id "idea.exclude_run_dir"
+}
+
+dependencies {
+//    api(libs.bundles.joml) {
+//        exclude group: "org.jetbrains.kotlin"
+//    }
+    api libs.bundles.commons
+}

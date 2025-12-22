@@ -1,0 +1,34 @@
+[versions]
+lwjgl = "3.3.6"
+commons = "1.9.0"
+
+[libraries]
+findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
+jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.0.2-1" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
+thingl = { module = "net.raphimc:thingl", version = "0.1.0-20251220.215123-5" }
+
+joml = { module = "org.joml:joml", version = "1.10.8" }
+joml-primitives = { module = "org.joml:joml-primitives", version = "1.10.0" }
+
+commons-core = { module = "net.lenni0451.commons:core", version.ref = "commons" }
+commons-logging = { module = "net.lenni0451.commons:logging", version.ref = "commons" }
+
+junit-bom = { module = "org.junit:junit-bom", version = "6.0.1" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+lwjgl = { module = "org.lwjgl:lwjgl", version.ref = "lwjgl" }
+lwjgl-opengl = { module = "org.lwjgl:lwjgl-opengl", version.ref = "lwjgl" }
+lwjgl-stb = { module = "org.lwjgl:lwjgl-stb", version.ref = "lwjgl" }
+lwjgl-glfw = { module = "org.lwjgl:lwjgl-glfw", version.ref = "lwjgl" }
+lwjgl-freetype = { module = "org.lwjgl:lwjgl-freetype", version.ref = "lwjgl" }
+lwjgl-harfbuzz = { module = "org.lwjgl:lwjgl-harfbuzz", version.ref = "lwjgl" }
+lwjgl-par = { module = "org.lwjgl:lwjgl-par", version.ref = "lwjgl" }
+
+[bundles]
+joml = ["joml", "joml-primitives"]
+commons = ["commons-core", "commons-logging"]
+lwjgl = ["lwjgl", "lwjgl-opengl", "lwjgl-stb", "lwjgl-glfw", "lwjgl-freetype", "lwjgl-harfbuzz", "lwjgl-par"]
+
+[plugins]
