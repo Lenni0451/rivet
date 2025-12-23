@@ -7,12 +7,13 @@ import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
-import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
+import net.lenni0451.rivet.layout.flow.HorizontalFlowLayout;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
 public class Test extends GLFWApplicationRunner {
 
@@ -73,9 +74,14 @@ public class Test extends GLFWApplicationRunner {
                 Test.this.rivet.onCharTyped(new CharEvent(Character.lowSurrogate(codepoint)));
             }
         });
+        GLFWFramebufferSizeCallback[] oldCallback = new GLFWFramebufferSizeCallback[1];
+        oldCallback[0] = GLFW.glfwSetFramebufferSizeCallback(this.window, (window, width, height) -> {
+            oldCallback[0].invoke(window, width, height);
+            this.rivet.setSize(new Size(width, height));
+        });
 
         ThinGLBackend backend = new ThinGLBackend();
-        this.rivet = new Rivet(backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
+        this.rivet = new Rivet(backend, new HorizontalFlowLayout(5, 5), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
         for (int i = 0; i < 10; i++) {
             TestComponent comp = new TestComponent(this.rivet);
             comp.setMinSize(new Size(100 + 100 * i, 100));
