@@ -50,7 +50,7 @@ public class ThinGLRenderer implements Renderer {
 
     @Override
     public void renderText(ShapedText shapedText, float x, float y, HorizontalOrigin horizontalOrigin, VerticalOrigin verticalOrigin) {
-        ThinGL.rendererText().textLine(this.matrixStack, ((ThinGLShapedText) shapedText).shapedTextLine(), x, y, switch (verticalOrigin) {
+        RendererText.VerticalOrigin vOrigin = switch (verticalOrigin) {
             case BASELINE -> RendererText.VerticalOrigin.BASELINE;
             case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
             case LOGICAL_CENTER -> RendererText.VerticalOrigin.LOGICAL_CENTER;
@@ -58,12 +58,14 @@ public class ThinGLRenderer implements Renderer {
             case VISUAL_TOP -> RendererText.VerticalOrigin.VISUAL_TOP;
             case VISUAL_CENTER -> RendererText.VerticalOrigin.VISUAL_CENTER;
             case VISUAL_BOTTOM -> RendererText.VerticalOrigin.VISUAL_BOTTOM;
-        }, switch (horizontalOrigin) {
+        };
+        RendererText.HorizontalOrigin hOrigin = switch (horizontalOrigin) {
             case LOGICAL_LEFT -> RendererText.HorizontalOrigin.LOGICAL_LEFT;
             case VISUAL_LEFT -> RendererText.HorizontalOrigin.VISUAL_LEFT;
             case VISUAL_CENTER -> RendererText.HorizontalOrigin.VISUAL_CENTER;
             case VISUAL_RIGHT -> RendererText.HorizontalOrigin.VISUAL_RIGHT;
-        });
+        };
+        ThinGL.rendererText().textLine(this.matrixStack, ((ThinGLShapedText) shapedText).shapedTextLine(), x, y, vOrigin, hOrigin);
     }
 
 }
