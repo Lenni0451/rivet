@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * <h3>Text Format Documentation</h3>
+ * <h2>Text Format Documentation</h2>
  * <p>
  * This format allows styling text using tags enclosed in angle brackets.
  * Tags do <b>not</b> need to be closed; a style persists until it is explicitly changed or reset.
