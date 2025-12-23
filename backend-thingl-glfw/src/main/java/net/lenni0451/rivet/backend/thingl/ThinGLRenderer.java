@@ -1,17 +1,17 @@
 package net.lenni0451.rivet.backend.thingl;
 
+import lombok.RequiredArgsConstructor;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.ShapedText;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.gl.renderer.impl.RendererText;
 import org.joml.Matrix4fStack;
 
+@RequiredArgsConstructor
 public class ThinGLRenderer implements Renderer {
 
     private final Matrix4fStack matrixStack;
-
-    public ThinGLRenderer(final Matrix4fStack matrixStack) {
-        this.matrixStack = matrixStack;
-    }
 
     @Override
     public void push() {
@@ -46,6 +46,24 @@ public class ThinGLRenderer implements Renderer {
     @Override
     public void fillRect(float x, float y, float width, float height, Color color) {
         ThinGL.renderer2D().filledRectangle(this.matrixStack, x, y, x + width, y + height, color);
+    }
+
+    @Override
+    public void renderText(ShapedText shapedText, float x, float y, HorizontalOrigin horizontalOrigin, VerticalOrigin verticalOrigin) {
+        ThinGL.rendererText().textLine(this.matrixStack, ((ThinGLShapedText) shapedText).shapedTextLine(), x, y, switch (verticalOrigin) {
+            case BASELINE -> RendererText.VerticalOrigin.BASELINE;
+            case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
+            case LOGICAL_CENTER -> RendererText.VerticalOrigin.LOGICAL_CENTER;
+            case LOGICAL_BOTTOM -> RendererText.VerticalOrigin.LOGICAL_BOTTOM;
+            case VISUAL_TOP -> RendererText.VerticalOrigin.VISUAL_TOP;
+            case VISUAL_CENTER -> RendererText.VerticalOrigin.VISUAL_CENTER;
+            case VISUAL_BOTTOM -> RendererText.VerticalOrigin.VISUAL_BOTTOM;
+        }, switch (horizontalOrigin) {
+            case LOGICAL_LEFT -> RendererText.HorizontalOrigin.LOGICAL_LEFT;
+            case VISUAL_LEFT -> RendererText.HorizontalOrigin.VISUAL_LEFT;
+            case VISUAL_CENTER -> RendererText.HorizontalOrigin.VISUAL_CENTER;
+            case VISUAL_RIGHT -> RendererText.HorizontalOrigin.VISUAL_RIGHT;
+        });
     }
 
 }

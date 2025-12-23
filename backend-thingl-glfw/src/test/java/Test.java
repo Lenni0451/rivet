@@ -1,8 +1,10 @@
+import lombok.SneakyThrows;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.GLFWMapper;
 import net.lenni0451.rivet.backend.thingl.ThinGLBackend;
 import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
 import net.lenni0451.rivet.component.base.Button;
+import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -12,6 +14,9 @@ import net.lenni0451.rivet.layout.flow.HorizontalFlowLayout;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
+import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
+import net.raphimc.thingl.text.font.FontSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
@@ -23,6 +28,7 @@ public class Test extends GLFWApplicationRunner {
     }
 
 
+    private FontSet font;
     private Rivet rivet;
 
     public Test() {
@@ -30,6 +36,7 @@ public class Test extends GLFWApplicationRunner {
     }
 
     @Override
+    @SneakyThrows
     protected void init() {
         super.init();
         GLFW.glfwSetCursorPosCallback(this.window, (window, xpos, ypos) -> {
@@ -83,8 +90,10 @@ public class Test extends GLFWApplicationRunner {
             oldCallback[0].invoke(window, width, height);
             this.rivet.setSize(new Size(width, height));
         });
+        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 128);
+        FontSet fontSet = new FontSet(font);
 
-        ThinGLBackend backend = new ThinGLBackend();
+        ThinGLBackend backend = new ThinGLBackend(fontSet);
         this.rivet = new Rivet(backend, new HorizontalFlowLayout(5, 5), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
 //        for (int i = 0; i < 10; i++) {
 //            TestComponent comp = new TestComponent(this.rivet);
@@ -92,9 +101,8 @@ public class Test extends GLFWApplicationRunner {
 //            comp.setMaxSize(comp.minSize());
 //            this.rivet.getRootContainer().addChild(comp);
 //        }
-        Button button = new Button(this.rivet, new TestComponent(this.rivet), event -> {
-            System.out.println(event);
-        });
+        Button button = new Button(this.rivet, new Label(this.rivet, "Hello, World!"), System.out::println);
+        button.setMinSize(new Size(1000, 500));
         this.rivet.getRootContainer().addChild(button);
     }
 

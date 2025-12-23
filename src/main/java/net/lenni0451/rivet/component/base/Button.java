@@ -7,12 +7,9 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseListener;
-import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.math.Padding;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class Button extends Component implements MouseListener, Renderable {
@@ -20,7 +17,6 @@ public class Button extends Component implements MouseListener, Renderable {
     private final Component child;
     private final Consumer<MouseButtonEvent> clickListener;
     private Padding innerPadding = new Padding(5, 5, 5, 5);
-    private Rectangle childBounds;
     private boolean hovered = false;
 
     public Button(final Rivet rivet, final Component child, final Consumer<MouseButtonEvent> clickListener) {
@@ -90,10 +86,6 @@ public class Button extends Component implements MouseListener, Renderable {
 
     @Override
     public void computeLayout(Size size) {
-        this.childBounds = FullSizeLayout.INSTANCE.layoutComponents(new Size(
-                size.width() - this.innerPadding.left() - this.innerPadding.right(),
-                size.height() - this.innerPadding.top() - this.innerPadding.bottom()
-        ), List.of(this.child)).get(this.child);
     }
 
 }
