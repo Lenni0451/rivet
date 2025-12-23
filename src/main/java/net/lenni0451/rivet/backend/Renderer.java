@@ -8,6 +8,10 @@ public interface Renderer {
 
     void translate(final float x, final float y);
 
+    void pushScissor(final float x, final float y, final float width, final float height);
+
+    void popScissor();
+
     default void scale(final float xy) {
         this.scale(xy, xy);
     }

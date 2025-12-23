@@ -131,7 +131,9 @@ public class Container extends Component implements MouseListener, Renderable {
             if (child instanceof Renderable renderable) {
                 renderer.push();
                 renderer.translate(bounds.x(), bounds.y());
+                renderer.pushScissor(0, 0, bounds.width(), bounds.height());
                 renderable.render(renderer, bounds.size());
+                renderer.popScissor();
                 renderer.pop();
             }
         }

@@ -24,6 +24,16 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
+    public void pushScissor(float x, float y, float width, float height) {
+        ThinGL.scissorStack().pushIntersection(this.matrixStack, x, y, x + width, y + height);
+    }
+
+    @Override
+    public void popScissor() {
+        ThinGL.scissorStack().pop();
+    }
+
+    @Override
     public void scale(float x, float y) {
         this.matrixStack.scale(x, y, 1);
     }

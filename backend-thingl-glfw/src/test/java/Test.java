@@ -2,6 +2,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.GLFWMapper;
 import net.lenni0451.rivet.backend.thingl.ThinGLBackend;
 import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
+import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -85,12 +86,16 @@ public class Test extends GLFWApplicationRunner {
 
         ThinGLBackend backend = new ThinGLBackend();
         this.rivet = new Rivet(backend, new HorizontalFlowLayout(5, 5), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
-        for (int i = 0; i < 10; i++) {
-            TestComponent comp = new TestComponent(this.rivet);
-            comp.setMinSize(new Size(100 + 100 * i, 100));
-            comp.setMaxSize(comp.minSize());
-            this.rivet.getRootContainer().addChild(comp);
-        }
+//        for (int i = 0; i < 10; i++) {
+//            TestComponent comp = new TestComponent(this.rivet);
+//            comp.setMinSize(new Size(100 + 100 * i, 100));
+//            comp.setMaxSize(comp.minSize());
+//            this.rivet.getRootContainer().addChild(comp);
+//        }
+        Button button = new Button(this.rivet, new TestComponent(this.rivet), event -> {
+            System.out.println(event);
+        });
+        this.rivet.getRootContainer().addChild(button);
     }
 
     @Override
