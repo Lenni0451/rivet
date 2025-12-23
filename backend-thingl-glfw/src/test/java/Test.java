@@ -32,14 +32,16 @@ public class Test extends GLFWApplicationRunner {
     protected void init() {
         super.init();
         GLFW.glfwSetCursorPosCallback(this.window, (window, xpos, ypos) -> {
-            Test.this.rivet.onMouseMove(new MouseMoveEvent((float) xpos, (float) ypos));
+            float[] mouseScale = Test.this.getMouseScale();
+            Test.this.rivet.onMouseMove(new MouseMoveEvent((float) xpos * mouseScale[0], (float) ypos * mouseScale[1]));
         });
         GLFW.glfwSetMouseButtonCallback(this.window, (window, button, action, mods) -> {
+            float[] mouseScale = Test.this.getMouseScale();
             final double[] xpos = new double[1];
             final double[] ypos = new double[1];
             GLFW.glfwGetCursorPos(window, xpos, ypos);
 
-            MouseButtonEvent event = GLFWMapper.mapMouseButton((float) xpos[0], (float) ypos[0], button, mods);
+            MouseButtonEvent event = GLFWMapper.mapMouseButton((float) xpos[0] * mouseScale[0], (float) ypos[0] * mouseScale[1], button, mods);
             if (event != null) {
                 if (action == GLFW.GLFW_PRESS) {
                     Test.this.rivet.onMouseDown(event);
@@ -49,10 +51,11 @@ public class Test extends GLFWApplicationRunner {
             }
         });
         GLFW.glfwSetScrollCallback(this.window, (window, xoffset, yoffset) -> {
+            float[] mouseScale = Test.this.getMouseScale();
             final double[] xpos = new double[1];
             final double[] ypos = new double[1];
             GLFW.glfwGetCursorPos(window, xpos, ypos);
-            Test.this.rivet.onMouseScroll(new MouseScrollEvent((float) xpos[0], (float) ypos[0], (float) xoffset, (float) yoffset));
+            Test.this.rivet.onMouseScroll(new MouseScrollEvent((float) xpos[0] * mouseScale[0], (float) ypos[0] * mouseScale[1], (float) xoffset, (float) yoffset));
         });
         GLFW.glfwSetKeyCallback(this.window, (window, key, scancode, action, mods) -> {
             KeyEvent event = GLFWMapper.mapKey(key, mods);
@@ -93,6 +96,16 @@ public class Test extends GLFWApplicationRunner {
     @Override
     protected void render(Matrix4fStack matrix4fStack) {
         this.rivet.render(new ThinGLRenderer(matrix4fStack));
+    }
+
+    private float[] getMouseScale() {
+        int[] windowSizeX = new int[1];
+        int[] windowSizeY = new int[1];
+        GLFW.glfwGetWindowSize(this.window, windowSizeX, windowSizeY);
+        int[] framebufferSizeX = new int[1];
+        int[] framebufferSizeY = new int[1];
+        GLFW.glfwGetFramebufferSize(this.window, framebufferSizeX, framebufferSizeY);
+        return new float[]{(float) framebufferSizeX[0] / windowSizeX[0], (float) framebufferSizeY[0] / windowSizeY[0]};
     }
 
 }
