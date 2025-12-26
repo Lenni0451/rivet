@@ -2,6 +2,7 @@ package net.lenni0451.rivet.text;
 
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.text.FormatParser.HandlerException;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -138,7 +139,7 @@ public class TextParser {
             case "italic" -> handleBooleanOption(defaultFormat, currentFormat, option.close(), option.value(), TextFormat::italic, TextFormat::withItalic);
             case "underlined" -> handleBooleanOption(defaultFormat, currentFormat, option.close(), option.value(), TextFormat::underlined, TextFormat::withUnderlined);
             case "strikethrough" -> handleBooleanOption(defaultFormat, currentFormat, option.close(), option.value(), TextFormat::strikethrough, TextFormat::withStrikethrough);
-            default -> throw new IllegalArgumentException("Unknown option name: " + option.name());
+            default -> throw new HandlerException("Unknown option name: " + option.name());
         };
     }
 
@@ -146,7 +147,7 @@ public class TextParser {
         if (close) {
             return setter.apply(currentFormat, getter.apply(defaultFormat));
         } else {
-            if (value == null) throw new IllegalArgumentException("Color option requires a value");
+            if (value == null) throw new HandlerException("Color option requires a value");
             value = value.toLowerCase(Locale.ROOT);
             Color color = null;
             try {
@@ -157,10 +158,10 @@ public class TextParser {
                     }
                 }
             } catch (Throwable t) {
-                throw new IllegalArgumentException("Exception during color parsing: " + value, t);
+                throw new HandlerException("Exception during color parsing: " + value, t);
             }
             if (color == null) {
-                throw new IllegalArgumentException("Unknown color format: " + value);
+                throw new HandlerException("Unknown color format: " + value);
             }
             return setter.apply(currentFormat, color);
         }
@@ -220,7 +221,7 @@ public class TextParser {
             if (inner.startsWith("#")) {
                 String hex = inner.substring(1);
                 if (hex.length() != this.channels * 2) {
-                    throw new IllegalArgumentException("Invalid " + this.name + " hex color length: " + s);
+                    throw new HandlerException("Invalid " + this.name + " hex color length: " + s);
                 }
                 for (int i = 0; i < this.channels; i++) {
                     values[i] = Integer.parseInt(hex.substring(i * 2, i * 2 + 2), 16);
@@ -228,7 +229,7 @@ public class TextParser {
             } else {
                 String[] parts = inner.split(",");
                 if (parts.length != this.channels) {
-                    throw new IllegalArgumentException("Invalid " + this.name + " color format: " + s);
+                    throw new HandlerException("Invalid " + this.name + " color format: " + s);
                 }
                 for (int i = 0; i < this.channels; i++) {
                     values[i] = Integer.parseInt(parts[i].trim());
@@ -255,7 +256,7 @@ public class TextParser {
             String inner = s.substring(this.name.length() + 1, s.length() - 1);
             String[] parts = inner.split(",");
             if (parts.length != this.channels) {
-                throw new IllegalArgumentException("Invalid " + this.name + " color format: " + s);
+                throw new HandlerException("Invalid " + this.name + " color format: " + s);
             }
             for (int i = 0; i < this.channels; i++) {
                 values[i] = Float.parseFloat(parts[i].trim());

@@ -3,9 +3,11 @@ package net.lenni0451.rivet.text;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 class FormatParser {
 
+    private static final int CONTEXT_LENGTH = 20;
     private static final char ESCAPE_CHAR = '\\';
     private static final char TAG_START = '<';
     private static final char KEY_VALUE_SEPARATOR = '=';
@@ -27,7 +29,11 @@ class FormatParser {
             if (c == TAG_START) {
                 List<Option> options = this.readTag();
                 if (!options.isEmpty()) {
-                    handler.handle(currentSection.toString(), options);
+                    try {
+                        handler.handle(currentSection.toString(), options);
+                    } catch (HandlerException e) {
+                        throw new IllegalStateException(this.context(e.getMessage()), e);
+                    }
                     currentSection.setLength(0);
                 }
             } else {
@@ -52,7 +58,7 @@ class FormatParser {
             char c = this.chars[this.index++];
             if (c == KEY_VALUE_SEPARATOR) {
                 if (close) {
-                    throw new IllegalArgumentException("Closing option cannot have a value: " + name);
+                    throw new IllegalStateException(this.context("Closing option cannot have a value: " + name));
                 }
                 String value = this.readOptionValue();
                 options.add(new Option(name, value, close));
@@ -66,10 +72,10 @@ class FormatParser {
                 }
                 return options;
             } else {
-                throw new IllegalStateException("Invalid character '" + c + "' in tag");
+                throw new IllegalStateException(this.context("Invalid character '" + c + "' in tag"));
             }
         }
-        throw new IllegalStateException("Unclosed tag");
+        throw new IllegalStateException(this.context("Unclosed tag"));
     }
 
     private String readOptionName() {
@@ -114,12 +120,38 @@ class FormatParser {
         return value.toString();
     }
 
+    private String context(final String message) {
+        String context;
+        if (this.index < CONTEXT_LENGTH) {
+            context = new String(this.chars, 0, this.index);
+        } else {
+            context = "..." + new String(this.chars, this.index - CONTEXT_LENGTH, CONTEXT_LENGTH);
+        }
+        context += " <<< ";
+        if (this.chars.length - this.index <= CONTEXT_LENGTH) {
+            context += new String(this.chars, this.index, this.chars.length - this.index);
+        } else {
+            context += new String(this.chars, this.index, CONTEXT_LENGTH) + "...";
+        }
+        return message + ", at index " + this.index + " (" + context.trim() + ")";
+    }
+
 
     public interface Handler {
         void handle(String currentText, List<Option> newOptions);
     }
 
     public record Option(String name, String value, boolean close) {
+    }
+
+    public static class HandlerException extends RuntimeException {
+        public HandlerException(final String message) {
+            super(Objects.requireNonNull(message));
+        }
+
+        public HandlerException(final String message, final Throwable cause) {
+            super(Objects.requireNonNull(message), cause);
+        }
     }
 
 }
