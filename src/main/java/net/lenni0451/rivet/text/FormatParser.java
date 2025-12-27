@@ -24,21 +24,28 @@ class FormatParser {
 
     public void parse(final Handler handler) {
         StringBuilder currentSection = new StringBuilder();
+        boolean escaped = false;
         while (this.index < this.chars.length) {
             char c = this.chars[this.index++];
-            if (c == TAG_START) {
-                List<Option> options = this.readTag();
-                if (!options.isEmpty()) {
-                    try {
-                        handler.handle(currentSection.toString(), options);
-                    } catch (HandlerException e) {
-                        throw new IllegalStateException(this.context(e.getMessage()), e);
+            if (!escaped) {
+                if (c == TAG_START) {
+                    List<Option> options = this.readTag();
+                    if (!options.isEmpty()) {
+                        try {
+                            handler.handle(currentSection.toString(), options);
+                        } catch (HandlerException e) {
+                            throw new IllegalStateException(this.context(e.getMessage()), e);
+                        }
+                        currentSection.setLength(0);
                     }
-                    currentSection.setLength(0);
+                    continue;
+                } else if (c == ESCAPE_CHAR) {
+                    escaped = true;
+                    continue;
                 }
-            } else {
-                currentSection.append(c);
             }
+            currentSection.append(c);
+            escaped = false;
         }
         if (!currentSection.isEmpty()) {
             handler.handle(currentSection.toString(), Collections.emptyList());

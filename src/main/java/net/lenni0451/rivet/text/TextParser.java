@@ -80,6 +80,12 @@ import java.util.function.Function;
  *     </li>
  * </ul>
  *
+ * <h3>Escaping</h3>
+ * <p>
+ *     To include a literal angle bracket in the text, use a backslash to escape it.
+ *     <br>Example: <code>\&lt;This is not a tag\&gt;</code>
+ * </p>
+ *
  * <h3>Advanced Usage</h3>
  * <p>
  *     Multiple key-value pairs can be combined in a single tag by separating them with spaces.
