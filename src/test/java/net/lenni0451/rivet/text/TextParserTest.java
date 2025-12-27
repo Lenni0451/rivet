@@ -23,7 +23,7 @@ class TextParserTest {
 
     @Test
     void defaultFormat() {
-        TextFormat format = new TextFormat(Color.RED, Color.GREEN, true, true, true, true);
+        TextFormat format = new TextFormat(Color.RED, Color.GREEN, true, true, true, true, true);
         List<TextSection> sections = TextParser.parse("Test", format);
         assertEquals(1, sections.size());
         assertEquals("Test", sections.get(0).text());
@@ -32,7 +32,7 @@ class TextParserTest {
 
     @Test
     void disableDefaultFormat() {
-        TextFormat format = new TextFormat(Color.RED, Color.GREEN, true, true, true, true);
+        TextFormat format = new TextFormat(Color.RED, Color.GREEN, true, true, true, true, true);
         List<TextSection> sections = TextParser.parse("<italic=false bold=false>Test", format);
         assertEquals(1, sections.size());
         assertEquals("Test", sections.get(0).text());
@@ -123,6 +123,15 @@ class TextParserTest {
         assertEquals(Color.CYAN, sections.get(18).format().color());
         assertEquals(Color.PINK, sections.get(19).format().color());
         assertEquals(Color.MAGENTA, sections.get(20).format().color());
+    }
+
+    @Test
+    void testEscape() {
+        List<TextSection> sections = TextParser.parse("\\<italic>Not Italic\\</italic>");
+        assertEquals(1, sections.size());
+        assertEquals("<italic>Not Italic</italic>", sections.get(0).text());
+        TextFormat format = sections.get(0).format();
+        assertFalse(format.italic());
     }
 
 }
