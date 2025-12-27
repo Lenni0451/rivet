@@ -37,7 +37,7 @@ import java.util.function.Function;
  * <h3>Formatting Options</h3>
  * <p>
  *     The following boolean options are available:
- *     <code>bold</code>, <code>italic</code>, <code>underlined</code>, <code>strikethrough</code>.
+ *     <code>bold</code>, <code>italic</code>, <code>underlined</code>, <code>strikethrough</code>, <code>shadow</code>.
  * </p>
  * <p>
  *     <b>Manual Boolean Values:</b><br>
@@ -139,6 +139,7 @@ public class TextParser {
             case "italic" -> handleBooleanOption(defaultFormat, currentFormat, option.close(), option.value(), TextFormat::italic, TextFormat::withItalic);
             case "underlined" -> handleBooleanOption(defaultFormat, currentFormat, option.close(), option.value(), TextFormat::underlined, TextFormat::withUnderlined);
             case "strikethrough" -> handleBooleanOption(defaultFormat, currentFormat, option.close(), option.value(), TextFormat::strikethrough, TextFormat::withStrikethrough);
+            case "shadow" -> handleBooleanOption(defaultFormat, currentFormat, option.close(), option.value(), TextFormat::shadow, TextFormat::withShadow);
             default -> throw new HandlerException("Unknown option name: " + option.name());
         };
     }
