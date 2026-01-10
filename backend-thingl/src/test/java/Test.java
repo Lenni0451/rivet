@@ -52,7 +52,7 @@ public class Test extends StandaloneApplicationRunner {
             } else if (action == GLFW.GLFW_RELEASE) {
                 this.rivet.onKeyUp(key, mods);
             } else if (action == GLFW.GLFW_REPEAT) {
-                this.rivet.onKeyDown(key,  mods);
+                this.rivet.onKeyDown(key, mods);
             }
         });
         GLFW.glfwSetCharCallback(this.window, (window, codepoint) -> {
