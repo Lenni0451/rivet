@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.layout;
 
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -14,11 +15,11 @@ public interface Layout {
     Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components);
 
     default float widthOf(final Component component) {
-        return Math.clamp(component.idealSize().width(), component.minSize().width(), component.maxSize().width());
+        return MathUtils.clamp(component.idealSize().width(), component.minSize().width(), component.maxSize().width());
     }
 
     default float heightOf(final Component component) {
-        return Math.clamp(component.idealSize().height(), component.minSize().height(), component.maxSize().height());
+        return MathUtils.clamp(component.idealSize().height(), component.minSize().height(), component.maxSize().height());
     }
 
 }
