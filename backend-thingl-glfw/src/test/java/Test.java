@@ -4,6 +4,7 @@ import net.lenni0451.rivet.backend.thingl.GLFWMapper;
 import net.lenni0451.rivet.backend.thingl.ThinGLBackend;
 import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
 import net.lenni0451.rivet.component.base.Button;
+import net.lenni0451.rivet.component.impl.FormattedLabel;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -104,10 +105,13 @@ public class Test extends GLFWApplicationRunner {
         Button button = new Button(this.rivet, new Label(this.rivet, "Hello, World!"), System.out::println);
         button.setMinSize(new Size(1000, 500));
         this.rivet.getRootContainer().addChild(button);
+
+        FormattedLabel formattedLabel = new FormattedLabel(this.rivet, "This is <bold>bold</bold>, <italic>italic</italic>, <color=red>red</color> and <shadow>shadowed</shadow> text!");
+        this.rivet.getRootContainer().addChild(formattedLabel);
     }
 
     @Override
-    protected void render(Matrix4fStack matrix4fStack) {
+    protected void render(final Matrix4fStack matrix4fStack) {
         this.rivet.render(new ThinGLRenderer(matrix4fStack));
     }
 
