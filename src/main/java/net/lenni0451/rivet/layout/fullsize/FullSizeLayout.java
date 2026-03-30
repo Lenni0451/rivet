@@ -17,7 +17,7 @@ public class FullSizeLayout implements Layout {
     public static final FullSizeLayout INSTANCE = new FullSizeLayout();
 
     @Override
-    public Size computeIdealSize(Collection<Component> components) {
+    public Size computeIdealSize(final Collection<Component> components) {
         float width = 0;
         float height = 0;
         for (Component component : components) {
@@ -28,7 +28,7 @@ public class FullSizeLayout implements Layout {
     }
 
     @Override
-    public Map<Component, Rectangle> layoutComponents(Size containerSize, Collection<Component> components) {
+    public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
         Map<Component, Rectangle> map = new IdentityHashMap<>();
         for (Component component : components) {
             float width = Math.min(containerSize.width(), component.maxSize().width());

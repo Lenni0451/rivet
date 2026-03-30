@@ -58,7 +58,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseDown(MouseButtonEvent event) {
+    public void onMouseDown(final MouseButtonEvent event) {
         for (Map.Entry<Component, Rectangle> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectangle bounds = entry.getValue();
@@ -72,7 +72,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseUp(MouseButtonEvent event) {
+    public void onMouseUp(final MouseButtonEvent event) {
         for (Map.Entry<Component, Rectangle> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectangle bounds = entry.getValue();
@@ -85,7 +85,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseMove(MouseMoveEvent event) {
+    public void onMouseMove(final MouseMoveEvent event) {
         Set<Component> currentlyHovered = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Map.Entry<Component, Rectangle> entry : this.children.entrySet()) {
             Component child = entry.getKey();
@@ -111,7 +111,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseScroll(MouseScrollEvent event) {
+    public void onMouseScroll(final MouseScrollEvent event) {
         for (Map.Entry<Component, Rectangle> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectangle bounds = entry.getValue();
@@ -124,7 +124,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void render(Renderer renderer, Size size) {
+    public void render(final Renderer renderer, final Size size) {
         for (Map.Entry<Component, Rectangle> entry : this.children.entrySet()) {
             Component child = entry.getKey();
             Rectangle bounds = entry.getValue();
@@ -148,7 +148,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void computeLayout(Size size) {
+    public void computeLayout(final Size size) {
         Map<Component, Rectangle> layout = this.layout.layoutComponents(size, this.children.keySet());
         for (Map.Entry<Component, Rectangle> entry : this.children.entrySet()) {
             Rectangle bounds = layout.get(entry.getKey());

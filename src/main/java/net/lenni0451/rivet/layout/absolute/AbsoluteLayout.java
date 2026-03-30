@@ -17,7 +17,7 @@ public class AbsoluteLayout implements Layout {
     public static final AbsoluteLayout INSTANCE = new AbsoluteLayout();
 
     @Override
-    public Size computeIdealSize(Collection<Component> components) {
+    public Size computeIdealSize(final Collection<Component> components) {
         float width = 0;
         float height = 0;
         for (Component component : components) {
@@ -42,7 +42,7 @@ public class AbsoluteLayout implements Layout {
     }
 
     @Override
-    public Map<Component, Rectangle> layoutComponents(Size containerSize, Collection<Component> components) {
+    public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
         Map<Component, Rectangle> layout = new IdentityHashMap<>();
         for (Component component : components) {
             float x = 0;

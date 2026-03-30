@@ -14,11 +14,11 @@ public interface Layout {
     Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components);
 
     default float widthOf(final Component component) {
-        return Math.max(component.minSize().width(), Math.min(component.idealSize().width(), component.maxSize().width()));
+        return Math.clamp(component.idealSize().width(), component.minSize().width(), component.maxSize().width());
     }
 
     default float heightOf(final Component component) {
-        return Math.max(component.minSize().height(), Math.min(component.idealSize().height(), component.maxSize().height()));
+        return Math.clamp(component.idealSize().height(), component.minSize().height(), component.maxSize().height());
     }
 
 }

@@ -20,7 +20,7 @@ public class HorizontalFlowLayout implements Layout {
     }
 
     @Override
-    public Size computeIdealSize(Collection<Component> components) {
+    public Size computeIdealSize(final Collection<Component> components) {
         float width = 0;
         float height = 0;
         for (Component component : components) {
@@ -32,7 +32,7 @@ public class HorizontalFlowLayout implements Layout {
     }
 
     @Override
-    public Map<Component, Rectangle> layoutComponents(Size containerSize, Collection<Component> components) {
+    public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
         Map<Component, Rectangle> layout = new IdentityHashMap<>();
         float x = 0;
         float y = 0;

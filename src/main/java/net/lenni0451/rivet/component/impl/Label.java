@@ -31,7 +31,7 @@ public class Label extends Component implements Renderable {
     }
 
     @Override
-    public void render(Renderer renderer, Size size) {
+    public void render(final Renderer renderer, final Size size) {
         renderer.renderText(this.shapedText, size.width() / 2F, size.height() / 2F, Renderer.HorizontalOrigin.VISUAL_CENTER, Renderer.VerticalOrigin.LOGICAL_CENTER);
     }
 
@@ -41,7 +41,7 @@ public class Label extends Component implements Renderable {
     }
 
     @Override
-    public void computeLayout(Size size) {
+    public void computeLayout(final Size size) {
     }
 
 }

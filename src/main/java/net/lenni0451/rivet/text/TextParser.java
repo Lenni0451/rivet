@@ -197,12 +197,12 @@ public class TextParser {
         private final Function<int[], Color> parser;
 
         @Override
-        public boolean canParse(String s) {
+        public boolean canParse(final String s) {
             return s.startsWith("#") && s.length() == (1 + this.channels * 2);
         }
 
         @Override
-        public Color parse(String s) {
+        public Color parse(final String s) {
             int[] values = new int[this.channels];
             String hex = s.substring(1);
             for (int i = 0; i < this.channels; i++) {
@@ -253,12 +253,12 @@ public class TextParser {
         private final Function<float[], Color> parser;
 
         @Override
-        public boolean canParse(String s) {
+        public boolean canParse(final String s) {
             return s.startsWith(this.name + "(") && s.endsWith(")");
         }
 
         @Override
-        public Color parse(String s) {
+        public Color parse(final String s) {
             float[] values = new float[this.channels];
             String inner = s.substring(this.name.length() + 1, s.length() - 1);
             String[] parts = inner.split(",");
@@ -278,12 +278,12 @@ public class TextParser {
         private final Color color;
 
         @Override
-        public boolean canParse(String s) {
+        public boolean canParse(final String s) {
             return s.equalsIgnoreCase(this.name);
         }
 
         @Override
-        public Color parse(String s) {
+        public Color parse(final String s) {
             return this.color;
         }
     }

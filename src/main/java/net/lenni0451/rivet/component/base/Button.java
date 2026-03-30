@@ -51,12 +51,12 @@ public class Button extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseUp(MouseButtonEvent event) {
+    public void onMouseUp(final MouseButtonEvent event) {
         this.clickListener.accept(event);
     }
 
     @Override
-    public void render(Renderer renderer, Size size) {
+    public void render(final Renderer renderer, final Size size) {
         if (this.hovered) {
             renderer.fillRect(0, 0, size.width(), size.height(), Color.GREEN);
         } else {
@@ -85,7 +85,7 @@ public class Button extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void computeLayout(Size size) {
+    public void computeLayout(final Size size) {
     }
 
 }
