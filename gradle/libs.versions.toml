@@ -6,7 +6,7 @@ commons = "1.9.0"
 findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.0.2-1" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
-thingl = { module = "net.raphimc:thingl", version = "0.1.0-20251223.230317-6" }
+thingl = { module = "net.raphimc:thingl", version = "0.1.1-20260205.202012-8" }
 
 joml = { module = "org.joml:joml", version = "1.10.8" }
 joml-primitives = { module = "org.joml:joml-primitives", version = "1.10.0" }
