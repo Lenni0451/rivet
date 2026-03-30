@@ -37,18 +37,29 @@ public class Container extends Component implements MouseListener, Renderable {
         return component;
     }
 
-    public void removeChild(final Component component) {
+    // Can return Bounds.EMPTY if the component isn't layouted yet or is not a child of this container
+    public Rectangle getChildBounds(final Component component) {
+        for (Child child : this.children) {
+            if (child.component == component) {
+                return child.bounds;
+            }
+        }
+        return Rectangle.EMPTY;
+    }
+
+    public boolean removeChild(final Component component) {
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
                 if (this.rivet.getFocused() == component) {
                     this.rivet.setFocused(null);
                 }
-                this.rivet.recalculateNextFrame();
                 it.remove();
-                break;
+                this.rivet.recalculateNextFrame();
+                return true;
             }
         }
+        return false;
     }
 
     public void clearChildren() {
