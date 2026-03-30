@@ -20,7 +20,7 @@ public class TestComponent extends Component implements Renderable, MouseListene
     }
 
     @Override
-    public void computeLayout(Size size) {
+    public void computeLayout(final Size size) {
     }
 
     @Override
@@ -34,7 +34,7 @@ public class TestComponent extends Component implements Renderable, MouseListene
     }
 
     @Override
-    public void render(Renderer renderer, Size size) {
+    public void render(final Renderer renderer, final Size size) {
         renderer.fillRect(0, 0, size.width(), size.height(), this.mouseOver ? Color.GREEN : Color.RED);
     }
 

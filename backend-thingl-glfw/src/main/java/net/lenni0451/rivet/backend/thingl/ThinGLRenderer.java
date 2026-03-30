@@ -19,12 +19,12 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
-    public void translate(float x, float y) {
+    public void translate(final float x, final float y) {
         this.matrixStack.translate(x, y, 0);
     }
 
     @Override
-    public void pushScissor(float x, float y, float width, float height) {
+    public void pushScissor(final float x, final float y, final float width, final float height) {
         ThinGL.scissorStack().pushIntersection(this.matrixStack, x, y, x + width, y + height);
     }
 
@@ -34,7 +34,7 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
-    public void scale(float x, float y) {
+    public void scale(final float x, final float y) {
         this.matrixStack.scale(x, y, 1);
     }
 
@@ -44,12 +44,12 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
-    public void fillRect(float x, float y, float width, float height, Color color) {
+    public void fillRect(final float x, final float y, final float width, final float height, final Color color) {
         ThinGL.renderer2D().filledRectangle(this.matrixStack, x, y, x + width, y + height, color);
     }
 
     @Override
-    public void renderText(ShapedText shapedText, float x, float y, HorizontalOrigin horizontalOrigin, VerticalOrigin verticalOrigin) {
+    public void renderText(final ShapedText shapedText, final float x, final float y, final HorizontalOrigin horizontalOrigin, final VerticalOrigin verticalOrigin) {
         RendererText.VerticalOrigin vOrigin = switch (verticalOrigin) {
             case BASELINE -> RendererText.VerticalOrigin.BASELINE;
             case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
