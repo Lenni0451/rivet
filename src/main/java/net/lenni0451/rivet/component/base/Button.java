@@ -29,11 +29,12 @@ public class Button extends Component implements MouseListener, Renderable {
         return this.innerPadding;
     }
 
-    public void setInnerPadding(final Padding padding) {
+    public Button setInnerPadding(final Padding padding) {
         if (!this.innerPadding.equals(padding)) {
             this.innerPadding = padding;
             this.rivet.recalculateNextFrame();
         }
+        return this;
     }
 
     public boolean isHovered() {

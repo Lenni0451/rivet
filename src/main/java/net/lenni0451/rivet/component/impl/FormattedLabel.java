@@ -43,44 +43,48 @@ public class FormattedLabel extends Component implements Renderable {
         return this.text;
     }
 
-    public void setText(final String text) {
-        this.setText(text, TextFormat.DEFAULT);
+    public FormattedLabel setText(final String text) {
+        return this.setText(text, TextFormat.DEFAULT);
     }
 
-    public void setText(final String text, final TextFormat defaultFormat) {
+    public FormattedLabel setText(final String text, final TextFormat defaultFormat) {
         if (this.text == null || !this.text.equals(text)) {
             this.text = text;
             this.sections = TextParser.parse(text, defaultFormat);
             this.shapedText = this.rivet.getBackend().shapeText(this.sections);
             this.rivet.recalculateNextFrame();
         }
+        return this;
     }
 
     public List<TextSection> sections() {
         return this.sections;
     }
 
-    public void setSections(final List<TextSection> sections) {
+    public FormattedLabel setSections(final List<TextSection> sections) {
         this.text = null;
         this.sections = sections;
         this.shapedText = this.rivet.getBackend().shapeText(this.sections);
         this.rivet.recalculateNextFrame();
+        return this;
     }
 
     public TextOrigin.Horizontal horizontalOrigin() {
         return this.horizontalOrigin;
     }
 
-    public void setHorizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
+    public FormattedLabel setHorizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
         this.horizontalOrigin = horizontalOrigin;
+        return this;
     }
 
     public TextOrigin.Vertical verticalOrigin() {
         return this.verticalOrigin;
     }
 
-    public void setVerticalOrigin(final TextOrigin.Vertical verticalOrigin) {
+    public FormattedLabel setVerticalOrigin(final TextOrigin.Vertical verticalOrigin) {
         this.verticalOrigin = verticalOrigin;
+        return this;
     }
 
     @Override

@@ -24,11 +24,12 @@ public abstract class Component {
         return this.minSize;
     }
 
-    public void setMinSize(final Size minSize) {
+    public Component setMinSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
             this.minSize = minSize;
             this.rivet.recalculateNextFrame();
         }
+        return this;
     }
 
     public Size idealSize() {
@@ -39,22 +40,24 @@ public abstract class Component {
         return this.maxSize;
     }
 
-    public void setMaxSize(final Size maxSize) {
+    public Component setMaxSize(final Size maxSize) {
         if (!this.maxSize.equals(maxSize)) {
             this.maxSize = maxSize;
             this.rivet.recalculateNextFrame();
         }
+        return this;
     }
 
     public LayoutOptions layoutOptions() {
         return this.layoutOptions;
     }
 
-    public void setLayoutOptions(final LayoutOptions layoutOptions) {
+    public Component setLayoutOptions(final LayoutOptions layoutOptions) {
         if (this.layoutOptions == null || !this.layoutOptions.equals(layoutOptions)) {
             this.layoutOptions = layoutOptions;
             this.rivet.recalculateNextFrame();
         }
+        return this;
     }
 
 

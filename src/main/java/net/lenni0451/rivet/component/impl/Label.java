@@ -25,28 +25,31 @@ public class Label extends Component implements Renderable {
         return this.text;
     }
 
-    public void setText(final String text) {
+    public Label setText(final String text) {
         if (!this.text.equals(text)) {
             this.text = text;
             this.shapedText = this.rivet.getBackend().shapeText(text);
             this.rivet.recalculateNextFrame();
         }
+        return this;
     }
 
     public TextOrigin.Horizontal horizontalOrigin() {
         return this.horizontalOrigin;
     }
 
-    public void setHorizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
+    public Label setHorizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
         this.horizontalOrigin = horizontalOrigin;
+        return this;
     }
 
     public TextOrigin.Vertical verticalOrigin() {
         return this.verticalOrigin;
     }
 
-    public void setVerticalOrigin(final TextOrigin.Vertical verticalOrigin) {
+    public Label setVerticalOrigin(final TextOrigin.Vertical verticalOrigin) {
         this.verticalOrigin = verticalOrigin;
+        return this;
     }
 
     @Override
