@@ -7,6 +7,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextFormat;
+import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.text.TextParser;
 import net.lenni0451.rivet.text.TextSection;
 
@@ -17,6 +18,8 @@ public class FormattedLabel extends Component implements Renderable {
     private String text;
     private List<TextSection> sections;
     private ShapedText shapedText;
+    private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;
+    private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
 
     public FormattedLabel(final Rivet rivet, final String text) {
         this(rivet, text, TextFormat.DEFAULT);
@@ -64,9 +67,38 @@ public class FormattedLabel extends Component implements Renderable {
         this.rivet.recalculateNextFrame();
     }
 
+    public TextOrigin.Horizontal horizontalOrigin() {
+        return this.horizontalOrigin;
+    }
+
+    public void setHorizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
+        this.horizontalOrigin = horizontalOrigin;
+    }
+
+    public TextOrigin.Vertical verticalOrigin() {
+        return this.verticalOrigin;
+    }
+
+    public void setVerticalOrigin(final TextOrigin.Vertical verticalOrigin) {
+        this.verticalOrigin = verticalOrigin;
+    }
+
     @Override
     public void render(final Renderer renderer, final Size size) {
-        renderer.renderText(this.shapedText, size.width() / 2F, size.height() / 2F, Renderer.HorizontalOrigin.VISUAL_CENTER, Renderer.VerticalOrigin.LOGICAL_CENTER);
+        renderer.renderText(this.shapedText, switch (this.horizontalOrigin) {
+            case LOGICAL_LEFT -> 0;
+            case VISUAL_LEFT -> 0;
+            case VISUAL_CENTER -> size.width() / 2F;
+            case VISUAL_RIGHT -> size.width();
+        }, switch (this.verticalOrigin) {
+            case BASELINE -> size.height() / 2F;
+            case LOGICAL_TOP -> 0;
+            case LOGICAL_CENTER -> size.height() / 2F;
+            case LOGICAL_BOTTOM -> size.height();
+            case VISUAL_TOP -> 0;
+            case VISUAL_CENTER -> size.height() / 2F;
+            case VISUAL_BOTTOM -> size.height();
+        }, this.horizontalOrigin, this.verticalOrigin);
     }
 
     @Override

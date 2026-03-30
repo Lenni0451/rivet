@@ -30,9 +30,10 @@ public class Container extends Component implements MouseListener, Renderable {
         return this.layout;
     }
 
-    public void addChild(final Component component) {
+    public <T extends Component> T addChild(final T component) {
         this.children.put(component, Rectangle.EMPTY);
         this.rivet.recalculateNextFrame();
+        return component;
     }
 
     public void removeChild(final Component component) {

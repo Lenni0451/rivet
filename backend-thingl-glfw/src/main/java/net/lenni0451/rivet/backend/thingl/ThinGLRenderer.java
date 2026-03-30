@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
+import net.lenni0451.rivet.text.TextOrigin;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.renderer.impl.RendererText;
 import org.joml.Matrix4fStack;
@@ -49,7 +50,7 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
-    public void renderText(final ShapedText shapedText, final float x, final float y, final HorizontalOrigin horizontalOrigin, final VerticalOrigin verticalOrigin) {
+    public void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
         RendererText.VerticalOrigin vOrigin = switch (verticalOrigin) {
             case BASELINE -> RendererText.VerticalOrigin.BASELINE;
             case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
