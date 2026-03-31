@@ -13,6 +13,7 @@ joml-primitives = { module = "org.joml:joml-primitives", version = "1.10.0" }
 
 commons-core = { module = "net.lenni0451.commons:core", version.ref = "commons" }
 commons-logging = { module = "net.lenni0451.commons:logging", version.ref = "commons" }
+commons-animation = { module = "net.lenni0451.commons:animation", version.ref = "commons" }
 
 junit-bom = { module = "org.junit:junit-bom", version = "6.0.1" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
@@ -28,7 +29,7 @@ lwjgl-par = { module = "org.lwjgl:lwjgl-par", version.ref = "lwjgl" }
 
 [bundles]
 joml = ["joml", "joml-primitives"]
-commons = ["commons-core", "commons-logging"]
+commons = ["commons-core", "commons-logging", "commons-animation"]
 lwjgl = ["lwjgl", "lwjgl-opengl", "lwjgl-stb", "lwjgl-glfw", "lwjgl-freetype", "lwjgl-harfbuzz", "lwjgl-par"]
 
 [plugins]

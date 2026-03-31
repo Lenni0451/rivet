@@ -91,7 +91,7 @@ public class Test extends GLFWApplicationRunner {
             oldCallback[0].invoke(window, width, height);
             this.rivet.setSize(new Size(width, height));
         });
-        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 128);
+        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
         FontSet fontSet = new FontSet(font);
 
         ThinGLBackend backend = new ThinGLBackend(fontSet);
@@ -103,7 +103,7 @@ public class Test extends GLFWApplicationRunner {
 //            this.rivet.getRootContainer().addChild(comp);
 //        }
         Button button = new Button(this.rivet, new Label(this.rivet, "Hello, World!"), System.out::println);
-        button.setMinSize(new Size(1000, 500));
+//        button.setMinSize(new Size(1000, 500));
         this.rivet.getRootContainer().addChild(button);
 
         FormattedLabel formattedLabel = new FormattedLabel(this.rivet, "This is <bold>bold</bold>, <italic>italic</italic>, <color=red>red</color> and <shadow>shadowed</shadow> text!");

@@ -24,6 +24,12 @@ public interface Renderer {
 
     void fillRect(final float x, final float y, final float width, final float height, final Color color);
 
+    void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color);
+
+    void fillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color);
+
+    void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color);
+
     void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin);
 
 }

@@ -12,6 +12,8 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.impl.DefaultDark;
 
 public class Rivet {
 
@@ -21,11 +23,13 @@ public class Rivet {
     private float scale = 1;
     private Component focusedComponent;
     private boolean recalculate = false;
+    private Theme theme;
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
         this.backend = backend;
         this.rootContainer = new Container(this, layout);
         this.size = size;
+        this.theme = new DefaultDark();
     }
 
     public Backend getBackend() {
@@ -76,6 +80,14 @@ public class Rivet {
 
     public void recalculateNextFrame() {
         this.recalculate = true;
+    }
+
+    public void setTheme(final Theme theme) {
+        this.theme = theme;
+    }
+
+    public Theme getTheme() {
+        return this.theme;
     }
 
 

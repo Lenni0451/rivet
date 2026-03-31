@@ -6,6 +6,7 @@ import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.text.TextOrigin;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.gl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.gl.renderer.impl.RendererText;
 import org.joml.Matrix4fStack;
 
@@ -47,6 +48,21 @@ public class ThinGLRenderer implements Renderer {
     @Override
     public void fillRect(final float x, final float y, final float width, final float height, final Color color) {
         ThinGL.renderer2D().filledRectangle(this.matrixStack, x, y, x + width, y + height, color);
+    }
+
+    @Override
+    public void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
+        ThinGL.renderer2D().outlinedRectangle(this.matrixStack, x, y, x + width, y + height, color, outlineWidth, Renderer2D.OUTLINE_STYLE_INNER_BIT);
+    }
+
+    @Override
+    public void fillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
+        ThinGL.renderer2D().filledRoundedRectangle(this.matrixStack, x, y, x + width, y + height, cornerRadius, color);
+    }
+
+    @Override
+    public void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
+        ThinGL.renderer2D().outlinedRoundedRectangle(this.matrixStack, x, y, x + width, y + height, cornerRadius, color, outlineWidth, Renderer2D.OUTLINE_STYLE_INNER_BIT);
     }
 
     @Override
