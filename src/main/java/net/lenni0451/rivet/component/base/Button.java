@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.component.base;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
@@ -24,8 +25,10 @@ public class Button extends Component implements MouseListener, Renderable {
     private final ThemeOption<Color> inactiveOutlineColor;
     private final ThemeOption<Color> activeColor;
     private final ThemeOption<Color> activeOutlineColor;
+    private final ThemeOption<Integer> animationDuration;
     private Padding innerPadding = new Padding(20, 5, 20, 5);
     private boolean hovered = false;
+    private long hoverStateChange = 0;
 
     public Button(final Rivet rivet, final Component child, final Consumer<MouseButtonEvent> clickListener) {
         super(rivet);
@@ -38,6 +41,7 @@ public class Button extends Component implements MouseListener, Renderable {
         this.inactiveOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_INACTIVE_OUTLINE_COLOR);
         this.activeColor = new ThemeOption<>(rivet, Theme.BUTTON_ACTIVE_COLOR);
         this.activeOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
+        this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
     }
 
     public ThemeOption<Integer> cornerRadius() {
@@ -64,6 +68,10 @@ public class Button extends Component implements MouseListener, Renderable {
         return this.activeOutlineColor;
     }
 
+    public ThemeOption<Integer> animationDuration() {
+        return this.animationDuration;
+    }
+
     public Padding innerPadding() {
         return this.innerPadding;
     }
@@ -83,11 +91,13 @@ public class Button extends Component implements MouseListener, Renderable {
     @Override
     public void onMouseEnter() {
         this.hovered = true;
+        this.hoverStateChange = System.currentTimeMillis();
     }
 
     @Override
     public void onMouseLeave() {
         this.hovered = false;
+        this.hoverStateChange = System.currentTimeMillis();
     }
 
     @Override
@@ -99,8 +109,9 @@ public class Button extends Component implements MouseListener, Renderable {
     public void render(final Renderer renderer, final Size size) {
         float cornerRadius = this.cornerRadius.value();
         float outlineWidth = this.outlineWidth.value();
-        Color color = this.hovered ? this.activeColor.value() : this.inactiveColor.value();
-        Color outlineColor = this.hovered ? this.activeOutlineColor.value() : this.inactiveOutlineColor.value();
+        float animationProgress = MathUtils.clamp((System.currentTimeMillis() - this.hoverStateChange) / (float) this.animationDuration.value(), 0, 1);
+        Color color = this.hovered ? Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value()) : Color.interpolate(animationProgress, this.activeColor.value(), this.inactiveColor.value());
+        Color outlineColor = this.hovered ? Color.interpolate(animationProgress, this.inactiveOutlineColor.value(), this.activeOutlineColor.value()) : Color.interpolate(animationProgress, this.activeOutlineColor.value(), this.inactiveOutlineColor.value());
         if (cornerRadius > 0) {
             renderer.fillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, color);
         } else {

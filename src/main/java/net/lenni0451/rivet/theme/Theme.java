@@ -15,6 +15,7 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_INACTIVE_OUTLINE_COLOR = new ThemeKey<>("button.inactive_outline_color", Color.class);
     public static final ThemeKey<Color> BUTTON_ACTIVE_COLOR = new ThemeKey<>("button.active_color", Color.class);
     public static final ThemeKey<Color> BUTTON_ACTIVE_OUTLINE_COLOR = new ThemeKey<>("button.active_outline_color", Color.class);
+    public static final ThemeKey<Integer> BUTTON_ANIMATION_DURATION = new ThemeKey<>("button.animation_duration", Integer.class);
 
 
     @Nullable

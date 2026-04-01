@@ -22,6 +22,9 @@ public class DefaultDark extends Theme {
         registrar.accept(Theme.BUTTON_ACTIVE_COLOR, Color.fromRGB(65, 65, 70));
         // Active Outline: A brighter border to make the active button pop and provide clear feedback
         registrar.accept(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(100, 100, 105));
+
+        // Animation Duration: A moderate duration for smooth transitions without feeling sluggish
+        registrar.accept(Theme.BUTTON_ANIMATION_DURATION, 150);
     }
 
 }
