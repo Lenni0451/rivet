@@ -107,7 +107,7 @@ public class Button extends Component implements MouseListener, Renderable {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        float cornerRadius = this.cornerRadius.value();
+        float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
         float animationProgress = MathUtils.clamp((System.currentTimeMillis() - this.hoverStateChange) / (float) this.animationDuration.value(), 0, 1);
         Color color = this.hovered ? Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value()) : Color.interpolate(animationProgress, this.activeColor.value(), this.inactiveColor.value());
