@@ -22,6 +22,8 @@ public interface Renderer {
     void pop();
 
 
+    void fillCircle(final float x, final float y, final float radius, final Color color);
+
     void fillRect(final float x, final float y, final float width, final float height, final Color color);
 
     void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color);
