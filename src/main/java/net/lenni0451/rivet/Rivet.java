@@ -112,25 +112,25 @@ public class Rivet {
     public void onMouseDown(final MouseButtonEvent event) {
         if (event.x() < 0 || event.x() >= this.size.width()) return;
         if (event.y() < 0 || event.y() >= this.size.height()) return;
-        this.rootContainer.onMouseDown(event.withX(event.x() / this.scale).withY(event.y() / this.scale));
+        this.rootContainer.onMouseDown(event.withX(event.x() / this.scale).withY(event.y() / this.scale), this.size.scale(this.scale, this.scale));
     }
 
     public void onMouseUp(final MouseButtonEvent event) {
         if (event.x() < 0 || event.x() >= this.size.width()) return;
         if (event.y() < 0 || event.y() >= this.size.height()) return;
-        this.rootContainer.onMouseUp(event.withX(event.x() / this.scale).withY(event.y() / this.scale));
+        this.rootContainer.onMouseUp(event.withX(event.x() / this.scale).withY(event.y() / this.scale), this.size.scale(this.scale, this.scale));
     }
 
     public void onMouseMove(final MouseMoveEvent event) {
         if (event.x() < 0 || event.x() >= this.size.width()) return;
         if (event.y() < 0 || event.y() >= this.size.height()) return;
-        this.rootContainer.onMouseMove(event.withX(event.x() / this.scale).withY(event.y() / this.scale));
+        this.rootContainer.onMouseMove(event.withX(event.x() / this.scale).withY(event.y() / this.scale), this.size.scale(this.scale, this.scale));
     }
 
     public void onMouseScroll(final MouseScrollEvent event) {
         if (event.x() < 0 || event.x() >= this.size.width()) return;
         if (event.y() < 0 || event.y() >= this.size.height()) return;
-        this.rootContainer.onMouseScroll(event.withX(event.x() / this.scale).withY(event.y() / this.scale));
+        this.rootContainer.onMouseScroll(event.withX(event.x() / this.scale).withY(event.y() / this.scale), this.size.scale(this.scale, this.scale));
     }
 
     public void render(final Renderer renderer) {

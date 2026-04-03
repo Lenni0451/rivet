@@ -101,7 +101,7 @@ public class Button extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event) {
+    public void onMouseUp(final MouseButtonEvent event, final Size size) {
         this.clickListener.accept(event);
     }
 
