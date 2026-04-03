@@ -11,6 +11,7 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,9 @@ public class Container extends Component implements MouseListener, Renderable {
 
     private final Layout layout;
     private final List<Child> children = new ArrayList<>();
+    private boolean mouseDown;
+    @Nullable
+    private Component clickedComponent;
 
     public Container(final Rivet rivet, final Layout layout) {
         super(rivet);
@@ -52,6 +56,9 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     public boolean removeChild(final Component component) {
+        if (this.clickedComponent == component) {
+            this.clickedComponent = null;
+        }
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
@@ -67,6 +74,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     public void clearChildren() {
+        this.clickedComponent = null;
         for (Child child : this.children) {
             if (this.rivet.getFocused() == child.component) {
                 this.rivet.setFocused(null);
@@ -78,10 +86,12 @@ public class Container extends Component implements MouseListener, Renderable {
 
     @Override
     public void onMouseDown(final MouseButtonEvent event, final Size size) {
+        this.mouseDown = true;
         for (Child child : this.children) {
             if (child.component instanceof MouseListener mouseListener) {
                 if (child.bounds.contains(event.x(), event.y())) {
                     mouseListener.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
+                    this.clickedComponent = child.component;
                     this.rivet.setFocused(child.component);
                 }
             }
@@ -92,28 +102,32 @@ public class Container extends Component implements MouseListener, Renderable {
     public void onMouseUp(final MouseButtonEvent event, final Size size) {
         for (Child child : this.children) {
             if (child.component instanceof MouseListener mouseListener) {
-                if (child.bounds.contains(event.x(), event.y())) {
+                if (this.clickedComponent == child.component) {
                     mouseListener.onMouseUp(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
+                    this.clickedComponent = null;
                 }
             }
         }
+        this.mouseDown = false;
     }
 
     @Override
     public void onMouseMove(final MouseMoveEvent event, final Size size) {
         for (Child child : this.children) {
             if (child.component instanceof MouseListener mouseListener) {
-                if (child.bounds.contains(event.x(), event.y())) {
+                if (child.bounds.contains(event.x(), event.y()) && (!this.mouseDown || this.clickedComponent == child.component)) {
                     if (!child.hovered) {
                         child.hovered = true;
                         mouseListener.onMouseEnter();
                     }
-                    mouseListener.onMouseMove(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
                 } else {
                     if (child.hovered) {
                         child.hovered = false;
                         mouseListener.onMouseLeave();
                     }
+                }
+                if ((child.bounds.contains(event.x(), event.y()) && !this.mouseDown) || this.clickedComponent == child.component) {
+                    mouseListener.onMouseMove(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
                 }
             }
         }
