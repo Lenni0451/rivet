@@ -6,6 +6,7 @@ import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
 import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.impl.FormattedLabel;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.component.impl.Slider;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -105,9 +106,16 @@ public class Test extends GLFWApplicationRunner {
         Button button = new Button(this.rivet, new Label(this.rivet, "Hello, World!"), System.out::println);
 //        button.setMinSize(new Size(1000, 500));
         this.rivet.getRootContainer().addChild(button);
+        Button button2 = new Button(this.rivet, new Label(this.rivet, "Bye, World!"), System.out::println);
+//        button.setMinSize(new Size(1000, 500));
+        this.rivet.getRootContainer().addChild(button2);
 
         FormattedLabel formattedLabel = new FormattedLabel(this.rivet, "This is <bold>bold</bold>, <italic>italic</italic>, <color=red>red</color> and <shadow>shadowed</shadow> text!");
         this.rivet.getRootContainer().addChild(formattedLabel);
+
+        Slider slider = new Slider(this.rivet, 0, 100, 0);
+        slider.setMinSize(new Size(500, 50));
+        this.rivet.getRootContainer().addChild(slider);
     }
 
     @Override
