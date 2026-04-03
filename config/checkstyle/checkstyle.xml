@@ -149,7 +149,7 @@
 
         <!-- Whitespace Checks -->
         <module name="EmptyForInitializerPad"/>
-        <module name="EmptyForIteratorPad"/>
+        <!--<module name="EmptyForIteratorPad"/>-->
         <module name="EmptyLineSeparator">
             <property name="allowNoEmptyLineBetweenFields" value="true"/>
             <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>

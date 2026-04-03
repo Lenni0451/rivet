@@ -54,12 +54,13 @@ public class Label extends Component implements Renderable {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        renderer.renderText(this.shapedText, switch (this.horizontalOrigin) {
+        float x = switch (this.horizontalOrigin) {
             case LOGICAL_LEFT -> 0;
             case VISUAL_LEFT -> 0;
             case VISUAL_CENTER -> size.width() / 2F;
             case VISUAL_RIGHT -> size.width();
-        }, switch (this.verticalOrigin) {
+        };
+        float y = switch (this.verticalOrigin) {
             case BASELINE -> size.height() / 2F;
             case LOGICAL_TOP -> 0;
             case LOGICAL_CENTER -> size.height() / 2F;
@@ -67,7 +68,8 @@ public class Label extends Component implements Renderable {
             case VISUAL_TOP -> 0;
             case VISUAL_CENTER -> size.height() / 2F;
             case VISUAL_BOTTOM -> size.height();
-        }, this.horizontalOrigin, this.verticalOrigin);
+        };
+        renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
     }
 
     @Override
