@@ -3,27 +3,19 @@ package net.lenni0451.rivet.component;
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseListener;
-import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
-import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
+import net.lenni0451.rivet.input.mouse.*;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Container extends Component implements MouseListener, Renderable {
 
     private final Layout layout;
     private final List<Child> children = new ArrayList<>();
     private boolean mouseDown;
-    @Nullable
-    private Component clickedComponent;
+    private final ClickedComponent clickedComponent = new ClickedComponent();
 
     public Container(final Rivet rivet, final Layout layout) {
         super(rivet);
@@ -56,8 +48,8 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     public boolean removeChild(final Component component) {
-        if (this.clickedComponent == component) {
-            this.clickedComponent = null;
+        if (this.clickedComponent.is(component)) {
+            this.clickedComponent.unset();
         }
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
@@ -74,7 +66,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     public void clearChildren() {
-        this.clickedComponent = null;
+        this.clickedComponent.unset();
         for (Child child : this.children) {
             if (this.rivet.getFocused() == child.component) {
                 this.rivet.setFocused(null);
@@ -91,7 +83,7 @@ public class Container extends Component implements MouseListener, Renderable {
             if (child.component instanceof MouseListener mouseListener) {
                 if (child.bounds.contains(event.x(), event.y())) {
                     mouseListener.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
-                    this.clickedComponent = child.component;
+                    this.clickedComponent.down(child.component, event.button());
                     this.rivet.setFocused(child.component);
                 }
             }
@@ -102,9 +94,9 @@ public class Container extends Component implements MouseListener, Renderable {
     public void onMouseUp(final MouseButtonEvent event, final Size size) {
         for (Child child : this.children) {
             if (child.component instanceof MouseListener mouseListener) {
-                if (this.clickedComponent == child.component) {
+                if (this.clickedComponent.is(child.component)) {
                     mouseListener.onMouseUp(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
-                    this.clickedComponent = null;
+                    this.clickedComponent.up(event.button());
                 }
             }
         }
@@ -115,7 +107,7 @@ public class Container extends Component implements MouseListener, Renderable {
     public void onMouseMove(final MouseMoveEvent event, final Size size) {
         for (Child child : this.children) {
             if (child.component instanceof MouseListener mouseListener) {
-                if (child.bounds.contains(event.x(), event.y()) && (!this.mouseDown || this.clickedComponent == child.component)) {
+                if (child.bounds.contains(event.x(), event.y()) && (!this.mouseDown || this.clickedComponent.is(child.component))) {
                     if (!child.hovered) {
                         child.hovered = true;
                         mouseListener.onMouseEnter();
@@ -126,7 +118,7 @@ public class Container extends Component implements MouseListener, Renderable {
                         mouseListener.onMouseLeave();
                     }
                 }
-                if ((child.bounds.contains(event.x(), event.y()) && !this.mouseDown) || this.clickedComponent == child.component) {
+                if ((child.bounds.contains(event.x(), event.y()) && !this.mouseDown) || this.clickedComponent.is(child.component)) {
                     mouseListener.onMouseMove(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
                 }
             }
@@ -184,6 +176,35 @@ public class Container extends Component implements MouseListener, Renderable {
         private final Component component;
         private Rectangle bounds = Rectangle.EMPTY;
         private boolean hovered = false;
+    }
+
+    private static class ClickedComponent {
+        private Component component;
+        private final Set<MouseButton> buttons = new HashSet<>();
+
+        public boolean is(final Component component) {
+            return this.component == component;
+        }
+
+        public void unset() {
+            this.component = null;
+            this.buttons.clear();
+        }
+
+        public void down(final Component component, final MouseButton button) {
+            if (this.component != component) {
+                this.component = component;
+                this.buttons.clear();
+            }
+            this.buttons.add(button);
+        }
+
+        public void up(final MouseButton button) {
+            this.buttons.remove(button);
+            if (this.buttons.isEmpty()) {
+                this.component = null;
+            }
+        }
     }
 
 }
