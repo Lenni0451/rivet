@@ -26,6 +26,9 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 public class Test extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
+        if (System.getProperty("os.name").contains("Linux")) {
+            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
+        }
         new Test().launch();
     }
 
