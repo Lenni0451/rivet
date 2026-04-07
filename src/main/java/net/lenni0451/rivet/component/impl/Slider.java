@@ -15,14 +15,20 @@ import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Size;
 
-@Getter
-@Setter
 @Accessors(chain = true, fluent = true)
 public class Slider extends Component implements MouseListener, Renderable {
 
+    @Getter
+    @Setter
     private float min;
+    @Getter
+    @Setter
     private float max;
+    @Getter
+    @Setter
     private float step;
+    @Getter
+    @Setter
     private float value;
     private boolean dragged;
 
