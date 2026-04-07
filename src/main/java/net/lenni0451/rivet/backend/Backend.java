@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface Backend {
 
+    float getTextHeight();
+
     ShapedText shapeText(final String text);
 
     ShapedText shapeText(final List<TextSection> sections);

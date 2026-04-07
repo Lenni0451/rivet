@@ -21,6 +21,11 @@ public class ThinGLBackend implements Backend {
     private final FontSet fontSet;
 
     @Override
+    public float getTextHeight() {
+        return this.fontSet.getMainFont().getHeight();
+    }
+
+    @Override
     public ShapedText shapeText(final String text) {
         ShapedTextLine shapedTextLine = TextLine.fromString(this.fontSet, text).shape();
         return new ThinGLShapedText(shapedTextLine);

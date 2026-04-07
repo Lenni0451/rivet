@@ -9,6 +9,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
+import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -39,13 +40,17 @@ public class Slider extends Component implements MouseListener, Renderable {
 
     @Override
     public void onMouseDown(final MouseButtonEvent event, final Size size) {
-        this.dragged = true;
-        this.updateValue(event.x(), size);
+        if (event.button().equals(MouseButton.LEFT)) {
+            this.dragged = true;
+            this.updateValue(event.x(), size);
+        }
     }
 
     @Override
     public void onMouseUp(final MouseButtonEvent event, final Size size) {
-        this.dragged = false;
+        if (event.button().equals(MouseButton.LEFT)) {
+            this.dragged = false;
+        }
     }
 
     @Override
@@ -78,7 +83,8 @@ public class Slider extends Component implements MouseListener, Renderable {
 
     @Override
     public void computeIdealSize() {
-        this.idealSize = new Size(100, 20);
+        float textHeight = this.rivet.getBackend().getTextHeight();
+        this.idealSize = new Size(textHeight * 10, textHeight);
     }
 
     @Override
