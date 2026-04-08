@@ -14,6 +14,10 @@ public class DefaultDark extends Theme {
         registrar.accept(Theme.BUTTON_ACTIVE_COLOR, Color.fromRGB(65, 65, 70));
         registrar.accept(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(100, 100, 105));
         registrar.accept(Theme.BUTTON_ANIMATION_DURATION, 150);
+
+        registrar.accept(Theme.SLIDER_BAR_COLOR, Color.fromRGB(65, 65, 70));
+        registrar.accept(Theme.SLIDER_KNOB_COLOR, Color.fromRGB(120, 120, 125));
+        registrar.accept(Theme.SLIDER_TICK_COLOR, Color.fromRGB(160, 160, 165));
     }
 
 }

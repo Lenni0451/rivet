@@ -17,6 +17,13 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_ACTIVE_OUTLINE_COLOR = new ThemeKey<>("button.active_outline_color", Color.class);
     public static final ThemeKey<Integer> BUTTON_ANIMATION_DURATION = new ThemeKey<>("button.animation_duration", Integer.class);
 
+    // Slider
+    public static final ThemeKey<Color> SLIDER_BAR_COLOR = new ThemeKey<>("slider.bar_color", Color.class);
+    public static final ThemeKey<Color> SLIDER_KNOB_COLOR = new ThemeKey<>("slider.knob_color", Color.class);
+    public static final ThemeKey<Color> SLIDER_TICK_COLOR = new ThemeKey<>("slider.tick_color", Color.class);
+    public static final ThemeKey<Integer> SLIDER_BAR_HEIGHT = new ThemeKey<>("slider.bar_height", Integer.class);
+    public static final ThemeKey<Integer> SLIDER_KNOB_RADIUS = new ThemeKey<>("slider.knob_radius", Integer.class);
+
 
     @Nullable
     private final Theme parent;
@@ -34,12 +41,18 @@ public abstract class Theme {
     protected abstract void register(final Registrar registrar);
 
     public <T> T get(final ThemeKey<T> key) {
+        T value = this.getOrDefault(key, null);
+        if (value == null) throw new IllegalStateException("No value for key " + key);
+        return value;
+    }
+
+    public <T> T getOrDefault(final ThemeKey<T> key, @Nullable final T defaultValue) {
         Object value = this.values.get(key);
         if (value == null) {
             if (this.parent != null) {
-                return this.parent.get(key);
+                return this.parent.getOrDefault(key, defaultValue);
             }
-            throw new IllegalStateException("No value for key " + key);
+            return defaultValue;
         }
         return (T) value;
     }

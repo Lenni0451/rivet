@@ -16,6 +16,8 @@ import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextOrigin;
+import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
 
@@ -42,6 +44,17 @@ public class Slider extends Component implements MouseListener, Renderable {
     private Ticks ticks;
     private boolean dragged;
 
+    @Getter
+    private final ThemeOption<Color> barColor;
+    @Getter
+    private final ThemeOption<Color> knobColor;
+    @Getter
+    private final ThemeOption<Color> tickColor;
+    @Getter
+    private final ThemeOption<Integer> barHeight;
+    @Getter
+    private final ThemeOption<Integer> knobRadius;
+
     public Slider(final Rivet rivet, final double min, final double max, final double value) {
         this(rivet, min, max, 1, value);
     }
@@ -52,6 +65,12 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.max = max;
         this.step = step;
         this.value = value;
+
+        this.barColor = new ThemeOption<>(rivet, Theme.SLIDER_BAR_COLOR);
+        this.knobColor = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_COLOR);
+        this.tickColor = new ThemeOption<>(rivet, Theme.SLIDER_TICK_COLOR);
+        this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
+        this.knobRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_RADIUS, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
     }
 
     @Override
@@ -77,7 +96,7 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     private void updateValue(final float mouseX, final Size size) {
-        float knobRadius = this.knobRadius();
+        float knobRadius = this.knobRadius.value();
         float barWidth = this.barWidth(size);
         float progress = (mouseX - knobRadius) / barWidth;
         progress = MathUtils.clamp(progress, 0, 1);
@@ -88,17 +107,17 @@ public class Slider extends Component implements MouseListener, Renderable {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        float knobRadius = this.knobRadius();
-        float barHeight = this.barHeight();
+        float knobRadius = this.knobRadius.value();
+        float barHeight = this.barHeight.value();
         float visualBarWidth = size.width() - knobRadius;
         float sliderCenter = size.height() / 2F;
         if (this.ticks != null) {
             sliderCenter = knobRadius;
         }
-        renderer.fillRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, visualBarWidth, barHeight, barHeight / 2F, Color.RED);
+        renderer.fillRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, visualBarWidth, barHeight, barHeight / 2F, this.barColor.value());
         float barWidth = this.barWidth(size);
         double progress = (this.value - this.min) / (this.max - this.min);
-        renderer.fillCircle((float) (knobRadius + barWidth * progress), sliderCenter, knobRadius, Color.BLUE);
+        renderer.fillCircle((float) (knobRadius + barWidth * progress), sliderCenter, knobRadius, this.knobColor.value());
 
         if (this.ticks != null) {
             float tickStartY = sliderCenter + knobRadius + TICK_OFFSET;
@@ -113,7 +132,7 @@ public class Slider extends Component implements MouseListener, Renderable {
                         lastTick = true;
                     }
                     float tickX = (float) (knobRadius + barWidth * (tick / (this.max - this.min)));
-                    renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, Color.WHITE);
+                    renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, this.tickColor.value());
                     String label = this.ticks.labelProvider.getLabel(this.min + tick);
                     ShapedText text = this.rivet.getBackend().shapeText(label);
                     renderer.push();
@@ -130,7 +149,7 @@ public class Slider extends Component implements MouseListener, Renderable {
                         continue; //Skip if it's a major tick
                     }
                     float tickX = (float) (knobRadius + barWidth * (tick / (this.max - this.min)));
-                    renderer.fillRect(tickX, tickStartY, 1, minorTickLength, Color.WHITE);
+                    renderer.fillRect(tickX, tickStartY, 1, minorTickLength, this.tickColor.value());
                 }
             }
         }
@@ -140,9 +159,9 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void computeIdealSize() {
         float height;
         if (this.ticks == null) {
-            height = this.knobRadius() * 2;
+            height = this.knobRadius.value() * 2;
         } else {
-            height = this.knobRadius() * 2 + TICK_OFFSET + this.barHeight() + TICK_OFFSET + this.rivet.getBackend().getTextHeight() / 2F;
+            height = this.knobRadius.value() * 2 + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet.getBackend().getTextHeight() / 2F;
         }
         this.idealSize = new Size(this.rivet.getBackend().getTextHeight() * 10, height);
     }
@@ -151,16 +170,8 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void computeLayout(final Size size) {
     }
 
-    private float knobRadius() {
-        return this.rivet.getBackend().getTextHeight() / 3F;
-    }
-
-    private float barHeight() {
-        return this.rivet.getBackend().getTextHeight() / 3F;
-    }
-
     private float barWidth(final Size size) {
-        return size.width() - this.knobRadius() * 2;
+        return size.width() - this.knobRadius.value() * 2;
     }
 
 
