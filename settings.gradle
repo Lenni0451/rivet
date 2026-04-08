@@ -11,5 +11,5 @@ plugins {
 
 rootProject.name = "rivet"
 
-include(":backend-awt")
+//include(":backend-awt")
 include(":backend-thingl-glfw")
