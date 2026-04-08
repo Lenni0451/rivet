@@ -20,14 +20,14 @@ public abstract class Theme {
 
     // Slider
     public static final ThemeKey<Color> SLIDER_BAR_COLOR = new ThemeKey<>("slider.bar_color", Color.class);
-    public static final ThemeKey<Color> SLIDER_KNOB_COLOR = new ThemeKey<>("slider.knob_color", Color.class);
+    public static final ThemeKey<Color> SLIDER_THUMB_COLOR = new ThemeKey<>("slider.thumb_color", Color.class);
     public static final ThemeKey<Color> SLIDER_TICK_COLOR = new ThemeKey<>("slider.tick_color", Color.class);
     public static final ThemeKey<Integer> SLIDER_BAR_HEIGHT = new ThemeKey<>("slider.bar_height", Integer.class);
-    public static final ThemeKey<Integer> SLIDER_KNOB_RADIUS = new ThemeKey<>("slider.knob_radius", Integer.class);
+    public static final ThemeKey<Integer> SLIDER_THUMB_RADIUS = new ThemeKey<>("slider.thumb_radius", Integer.class);
     public static final ThemeKey<Integer> SLIDER_BAR_CORNER_RADIUS = new ThemeKey<>("slider.bar_corner_radius", Integer.class);
-    public static final ThemeKey<Integer> SLIDER_KNOB_CORNER_RADIUS = new ThemeKey<>("slider.knob_corner_radius", Integer.class);
-    public static final ThemeKey<Boolean> SLIDER_KNOB_ENCASED = new ThemeKey<>("slider.knob_encased", Boolean.class);
-    public static final ThemeKey<Slider.KnobShape> SLIDER_KNOB_SHAPE = new ThemeKey<>("slider.knob_shape", Slider.KnobShape.class);
+    public static final ThemeKey<Integer> SLIDER_THUMB_CORNER_RADIUS = new ThemeKey<>("slider.thumb_corner_radius", Integer.class);
+    public static final ThemeKey<Boolean> SLIDER_THUMB_ENCASED = new ThemeKey<>("slider.thumb_encased", Boolean.class);
+    public static final ThemeKey<Slider.ThumbShape> SLIDER_THUMB_SHAPE = new ThemeKey<>("slider.thumb_shape", Slider.ThumbShape.class);
 
 
     @Nullable

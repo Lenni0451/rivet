@@ -47,21 +47,21 @@ public class Slider extends Component implements MouseListener, Renderable {
     @Getter
     private final ThemeOption<Color> barColor;
     @Getter
-    private final ThemeOption<Color> knobColor;
+    private final ThemeOption<Color> thumbColor;
     @Getter
     private final ThemeOption<Color> tickColor;
     @Getter
     private final ThemeOption<Integer> barHeight;
     @Getter
-    private final ThemeOption<Integer> knobRadius;
+    private final ThemeOption<Integer> thumbRadius;
     @Getter
     private final ThemeOption<Integer> barCornerRadius;
     @Getter
-    private final ThemeOption<Integer> knobCornerRadius;
+    private final ThemeOption<Integer> thumbCornerRadius;
     @Getter
-    private final ThemeOption<Boolean> knobEncased;
+    private final ThemeOption<Boolean> thumbEncased;
     @Getter
-    private final ThemeOption<KnobShape> knobShape;
+    private final ThemeOption<ThumbShape> thumbShape;
 
     public Slider(final Rivet rivet, final double min, final double max, final double value) {
         this(rivet, min, max, 1, value);
@@ -75,14 +75,14 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.value = value;
 
         this.barColor = new ThemeOption<>(rivet, Theme.SLIDER_BAR_COLOR);
-        this.knobColor = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_COLOR);
+        this.thumbColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_COLOR);
         this.tickColor = new ThemeOption<>(rivet, Theme.SLIDER_TICK_COLOR);
         this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
-        this.knobRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_RADIUS, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
+        this.thumbRadius = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_RADIUS, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
         this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS, () -> this.barHeight.value() / 2);
-        this.knobCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_CORNER_RADIUS, () -> this.knobRadius.value());
-        this.knobEncased = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_ENCASED, () -> false);
-        this.knobShape = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_SHAPE, () -> KnobShape.CIRCLE);
+        this.thumbCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CORNER_RADIUS, () -> this.thumbRadius.value());
+        this.thumbEncased = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_ENCASED, () -> false);
+        this.thumbShape = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_SHAPE, () -> ThumbShape.CIRCLE);
     }
 
     @Override
@@ -108,9 +108,9 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     private void updateValue(final float mouseX, final Size size) {
-        float knobRadius = this.knobRadius.value();
+        float thumbRadius = this.thumbRadius.value();
         float barWidth = this.barWidth(size);
-        float progress = (mouseX - knobRadius) / barWidth;
+        float progress = (mouseX - thumbRadius) / barWidth;
         progress = MathUtils.clamp(progress, 0, 1);
         double newValue = this.min + progress * (this.max - this.min);
         newValue = Math.round(newValue / this.step) * this.step;
@@ -119,32 +119,32 @@ public class Slider extends Component implements MouseListener, Renderable {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        float knobRadius = this.knobRadius.value();
+        float thumbRadius = this.thumbRadius.value();
         float barHeight = this.barHeight.value();
         float sliderCenter = size.height() / 2F;
         if (this.ticks != null) {
-            sliderCenter = knobRadius;
+            sliderCenter = thumbRadius;
         }
 
-        if (this.knobEncased.value()) {
+        if (this.thumbEncased.value()) {
             renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
         } else {
-            renderer.fillOptimizedRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, size.width() - knobRadius, barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.fillOptimizedRoundedRect(thumbRadius / 2, sliderCenter - barHeight / 2F, size.width() - thumbRadius, barHeight, this.barCornerRadius.value(), this.barColor.value());
         }
         float barWidth = this.barWidth(size);
         double progress = (this.value - this.min) / (this.max - this.min);
-        float knobX = (float) (knobRadius + barWidth * progress);
-        switch (this.knobShape.value()) {
-            case CIRCLE, SQUARE -> renderer.fillOptimizedRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
-            case RECTANGLE -> renderer.fillOptimizedRoundedRect(knobX - knobRadius / 2F, sliderCenter - knobRadius, knobRadius, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
+        float thumbX = (float) (thumbRadius + barWidth * progress);
+        switch (this.thumbShape.value()) {
+            case CIRCLE, SQUARE -> renderer.fillOptimizedRoundedRect(thumbX - thumbRadius, sliderCenter - thumbRadius, thumbRadius * 2, thumbRadius * 2, this.thumbCornerRadius.value(), this.thumbColor.value());
+            case RECTANGLE -> renderer.fillOptimizedRoundedRect(thumbX - thumbRadius / 2F, sliderCenter - thumbRadius, thumbRadius, thumbRadius * 2, this.thumbCornerRadius.value(), this.thumbColor.value());
             case PIN -> {
-                renderer.fillOptimizedRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius, this.knobCornerRadius.value(), this.knobColor.value());
-                renderer.fillTriangle(knobX - knobRadius, sliderCenter, knobX, sliderCenter + knobRadius, knobX + knobRadius, sliderCenter, this.knobColor.value());
+                renderer.fillOptimizedRoundedRect(thumbX - thumbRadius, sliderCenter - thumbRadius, thumbRadius * 2, thumbRadius, this.thumbCornerRadius.value(), this.thumbColor.value());
+                renderer.fillTriangle(thumbX - thumbRadius, sliderCenter, thumbX, sliderCenter + thumbRadius, thumbX + thumbRadius, sliderCenter, this.thumbColor.value());
             }
         }
 
         if (this.ticks != null) {
-            float tickStartY = sliderCenter + knobRadius + TICK_OFFSET;
+            float tickStartY = sliderCenter + thumbRadius + TICK_OFFSET;
             float majorTickLength = barHeight;
             float minorTickLength = barHeight / 2F;
 
@@ -155,7 +155,7 @@ public class Slider extends Component implements MouseListener, Renderable {
                         tick = this.max - this.min;
                         lastTick = true;
                     }
-                    float tickX = (float) (knobRadius + barWidth * (tick / (this.max - this.min)));
+                    float tickX = (float) (thumbRadius + barWidth * (tick / (this.max - this.min)));
                     renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, this.tickColor.value());
                     String label = this.ticks.labelProvider.getLabel(this.min + tick);
                     ShapedText text = this.rivet.getBackend().shapeText(label);
@@ -172,7 +172,7 @@ public class Slider extends Component implements MouseListener, Renderable {
                     if (this.ticks.majorTickSpacing > 0 && Math.abs(tick % this.ticks.majorTickSpacing) < 1e-6) {
                         continue; //Skip if it's a major tick
                     }
-                    float tickX = (float) (knobRadius + barWidth * (tick / (this.max - this.min)));
+                    float tickX = (float) (thumbRadius + barWidth * (tick / (this.max - this.min)));
                     renderer.fillRect(tickX, tickStartY, 1, minorTickLength, this.tickColor.value());
                 }
             }
@@ -183,9 +183,9 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void computeIdealSize() {
         float height;
         if (this.ticks == null) {
-            height = this.knobRadius.value() * 2;
+            height = this.thumbRadius.value() * 2;
         } else {
-            height = this.knobRadius.value() * 2 + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet.getBackend().getTextHeight() / 2F;
+            height = this.thumbRadius.value() * 2 + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet.getBackend().getTextHeight() / 2F;
         }
         this.idealSize = new Size(this.rivet.getBackend().getTextHeight() * 10, height);
     }
@@ -195,7 +195,7 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     private float barWidth(final Size size) {
-        return size.width() - this.knobRadius.value() * 2;
+        return size.width() - this.thumbRadius.value() * 2;
     }
 
 
@@ -210,7 +210,7 @@ public class Slider extends Component implements MouseListener, Renderable {
         String getLabel(final double value);
     }
 
-    public enum KnobShape {
+    public enum ThumbShape {
         CIRCLE,
         SQUARE,
         RECTANGLE,
