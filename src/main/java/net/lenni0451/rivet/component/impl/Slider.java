@@ -124,14 +124,14 @@ public class Slider extends Component implements MouseListener, Renderable {
         }
 
         if (this.knobEncased.value()) {
-            renderer.fillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
         } else {
-            renderer.fillRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, size.width() - knobRadius, barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.fillOptimizedRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, size.width() - knobRadius, barHeight, this.barCornerRadius.value(), this.barColor.value());
         }
         float barWidth = this.barWidth(size);
         double progress = (this.value - this.min) / (this.max - this.min);
         float knobX = (float) (knobRadius + barWidth * progress);
-        renderer.fillRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
+        renderer.fillOptimizedRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
 
         if (this.ticks != null) {
             float tickStartY = sliderCenter + knobRadius + TICK_OFFSET;

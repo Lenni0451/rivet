@@ -24,6 +24,8 @@ public interface Renderer {
 
     void fillCircle(final float x, final float y, final float radius, final Color color);
 
+    void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color);
+
     void fillRect(final float x, final float y, final float width, final float height, final Color color);
 
     void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color);
@@ -31,6 +33,30 @@ public interface Renderer {
     void fillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color);
 
     void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color);
+
+    default void fillOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
+        float maxRadius = Math.min(width, height) / 2F;
+        float radius = Math.min(cornerRadius, maxRadius);
+        if (radius <= 0) {
+            this.fillRect(x, y, width, height, color);
+        } else if (width == height && radius == maxRadius) {
+            this.fillCircle(x + radius, y + radius, radius, color);
+        } else {
+            this.fillRoundedRect(x, y, width, height, radius, color);
+        }
+    }
+
+    default void outlineOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
+        float maxRadius = Math.min(width, height) / 2F;
+        float radius = Math.min(cornerRadius, maxRadius);
+        if (radius <= 0) {
+            this.outlineRect(x, y, width, height, outlineWidth, color);
+        } else if (width == height && radius == maxRadius) {
+            this.outlineCircle(x + radius, y + radius, radius, outlineWidth, color);
+        } else {
+            this.outlineRoundedRect(x, y, width, height, radius, outlineWidth, color);
+        }
+    }
 
     void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin);
 

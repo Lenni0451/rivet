@@ -51,6 +51,11 @@ public class ThinGLRenderer implements Renderer {
     }
 
     @Override
+    public void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
+        ThinGL.renderer2D().outlinedCircle(this.matrixStack, x, y, radius, color, outlineWidth, Renderer2D.OUTLINE_STYLE_INNER_BIT);
+    }
+
+    @Override
     public void fillRect(final float x, final float y, final float width, final float height, final Color color) {
         ThinGL.renderer2D().filledRectangle(this.matrixStack, x, y, x + width, y + height, color);
     }
