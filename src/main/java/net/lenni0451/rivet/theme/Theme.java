@@ -25,6 +25,7 @@ public abstract class Theme {
     public static final ThemeKey<Integer> SLIDER_KNOB_RADIUS = new ThemeKey<>("slider.knob_radius", Integer.class);
     public static final ThemeKey<Integer> SLIDER_BAR_CORNER_RADIUS = new ThemeKey<>("slider.bar_corner_radius", Integer.class);
     public static final ThemeKey<Integer> SLIDER_KNOB_CORNER_RADIUS = new ThemeKey<>("slider.knob_corner_radius", Integer.class);
+    public static final ThemeKey<Boolean> SLIDER_KNOB_ENCASED = new ThemeKey<>("slider.knob_encased", Boolean.class);
 
 
     @Nullable

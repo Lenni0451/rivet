@@ -58,6 +58,8 @@ public class Slider extends Component implements MouseListener, Renderable {
     private final ThemeOption<Integer> barCornerRadius;
     @Getter
     private final ThemeOption<Integer> knobCornerRadius;
+    @Getter
+    private final ThemeOption<Boolean> knobEncased;
 
     public Slider(final Rivet rivet, final double min, final double max, final double value) {
         this(rivet, min, max, 1, value);
@@ -77,6 +79,7 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.knobRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_RADIUS, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
         this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS, () -> this.barHeight.value() / 2);
         this.knobCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_CORNER_RADIUS, () -> this.knobRadius.value());
+        this.knobEncased = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_ENCASED, () -> false);
     }
 
     @Override
@@ -115,12 +118,16 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void render(final Renderer renderer, final Size size) {
         float knobRadius = this.knobRadius.value();
         float barHeight = this.barHeight.value();
-        float visualBarWidth = size.width() - knobRadius;
         float sliderCenter = size.height() / 2F;
         if (this.ticks != null) {
             sliderCenter = knobRadius;
         }
-        renderer.fillRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, visualBarWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
+
+        if (this.knobEncased.value()) {
+            renderer.fillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
+        } else {
+            renderer.fillRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, size.width() - knobRadius, barHeight, this.barCornerRadius.value(), this.barColor.value());
+        }
         float barWidth = this.barWidth(size);
         double progress = (this.value - this.min) / (this.max - this.min);
         float knobX = (float) (knobRadius + barWidth * progress);
