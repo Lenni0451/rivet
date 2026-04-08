@@ -23,6 +23,8 @@ public abstract class Theme {
     public static final ThemeKey<Color> SLIDER_TICK_COLOR = new ThemeKey<>("slider.tick_color", Color.class);
     public static final ThemeKey<Integer> SLIDER_BAR_HEIGHT = new ThemeKey<>("slider.bar_height", Integer.class);
     public static final ThemeKey<Integer> SLIDER_KNOB_RADIUS = new ThemeKey<>("slider.knob_radius", Integer.class);
+    public static final ThemeKey<Integer> SLIDER_BAR_CORNER_RADIUS = new ThemeKey<>("slider.bar_corner_radius", Integer.class);
+    public static final ThemeKey<Integer> SLIDER_KNOB_CORNER_RADIUS = new ThemeKey<>("slider.knob_corner_radius", Integer.class);
 
 
     @Nullable

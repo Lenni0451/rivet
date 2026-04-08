@@ -54,6 +54,10 @@ public class Slider extends Component implements MouseListener, Renderable {
     private final ThemeOption<Integer> barHeight;
     @Getter
     private final ThemeOption<Integer> knobRadius;
+    @Getter
+    private final ThemeOption<Integer> barCornerRadius;
+    @Getter
+    private final ThemeOption<Integer> knobCornerRadius;
 
     public Slider(final Rivet rivet, final double min, final double max, final double value) {
         this(rivet, min, max, 1, value);
@@ -71,6 +75,8 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.tickColor = new ThemeOption<>(rivet, Theme.SLIDER_TICK_COLOR);
         this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
         this.knobRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_RADIUS, () -> (int) (rivet.getBackend().getTextHeight() / 3F));
+        this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS, () -> this.barHeight.value() / 2);
+        this.knobCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_CORNER_RADIUS, () -> this.knobRadius.value());
     }
 
     @Override
@@ -114,10 +120,11 @@ public class Slider extends Component implements MouseListener, Renderable {
         if (this.ticks != null) {
             sliderCenter = knobRadius;
         }
-        renderer.fillRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, visualBarWidth, barHeight, barHeight / 2F, this.barColor.value());
+        renderer.fillRoundedRect(knobRadius / 2, sliderCenter - barHeight / 2F, visualBarWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
         float barWidth = this.barWidth(size);
         double progress = (this.value - this.min) / (this.max - this.min);
-        renderer.fillCircle((float) (knobRadius + barWidth * progress), sliderCenter, knobRadius, this.knobColor.value());
+        float knobX = (float) (knobRadius + barWidth * progress);
+        renderer.fillRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
 
         if (this.ticks != null) {
             float tickStartY = sliderCenter + knobRadius + TICK_OFFSET;
