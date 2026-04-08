@@ -117,8 +117,8 @@ public class Test extends GLFWApplicationRunner {
         this.rivet.getRootContainer().addChild(formattedLabel);
 
         Slider slider = new Slider(this.rivet, 0, 100, 0);
-//        slider.setMinSize(new Size(500, 50));
-        this.rivet.getRootContainer().addChild(slider);
+//        slider.setMinSize(new Size(500, 100));
+        this.rivet.getRootContainer().addChild(slider.ticks(new Slider.Ticks(10, 2.5, d -> String.format("%,d", (int) d))));
     }
 
     @Override
