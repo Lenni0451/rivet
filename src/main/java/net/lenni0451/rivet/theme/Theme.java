@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.theme;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.component.impl.Slider;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public abstract class Theme {
     public static final ThemeKey<Integer> SLIDER_BAR_CORNER_RADIUS = new ThemeKey<>("slider.bar_corner_radius", Integer.class);
     public static final ThemeKey<Integer> SLIDER_KNOB_CORNER_RADIUS = new ThemeKey<>("slider.knob_corner_radius", Integer.class);
     public static final ThemeKey<Boolean> SLIDER_KNOB_ENCASED = new ThemeKey<>("slider.knob_encased", Boolean.class);
+    public static final ThemeKey<Slider.KnobShape> SLIDER_KNOB_SHAPE = new ThemeKey<>("slider.knob_shape", Slider.KnobShape.class);
 
 
     @Nullable

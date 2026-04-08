@@ -26,6 +26,8 @@ public interface Renderer {
 
     void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color);
 
+    void fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3, final Color color);
+
     void fillRect(final float x, final float y, final float width, final float height, final Color color);
 
     void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color);

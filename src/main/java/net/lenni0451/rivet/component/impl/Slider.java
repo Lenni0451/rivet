@@ -60,6 +60,8 @@ public class Slider extends Component implements MouseListener, Renderable {
     private final ThemeOption<Integer> knobCornerRadius;
     @Getter
     private final ThemeOption<Boolean> knobEncased;
+    @Getter
+    private final ThemeOption<KnobShape> knobShape;
 
     public Slider(final Rivet rivet, final double min, final double max, final double value) {
         this(rivet, min, max, 1, value);
@@ -80,6 +82,7 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS, () -> this.barHeight.value() / 2);
         this.knobCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_CORNER_RADIUS, () -> this.knobRadius.value());
         this.knobEncased = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_ENCASED, () -> false);
+        this.knobShape = new ThemeOption<>(rivet, Theme.SLIDER_KNOB_SHAPE, () -> KnobShape.CIRCLE);
     }
 
     @Override
@@ -131,7 +134,14 @@ public class Slider extends Component implements MouseListener, Renderable {
         float barWidth = this.barWidth(size);
         double progress = (this.value - this.min) / (this.max - this.min);
         float knobX = (float) (knobRadius + barWidth * progress);
-        renderer.fillOptimizedRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
+        switch (this.knobShape.value()) {
+            case CIRCLE, SQUARE -> renderer.fillOptimizedRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
+            case RECTANGLE -> renderer.fillOptimizedRoundedRect(knobX - knobRadius / 2F, sliderCenter - knobRadius, knobRadius, knobRadius * 2, this.knobCornerRadius.value(), this.knobColor.value());
+            case PIN -> {
+                renderer.fillOptimizedRoundedRect(knobX - knobRadius, sliderCenter - knobRadius, knobRadius * 2, knobRadius, this.knobCornerRadius.value(), this.knobColor.value());
+                renderer.fillTriangle(knobX - knobRadius, sliderCenter, knobX, sliderCenter + knobRadius, knobX + knobRadius, sliderCenter, this.knobColor.value());
+            }
+        }
 
         if (this.ticks != null) {
             float tickStartY = sliderCenter + knobRadius + TICK_OFFSET;
@@ -198,6 +208,13 @@ public class Slider extends Component implements MouseListener, Renderable {
     @FunctionalInterface
     public interface TickLabelProvider {
         String getLabel(final double value);
+    }
+
+    public enum KnobShape {
+        CIRCLE,
+        SQUARE,
+        RECTANGLE,
+        PIN
     }
 
 }
