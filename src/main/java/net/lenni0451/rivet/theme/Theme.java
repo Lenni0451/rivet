@@ -16,11 +16,14 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_INACTIVE_OUTLINE_COLOR = new ThemeKey<>("button.inactive_outline_color", Color.class);
     public static final ThemeKey<Color> BUTTON_ACTIVE_COLOR = new ThemeKey<>("button.active_color", Color.class);
     public static final ThemeKey<Color> BUTTON_ACTIVE_OUTLINE_COLOR = new ThemeKey<>("button.active_outline_color", Color.class);
+    public static final ThemeKey<Color> BUTTON_CLICK_COLOR = new ThemeKey<>("button.click_color", Color.class);
+    public static final ThemeKey<Color> BUTTON_CLICK_OUTLINE_COLOR = new ThemeKey<>("button.click_outline_color", Color.class);
     public static final ThemeKey<Integer> BUTTON_ANIMATION_DURATION = new ThemeKey<>("button.animation_duration", Integer.class);
 
     // Slider
     public static final ThemeKey<Color> SLIDER_BAR_COLOR = new ThemeKey<>("slider.bar_color", Color.class);
     public static final ThemeKey<Color> SLIDER_THUMB_COLOR = new ThemeKey<>("slider.thumb_color", Color.class);
+    public static final ThemeKey<Color> SLIDER_THUMB_CLICK_COLOR = new ThemeKey<>("slider.thumb_click_color", Color.class);
     public static final ThemeKey<Color> SLIDER_TICK_COLOR = new ThemeKey<>("slider.tick_color", Color.class);
     public static final ThemeKey<Float> SLIDER_BAR_HEIGHT = new ThemeKey<>("slider.bar_height", Float.class);
     public static final ThemeKey<Float> SLIDER_THUMB_WIDTH = new ThemeKey<>("slider.thumb_width", Float.class);

@@ -49,6 +49,8 @@ public class Slider extends Component implements MouseListener, Renderable {
     @Getter
     private final ThemeOption<Color> thumbColor;
     @Getter
+    private final ThemeOption<Color> thumbClickColor;
+    @Getter
     private final ThemeOption<Color> tickColor;
     @Getter
     private final ThemeOption<Float> barHeight;
@@ -78,6 +80,7 @@ public class Slider extends Component implements MouseListener, Renderable {
 
         this.barColor = new ThemeOption<>(rivet, Theme.SLIDER_BAR_COLOR);
         this.thumbColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_COLOR);
+        this.thumbClickColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CLICK_COLOR);
         this.tickColor = new ThemeOption<>(rivet, Theme.SLIDER_TICK_COLOR);
         this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT, () -> rivet.getBackend().getTextHeight() / 3F);
         this.thumbWidth = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_WIDTH, () -> rivet.getBackend().getTextHeight() / 3F * 2F);
@@ -165,7 +168,7 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     private void renderThumb(final Renderer renderer, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float thumbX) {
-        Color color = this.thumbColor.value();
+        Color color = this.dragged ? this.thumbClickColor.value() : this.thumbColor.value();
         float cornerRadius = this.thumbCornerRadius.value();
         switch (this.thumbShape.value()) {
             case CIRCLE -> renderer.fillCircle(thumbX, sliderCenter, Math.min(thumbWidth, thumbHeight) / 2F, color);

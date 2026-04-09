@@ -25,9 +25,12 @@ public class Button extends Component implements MouseListener, Renderable {
     private final ThemeOption<Color> inactiveOutlineColor;
     private final ThemeOption<Color> activeColor;
     private final ThemeOption<Color> activeOutlineColor;
+    private final ThemeOption<Color> clickColor;
+    private final ThemeOption<Color> clickOutlineColor;
     private final ThemeOption<Integer> animationDuration;
     private Padding innerPadding = new Padding(20, 5, 20, 5);
     private boolean hovered = false;
+    private boolean pressed = false;
     private long hoverStateChange = 0;
 
     public Button(final Rivet rivet, final Component child, final Consumer<MouseButtonEvent> clickListener) {
@@ -41,6 +44,8 @@ public class Button extends Component implements MouseListener, Renderable {
         this.inactiveOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_INACTIVE_OUTLINE_COLOR);
         this.activeColor = new ThemeOption<>(rivet, Theme.BUTTON_ACTIVE_COLOR);
         this.activeOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
+        this.clickColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_COLOR);
+        this.clickOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_OUTLINE_COLOR);
         this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
     }
 
@@ -68,6 +73,14 @@ public class Button extends Component implements MouseListener, Renderable {
         return this.activeOutlineColor;
     }
 
+    public ThemeOption<Color> clickColor() {
+        return this.clickColor;
+    }
+
+    public ThemeOption<Color> clickOutlineColor() {
+        return this.clickOutlineColor;
+    }
+
     public ThemeOption<Integer> animationDuration() {
         return this.animationDuration;
     }
@@ -84,10 +97,6 @@ public class Button extends Component implements MouseListener, Renderable {
         return this;
     }
 
-    public boolean isHovered() {
-        return this.hovered;
-    }
-
     @Override
     public void onMouseEnter() {
         this.hovered = true;
@@ -97,14 +106,21 @@ public class Button extends Component implements MouseListener, Renderable {
     @Override
     public void onMouseLeave() {
         this.hovered = false;
+        this.pressed = false;
         this.hoverStateChange = System.currentTimeMillis();
     }
 
     @Override
+    public void onMouseDown(final MouseButtonEvent event, final Size size) {
+        this.pressed = true;
+    }
+
+    @Override
     public void onMouseUp(final MouseButtonEvent event, final Size size) {
-        if (this.hovered) {
+        if (this.pressed && this.hovered) {
             this.clickListener.accept(event);
         }
+        this.pressed = false;
     }
 
     @Override
@@ -112,8 +128,15 @@ public class Button extends Component implements MouseListener, Renderable {
         float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
         float animationProgress = MathUtils.clamp((System.currentTimeMillis() - this.hoverStateChange) / (float) this.animationDuration.value(), 0, 1);
-        Color color = this.hovered ? Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value()) : Color.interpolate(animationProgress, this.activeColor.value(), this.inactiveColor.value());
-        Color outlineColor = this.hovered ? Color.interpolate(animationProgress, this.inactiveOutlineColor.value(), this.activeOutlineColor.value()) : Color.interpolate(animationProgress, this.activeOutlineColor.value(), this.inactiveOutlineColor.value());
+        Color color;
+        Color outlineColor;
+        if (this.pressed) {
+            color = this.clickColor.value();
+            outlineColor = this.clickOutlineColor.value();
+        } else {
+            color = this.hovered ? Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value()) : Color.interpolate(animationProgress, this.activeColor.value(), this.inactiveColor.value());
+            outlineColor = this.hovered ? Color.interpolate(animationProgress, this.inactiveOutlineColor.value(), this.activeOutlineColor.value()) : Color.interpolate(animationProgress, this.activeOutlineColor.value(), this.inactiveOutlineColor.value());
+        }
         renderer.fillOptimizedRoundedRect(0, 0, size.width(), size.height(), cornerRadius, color);
         if (outlineWidth > 0) {
             renderer.outlineOptimizedRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
