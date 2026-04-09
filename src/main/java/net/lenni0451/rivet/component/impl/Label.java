@@ -74,7 +74,7 @@ public class Label extends Component implements Renderable {
 
     @Override
     public void computeIdealSize() {
-        this.idealSize = this.shapedText.visualSize();
+        this.idealSize = this.shapedText.logicalSize();
     }
 
     @Override

@@ -110,7 +110,7 @@ public class Test extends GLFWApplicationRunner {
 //        button.setMinSize(new Size(1000, 500));
         this.rivet.getRootContainer().addChild(button);
         Button button2 = new Button(this.rivet, new Label(this.rivet, "Bye, World!"), System.out::println);
-//        button.setMinSize(new Size(1000, 500));
+//        button2.setMinSize(new Size(1000, 500));
         this.rivet.getRootContainer().addChild(button2);
 
         FormattedLabel formattedLabel = new FormattedLabel(this.rivet, "This is <bold>bold</bold>, <italic>italic</italic>, <color=red>red</color> and <shadow>shadowed</shadow> text!");

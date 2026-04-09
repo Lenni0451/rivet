@@ -109,7 +109,7 @@ public class FormattedLabel extends Component implements Renderable {
 
     @Override
     public void computeIdealSize() {
-        this.idealSize = this.shapedText.visualSize();
+        this.idealSize = this.shapedText.logicalSize();
     }
 
     @Override
