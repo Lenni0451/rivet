@@ -9,6 +9,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
+import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.math.Padding;
@@ -16,6 +17,8 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
@@ -45,7 +48,7 @@ public class Button extends Component implements MouseListener, Renderable {
     @Setter
     private Padding innerPadding = new Padding(20, 5, 20, 5);
     private boolean hovered = false;
-    private boolean pressed = false;
+    private final Set<MouseButton> pressed = new HashSet<>();
     private long hoverStateChange = 0;
 
     public Button(final Rivet rivet, final Component child, final Consumer<MouseButtonEvent> clickListener) {
@@ -73,21 +76,20 @@ public class Button extends Component implements MouseListener, Renderable {
     @Override
     public void onMouseLeave() {
         this.hovered = false;
-        this.pressed = false;
         this.hoverStateChange = System.currentTimeMillis();
     }
 
     @Override
     public void onMouseDown(final MouseButtonEvent event, final Size size) {
-        this.pressed = true;
+        this.pressed.add(event.button());
     }
 
     @Override
     public void onMouseUp(final MouseButtonEvent event, final Size size) {
-        if (this.pressed && this.hovered) {
+        if (this.hovered) {
             this.clickListener.accept(event);
         }
-        this.pressed = false;
+        this.pressed.remove(event.button());
     }
 
     @Override
@@ -97,12 +99,12 @@ public class Button extends Component implements MouseListener, Renderable {
         float animationProgress = MathUtils.clamp((System.currentTimeMillis() - this.hoverStateChange) / (float) this.animationDuration.value(), 0, 1);
         Color color;
         Color outlineColor;
-        if (this.pressed) {
-            color = this.clickColor.value();
-            outlineColor = this.clickOutlineColor.value();
-        } else {
+        if (this.pressed.isEmpty()) {
             color = this.hovered ? Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value()) : Color.interpolate(animationProgress, this.activeColor.value(), this.inactiveColor.value());
             outlineColor = this.hovered ? Color.interpolate(animationProgress, this.inactiveOutlineColor.value(), this.activeOutlineColor.value()) : Color.interpolate(animationProgress, this.activeOutlineColor.value(), this.inactiveOutlineColor.value());
+        } else {
+            color = this.clickColor.value();
+            outlineColor = this.clickOutlineColor.value();
         }
         renderer.fillOptimizedRoundedRect(0, 0, size.width(), size.height(), cornerRadius, color);
         if (outlineWidth > 0) {
