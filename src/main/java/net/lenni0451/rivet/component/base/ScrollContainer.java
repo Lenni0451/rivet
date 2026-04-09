@@ -8,6 +8,9 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
+import net.lenni0451.rivet.input.keyboard.CharEvent;
+import net.lenni0451.rivet.input.keyboard.KeyEvent;
+import net.lenni0451.rivet.input.keyboard.KeyboardListener;
 import net.lenni0451.rivet.input.mouse.*;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -17,7 +20,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import javax.annotation.Nullable;
 
 @Accessors(fluent = true, chain = true)
-public class ScrollContainer extends Component implements MouseListener, Renderable {
+public class ScrollContainer extends Component implements MouseListener, KeyboardListener, Renderable {
 
     private final Component child;
     @Getter
@@ -93,12 +96,15 @@ public class ScrollContainer extends Component implements MouseListener, Rendera
                 this.vBarPressed = true;
                 this.dragStartY = event.y();
                 this.initialScrollY = this.targetScrollY;
+                return;
             } else if (hBar != null && hBar.contains(event.x(), event.y())) {
                 this.hBarPressed = true;
                 this.dragStartX = event.x();
                 this.initialScrollX = this.targetScrollX;
+                return;
             }
         }
+        this.rivet.setFocused(this.child);
         if (this.child instanceof MouseListener mouseListener) {
             mouseListener.onMouseDown(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.getChildSize(size));
         }
@@ -150,6 +156,27 @@ public class ScrollContainer extends Component implements MouseListener, Rendera
                 }
                 mouseListener.onMouseMove(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.getChildSize(size));
             }
+        }
+    }
+
+    @Override
+    public void onKeyDown(final KeyEvent event) {
+        if (this.child instanceof KeyboardListener keyboardListener) {
+            keyboardListener.onKeyDown(event);
+        }
+    }
+
+    @Override
+    public void onKeyUp(final KeyEvent event) {
+        if (this.child instanceof KeyboardListener keyboardListener) {
+            keyboardListener.onKeyUp(event);
+        }
+    }
+
+    @Override
+    public void onCharTyped(final CharEvent event) {
+        if (this.child instanceof KeyboardListener keyboardListener) {
+            keyboardListener.onCharTyped(event);
         }
     }
 
@@ -280,9 +307,11 @@ public class ScrollContainer extends Component implements MouseListener, Rendera
     }
 
     private Size getChildSize(final Size size) {
+        float width = this.horizontalScrolling ? this.child.idealSize().width() : size.width();
+        float height = this.verticalScrolling ? this.child.idealSize().height() : size.height();
         return new Size(
-                this.horizontalScrolling ? this.child.idealSize().width() : size.width(),
-                this.verticalScrolling ? this.child.idealSize().height() : size.height()
+                MathUtils.clamp(width, this.child.minSize().width(), this.child.maxSize().width()),
+                MathUtils.clamp(height, this.child.minSize().height(), this.child.maxSize().height())
         );
     }
 
