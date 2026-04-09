@@ -1,5 +1,8 @@
 package net.lenni0451.rivet.component.base;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
@@ -15,19 +18,31 @@ import net.lenni0451.rivet.theme.ThemeOption;
 
 import java.util.function.Consumer;
 
+@Accessors(fluent = true, chain = true)
 public class Button extends Component implements MouseListener, Renderable {
 
     private final Component child;
     private final Consumer<MouseButtonEvent> clickListener;
+    @Getter
     private final ThemeOption<Integer> cornerRadius;
+    @Getter
     private final ThemeOption<Integer> outlineWidth;
+    @Getter
     private final ThemeOption<Color> inactiveColor;
+    @Getter
     private final ThemeOption<Color> inactiveOutlineColor;
+    @Getter
     private final ThemeOption<Color> activeColor;
+    @Getter
     private final ThemeOption<Color> activeOutlineColor;
+    @Getter
     private final ThemeOption<Color> clickColor;
+    @Getter
     private final ThemeOption<Color> clickOutlineColor;
+    @Getter
     private final ThemeOption<Integer> animationDuration;
+    @Getter
+    @Setter
     private Padding innerPadding = new Padding(20, 5, 20, 5);
     private boolean hovered = false;
     private boolean pressed = false;
@@ -47,54 +62,6 @@ public class Button extends Component implements MouseListener, Renderable {
         this.clickColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_COLOR);
         this.clickOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_OUTLINE_COLOR);
         this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
-    }
-
-    public ThemeOption<Integer> cornerRadius() {
-        return this.cornerRadius;
-    }
-
-    public ThemeOption<Integer> outlineWidth() {
-        return this.outlineWidth;
-    }
-
-    public ThemeOption<Color> inactiveColor() {
-        return this.inactiveColor;
-    }
-
-    public ThemeOption<Color> inactiveOutlineColor() {
-        return this.inactiveOutlineColor;
-    }
-
-    public ThemeOption<Color> activeColor() {
-        return this.activeColor;
-    }
-
-    public ThemeOption<Color> activeOutlineColor() {
-        return this.activeOutlineColor;
-    }
-
-    public ThemeOption<Color> clickColor() {
-        return this.clickColor;
-    }
-
-    public ThemeOption<Color> clickOutlineColor() {
-        return this.clickOutlineColor;
-    }
-
-    public ThemeOption<Integer> animationDuration() {
-        return this.animationDuration;
-    }
-
-    public Padding innerPadding() {
-        return this.innerPadding;
-    }
-
-    public Button setInnerPadding(final Padding padding) {
-        if (!this.innerPadding.equals(padding)) {
-            this.innerPadding = padding;
-            this.rivet.recalculateNextFrame();
-        }
-        return this;
     }
 
     @Override
