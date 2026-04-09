@@ -1,28 +1,26 @@
 package net.lenni0451.rivet.component;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.layout.LayoutOptions;
 import net.lenni0451.rivet.math.Size;
 
+@RequiredArgsConstructor
+@Accessors(fluent = true, chain = true)
 public abstract class Component {
 
+    @Getter
     protected final Rivet rivet;
+    @Getter
     private Size minSize = Size.EMPTY;
+    @Getter
     protected Size idealSize = Size.EMPTY;
+    @Getter
     private Size maxSize = new Size(Float.MAX_VALUE, Float.MAX_VALUE);
+    @Getter
     private LayoutOptions layoutOptions;
-
-    public Component(final Rivet rivet) {
-        this.rivet = rivet;
-    }
-
-    public Rivet rivet() {
-        return this.rivet;
-    }
-
-    public Size minSize() {
-        return this.minSize;
-    }
 
     public Component setMinSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
@@ -32,24 +30,12 @@ public abstract class Component {
         return this;
     }
 
-    public Size idealSize() {
-        return this.idealSize;
-    }
-
-    public Size maxSize() {
-        return this.maxSize;
-    }
-
     public Component setMaxSize(final Size maxSize) {
         if (!this.maxSize.equals(maxSize)) {
             this.maxSize = maxSize;
             this.rivet.recalculateNextFrame();
         }
         return this;
-    }
-
-    public LayoutOptions layoutOptions() {
-        return this.layoutOptions;
     }
 
     public Component setLayoutOptions(final LayoutOptions layoutOptions) {

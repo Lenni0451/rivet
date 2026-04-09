@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-@Accessors(chain = true, fluent = true)
+@Accessors(fluent = true, chain = true)
 public class Slider extends Component implements MouseListener, Renderable {
 
     private static final int TICK_OFFSET = 2;

@@ -1,5 +1,8 @@
 package net.lenni0451.rivet.component.impl;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
@@ -13,12 +16,19 @@ import net.lenni0451.rivet.text.TextSection;
 
 import java.util.List;
 
+@Accessors(fluent = true, chain = true)
 public class FormattedLabel extends Component implements Renderable {
 
+    @Getter
     private String text;
+    @Getter
     private List<TextSection> sections;
     private ShapedText shapedText;
+    @Getter
+    @Setter
     private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;
+    @Getter
+    @Setter
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
 
     public FormattedLabel(final Rivet rivet, final String text) {
@@ -39,10 +49,6 @@ public class FormattedLabel extends Component implements Renderable {
         this.shapedText = rivet.getBackend().shapeText(this.sections);
     }
 
-    public String text() {
-        return this.text;
-    }
-
     public FormattedLabel setText(final String text) {
         return this.setText(text, TextFormat.DEFAULT);
     }
@@ -57,33 +63,11 @@ public class FormattedLabel extends Component implements Renderable {
         return this;
     }
 
-    public List<TextSection> sections() {
-        return this.sections;
-    }
-
     public FormattedLabel setSections(final List<TextSection> sections) {
         this.text = null;
         this.sections = sections;
         this.shapedText = this.rivet.getBackend().shapeText(this.sections);
         this.rivet.recalculateNextFrame();
-        return this;
-    }
-
-    public TextOrigin.Horizontal horizontalOrigin() {
-        return this.horizontalOrigin;
-    }
-
-    public FormattedLabel setHorizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
-        this.horizontalOrigin = horizontalOrigin;
-        return this;
-    }
-
-    public TextOrigin.Vertical verticalOrigin() {
-        return this.verticalOrigin;
-    }
-
-    public FormattedLabel setVerticalOrigin(final TextOrigin.Vertical verticalOrigin) {
-        this.verticalOrigin = verticalOrigin;
         return this;
     }
 

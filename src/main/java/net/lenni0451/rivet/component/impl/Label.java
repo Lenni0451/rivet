@@ -1,5 +1,8 @@
 package net.lenni0451.rivet.component.impl;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
@@ -8,11 +11,17 @@ import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextOrigin;
 
+@Accessors(fluent = true, chain = true)
 public class Label extends Component implements Renderable {
 
+    @Getter
     private String text;
     private ShapedText shapedText;
+    @Getter
+    @Setter
     private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;
+    @Getter
+    @Setter
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
 
     public Label(final Rivet rivet, final String text) {
@@ -21,34 +30,12 @@ public class Label extends Component implements Renderable {
         this.shapedText = rivet.getBackend().shapeText(text);
     }
 
-    public String text() {
-        return this.text;
-    }
-
     public Label setText(final String text) {
         if (!this.text.equals(text)) {
             this.text = text;
             this.shapedText = this.rivet.getBackend().shapeText(text);
             this.rivet.recalculateNextFrame();
         }
-        return this;
-    }
-
-    public TextOrigin.Horizontal horizontalOrigin() {
-        return this.horizontalOrigin;
-    }
-
-    public Label setHorizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
-        this.horizontalOrigin = horizontalOrigin;
-        return this;
-    }
-
-    public TextOrigin.Vertical verticalOrigin() {
-        return this.verticalOrigin;
-    }
-
-    public Label setVerticalOrigin(final TextOrigin.Vertical verticalOrigin) {
-        this.verticalOrigin = verticalOrigin;
         return this;
     }
 
