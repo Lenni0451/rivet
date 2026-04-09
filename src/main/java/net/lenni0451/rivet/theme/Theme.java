@@ -33,6 +33,18 @@ public abstract class Theme {
     public static final ThemeKey<Boolean> SLIDER_THUMB_ENCASED = new ThemeKey<>("slider.thumb_encased", Boolean.class);
     public static final ThemeKey<Slider.ThumbShape> SLIDER_THUMB_SHAPE = new ThemeKey<>("slider.thumb_shape", Slider.ThumbShape.class);
 
+    // ScrollContainer
+    public static final ThemeKey<Color> SCROLL_BAR_COLOR = new ThemeKey<>("scroll.bar_color", Color.class);
+    public static final ThemeKey<Color> SCROLL_BAR_HOVER_COLOR = new ThemeKey<>("scroll.bar_hover_color", Color.class);
+    public static final ThemeKey<Color> SCROLL_BAR_CLICK_COLOR = new ThemeKey<>("scroll.bar_click_color", Color.class);
+    public static final ThemeKey<Float> SCROLL_BAR_WIDTH = new ThemeKey<>("scroll.bar_width", Float.class);
+    public static final ThemeKey<Float> SCROLL_BAR_CORNER_RADIUS = new ThemeKey<>("scroll.bar_corner_radius", Float.class);
+    public static final ThemeKey<Float> SCROLL_BAR_OUTLINE_WIDTH = new ThemeKey<>("scroll.bar_outline_width", Float.class);
+    public static final ThemeKey<Color> SCROLL_BAR_OUTLINE_COLOR = new ThemeKey<>("scroll.bar_outline_color", Color.class);
+    public static final ThemeKey<Float> SCROLL_SPEED = new ThemeKey<>("scroll.speed", Float.class);
+    public static final ThemeKey<Boolean> SCROLL_SMOOTH = new ThemeKey<>("scroll.smooth", Boolean.class);
+    public static final ThemeKey<Integer> SCROLL_ANIMATION_DURATION = new ThemeKey<>("scroll.animation_duration", Integer.class);
+
 
     @Nullable
     private final Theme parent;

@@ -3,16 +3,16 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.GLFWMapper;
 import net.lenni0451.rivet.backend.thingl.ThinGLBackend;
 import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
-import net.lenni0451.rivet.component.base.Button;
-import net.lenni0451.rivet.component.impl.FormattedLabel;
+import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.Label;
-import net.lenni0451.rivet.component.impl.Slider;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
-import net.lenni0451.rivet.layout.flow.VerticalFlowLayout;
+import net.lenni0451.rivet.layout.flow.HorizontalFlowLayout;
+import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
@@ -99,32 +99,18 @@ public class Test extends GLFWApplicationRunner {
         FontSet fontSet = new FontSet(font);
 
         ThinGLBackend backend = new ThinGLBackend(fontSet);
-        this.rivet = new Rivet(backend, new VerticalFlowLayout(5, 5), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
-//        for (int i = 0; i < 10; i++) {
-//            TestComponent comp = new TestComponent(this.rivet);
-//            comp.setMinSize(new Size(100 + 100 * i, 100));
-//            comp.setMaxSize(comp.minSize());
-//            this.rivet.getRootContainer().addChild(comp);
-//        }
-        Button button = new Button(this.rivet, new Label(this.rivet, "Hello, World!"), System.out::println);
-//        button.setMinSize(new Size(1000, 500));
-        this.rivet.getRootContainer().addChild(button);
-        Button button2 = new Button(this.rivet, new Label(this.rivet, "Bye, World!"), System.out::println);
-//        button2.setMinSize(new Size(1000, 500));
-        this.rivet.getRootContainer().addChild(button2);
+        this.rivet = new Rivet(backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
 
-        FormattedLabel formattedLabel = new FormattedLabel(this.rivet, "This is <bold>bold</bold>, <italic>italic</italic>, <color=red>red</color> and <shadow>shadowed</shadow> text!");
-        this.rivet.getRootContainer().addChild(formattedLabel);
-
-        Slider slider = new Slider(this.rivet, 0, 100, 0);
-//        slider.setMinSize(new Size(500, 100));
-//        slider.thumbCornerRadius().set(0);
-//        slider.barCornerRadius().set(0F);
-//        slider.barHeight().set(slider.thumbHeight().value());
-//        slider.thumbEncased().set(true);
-//        slider.thumbWidth().set(this.rivet.getBackend().getTextHeight() / 3F);
-//        slider.thumbShape().set(Slider.ThumbShape.PIN);
-        this.rivet.getRootContainer().addChild(slider/*.ticks(new Slider.Ticks(10, 2, d -> String.format("%,d", (int) d)))*/);
+        Container scrollContent = new Container(this.rivet, new HorizontalFlowLayout(5, 5));
+        scrollContent.setMaxSize(new Size(100, Integer.MAX_VALUE));
+        for (int i = 0; i < 50; i++) {
+            scrollContent.addChild(new Label(this.rivet, "Line " + i));
+        }
+        ScrollContainer scrollContainer = new ScrollContainer(this.rivet, scrollContent, true, true);
+        scrollContainer.scrollSpeed().set(140F);
+//        scrollContainer.setMinSize(new Size(200, 200));
+//        scrollContainer.setMaxSize(new Size(200, 200));
+        this.rivet.getRootContainer().addChild(scrollContainer);
     }
 
     @Override
