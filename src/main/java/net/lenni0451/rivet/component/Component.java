@@ -69,6 +69,7 @@ public abstract class Component {
 
     public abstract void computeIdealSize();
 
-    public abstract void computeLayout(final Size size);
+    public void computeLayout(final Size size) {
+    }
 
 }

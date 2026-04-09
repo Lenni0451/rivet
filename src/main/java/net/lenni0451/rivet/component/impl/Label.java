@@ -77,8 +77,4 @@ public class Label extends Component implements Renderable {
         this.idealSize = this.shapedText.logicalSize();
     }
 
-    @Override
-    public void computeLayout(final Size size) {
-    }
-
 }

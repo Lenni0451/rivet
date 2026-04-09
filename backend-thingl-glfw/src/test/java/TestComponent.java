@@ -20,10 +20,6 @@ public class TestComponent extends Component implements Renderable, MouseListene
     }
 
     @Override
-    public void computeLayout(final Size size) {
-    }
-
-    @Override
     public void onMouseEnter() {
         this.mouseOver = true;
     }

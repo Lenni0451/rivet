@@ -232,10 +232,6 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.idealSize = new Size(this.rivet.getBackend().getTextHeight() * 10, height);
     }
 
-    @Override
-    public void computeLayout(final Size size) {
-    }
-
     private float barWidth(final Size size) {
         return size.width() - this.thumbWidth.value();
     }
