@@ -118,10 +118,11 @@ public class Test extends GLFWApplicationRunner {
 
         Slider slider = new Slider(this.rivet, 0, 100, 0);
 //        slider.setMinSize(new Size(500, 100));
-        slider.thumbCornerRadius().set(0);
-//        slider.barCornerRadius().set(0);
-//        slider.barHeight().set(slider.thumbRadius().value() * 2);
+//        slider.thumbCornerRadius().set(0);
+//        slider.barCornerRadius().set(0F);
+//        slider.barHeight().set(slider.thumbHeight().value());
 //        slider.thumbEncased().set(true);
+        slider.thumbWidth().set(this.rivet.getBackend().getTextHeight() / 3F);
         slider.thumbShape().set(Slider.ThumbShape.PIN);
 
         this.rivet.getRootContainer().addChild(slider.ticks(new Slider.Ticks(10, 2, d -> String.format("%,d", (int) d))));
