@@ -11,7 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class HorizontalFlowLayout implements Layout {
+public class VerticalFlowLayout implements Layout {
 
     private final int horizontalGap;
     private final int verticalGap;
@@ -21,10 +21,10 @@ public class HorizontalFlowLayout implements Layout {
         float width = 0;
         float height = 0;
         for (Component component : components) {
-            width += this.widthOf(component);
-            height = Math.max(height, this.heightOf(component));
+            width = Math.max(width, this.widthOf(component));
+            height += this.heightOf(component);
         }
-        width += (components.size() - 1) * this.horizontalGap;
+        height += (components.size() - 1) * this.verticalGap;
         return new Size(width, height);
     }
 
@@ -33,18 +33,18 @@ public class HorizontalFlowLayout implements Layout {
         Map<Component, Rectangle> layout = new IdentityHashMap<>();
         float x = 0;
         float y = 0;
-        float maxHeight = 0;
+        float maxWidth = 0;
         for (Component component : components) {
             float width = this.widthOf(component);
             float height = this.heightOf(component);
-            if (x + width > containerSize.width() && x > 0) {
-                x = 0;
-                y += maxHeight + this.verticalGap;
-                maxHeight = height;
+            if (y + height > containerSize.height() && y > 0) {
+                x += maxWidth + this.horizontalGap;
+                y = 0;
+                maxWidth = width;
             }
             layout.put(component, new Rectangle(x, y, width, height));
-            x += width + this.horizontalGap;
-            maxHeight = Math.max(maxHeight, height);
+            y += height + this.verticalGap;
+            maxWidth = Math.max(maxWidth, width);
         }
         return layout;
     }

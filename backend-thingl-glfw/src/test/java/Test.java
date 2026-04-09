@@ -12,7 +12,7 @@ import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
-import net.lenni0451.rivet.layout.flow.HorizontalFlowLayout;
+import net.lenni0451.rivet.layout.flow.VerticalFlowLayout;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
@@ -99,7 +99,7 @@ public class Test extends GLFWApplicationRunner {
         FontSet fontSet = new FontSet(font);
 
         ThinGLBackend backend = new ThinGLBackend(fontSet);
-        this.rivet = new Rivet(backend, new HorizontalFlowLayout(5, 5), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
+        this.rivet = new Rivet(backend, new VerticalFlowLayout(5, 5), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
 //        for (int i = 0; i < 10; i++) {
 //            TestComponent comp = new TestComponent(this.rivet);
 //            comp.setMinSize(new Size(100 + 100 * i, 100));
