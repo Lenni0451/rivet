@@ -166,6 +166,10 @@ public class Button extends Component implements MouseListener, Renderable {
 
     @Override
     public void computeLayout(final Size size) {
+        this.child.computeLayout(new Size(
+                size.width() - this.innerPadding.left() - this.innerPadding.right(),
+                size.height() - this.innerPadding.top() - this.innerPadding.bottom()
+        ));
     }
 
 }
