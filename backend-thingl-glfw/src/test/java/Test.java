@@ -102,7 +102,7 @@ public class Test extends GLFWApplicationRunner {
         this.rivet = new Rivet(backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
 
         Container scrollContent = new Container(this.rivet, new HorizontalFlowLayout(5, 5));
-        scrollContent.setMaxSize(new Size(100, Integer.MAX_VALUE));
+        scrollContent.setMaxSize(new Size(200, Integer.MAX_VALUE));
         for (int i = 0; i < 50; i++) {
             scrollContent.addChild(new Label(this.rivet, "Line " + i));
         }

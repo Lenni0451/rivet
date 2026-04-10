@@ -1,6 +1,8 @@
 package net.lenni0451.rivet.component;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.input.mouse.*;
@@ -10,20 +12,20 @@ import net.lenni0451.rivet.math.Size;
 
 import java.util.*;
 
+@Accessors(fluent = true, chain = true)
 public class Container extends Component implements MouseListener, Renderable {
 
+    @Getter
     private final Layout layout;
     private final List<Child> children = new ArrayList<>();
     private boolean mouseDown;
     private final ClickedComponent clickedComponent = new ClickedComponent();
+    @Getter
+    private Size contentSize = Size.EMPTY;
 
     public Container(final Rivet rivet, final Layout layout) {
         super(rivet);
         this.layout = layout;
-    }
-
-    public Layout getLayout() {
-        return this.layout;
     }
 
     public <T extends Component> T addChild(final T component) {
@@ -161,13 +163,19 @@ public class Container extends Component implements MouseListener, Renderable {
     @Override
     public void computeLayout(final Size size) {
         Map<Component, Rectangle> layout = this.layout.layoutComponents(size, this.children.stream().map(child -> child.component).toList());
+        Size contentSize = Size.EMPTY;
         for (Child child : this.children) {
             Rectangle bounds = layout.get(child.component);
             if (bounds == null) throw new IllegalStateException("Layout did not provide bounds for all children!");
 
             child.bounds = bounds;
             child.component.computeLayout(bounds.size());
+            contentSize = new Size(
+                    Math.max(size.width(), bounds.x() + bounds.width()),
+                    Math.max(size.height(), bounds.y() + bounds.height())
+            );
         }
+        this.contentSize = contentSize;
     }
 
 

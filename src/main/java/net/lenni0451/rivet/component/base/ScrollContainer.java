@@ -7,6 +7,7 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -48,6 +49,8 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     private final ThemeOption<Boolean> smoothScrolling;
     @Getter
     private final ThemeOption<Integer> animationDuration;
+
+    private Size childSize = Size.EMPTY;
 
     private float scrollX;
     private float scrollY;
@@ -106,7 +109,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         }
         this.rivet.setFocused(this.child);
         if (this.child instanceof MouseListener mouseListener) {
-            mouseListener.onMouseDown(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.getChildSize(size));
+            mouseListener.onMouseDown(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.childSize);
         }
     }
 
@@ -117,7 +120,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
             this.hBarPressed = false;
         } else {
             if (this.child instanceof MouseListener mouseListener) {
-                mouseListener.onMouseUp(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.getChildSize(size));
+                mouseListener.onMouseUp(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.childSize);
             }
         }
     }
@@ -128,16 +131,16 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         Rectangle hBar = this.getHBarBounds(size);
         this.vBarHovered = vBar != null && vBar.contains(event.x(), event.y());
         this.hBarHovered = hBar != null && hBar.contains(event.x(), event.y());
-        if (this.vBarPressed) {
-            float contentHeight = this.getChildSize(size).height();
+        if (this.vBarPressed && vBar != null) {
+            float contentHeight = this.childSize.height();
             float maxScroll = contentHeight - size.height();
             float barHeight = vBar.height();
             float scrollableHeight = size.height() - barHeight;
             float dragDelta = event.y() - this.dragStartY;
             this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
             if (!this.smoothScrolling.value()) this.scrollY = this.targetScrollY;
-        } else if (this.hBarPressed) {
-            float contentWidth = this.getChildSize(size).width();
+        } else if (this.hBarPressed && hBar != null) {
+            float contentWidth = this.childSize.width();
             float maxScroll = contentWidth - size.width();
             float barWidth = hBar.width();
             float scrollableWidth = size.width() - barWidth;
@@ -154,7 +157,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
                     this.childHovered = false;
                     mouseListener.onMouseLeave();
                 }
-                mouseListener.onMouseMove(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.getChildSize(size));
+                mouseListener.onMouseMove(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.childSize);
             }
         }
     }
@@ -183,13 +186,13 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     @Override
     public void onMouseScroll(final MouseScrollEvent event, final Size size) {
         if (this.verticalScrolling && event.scrollY() != 0) {
-            float contentHeight = this.getChildSize(size).height();
+            float contentHeight = this.childSize.height();
             float maxScroll = Math.max(0, contentHeight - size.height());
             this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
             if (!this.smoothScrolling.value()) this.scrollY = this.targetScrollY;
         }
         if (this.horizontalScrolling && event.scrollX() != 0) {
-            float contentWidth = this.getChildSize(size).width();
+            float contentWidth = this.childSize.width();
             float maxScroll = Math.max(0, contentWidth - size.width());
             this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
             if (!this.smoothScrolling.value()) this.scrollX = this.targetScrollX;
@@ -204,7 +207,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         renderer.pushScissor(0, 0, size.width(), size.height());
         renderer.translate(-this.scrollX, -this.scrollY);
         if (this.child instanceof Renderable renderable) {
-            renderable.render(renderer, this.getChildSize(size));
+            renderable.render(renderer, this.childSize);
         }
         renderer.popScissor();
         renderer.pop();
@@ -257,7 +260,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     @Nullable
     private Rectangle getVBarBounds(final Size size) {
         if (!this.verticalScrolling) return null;
-        float contentHeight = this.getChildSize(size).height();
+        float contentHeight = this.childSize.height();
         if (contentHeight <= size.height()) return null;
 
         float barWidth = this.barWidth.value();
@@ -272,7 +275,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     @Nullable
     private Rectangle getHBarBounds(final Size size) {
         if (!this.horizontalScrolling) return null;
-        float contentWidth = this.getChildSize(size).width();
+        float contentWidth = this.childSize.width();
         if (contentWidth <= size.width()) return null;
 
         float barWidth = Math.max(20, (size.width() / contentWidth) * size.width());
@@ -292,8 +295,15 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
 
     @Override
     public void computeLayout(final Size size) {
-        Size childSize = this.getChildSize(size);
+        Size childSize = new Size(
+                MathUtils.clamp(this.child.idealSize().width(), this.child.minSize().width(), this.child.maxSize().width()),
+                MathUtils.clamp(this.child.idealSize().height(), this.child.minSize().height(), this.child.maxSize().height())
+        );
         this.child.computeLayout(childSize);
+        if (this.child instanceof Container container) {
+            childSize = container.contentSize();
+        }
+        this.childSize = childSize;
 
         float contentHeight = childSize.height();
         float maxScrollY = Math.max(0, contentHeight - size.height());
@@ -304,15 +314,6 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         float maxScrollX = Math.max(0, contentWidth - size.width());
         this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
         this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
-    }
-
-    private Size getChildSize(final Size size) {
-        float width = this.horizontalScrolling ? this.child.idealSize().width() : size.width();
-        float height = this.verticalScrolling ? this.child.idealSize().height() : size.height();
-        return new Size(
-                MathUtils.clamp(width, this.child.minSize().width(), this.child.maxSize().width()),
-                MathUtils.clamp(height, this.child.minSize().height(), this.child.maxSize().height())
-        );
     }
 
 }
