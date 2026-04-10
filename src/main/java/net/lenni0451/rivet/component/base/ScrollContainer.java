@@ -185,13 +185,13 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
 
     @Override
     public void onMouseScroll(final MouseScrollEvent event, final Size size) {
-        if (this.verticalScrolling && event.scrollY() != 0) {
+        if (this.verticalScrolling && event.scrollY() != 0 && !this.vBarPressed) {
             float contentHeight = this.childSize.height();
             float maxScroll = Math.max(0, contentHeight - size.height());
             this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
             if (!this.smoothScrolling.value()) this.scrollY = this.targetScrollY;
         }
-        if (this.horizontalScrolling && event.scrollX() != 0) {
+        if (this.horizontalScrolling && event.scrollX() != 0 && !this.hBarPressed) {
             float contentWidth = this.childSize.width();
             float maxScroll = Math.max(0, contentWidth - size.width());
             this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
