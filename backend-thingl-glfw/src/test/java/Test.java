@@ -1,19 +1,25 @@
 import lombok.SneakyThrows;
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.GLFWMapper;
 import net.lenni0451.rivet.backend.thingl.ThinGLBackend;
 import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
 import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.component.base.ScrollContainer;
+import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
-import net.lenni0451.rivet.layout.flow.HorizontalFlowLayout;
-import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
+import net.lenni0451.rivet.layout.grid.GridAnchor;
+import net.lenni0451.rivet.layout.grid.GridFill;
+import net.lenni0451.rivet.layout.grid.GridLayout;
+import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
+import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.impl.DefaultDark;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.resource.font.Font;
@@ -99,22 +105,40 @@ public class Test extends GLFWApplicationRunner {
         FontSet fontSet = new FontSet(font);
 
         ThinGLBackend backend = new ThinGLBackend(fontSet);
-        this.rivet = new Rivet(backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
+        this.rivet = new Rivet(backend, new GridLayout(10, 10).homogeneousColumns(true), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
+        this.rivet.setTheme(new DefaultDark() {
+            @Override
+            protected void register(final Registrar registrar) {
+                super.register(registrar);
+                registrar.accept(Theme.BUTTON_INACTIVE_COLOR, Color.GRAY.withAlpha(50));
+                registrar.accept(Theme.BUTTON_INACTIVE_OUTLINE_COLOR, Color.BLACK);
+                registrar.accept(Theme.BUTTON_ACTIVE_COLOR, Color.GRAY.withAlpha(150));
+                registrar.accept(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(116, 165, 229));
+                registrar.accept(Theme.BUTTON_CLICK_COLOR, Color.GRAY.withAlpha(150).darker());
+                registrar.accept(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(116, 165, 229).darker());
+                registrar.accept(Theme.BUTTON_CORNER_RADIUS, 0);
+                registrar.accept(Theme.BUTTON_OUTLINE_WIDTH, 3);
+            }
+        });
 
-        Container scrollContent = new Container(this.rivet, new HorizontalFlowLayout(5, 5));
-        scrollContent.setMaxSize(new Size(200, Integer.MAX_VALUE));
-        for (int i = 0; i < 50; i++) {
-            scrollContent.addChild(new Label(this.rivet, "Line " + i));
-        }
-        ScrollContainer scrollContainer = new ScrollContainer(this.rivet, scrollContent, true, true);
-        scrollContainer.scrollSpeed().set(140F);
-//        scrollContainer.setMinSize(new Size(200, 200));
-//        scrollContainer.setMaxSize(new Size(200, 200));
-        this.rivet.getRootContainer().addChild(scrollContainer);
+        Container container = this.rivet.getRootContainer();
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Singleplayer"), event -> {})
+                .setLayoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Minecraft Realms"), event -> {})
+                .setLayoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Multiplayer"), event -> {})
+                .setLayoutOptions(new GridLayoutOptions(1, 1).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "DeepClient Menu"), event -> {})
+                .setLayoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Options..."), event -> {})
+                .setLayoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Quit Game"), event -> {})
+                .setLayoutOptions(new GridLayoutOptions(1, 3).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
     }
 
     @Override
     protected void render(final Matrix4fStack matrix4fStack) {
+        ThinGL.renderer2D().filledRectangle(matrix4fStack, 0, 0, 3000, 2000, Color.GRAY.darker().darker().darker().darker());
         this.rivet.render(new ThinGLRenderer(matrix4fStack));
     }
 
