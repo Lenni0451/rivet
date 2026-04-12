@@ -8,4 +8,8 @@ public interface ShapedText {
 
     Size logicalSize();
 
+    float cursorPosition(final int index);
+
+    int index(final float x);
+
 }

@@ -1,0 +1,233 @@
+package net.lenni0451.rivet.component.impl;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.ShapedText;
+import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.Renderable;
+import net.lenni0451.rivet.input.keyboard.*;
+import net.lenni0451.rivet.input.mouse.MouseButton;
+import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.input.mouse.MouseListener;
+import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.text.TextOrigin;
+
+public class TextField extends Component implements Renderable, KeyboardListener, MouseListener {
+
+    private final StringBuffer text = new StringBuffer();
+    private int cursor = 0;
+    private int selection = 0;
+    private ShapedText shapedText;
+    @Getter
+    @Setter
+    private Padding innerPadding = new Padding(5, 5, 5, 5);
+    private boolean selecting = false;
+    private float scrollX = 0;
+
+    public TextField(final Rivet rivet) {
+        super(rivet);
+        this.updateShapedText();
+    }
+
+    public String text() {
+        return this.text.toString();
+    }
+
+    public void setText(final String text) {
+        this.text.setLength(0);
+        this.text.append(text);
+        this.cursor = Math.min(this.cursor, this.text.length());
+        this.selection = Math.min(this.selection, this.text.length());
+        this.updateShapedText();
+    }
+
+    private void updateShapedText() {
+        this.shapedText = this.rivet.backend().shapeText(this.text.toString());
+    }
+
+    @Override
+    public void onKeyDown(final KeyEvent event) {
+        boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
+        boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
+
+        if (event.key().isEquivalent(Key.LEFT)) {
+            if (ctrl) {
+                this.cursor = this.findWordStart(this.cursor);
+            } else {
+                this.cursor = Math.max(0, this.cursor - 1);
+            }
+            if (!shift) this.selection = this.cursor;
+        } else if (event.key().isEquivalent(Key.RIGHT)) {
+            if (ctrl) {
+                this.cursor = this.findWordEnd(this.cursor);
+            } else {
+                this.cursor = Math.min(this.text.length(), this.cursor + 1);
+            }
+            if (!shift) this.selection = this.cursor;
+        } else if (event.key().isEquivalent(Key.HOME)) {
+            this.cursor = 0;
+            if (!shift) this.selection = this.cursor;
+        } else if (event.key().isEquivalent(Key.END)) {
+            this.cursor = this.text.length();
+            if (!shift) this.selection = this.cursor;
+        } else if (event.key().isEquivalent(Key.BACKSPACE)) {
+            if (this.cursor != this.selection) {
+                this.deleteSelection();
+            } else if (this.cursor > 0) {
+                this.text.deleteCharAt(this.cursor - 1);
+                this.cursor--;
+                this.selection = this.cursor;
+                this.updateShapedText();
+            }
+        } else if (event.key().isEquivalent(Key.DELETE)) {
+            if (this.cursor != this.selection) {
+                this.deleteSelection();
+            } else if (this.cursor < this.text.length()) {
+                this.text.deleteCharAt(this.cursor);
+                this.updateShapedText();
+            }
+        } else if (ctrl && event.key().isEquivalent(Key.A)) {
+            this.selection = 0;
+            this.cursor = this.text.length();
+        } else if (ctrl && event.key().isEquivalent(Key.C)) {
+            this.copy();
+        } else if (ctrl && event.key().isEquivalent(Key.V)) {
+            this.paste();
+        } else if (ctrl && event.key().isEquivalent(Key.X)) {
+            this.copy();
+            this.deleteSelection();
+        }
+    }
+
+    @Override
+    public void onCharTyped(final CharEvent event) {
+        if (event.character() < 32 || event.character() == 127) return;
+        this.deleteSelection();
+        this.text.insert(this.cursor, event.character());
+        this.cursor++;
+        this.selection = this.cursor;
+        this.updateShapedText();
+    }
+
+    @Override
+    public void onMouseDown(final MouseButtonEvent event, final Size size) {
+        if (event.button().equals(MouseButton.LEFT)) {
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.left() + this.scrollX);
+            if (!event.modifiers().contains(ModifierKey.SHIFT)) {
+                this.selection = this.cursor;
+            }
+            this.selecting = true;
+        }
+    }
+
+    @Override
+    public void onMouseUp(final MouseButtonEvent event, final Size size) {
+        if (event.button().equals(MouseButton.LEFT)) {
+            this.selecting = false;
+        }
+    }
+
+    @Override
+    public void onMouseMove(final MouseMoveEvent event, final Size size) {
+        if (this.selecting) {
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.left() + this.scrollX);
+        }
+    }
+
+    @Override
+    public void render(final Renderer renderer, final Size size) {
+        float visibleWidth = size.width() - this.innerPadding.left() - this.innerPadding.right();
+        float textHeight = this.rivet.backend().getTextHeight();
+//        this.ensureCursorVisible(visibleWidth); //TODO: Make cursor always visible
+
+        renderer.fillRect(0, 0, size.width(), size.height(), Color.fromRGB(30, 30, 30));
+        renderer.outlineRect(0, 0, size.width(), size.height(), 1, this.rivet.focusedComponent() == this ? Color.WHITE : Color.GRAY);
+
+        renderer.push();
+        renderer.pushScissor(this.innerPadding.left(), this.innerPadding.top(), visibleWidth, size.height() - this.innerPadding.top() - this.innerPadding.bottom());
+        renderer.translate(this.innerPadding.left(), this.innerPadding.top() + (size.height() - this.innerPadding.top() - this.innerPadding.bottom()) / 2F);
+        renderer.translate(-this.scrollX, 0);
+
+        if (this.cursor != this.selection) {
+            float x1 = this.shapedText.cursorPosition(this.cursor);
+            float x2 = this.shapedText.cursorPosition(this.selection);
+            renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, Color.fromRGBA(100, 100, 255, 100));
+        }
+
+        renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+
+        if (this.rivet.focusedComponent() == this && (System.currentTimeMillis() / 500) % 2 == 0) {
+            float cursorX = this.shapedText.cursorPosition(this.cursor);
+            //TODO: Don't blink cursor shortly after moving or typing or mouse clicking
+            renderer.fillRect(cursorX, -textHeight / 2F, 1, textHeight, Color.WHITE);
+        }
+        renderer.popScissor();
+        renderer.pop();
+    }
+
+    @Override
+    public void computeIdealSize() {
+        float textHeight = this.rivet.backend().getTextHeight();
+        this.idealSize = new Size(
+                textHeight * 10 + this.innerPadding.left() + this.innerPadding.right(),
+                this.rivet.backend().getTextHeight() + this.innerPadding.top() + this.innerPadding.bottom()
+        );
+    }
+
+    private void ensureCursorVisible(final float visibleWidth) {
+        float cursorX = this.shapedText.cursorPosition(this.cursor);
+        if (cursorX < this.scrollX) {
+            this.scrollX = cursorX;
+        } else if (cursorX > this.scrollX + visibleWidth) {
+            this.scrollX = cursorX - visibleWidth;
+        }
+        this.scrollX = Math.max(0, Math.min(this.scrollX, Math.max(0, this.shapedText.logicalSize().width() - visibleWidth)));
+    }
+
+    private void deleteSelection() {
+        if (this.cursor == this.selection) return;
+        int start = Math.min(this.cursor, this.selection);
+        int end = Math.max(this.cursor, this.selection);
+        this.text.delete(start, end);
+        this.cursor = start;
+        this.selection = start;
+        this.updateShapedText();
+    }
+
+    private void copy() {
+        if (this.cursor == this.selection) return;
+        int start = Math.min(this.cursor, this.selection);
+        int end = Math.max(this.cursor, this.selection);
+        this.rivet.backend().setClipboard(this.text.substring(start, end));
+    }
+
+    private void paste() {
+        String clipboard = this.rivet.backend().getClipboard();
+        if (clipboard == null || clipboard.isEmpty()) return;
+        this.deleteSelection();
+        this.text.insert(this.cursor, clipboard);
+        this.cursor += clipboard.length();
+        this.selection = this.cursor;
+        this.updateShapedText();
+    }
+
+    private int findWordStart(int from) {
+        int i = Math.max(0, Math.min(this.text.length(), from));
+        while (i > 0 && Character.isWhitespace(this.text.charAt(i - 1))) i--;
+        while (i > 0 && !Character.isWhitespace(this.text.charAt(i - 1))) i--;
+        return i;
+    }
+
+    private int findWordEnd(int from) {
+        int i = Math.max(0, Math.min(this.text.length(), from));
+        while (i < this.text.length() && Character.isWhitespace(this.text.charAt(i))) i++;
+        while (i < this.text.length() && !Character.isWhitespace(this.text.charAt(i))) i++;
+        return i;
+    }
+
+}

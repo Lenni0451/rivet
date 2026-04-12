@@ -126,6 +126,7 @@ public class Rivet {
 
         renderer.push();
         renderer.scale(this.scale);
+        //TODO: Pass viewport to container to allow skipping out of viewport components
         this.rootContainer.render(renderer, scaledSize);
         renderer.pop();
     }

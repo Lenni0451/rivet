@@ -7,6 +7,7 @@ import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
 import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.component.impl.TextField;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -104,7 +105,7 @@ public class Test extends GLFWApplicationRunner {
         Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
         FontSet fontSet = new FontSet(font);
 
-        ThinGLBackend backend = new ThinGLBackend(fontSet);
+        ThinGLBackend backend = new ThinGLBackend(this.window, fontSet);
         this.rivet = new Rivet(backend, new GridLayout(10, 10).homogeneousColumns(true), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
         this.rivet.theme(new DefaultDark() {
             @Override
@@ -134,6 +135,8 @@ public class Test extends GLFWApplicationRunner {
                 .layoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Quit Game"), event -> {})
                 .layoutOptions(new GridLayoutOptions(1, 3).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
+        container.addChild(new TextField(this.rivet)
+                .layoutOptions(new GridLayoutOptions(0, 4).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
     }
 
     @Override
