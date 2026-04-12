@@ -22,7 +22,7 @@ public abstract class Component {
     @Getter
     private LayoutOptions layoutOptions;
 
-    public Component setMinSize(final Size minSize) {
+    public Component minSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
             this.minSize = minSize;
             this.rivet.recalculateNextFrame();
@@ -30,7 +30,7 @@ public abstract class Component {
         return this;
     }
 
-    public Component setMaxSize(final Size maxSize) {
+    public Component maxSize(final Size maxSize) {
         if (!this.maxSize.equals(maxSize)) {
             this.maxSize = maxSize;
             this.rivet.recalculateNextFrame();
@@ -38,7 +38,7 @@ public abstract class Component {
         return this;
     }
 
-    public Component setLayoutOptions(final LayoutOptions layoutOptions) {
+    public Component layoutOptions(final LayoutOptions layoutOptions) {
         if (this.layoutOptions == null || !this.layoutOptions.equals(layoutOptions)) {
             this.layoutOptions = layoutOptions;
             this.rivet.recalculateNextFrame();

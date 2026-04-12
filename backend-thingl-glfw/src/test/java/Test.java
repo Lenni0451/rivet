@@ -99,14 +99,14 @@ public class Test extends GLFWApplicationRunner {
         GLFWFramebufferSizeCallback[] oldCallback = new GLFWFramebufferSizeCallback[1];
         oldCallback[0] = GLFW.glfwSetFramebufferSizeCallback(this.window, (window, width, height) -> {
             oldCallback[0].invoke(window, width, height);
-            this.rivet.setSize(new Size(width, height));
+            this.rivet.size(new Size(width, height));
         });
         Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
         FontSet fontSet = new FontSet(font);
 
         ThinGLBackend backend = new ThinGLBackend(fontSet);
         this.rivet = new Rivet(backend, new GridLayout(10, 10).homogeneousColumns(true), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
-        this.rivet.setTheme(new DefaultDark() {
+        this.rivet.theme(new DefaultDark() {
             @Override
             protected void register(final Registrar registrar) {
                 super.register(registrar);
@@ -121,19 +121,19 @@ public class Test extends GLFWApplicationRunner {
             }
         });
 
-        Container container = this.rivet.getRootContainer();
+        Container container = this.rivet.rootContainer();
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Singleplayer"), event -> {})
-                .setLayoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+                .layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Minecraft Realms"), event -> {})
-                .setLayoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+                .layoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Multiplayer"), event -> {})
-                .setLayoutOptions(new GridLayoutOptions(1, 1).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+                .layoutOptions(new GridLayoutOptions(1, 1).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
         container.addChild(new Button(this.rivet, new Label(this.rivet, "DeepClient Menu"), event -> {})
-                .setLayoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+                .layoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Options..."), event -> {})
-                .setLayoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
+                .layoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Quit Game"), event -> {})
-                .setLayoutOptions(new GridLayoutOptions(1, 3).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
+                .layoutOptions(new GridLayoutOptions(1, 3).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
     }
 
     @Override

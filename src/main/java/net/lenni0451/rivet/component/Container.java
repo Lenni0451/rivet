@@ -35,12 +35,12 @@ public class Container extends Component implements MouseListener, Renderable {
         return component;
     }
 
-    public List<Component> getChildren() {
+    public List<Component> children() {
         return this.children.stream().map(c -> c.component).toList();
     }
 
     // Can return Bounds.EMPTY if the component isn't layouted yet or is not a child of this container
-    public Rectangle getChildBounds(final Component component) {
+    public Rectangle childBounds(final Component component) {
         for (Child child : this.children) {
             if (child.component == component) {
                 return child.bounds;
@@ -56,8 +56,8 @@ public class Container extends Component implements MouseListener, Renderable {
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
-                if (this.rivet.getFocused() == component) {
-                    this.rivet.setFocused(null);
+                if (this.rivet.focusedComponent() == component) {
+                    this.rivet.focusedComponent(null);
                 }
                 it.remove();
                 this.rivet.recalculateNextFrame();
@@ -70,8 +70,8 @@ public class Container extends Component implements MouseListener, Renderable {
     public void clearChildren() {
         this.clickedComponent.unset();
         for (Child child : this.children) {
-            if (this.rivet.getFocused() == child.component) {
-                this.rivet.setFocused(null);
+            if (this.rivet.focusedComponent() == child.component) {
+                this.rivet.focusedComponent(null);
             }
         }
         this.children.clear();
@@ -86,7 +86,7 @@ public class Container extends Component implements MouseListener, Renderable {
                 if (child.bounds.contains(event.x(), event.y())) {
                     mouseListener.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
                     this.clickedComponent.down(child.component, event.button());
-                    this.rivet.setFocused(child.component);
+                    this.rivet.focusedComponent(child.component);
                 }
             }
         }

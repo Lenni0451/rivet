@@ -39,34 +39,34 @@ public class FormattedLabel extends Component implements Renderable {
         super(rivet);
         this.text = text;
         this.sections = TextParser.parse(text, defaultFormat);
-        this.shapedText = rivet.getBackend().shapeText(this.sections);
+        this.shapedText = rivet.backend().shapeText(this.sections);
     }
 
     public FormattedLabel(final Rivet rivet, final List<TextSection> sections) {
         super(rivet);
         this.text = null;
         this.sections = sections;
-        this.shapedText = rivet.getBackend().shapeText(this.sections);
+        this.shapedText = rivet.backend().shapeText(this.sections);
     }
 
-    public FormattedLabel setText(final String text) {
-        return this.setText(text, TextFormat.DEFAULT);
+    public FormattedLabel text(final String text) {
+        return this.text(text, TextFormat.DEFAULT);
     }
 
-    public FormattedLabel setText(final String text, final TextFormat defaultFormat) {
+    public FormattedLabel text(final String text, final TextFormat defaultFormat) {
         if (this.text == null || !this.text.equals(text)) {
             this.text = text;
             this.sections = TextParser.parse(text, defaultFormat);
-            this.shapedText = this.rivet.getBackend().shapeText(this.sections);
+            this.shapedText = this.rivet.backend().shapeText(this.sections);
             this.rivet.recalculateNextFrame();
         }
         return this;
     }
 
-    public FormattedLabel setSections(final List<TextSection> sections) {
+    public FormattedLabel sections(final List<TextSection> sections) {
         this.text = null;
         this.sections = sections;
-        this.shapedText = this.rivet.getBackend().shapeText(this.sections);
+        this.shapedText = this.rivet.backend().shapeText(this.sections);
         this.rivet.recalculateNextFrame();
         return this;
     }

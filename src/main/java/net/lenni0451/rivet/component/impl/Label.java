@@ -27,13 +27,13 @@ public class Label extends Component implements Renderable {
     public Label(final Rivet rivet, final String text) {
         super(rivet);
         this.text = text;
-        this.shapedText = rivet.getBackend().shapeText(text);
+        this.shapedText = rivet.backend().shapeText(text);
     }
 
-    public Label setText(final String text) {
+    public Label text(final String text) {
         if (!this.text.equals(text)) {
             this.text = text;
-            this.shapedText = this.rivet.getBackend().shapeText(text);
+            this.shapedText = this.rivet.backend().shapeText(text);
             this.rivet.recalculateNextFrame();
         }
         return this;

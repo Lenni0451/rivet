@@ -1,8 +1,10 @@
 package net.lenni0451.rivet.math;
 
 import lombok.With;
+import lombok.experimental.WithBy;
 
 @With
+@WithBy
 public record Rectangle(float x, float y, float width, float height) {
 
     public static final Rectangle EMPTY = new Rectangle(0, 0, 0, 0);

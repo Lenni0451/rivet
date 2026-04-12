@@ -82,9 +82,9 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.thumbColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_COLOR);
         this.thumbClickColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CLICK_COLOR);
         this.tickColor = new ThemeOption<>(rivet, Theme.SLIDER_TICK_COLOR);
-        this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT, () -> rivet.getBackend().getTextHeight() / 3F);
-        this.thumbWidth = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_WIDTH, () -> rivet.getBackend().getTextHeight() / 3F * 2F);
-        this.thumbHeight = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_HEIGHT, () -> rivet.getBackend().getTextHeight() / 3F * 2F);
+        this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT, () -> rivet.backend().getTextHeight() / 3F);
+        this.thumbWidth = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_WIDTH, () -> rivet.backend().getTextHeight() / 3F * 2F);
+        this.thumbHeight = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_HEIGHT, () -> rivet.backend().getTextHeight() / 3F * 2F);
         this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS, () -> this.barHeight.value() / 2F);
         this.thumbShape = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_SHAPE, () -> ThumbShape.CIRCLE);
         this.thumbCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CORNER_RADIUS, () -> {
@@ -201,7 +201,7 @@ public class Slider extends Component implements MouseListener, Renderable {
                 renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, color);
 
                 double tickValue = this.min + tick;
-                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet.getBackend().shapeText(this.ticks.labelProvider.getLabel(v)));
+                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet.backend().shapeText(this.ticks.labelProvider.getLabel(v)));
                 renderer.push();
                 renderer.translate(tickX, tickStartY + majorTickLength + 2);
                 renderer.scale(0.5F);
@@ -227,9 +227,9 @@ public class Slider extends Component implements MouseListener, Renderable {
         if (this.ticks == null) {
             height = this.thumbHeight.value();
         } else {
-            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet.getBackend().getTextHeight() / 2F;
+            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet.backend().getTextHeight() / 2F;
         }
-        this.idealSize = new Size(this.rivet.getBackend().getTextHeight() * 10, height);
+        this.idealSize = new Size(this.rivet.backend().getTextHeight() * 10, height);
     }
 
     private float barWidth(final Size size) {

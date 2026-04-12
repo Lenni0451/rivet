@@ -30,10 +30,10 @@ public class ThemeOption<T> {
 
     public T value() {
         if (this.value != null) return this.value;
-        T themeValue = this.rivet.getTheme().getOrDefault(this.key, null);
+        T themeValue = this.rivet.theme().getOrDefault(this.key, null);
         if (themeValue != null) return themeValue;
         if (this.defaultSupplier != null) return this.defaultSupplier.get();
-        return this.rivet.getTheme().get(this.key);
+        return this.rivet.theme().get(this.key);
     }
 
     public void set(@Nullable final T value) {

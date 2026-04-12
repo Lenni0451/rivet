@@ -1,12 +1,14 @@
 package net.lenni0451.rivet.layout.grid;
 
 import lombok.With;
+import lombok.experimental.WithBy;
 import net.lenni0451.rivet.layout.LayoutOptions;
 import net.lenni0451.rivet.math.Padding;
 
 import javax.annotation.Nullable;
 
 @With
+@WithBy
 public record GridLayoutOptions(
         int column,
         int row,

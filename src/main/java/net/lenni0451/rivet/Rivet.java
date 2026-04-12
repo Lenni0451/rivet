@@ -1,5 +1,8 @@
 package net.lenni0451.rivet;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
@@ -15,15 +18,23 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.impl.DefaultDark;
 
+@Accessors(fluent = true, chain = true)
 public class Rivet {
 
+    @Getter
     private final Backend backend;
+    @Getter
     private Container rootContainer;
+    @Getter
     private Size size;
+    @Getter
     private float scale = 1;
+    @Getter
     private Component focusedComponent;
-    private boolean recalculate = false;
+    @Getter
+    @Setter
     private Theme theme;
+    private boolean recalculate = false;
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
         this.backend = backend;
@@ -32,42 +43,22 @@ public class Rivet {
         this.theme = new DefaultDark();
     }
 
-    public Backend getBackend() {
-        return this.backend;
-    }
-
-    public Container getRootContainer() {
-        return this.rootContainer;
-    }
-
-    public void setRootContainer(final Container rootContainer) {
+    public void rootContainer(final Container rootContainer) {
         this.rootContainer = rootContainer;
         this.recalculate = true;
     }
 
-    public Size getSize() {
-        return this.size;
-    }
-
-    public void setSize(final Size size) {
+    public void size(final Size size) {
         this.size = size;
         this.recalculate = true;
     }
 
-    public float getScale() {
-        return this.scale;
-    }
-
-    public void setScale(final float scale) {
+    public void scale(final float scale) {
         this.scale = scale;
         this.recalculate = true;
     }
 
-    public Component getFocused() {
-        return this.focusedComponent;
-    }
-
-    public void setFocused(final Component component) {
+    public void focusedComponent(final Component component) {
         if (this.focusedComponent == component) return;
         if (this.focusedComponent != null) {
             this.focusedComponent.onFocusLost();
@@ -80,14 +71,6 @@ public class Rivet {
 
     public void recalculateNextFrame() {
         this.recalculate = true;
-    }
-
-    public void setTheme(final Theme theme) {
-        this.theme = theme;
-    }
-
-    public Theme getTheme() {
-        return this.theme;
     }
 
 
