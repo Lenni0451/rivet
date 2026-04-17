@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
@@ -17,6 +18,8 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.impl.DefaultDark;
+
+import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
 public class Rivet {
@@ -116,7 +119,7 @@ public class Rivet {
         this.rootContainer.onMouseScroll(event.withX(event.x() / this.scale).withY(event.y() / this.scale), this.size.scale(this.scale, this.scale));
     }
 
-    public void render(final Renderer renderer) {
+    public void render(final Consumer<RenderList> renderListConsumer) {
         Size scaledSize = this.size.scale(this.scale, this.scale);
         if (this.recalculate) {
             this.rootContainer.computeIdealSize();
@@ -124,11 +127,12 @@ public class Rivet {
             this.recalculate = false;
         }
 
-        renderer.push();
-        renderer.scale(this.scale);
-        //TODO: Pass viewport to container to allow skipping out of viewport components
-        this.rootContainer.render(renderer, scaledSize);
-        renderer.pop();
+        Renderer renderer = new Renderer();
+        renderer.scale(this.scale, () -> {
+            //TODO: Pass viewport to container to allow skipping out of viewport components
+            this.rootContainer.render(renderer, scaledSize);
+        });
+        renderListConsumer.accept(renderer.renderList());
     }
 
 }

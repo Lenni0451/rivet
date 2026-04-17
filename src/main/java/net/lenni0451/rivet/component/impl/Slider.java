@@ -202,11 +202,11 @@ public class Slider extends Component implements MouseListener, Renderable {
 
                 double tickValue = this.min + tick;
                 ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet.backend().shapeText(this.ticks.labelProvider.getLabel(v)));
-                renderer.push();
-                renderer.translate(tickX, tickStartY + majorTickLength + 2);
-                renderer.scale(0.5F);
-                renderer.renderText(text, 0, 0, TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_TOP);
-                renderer.pop();
+                renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
+                    renderer.scale(0.5F, () -> {
+                        renderer.renderText(text, 0, 0, TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_TOP);
+                    });
+                });
                 if (lastTick) break;
             }
         }

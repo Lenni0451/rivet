@@ -1,103 +1,126 @@
 package net.lenni0451.rivet.backend.thingl;
 
 import lombok.RequiredArgsConstructor;
-import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.backend.ShapedText;
-import net.lenni0451.rivet.text.TextOrigin;
+import net.lenni0451.rivet.backend.render.RenderCommand;
+import net.lenni0451.rivet.backend.render.RenderList;
+import net.lenni0451.rivet.backend.render.TransformCommand;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.gl.renderer.impl.RendererText;
 import org.joml.Matrix4fStack;
 
 @RequiredArgsConstructor
-public class ThinGLRenderer implements Renderer {
+public class ThinGLRenderer {
 
-    private final Matrix4fStack matrixStack;
-
-    @Override
-    public void push() {
-        this.matrixStack.pushMatrix();
-    }
-
-    @Override
-    public void translate(final float x, final float y) {
-        this.matrixStack.translate(x, y, 0);
-    }
-
-    @Override
-    public void pushScissor(final float x, final float y, final float width, final float height) {
-        ThinGL.scissorStack().pushIntersection(this.matrixStack, x, y, x + width, y + height);
-    }
-
-    @Override
-    public void popScissor() {
-        ThinGL.scissorStack().pop();
-    }
-
-    @Override
-    public void scale(final float x, final float y) {
-        this.matrixStack.scale(x, y, 1);
-    }
-
-    @Override
-    public void pop() {
-        this.matrixStack.popMatrix();
-    }
-
-    @Override
-    public void fillCircle(final float x, final float y, final float radius, final Color color) {
-        ThinGL.renderer2D().filledCircle(this.matrixStack, x, y, radius, color);
-    }
-
-    @Override
-    public void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
-        ThinGL.renderer2D().outlinedCircle(this.matrixStack, x, y, radius, color, outlineWidth, Renderer2D.OUTLINE_STYLE_INNER_BIT);
-    }
-
-    @Override
-    public void fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3, final Color color) {
-        ThinGL.renderer2D().filledTriangle(this.matrixStack, x1, y1, x2, y2, x3, y3, color);
-    }
-
-    @Override
-    public void fillRect(final float x, final float y, final float width, final float height, final Color color) {
-        ThinGL.renderer2D().filledRectangle(this.matrixStack, x, y, x + width, y + height, color);
-    }
-
-    @Override
-    public void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
-        ThinGL.renderer2D().outlinedRectangle(this.matrixStack, x, y, x + width, y + height, color, outlineWidth, Renderer2D.OUTLINE_STYLE_INNER_BIT);
-    }
-
-    @Override
-    public void fillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
-        ThinGL.renderer2D().filledRoundedRectangle(this.matrixStack, x, y, x + width, y + height, cornerRadius, color);
-    }
-
-    @Override
-    public void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
-        ThinGL.renderer2D().outlinedRoundedRectangle(this.matrixStack, x, y, x + width, y + height, cornerRadius, color, outlineWidth, Renderer2D.OUTLINE_STYLE_INNER_BIT);
-    }
-
-    @Override
-    public void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
-        RendererText.VerticalOrigin vOrigin = switch (verticalOrigin) {
-            case BASELINE -> RendererText.VerticalOrigin.BASELINE;
-            case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
-            case LOGICAL_CENTER -> RendererText.VerticalOrigin.LOGICAL_CENTER;
-            case LOGICAL_BOTTOM -> RendererText.VerticalOrigin.LOGICAL_BOTTOM;
-            case VISUAL_TOP -> RendererText.VerticalOrigin.VISUAL_TOP;
-            case VISUAL_CENTER -> RendererText.VerticalOrigin.VISUAL_CENTER;
-            case VISUAL_BOTTOM -> RendererText.VerticalOrigin.VISUAL_BOTTOM;
-        };
-        RendererText.HorizontalOrigin hOrigin = switch (horizontalOrigin) {
-            case LOGICAL_LEFT -> RendererText.HorizontalOrigin.LOGICAL_LEFT;
-            case VISUAL_LEFT -> RendererText.HorizontalOrigin.VISUAL_LEFT;
-            case VISUAL_CENTER -> RendererText.HorizontalOrigin.VISUAL_CENTER;
-            case VISUAL_RIGHT -> RendererText.HorizontalOrigin.VISUAL_RIGHT;
-        };
-        ThinGL.rendererText().textLine(this.matrixStack, ((ThinGLShapedText) shapedText).shapedTextLine(), x, y, vOrigin, hOrigin);
+    public static void render(final Matrix4fStack matrixStack, final RenderList renderList) {
+        matrixStack.pushMatrix();
+        switch (renderList.transform()) {
+            case TransformCommand.Scale scale -> matrixStack.scale(
+                    scale.x(),
+                    scale.y(),
+                    1
+            );
+            case TransformCommand.Scissor scissor -> ThinGL.scissorStack().pushIntersection(
+                    matrixStack,
+                    scissor.x(),
+                    scissor.y(),
+                    scissor.x() + scissor.width(),
+                    scissor.y() + scissor.height()
+            );
+            case TransformCommand.Translate translate -> matrixStack.translate(
+                    translate.x(),
+                    translate.y(),
+                    0
+            );
+            case null -> {
+            }
+        }
+        for (RenderCommand render : renderList.renders()) {
+            switch (render) {
+                case RenderCommand.FillCircle fillCircle -> ThinGL.renderer2D().filledCircle(
+                        matrixStack,
+                        fillCircle.x(), fillCircle.y(),
+                        fillCircle.radius(),
+                        fillCircle.color()
+                );
+                case RenderCommand.FillRect fillRect -> ThinGL.renderer2D().filledRectangle(
+                        matrixStack,
+                        fillRect.x(), fillRect.y(),
+                        fillRect.x() + fillRect.width(), fillRect.y() + fillRect.height(),
+                        fillRect.color()
+                );
+                case RenderCommand.FillRoundedRect fillRoundedRect -> ThinGL.renderer2D().filledRoundedRectangle(
+                        matrixStack,
+                        fillRoundedRect.x(), fillRoundedRect.y(),
+                        fillRoundedRect.x() + fillRoundedRect.width(), fillRoundedRect.y() + fillRoundedRect.height(),
+                        fillRoundedRect.cornerRadius(),
+                        fillRoundedRect.color()
+                );
+                case RenderCommand.FillTriangle fillTriangle -> ThinGL.renderer2D().filledTriangle(
+                        matrixStack,
+                        fillTriangle.x1(), fillTriangle.y1(),
+                        fillTriangle.x2(), fillTriangle.y2(),
+                        fillTriangle.x3(), fillTriangle.y3(),
+                        fillTriangle.color()
+                );
+                case RenderCommand.OutlineCircle outlineCircle -> ThinGL.renderer2D().outlinedCircle(
+                        matrixStack,
+                        outlineCircle.x(), outlineCircle.y(),
+                        outlineCircle.radius(),
+                        outlineCircle.color(),
+                        outlineCircle.outlineWidth(),
+                        Renderer2D.OUTLINE_STYLE_INNER_BIT
+                );
+                case RenderCommand.OutlineRect outlineRect -> ThinGL.renderer2D().outlinedRectangle(
+                        matrixStack,
+                        outlineRect.x(), outlineRect.y(),
+                        outlineRect.x() + outlineRect.width(), outlineRect.y() + outlineRect.height(),
+                        outlineRect.color(),
+                        outlineRect.outlineWidth(),
+                        Renderer2D.OUTLINE_STYLE_INNER_BIT
+                );
+                case RenderCommand.OutlineRoundedRect outlineRoundedRect -> ThinGL.renderer2D().outlinedRoundedRectangle(
+                        matrixStack,
+                        outlineRoundedRect.x(), outlineRoundedRect.y(),
+                        outlineRoundedRect.x() + outlineRoundedRect.width(), outlineRoundedRect.y() + outlineRoundedRect.height(),
+                        outlineRoundedRect.cornerRadius(),
+                        outlineRoundedRect.color(),
+                        outlineRoundedRect.outlineWidth(),
+                        Renderer2D.OUTLINE_STYLE_INNER_BIT
+                );
+                case RenderCommand.Text text -> {
+                    RendererText.VerticalOrigin verticalOrigin = switch (text.verticalOrigin()) {
+                        case BASELINE -> RendererText.VerticalOrigin.BASELINE;
+                        case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
+                        case LOGICAL_CENTER -> RendererText.VerticalOrigin.LOGICAL_CENTER;
+                        case LOGICAL_BOTTOM -> RendererText.VerticalOrigin.LOGICAL_BOTTOM;
+                        case VISUAL_TOP -> RendererText.VerticalOrigin.VISUAL_TOP;
+                        case VISUAL_CENTER -> RendererText.VerticalOrigin.VISUAL_CENTER;
+                        case VISUAL_BOTTOM -> RendererText.VerticalOrigin.VISUAL_BOTTOM;
+                    };
+                    RendererText.HorizontalOrigin horizontalOrigin = switch (text.horizontalOrigin()) {
+                        case LOGICAL_LEFT -> RendererText.HorizontalOrigin.LOGICAL_LEFT;
+                        case VISUAL_LEFT -> RendererText.HorizontalOrigin.VISUAL_LEFT;
+                        case VISUAL_CENTER -> RendererText.HorizontalOrigin.VISUAL_CENTER;
+                        case VISUAL_RIGHT -> RendererText.HorizontalOrigin.VISUAL_RIGHT;
+                    };
+                    ThinGL.rendererText().textLine(
+                            matrixStack,
+                            ((ThinGLShapedText) text.shapedText()).shapedTextLine(),
+                            text.x(), text.y(),
+                            verticalOrigin,
+                            horizontalOrigin
+                    );
+                }
+            }
+        }
+        for (RenderList subList : renderList.subLists()) {
+            render(matrixStack, subList);
+        }
+        if (renderList.transform() instanceof TransformCommand.Scissor) {
+            ThinGL.scissorStack().pop();
+        }
+        matrixStack.popMatrix();
     }
 
 }

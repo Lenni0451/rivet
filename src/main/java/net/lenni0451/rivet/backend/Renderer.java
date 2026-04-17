@@ -1,42 +1,78 @@
 package net.lenni0451.rivet.backend;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.backend.render.RenderCommand;
+import net.lenni0451.rivet.backend.render.RenderList;
+import net.lenni0451.rivet.backend.render.TransformCommand;
 import net.lenni0451.rivet.text.TextOrigin;
 
-public interface Renderer {
+import java.util.Stack;
 
-    void push();
+public class Renderer {
 
-    void translate(final float x, final float y);
+    private final Stack<RenderList> currentRenderList = new Stack<>();
 
-    void pushScissor(final float x, final float y, final float width, final float height);
-
-    void popScissor();
-
-    default void scale(final float xy) {
-        this.scale(xy, xy);
+    public Renderer() {
+        this.currentRenderList.push(new RenderList());
     }
 
-    void scale(final float x, final float y);
+    public RenderList renderList() {
+        return this.currentRenderList.peek();
+    }
 
-    void pop();
+    public void translate(final float x, final float y, final Runnable renderer) {
+        this.pushTransform(new TransformCommand.Translate(x, y), renderer);
+    }
+
+    public void scissor(final float x, final float y, final float width, final float height, final Runnable renderer) {
+        this.pushTransform(new TransformCommand.Scissor(x, y, width, height), renderer);
+    }
+
+    public void scale(final float xy, final Runnable renderer) {
+        this.scale(xy, xy, renderer);
+    }
+
+    public void scale(final float x, final float y, final Runnable renderer) {
+        this.pushTransform(new TransformCommand.Scale(x, y), renderer);
+    }
+
+    private void pushTransform(final TransformCommand command, final Runnable renderer) {
+        this.currentRenderList.push(new RenderList(command));
+        renderer.run();
+        RenderList subList = this.currentRenderList.pop();
+        this.currentRenderList.peek().subList(subList);
+    }
 
 
-    void fillCircle(final float x, final float y, final float radius, final Color color);
+    public void fillCircle(final float x, final float y, final float radius, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.FillCircle(x, y, radius, color));
+    }
 
-    void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color);
+    public void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.OutlineCircle(x, y, radius, outlineWidth, color));
+    }
 
-    void fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3, final Color color);
+    public void fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.FillTriangle(x1, y1, x2, y2, x3, y3, color));
+    }
 
-    void fillRect(final float x, final float y, final float width, final float height, final Color color);
+    public void fillRect(final float x, final float y, final float width, final float height, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.FillRect(x, y, width, height, color));
+    }
 
-    void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color);
+    public void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.OutlineRect(x, y, width, height, outlineWidth, color));
+    }
 
-    void fillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color);
+    public void fillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.FillRoundedRect(x, y, width, height, cornerRadius, color));
+    }
 
-    void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color);
+    public void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.OutlineRoundedRect(x, y, width, height, cornerRadius, outlineWidth, color));
+    }
 
-    default void fillOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
+    public void fillOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
         float maxRadius = Math.min(width, height) / 2F;
         float radius = Math.min(cornerRadius, maxRadius);
         if (radius <= 0) {
@@ -48,7 +84,7 @@ public interface Renderer {
         }
     }
 
-    default void outlineOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
+    public void outlineOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
         float maxRadius = Math.min(width, height) / 2F;
         float radius = Math.min(cornerRadius, maxRadius);
         if (radius <= 0) {
@@ -60,6 +96,8 @@ public interface Renderer {
         }
     }
 
-    void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin);
+    public void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
+        this.currentRenderList.peek().render(new RenderCommand.Text(shapedText, x, y, horizontalOrigin, verticalOrigin));
+    }
 
 }

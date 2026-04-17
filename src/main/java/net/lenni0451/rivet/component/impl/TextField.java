@@ -148,26 +148,25 @@ public class TextField extends Component implements Renderable, KeyboardListener
         renderer.fillRect(0, 0, size.width(), size.height(), Color.fromRGB(30, 30, 30));
         renderer.outlineRect(0, 0, size.width(), size.height(), 1, this.rivet.focusedComponent() == this ? Color.WHITE : Color.GRAY);
 
-        renderer.push();
-        renderer.pushScissor(this.innerPadding.left(), this.innerPadding.top(), visibleWidth, size.height() - this.innerPadding.top() - this.innerPadding.bottom());
-        renderer.translate(this.innerPadding.left(), this.innerPadding.top() + (size.height() - this.innerPadding.top() - this.innerPadding.bottom()) / 2F);
-        renderer.translate(-this.scrollX, 0);
+        renderer.scissor(this.innerPadding.left(), this.innerPadding.top(), visibleWidth, size.height() - this.innerPadding.top() - this.innerPadding.bottom(), () -> {
+            renderer.translate(this.innerPadding.left(), this.innerPadding.top() + (size.height() - this.innerPadding.top() - this.innerPadding.bottom()) / 2F, () -> {
+                renderer.translate(-this.scrollX, 0, () -> {
+                    if (this.cursor != this.selection) {
+                        float x1 = this.shapedText.cursorPosition(this.cursor);
+                        float x2 = this.shapedText.cursorPosition(this.selection);
+                        renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, Color.fromRGBA(100, 100, 255, 100));
+                    }
 
-        if (this.cursor != this.selection) {
-            float x1 = this.shapedText.cursorPosition(this.cursor);
-            float x2 = this.shapedText.cursorPosition(this.selection);
-            renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, Color.fromRGBA(100, 100, 255, 100));
-        }
+                    renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
-        renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
-
-        if (this.rivet.focusedComponent() == this && (System.currentTimeMillis() / 500) % 2 == 0) {
-            float cursorX = this.shapedText.cursorPosition(this.cursor);
-            //TODO: Don't blink cursor shortly after moving or typing or mouse clicking
-            renderer.fillRect(cursorX, -textHeight / 2F, 1, textHeight, Color.WHITE);
-        }
-        renderer.popScissor();
-        renderer.pop();
+                    if (this.rivet.focusedComponent() == this && (System.currentTimeMillis() / 500) % 2 == 0) {
+                        float cursorX = this.shapedText.cursorPosition(this.cursor);
+                        //TODO: Don't blink cursor shortly after moving or typing or mouse clicking
+                        renderer.fillRect(cursorX, -textHeight / 2F, 1, textHeight, Color.WHITE);
+                    }
+                });
+            });
+        });
     }
 
     @Override

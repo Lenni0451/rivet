@@ -203,14 +203,13 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     public void render(final Renderer renderer, final Size size) {
         this.updateAnimation();
 
-        renderer.push();
-        renderer.pushScissor(0, 0, size.width(), size.height());
-        renderer.translate(-this.scrollX, -this.scrollY);
-        if (this.child instanceof Renderable renderable) {
-            renderable.render(renderer, this.childSize);
-        }
-        renderer.popScissor();
-        renderer.pop();
+        renderer.scissor(0, 0, size.width(), size.height(), () -> {
+            renderer.translate(-this.scrollX, -this.scrollY, () -> {
+                if (this.child instanceof Renderable renderable) {
+                    renderable.render(renderer, this.childSize);
+                }
+            });
+        });
 
         this.renderBar(renderer, this.getVBarBounds(size), this.vBarHovered, this.vBarPressed);
         this.renderBar(renderer, this.getHBarBounds(size), this.hBarHovered, this.hBarPressed);
