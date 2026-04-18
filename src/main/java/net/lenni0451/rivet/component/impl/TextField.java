@@ -2,6 +2,7 @@ package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
@@ -17,11 +18,15 @@ import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeOption;
 
+@Accessors(fluent = true, chain = true)
 public class TextField extends Component implements Renderable, KeyboardListener, MouseListener {
 
     private final StringBuffer text = new StringBuffer();
+    @Getter
     private int cursor = 0;
+    @Getter
     private int selection = 0;
     private long cursorBlinkTimeout = 0;
     private ShapedText shapedText;
@@ -31,8 +36,34 @@ public class TextField extends Component implements Renderable, KeyboardListener
     private boolean selecting = false;
     private float scrollX = 0;
 
+    @Getter
+    private final ThemeOption<Color> backgroundColor;
+    @Getter
+    private final ThemeOption<Color> outlineColor;
+    @Getter
+    private final ThemeOption<Color> focusedOutlineColor;
+    @Getter
+    private final ThemeOption<Color> selectionColor;
+    @Getter
+    private final ThemeOption<Color> cursorColor;
+    @Getter
+    private final ThemeOption<Float> cursorWidth;
+    @Getter
+    private final ThemeOption<Float> outlineWidth;
+    @Getter
+    private final ThemeOption<Float> cornerRadius;
+
     public TextField(final Rivet rivet) {
         super(rivet);
+        this.backgroundColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_BACKGROUND_COLOR);
+        this.outlineColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_OUTLINE_COLOR);
+        this.focusedOutlineColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
+        this.selectionColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_SELECTION_COLOR);
+        this.cursorColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CURSOR_COLOR);
+        this.cursorWidth = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CURSOR_WIDTH);
+        this.outlineWidth = new ThemeOption<>(rivet, Theme.TEXT_FIELD_OUTLINE_WIDTH);
+        this.cornerRadius = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CORNER_RADIUS);
+
         this.updateShapedText();
     }
 
@@ -40,12 +71,13 @@ public class TextField extends Component implements Renderable, KeyboardListener
         return this.text.toString();
     }
 
-    public void setText(final String text) {
+    public TextField text(final String text) {
         this.text.setLength(0);
         this.text.append(text);
         this.cursor = Math.min(this.cursor, this.text.length());
         this.selection = Math.min(this.selection, this.text.length());
         this.updateShapedText();
+        return this;
     }
 
     private void updateShapedText() {
@@ -149,8 +181,8 @@ public class TextField extends Component implements Renderable, KeyboardListener
         float textHeight = this.rivet.backend().getTextHeight();
 //        this.ensureCursorVisible(visibleWidth); //TODO: Make cursor always visible
 
-        renderer.fillRect(0, 0, size.width(), size.height(), Color.fromRGB(30, 30, 30));
-        renderer.outlineRect(0, 0, size.width(), size.height(), 1, this.rivet.focusedComponent() == this ? Color.WHITE : Color.GRAY);
+        renderer.fillOptimizedRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.backgroundColor.value());
+        renderer.outlineOptimizedRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.rivet.focusedComponent() == this ? this.focusedOutlineColor.value() : this.outlineColor.value());
 
         renderer.scissor(this.innerPadding.left(), this.innerPadding.top(), visibleWidth, size.height() - this.innerPadding.top() - this.innerPadding.bottom(), () -> {
             renderer.translate(this.innerPadding.left(), this.innerPadding.top() + (size.height() - this.innerPadding.top() - this.innerPadding.bottom()) / 2F, () -> {
@@ -158,14 +190,14 @@ public class TextField extends Component implements Renderable, KeyboardListener
                     if (this.cursor != this.selection) {
                         float x1 = this.shapedText.cursorPosition(this.cursor);
                         float x2 = this.shapedText.cursorPosition(this.selection);
-                        renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, Color.fromRGBA(100, 100, 255, 100));
+                        renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, this.selectionColor.value());
                     }
 
                     renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
                     if (this.rivet.focusedComponent() == this && ((System.currentTimeMillis() / 500) % 2 == 0 || System.currentTimeMillis() - this.cursorBlinkTimeout < 1000)) {
                         float cursorX = this.shapedText.cursorPosition(this.cursor);
-                        renderer.fillRect(cursorX, -textHeight / 2F, 1, textHeight, Color.WHITE);
+                        renderer.fillRect(cursorX, -textHeight / 2F, this.cursorWidth.value(), textHeight, this.cursorColor.value());
                     }
                 });
             });

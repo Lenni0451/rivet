@@ -48,6 +48,16 @@ public abstract class Theme {
     public static final ThemeKey<Boolean> SCROLL_SMOOTH = new ThemeKey<>("scroll.smooth", Boolean.class);
     public static final ThemeKey<Integer> SCROLL_ANIMATION_DURATION = new ThemeKey<>("scroll.animation_duration", Integer.class);
 
+    // TextField
+    public static final ThemeKey<Color> TEXT_FIELD_BACKGROUND_COLOR = new ThemeKey<>("text_field.background_color", Color.class);
+    public static final ThemeKey<Color> TEXT_FIELD_OUTLINE_COLOR = new ThemeKey<>("text_field.outline_color", Color.class);
+    public static final ThemeKey<Color> TEXT_FIELD_FOCUSED_OUTLINE_COLOR = new ThemeKey<>("text_field.focused_outline_color", Color.class);
+    public static final ThemeKey<Color> TEXT_FIELD_SELECTION_COLOR = new ThemeKey<>("text_field.selection_color", Color.class);
+    public static final ThemeKey<Color> TEXT_FIELD_CURSOR_COLOR = new ThemeKey<>("text_field.cursor_color", Color.class);
+    public static final ThemeKey<Float> TEXT_FIELD_CURSOR_WIDTH = new ThemeKey<>("text_field.cursor_width", Float.class);
+    public static final ThemeKey<Float> TEXT_FIELD_OUTLINE_WIDTH = new ThemeKey<>("text_field.outline_width", Float.class);
+    public static final ThemeKey<Float> TEXT_FIELD_CORNER_RADIUS = new ThemeKey<>("text_field.corner_radius", Float.class);
+
 
     @Nullable
     private final Theme parent;

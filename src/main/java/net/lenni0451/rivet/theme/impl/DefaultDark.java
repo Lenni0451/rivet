@@ -34,6 +34,15 @@ public class DefaultDark extends Theme {
         registrar.accept(Theme.SCROLL_SPEED, 30F);
         registrar.accept(Theme.SCROLL_SMOOTH, true);
         registrar.accept(Theme.SCROLL_ANIMATION_DURATION, 100);
+
+        registrar.accept(Theme.TEXT_FIELD_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
+        registrar.accept(Theme.TEXT_FIELD_OUTLINE_COLOR, Color.GRAY);
+        registrar.accept(Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR, Color.WHITE);
+        registrar.accept(Theme.TEXT_FIELD_SELECTION_COLOR, Color.fromRGBA(100, 100, 255, 100));
+        registrar.accept(Theme.TEXT_FIELD_CURSOR_COLOR, Color.WHITE);
+        registrar.accept(Theme.TEXT_FIELD_CURSOR_WIDTH, 1F);
+        registrar.accept(Theme.TEXT_FIELD_OUTLINE_WIDTH, 1F);
+        registrar.accept(Theme.TEXT_FIELD_CORNER_RADIUS, 0F);
     }
 
 }
