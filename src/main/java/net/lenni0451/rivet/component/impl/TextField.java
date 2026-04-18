@@ -3,6 +3,11 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.lenni0451.commons.animation.Animation;
+import net.lenni0451.commons.animation.AnimationMode;
+import net.lenni0451.commons.animation.EasingBehavior;
+import net.lenni0451.commons.animation.easing.EasingFunction;
+import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
@@ -28,11 +33,16 @@ public class TextField extends Component implements Renderable, KeyboardListener
     private int cursor = 0;
     @Getter
     private int selection = 0;
-    private long cursorBlinkTimeout = 0;
-    private ShapedText shapedText;
     @Getter
     @Setter
     private Padding innerPadding = new Padding(5, 5, 5, 5);
+
+    private final Animation cursorAnimation = new Animation(AnimationMode.LOOP)
+            .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 1, 250, EasingBehavior.KEEP)
+            .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 0, 500, EasingBehavior.KEEP)
+            .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 0, 1, 500, EasingBehavior.KEEP)
+            .start();
+    private ShapedText shapedText;
     private boolean selecting = false;
     private float scrollX = 0;
 
@@ -136,7 +146,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
             this.copy();
             this.deleteSelection();
         }
-        this.cursorBlinkTimeout = System.currentTimeMillis();
+        this.cursorAnimation.reset().start();
     }
 
     @Override
@@ -146,7 +156,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
         this.text.insert(this.cursor, event.character());
         this.cursor++;
         this.selection = this.cursor;
-        this.cursorBlinkTimeout = System.currentTimeMillis();
+        this.cursorAnimation.reset().start();
         this.updateShapedText();
     }
 
@@ -195,9 +205,9 @@ public class TextField extends Component implements Renderable, KeyboardListener
 
                     renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
-                    if (this.rivet.focusedComponent() == this && ((System.currentTimeMillis() / 500) % 2 == 0 || System.currentTimeMillis() - this.cursorBlinkTimeout < 1000)) {
+                    if (this.rivet.focusedComponent() == this) {
                         float cursorX = this.shapedText.cursorPosition(this.cursor);
-                        renderer.fillRect(cursorX, -textHeight / 2F, this.cursorWidth.value(), textHeight, this.cursorColor.value());
+                        renderer.fillRect(cursorX, -textHeight / 2F, this.cursorWidth.value(), textHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
                     }
                 });
             });
