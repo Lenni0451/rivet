@@ -7,6 +7,8 @@ public class DefaultDark extends Theme {
 
     @Override
     protected void register(final Registrar registrar) {
+        registrar.accept(Theme.TEXT_COLOR, Color.WHITE);
+
         registrar.accept(Theme.BUTTON_CORNER_RADIUS, 4);
         registrar.accept(Theme.BUTTON_OUTLINE_WIDTH, 2);
         registrar.accept(Theme.BUTTON_INACTIVE_COLOR, Color.fromRGB(45, 45, 48));

@@ -9,6 +9,9 @@ import java.util.Map;
 
 public abstract class Theme {
 
+    // General
+    public static final ThemeKey<Color> TEXT_COLOR = new ThemeKey<>("general.text_color", Color.class);
+
     // Button
     public static final ThemeKey<Integer> BUTTON_CORNER_RADIUS = new ThemeKey<>("button.corner_radius", Integer.class);
     public static final ThemeKey<Integer> BUTTON_OUTLINE_WIDTH = new ThemeKey<>("button.outline_width", Integer.class);

@@ -201,7 +201,7 @@ public class Slider extends Component implements MouseListener, Renderable {
                 renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, color);
 
                 double tickValue = this.min + tick;
-                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet.backend().shapeText(this.ticks.labelProvider.getLabel(v)));
+                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet.backend().shapeText(this.ticks.labelProvider.getLabel(v), this.rivet.theme().get(Theme.TEXT_COLOR)));
                 renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
                     renderer.scale(0.5F, () -> {
                         renderer.renderText(text, 0, 0, TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_TOP);

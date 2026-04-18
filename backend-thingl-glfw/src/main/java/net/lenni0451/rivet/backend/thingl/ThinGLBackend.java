@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.backend.thingl;
 
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.text.TextSection;
@@ -24,8 +25,9 @@ public record ThinGLBackend(long window, FontSet fontSet) implements Backend {
     }
 
     @Override
-    public ShapedText shapeText(final String text) {
-        ShapedTextLine shapedTextLine = TextLine.fromString(this.fontSet, text).shape();
+    public ShapedText shapeText(final String text, final Color color) {
+        TextStyle style = new TextStyle(color, 0, Color.TRANSPARENT);
+        ShapedTextLine shapedTextLine = TextLine.fromString(this.fontSet, text, style).shape();
         return new ThinGLShapedText(shapedTextLine);
     }
 

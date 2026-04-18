@@ -13,6 +13,7 @@ import net.lenni0451.rivet.text.TextFormat;
 import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.text.TextParser;
 import net.lenni0451.rivet.text.TextSection;
+import net.lenni0451.rivet.theme.Theme;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class FormattedLabel extends Component implements Renderable {
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
 
     public FormattedLabel(final Rivet rivet, final String text) {
-        this(rivet, text, TextFormat.DEFAULT);
+        this(rivet, text, TextFormat.DEFAULT.withColor(rivet.theme().get(Theme.TEXT_COLOR)));
     }
 
     public FormattedLabel(final Rivet rivet, final String text, final TextFormat defaultFormat) {
@@ -50,7 +51,7 @@ public class FormattedLabel extends Component implements Renderable {
     }
 
     public FormattedLabel text(final String text) {
-        return this.text(text, TextFormat.DEFAULT);
+        return this.text(text, TextFormat.DEFAULT.withColor(this.rivet.theme().get(Theme.TEXT_COLOR)));
     }
 
     public FormattedLabel text(final String text, final TextFormat defaultFormat) {

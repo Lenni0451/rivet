@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.backend;
 
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.text.TextSection;
 
 import javax.annotation.Nullable;
@@ -9,7 +10,7 @@ public interface Backend {
 
     float getTextHeight();
 
-    ShapedText shapeText(final String text);
+    ShapedText shapeText(final String text, final Color color);
 
     ShapedText shapeText(final List<TextSection> sections);
 

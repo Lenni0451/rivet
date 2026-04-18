@@ -16,6 +16,7 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextOrigin;
+import net.lenni0451.rivet.theme.Theme;
 
 public class TextField extends Component implements Renderable, KeyboardListener, MouseListener {
 
@@ -48,7 +49,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
     }
 
     private void updateShapedText() {
-        this.shapedText = this.rivet.backend().shapeText(this.text.toString());
+        this.shapedText = this.rivet.backend().shapeText(this.text.toString(), this.rivet.theme().get(Theme.TEXT_COLOR));
     }
 
     @Override
