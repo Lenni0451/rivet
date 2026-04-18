@@ -179,7 +179,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
     public void render(final Renderer renderer, final Size size) {
         float visibleWidth = size.width() - this.innerPadding.left() - this.innerPadding.right();
         float textHeight = this.rivet.backend().getTextHeight();
-//        this.ensureCursorVisible(visibleWidth); //TODO: Make cursor always visible
+        this.ensureCursorVisible(visibleWidth);
 
         renderer.fillOptimizedRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.backgroundColor.value());
         renderer.outlineOptimizedRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.rivet.focusedComponent() == this ? this.focusedOutlineColor.value() : this.outlineColor.value());
