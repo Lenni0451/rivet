@@ -22,6 +22,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
     private final StringBuffer text = new StringBuffer();
     private int cursor = 0;
     private int selection = 0;
+    private long cursorBlinkTimeout = 0;
     private ShapedText shapedText;
     @Getter
     @Setter
@@ -102,6 +103,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
             this.copy();
             this.deleteSelection();
         }
+        this.cursorBlinkTimeout = System.currentTimeMillis();
     }
 
     @Override
@@ -111,6 +113,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
         this.text.insert(this.cursor, event.character());
         this.cursor++;
         this.selection = this.cursor;
+        this.cursorBlinkTimeout = System.currentTimeMillis();
         this.updateShapedText();
     }
 
@@ -159,9 +162,8 @@ public class TextField extends Component implements Renderable, KeyboardListener
 
                     renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
-                    if (this.rivet.focusedComponent() == this && (System.currentTimeMillis() / 500) % 2 == 0) {
+                    if (this.rivet.focusedComponent() == this && ((System.currentTimeMillis() / 500) % 2 == 0 || System.currentTimeMillis() - this.cursorBlinkTimeout < 1000)) {
                         float cursorX = this.shapedText.cursorPosition(this.cursor);
-                        //TODO: Don't blink cursor shortly after moving or typing or mouse clicking
                         renderer.fillRect(cursorX, -textHeight / 2F, 1, textHeight, Color.WHITE);
                     }
                 });
