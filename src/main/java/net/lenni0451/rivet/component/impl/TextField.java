@@ -122,6 +122,9 @@ public class TextField extends Component implements Renderable, KeyboardListener
         } else if (event.key().isEquivalent(Key.BACKSPACE)) {
             if (this.cursor != this.selection) {
                 this.deleteSelection();
+            } else if (ctrl) {
+                this.selection = this.findWordStart(this.cursor);
+                this.deleteSelection();
             } else if (this.cursor > 0) {
                 this.text.deleteCharAt(this.cursor - 1);
                 this.cursor--;
@@ -130,6 +133,9 @@ public class TextField extends Component implements Renderable, KeyboardListener
             }
         } else if (event.key().isEquivalent(Key.DELETE)) {
             if (this.cursor != this.selection) {
+                this.deleteSelection();
+            } else if (ctrl) {
+                this.selection = this.findWordEnd(this.cursor);
                 this.deleteSelection();
             } else if (this.cursor < this.text.length()) {
                 this.text.deleteCharAt(this.cursor);
