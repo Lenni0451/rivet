@@ -45,6 +45,8 @@ public class TextField extends Component implements Renderable, KeyboardListener
     private ShapedText shapedText;
     private boolean selecting = false;
     private float scrollX = 0;
+    private int clickCount;
+    private long lastClick;
 
     @Getter
     private final ThemeOption<Color> backgroundColor;
@@ -169,11 +171,29 @@ public class TextField extends Component implements Renderable, KeyboardListener
     @Override
     public void onMouseDown(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
+            long now = System.currentTimeMillis();
+            if (now - this.lastClick < 250) {
+                this.clickCount++;
+            } else {
+                this.clickCount = 1;
+            }
+            this.lastClick = now;
+
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.left() + this.scrollX);
             if (!event.modifiers().contains(ModifierKey.SHIFT)) {
                 this.selection = this.cursor;
             }
             this.selecting = true;
+
+            if (this.clickCount == 2) {
+                this.selection = this.findWordStart(this.cursor);
+                this.cursor = this.findWordEnd(this.cursor);
+            } else if (this.clickCount == 3) {
+                this.selection = 0;
+                this.cursor = this.text.length();
+            } else {
+                this.clickCount = 1;
+            }
         }
     }
 
