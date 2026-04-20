@@ -7,7 +7,8 @@ import net.lenni0451.rivet.text.TextOrigin;
 
 public sealed interface RenderCommand permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
-        RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Text {
+        RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Text,
+        RenderCommand.Line {
 
     Rectangle bounds();
 
@@ -69,6 +70,17 @@ public sealed interface RenderCommand permits
         @Override
         public Rectangle bounds() {
             return this.shapedText.visualSize().at(this.x, this.y);
+        }
+    }
+
+    record Line(float x1, float y1, float x2, float y2, float width, Color color) implements RenderCommand {
+        @Override
+        public Rectangle bounds() {
+            float minX = Math.min(this.x1, this.x2) - this.width / 2F;
+            float minY = Math.min(this.y1, this.y2) - this.width / 2F;
+            float maxX = Math.max(this.x1, this.x2) + this.width / 2F;
+            float maxY = Math.max(this.y1, this.y2) + this.width / 2F;
+            return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
     }
 

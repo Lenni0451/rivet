@@ -6,6 +6,7 @@ import net.lenni0451.rivet.backend.thingl.ThinGLBackend;
 import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
 import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.base.Button;
+import net.lenni0451.rivet.component.impl.Checkbox;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.TextField;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
@@ -137,6 +138,9 @@ public class Test extends GLFWApplicationRunner {
                 .layoutOptions(new GridLayoutOptions(1, 3).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
         container.addChild(new TextField(this.rivet)
                 .layoutOptions(new GridLayoutOptions(0, 4).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+        container.addChild(new Checkbox(this.rivet, "Test Test Test", true)
+                .layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+        ((Checkbox) container.children().getLast()).cornerRadius().set(8F);
     }
 
     @Override

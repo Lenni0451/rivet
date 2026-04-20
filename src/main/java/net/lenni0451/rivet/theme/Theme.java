@@ -58,6 +58,16 @@ public abstract class Theme {
     public static final ThemeKey<Float> TEXT_FIELD_OUTLINE_WIDTH = new ThemeKey<>("text_field.outline_width", Float.class);
     public static final ThemeKey<Float> TEXT_FIELD_CORNER_RADIUS = new ThemeKey<>("text_field.corner_radius", Float.class);
 
+    // Checkbox
+    public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = new ThemeKey<>("checkbox.corner_radius", Float.class);
+    public static final ThemeKey<Float> CHECKBOX_OUTLINE_WIDTH = new ThemeKey<>("checkbox.outline_width", Float.class);
+    public static final ThemeKey<Color> CHECKBOX_BACKGROUND_COLOR = new ThemeKey<>("checkbox.background_color", Color.class);
+    public static final ThemeKey<Color> CHECKBOX_OUTLINE_COLOR = new ThemeKey<>("checkbox.outline_color", Color.class);
+    public static final ThemeKey<Color> CHECKBOX_CHECK_COLOR = new ThemeKey<>("checkbox.check_color", Color.class);
+    public static final ThemeKey<Float> CHECKBOX_CHECK_WIDTH = new ThemeKey<>("checkbox.check_width", Float.class);
+    public static final ThemeKey<Float> CHECKBOX_TEXT_GAP = new ThemeKey<>("checkbox.text_gap", Float.class);
+    public static final ThemeKey<Integer> CHECKBOX_ANIMATION_DURATION = new ThemeKey<>("checkbox.animation_duration", Integer.class);
+
 
     @Nullable
     private final Theme parent;

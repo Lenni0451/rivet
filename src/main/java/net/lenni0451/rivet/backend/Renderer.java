@@ -100,4 +100,8 @@ public class Renderer {
         this.currentRenderList.peek().render(new RenderCommand.Text(shapedText, x, y, horizontalOrigin, verticalOrigin));
     }
 
+    public void line(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
+        this.currentRenderList.peek().render(new RenderCommand.Line(x1, y1, x2, y2, width, color));
+    }
+
 }

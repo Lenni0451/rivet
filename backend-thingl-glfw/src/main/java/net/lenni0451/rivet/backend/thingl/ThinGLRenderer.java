@@ -88,6 +88,13 @@ public class ThinGLRenderer {
                         outlineRoundedRect.outlineWidth(),
                         Renderer2D.OUTLINE_STYLE_INNER_BIT
                 );
+                case RenderCommand.Line line -> ThinGL.renderer2D().line(
+                        matrixStack,
+                        line.x1(), line.y1(),
+                        line.x2(), line.y2(),
+                        line.width(),
+                        line.color()
+                );
                 case RenderCommand.Text text -> {
                     RendererText.VerticalOrigin verticalOrigin = switch (text.verticalOrigin()) {
                         case BASELINE -> RendererText.VerticalOrigin.BASELINE;

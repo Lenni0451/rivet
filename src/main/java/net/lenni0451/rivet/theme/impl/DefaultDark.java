@@ -43,6 +43,15 @@ public class DefaultDark extends Theme {
         registrar.accept(Theme.TEXT_FIELD_CURSOR_WIDTH, 1F);
         registrar.accept(Theme.TEXT_FIELD_OUTLINE_WIDTH, 1F);
         registrar.accept(Theme.TEXT_FIELD_CORNER_RADIUS, 0F);
+
+        registrar.accept(Theme.CHECKBOX_CORNER_RADIUS, 2F);
+        registrar.accept(Theme.CHECKBOX_OUTLINE_WIDTH, 1F);
+        registrar.accept(Theme.CHECKBOX_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
+        registrar.accept(Theme.CHECKBOX_OUTLINE_COLOR, Color.GRAY);
+        registrar.accept(Theme.CHECKBOX_CHECK_COLOR, Color.WHITE);
+        registrar.accept(Theme.CHECKBOX_CHECK_WIDTH, 2F);
+        registrar.accept(Theme.CHECKBOX_TEXT_GAP, 0F);
+        registrar.accept(Theme.CHECKBOX_ANIMATION_DURATION, 100);
     }
 
 }
