@@ -1,57 +1,46 @@
 package net.lenni0451.rivet.theme.impl;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeKey;
 
-public class DefaultDark extends Theme {
+import java.util.Map;
+
+public class DefaultDark extends BaseTheme {
 
     @Override
-    protected void register(final Registrar registrar) {
-        registrar.accept(Theme.TEXT_COLOR, Color.WHITE);
+    protected void addValues(final Rivet rivet, final Map<ThemeKey<?>, Object> values) {
+        super.addValues(rivet, values);
 
-        registrar.accept(Theme.BUTTON_CORNER_RADIUS, 4);
-        registrar.accept(Theme.BUTTON_OUTLINE_WIDTH, 2);
-        registrar.accept(Theme.BUTTON_INACTIVE_COLOR, Color.fromRGB(45, 45, 48));
-        registrar.accept(Theme.BUTTON_INACTIVE_OUTLINE_COLOR, Color.fromRGB(65, 65, 70));
-        registrar.accept(Theme.BUTTON_ACTIVE_COLOR, Color.fromRGB(65, 65, 70));
-        registrar.accept(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(100, 100, 105));
-        registrar.accept(Theme.BUTTON_CLICK_COLOR, Color.fromRGB(55, 55, 60));
-        registrar.accept(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(110, 110, 115));
-        registrar.accept(Theme.BUTTON_ANIMATION_DURATION, 150);
+        values.put(Theme.TEXT_COLOR, Color.WHITE);
 
-        registrar.accept(Theme.SLIDER_BAR_COLOR, Color.fromRGB(65, 65, 70));
-        registrar.accept(Theme.SLIDER_THUMB_COLOR, Color.fromRGB(120, 120, 125));
-        registrar.accept(Theme.SLIDER_THUMB_CLICK_COLOR, Color.fromRGB(100, 100, 105));
-        registrar.accept(Theme.SLIDER_TICK_COLOR, Color.fromRGB(160, 160, 165));
+        values.put(Theme.BUTTON_INACTIVE_COLOR, Color.fromRGB(45, 45, 48));
+        values.put(Theme.BUTTON_INACTIVE_OUTLINE_COLOR, Color.fromRGB(65, 65, 70));
+        values.put(Theme.BUTTON_ACTIVE_COLOR, Color.fromRGB(65, 65, 70));
+        values.put(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(100, 100, 105));
+        values.put(Theme.BUTTON_CLICK_COLOR, Color.fromRGB(55, 55, 60));
+        values.put(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(110, 110, 115));
 
-        registrar.accept(Theme.SCROLL_BAR_COLOR, Color.fromRGBA(120, 120, 125, 100));
-        registrar.accept(Theme.SCROLL_BAR_HOVER_COLOR, Color.fromRGBA(140, 140, 145, 150));
-        registrar.accept(Theme.SCROLL_BAR_CLICK_COLOR, Color.fromRGBA(100, 100, 105, 200));
-        registrar.accept(Theme.SCROLL_BAR_WIDTH, 8F);
-        registrar.accept(Theme.SCROLL_BAR_CORNER_RADIUS, 4F);
-        registrar.accept(Theme.SCROLL_BAR_OUTLINE_WIDTH, 0F);
-        registrar.accept(Theme.SCROLL_BAR_OUTLINE_COLOR, Color.fromRGB(65, 65, 70));
-        registrar.accept(Theme.SCROLL_SPEED, 30F);
-        registrar.accept(Theme.SCROLL_SMOOTH, true);
-        registrar.accept(Theme.SCROLL_ANIMATION_DURATION, 100);
+        values.put(Theme.SLIDER_BAR_COLOR, Color.fromRGB(65, 65, 70));
+        values.put(Theme.SLIDER_THUMB_COLOR, Color.fromRGB(120, 120, 125));
+        values.put(Theme.SLIDER_THUMB_CLICK_COLOR, Color.fromRGB(100, 100, 105));
+        values.put(Theme.SLIDER_TICK_COLOR, Color.fromRGB(160, 160, 165));
 
-        registrar.accept(Theme.TEXT_FIELD_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
-        registrar.accept(Theme.TEXT_FIELD_OUTLINE_COLOR, Color.GRAY);
-        registrar.accept(Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR, Color.WHITE);
-        registrar.accept(Theme.TEXT_FIELD_SELECTION_COLOR, Color.fromRGBA(100, 100, 255, 100));
-        registrar.accept(Theme.TEXT_FIELD_CURSOR_COLOR, Color.WHITE);
-        registrar.accept(Theme.TEXT_FIELD_CURSOR_WIDTH, 1F);
-        registrar.accept(Theme.TEXT_FIELD_OUTLINE_WIDTH, 1F);
-        registrar.accept(Theme.TEXT_FIELD_CORNER_RADIUS, 0F);
+        values.put(Theme.SCROLL_BAR_COLOR, Color.fromRGBA(120, 120, 125, 100));
+        values.put(Theme.SCROLL_BAR_HOVER_COLOR, Color.fromRGBA(140, 140, 145, 150));
+        values.put(Theme.SCROLL_BAR_CLICK_COLOR, Color.fromRGBA(100, 100, 105, 200));
+        values.put(Theme.SCROLL_BAR_OUTLINE_COLOR, Color.fromRGB(65, 65, 70));
 
-        registrar.accept(Theme.CHECKBOX_CORNER_RADIUS, 2F);
-        registrar.accept(Theme.CHECKBOX_OUTLINE_WIDTH, 1F);
-        registrar.accept(Theme.CHECKBOX_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
-        registrar.accept(Theme.CHECKBOX_OUTLINE_COLOR, Color.GRAY);
-        registrar.accept(Theme.CHECKBOX_CHECK_COLOR, Color.WHITE);
-        registrar.accept(Theme.CHECKBOX_CHECK_WIDTH, 2F);
-        registrar.accept(Theme.CHECKBOX_TEXT_GAP, 0F);
-        registrar.accept(Theme.CHECKBOX_ANIMATION_DURATION, 100);
+        values.put(Theme.TEXT_FIELD_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
+        values.put(Theme.TEXT_FIELD_OUTLINE_COLOR, Color.GRAY);
+        values.put(Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR, Color.WHITE);
+        values.put(Theme.TEXT_FIELD_SELECTION_COLOR, Color.fromRGBA(100, 100, 255, 100));
+        values.put(Theme.TEXT_FIELD_CURSOR_COLOR, Color.WHITE);
+
+        values.put(Theme.CHECKBOX_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
+        values.put(Theme.CHECKBOX_OUTLINE_COLOR, Color.GRAY);
+        values.put(Theme.CHECKBOX_CHECK_COLOR, Color.WHITE);
     }
 
 }

@@ -1,6 +1,6 @@
 package net.lenni0451.rivet.theme;
 
-public record ThemeKey<T>(String name, Class<T> type) { // TODO: Better class name?
+public record ThemeKey<T>(String name, Class<T> type) {
 
     public T verifyAndCast(final Object o) {
         if (o == null) {

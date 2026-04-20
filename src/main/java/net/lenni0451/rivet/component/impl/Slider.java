@@ -82,16 +82,16 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.thumbColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_COLOR);
         this.thumbClickColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CLICK_COLOR);
         this.tickColor = new ThemeOption<>(rivet, Theme.SLIDER_TICK_COLOR);
-        this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT, () -> rivet.backend().getTextHeight() / 3F);
-        this.thumbWidth = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_WIDTH, () -> rivet.backend().getTextHeight() / 3F * 2F);
-        this.thumbHeight = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_HEIGHT, () -> rivet.backend().getTextHeight() / 3F * 2F);
+        this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT);
+        this.thumbWidth = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_WIDTH);
+        this.thumbHeight = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_HEIGHT);
         this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS, () -> this.barHeight.value() / 2F);
-        this.thumbShape = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_SHAPE, () -> ThumbShape.CIRCLE);
+        this.thumbShape = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_SHAPE);
         this.thumbCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CORNER_RADIUS, () -> {
             if (this.thumbShape.value() == ThumbShape.PIN) return 0F;
             return Math.min(this.thumbWidth.value(), this.thumbHeight.value()) / 2F;
         });
-        this.thumbEncased = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_ENCASED, () -> false);
+        this.thumbEncased = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_ENCASED);
     }
 
     public Slider min(final double min) {

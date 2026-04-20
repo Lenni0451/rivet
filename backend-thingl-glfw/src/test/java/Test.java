@@ -21,6 +21,7 @@ import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.theme.impl.DefaultDark;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
@@ -30,6 +31,8 @@ import net.raphimc.thingl.text.font.FontSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+
+import java.util.Map;
 
 public class Test extends GLFWApplicationRunner {
 
@@ -110,16 +113,16 @@ public class Test extends GLFWApplicationRunner {
         this.rivet = new Rivet(backend, new GridLayout(10, 10).homogeneousColumns(true), new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
         this.rivet.theme(new DefaultDark() {
             @Override
-            protected void register(final Registrar registrar) {
-                super.register(registrar);
-                registrar.accept(Theme.BUTTON_INACTIVE_COLOR, Color.GRAY.withAlpha(50));
-                registrar.accept(Theme.BUTTON_INACTIVE_OUTLINE_COLOR, Color.BLACK);
-                registrar.accept(Theme.BUTTON_ACTIVE_COLOR, Color.GRAY.withAlpha(150));
-                registrar.accept(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(116, 165, 229));
-                registrar.accept(Theme.BUTTON_CLICK_COLOR, Color.GRAY.withAlpha(150).darker());
-                registrar.accept(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(116, 165, 229).darker());
-                registrar.accept(Theme.BUTTON_CORNER_RADIUS, 0);
-                registrar.accept(Theme.BUTTON_OUTLINE_WIDTH, 3);
+            protected void addValues(final Rivet rivet, final Map<ThemeKey<?>, Object> values) {
+                super.addValues(rivet, values);
+                values.put(Theme.BUTTON_INACTIVE_COLOR, Color.GRAY.withAlpha(50));
+                values.put(Theme.BUTTON_INACTIVE_OUTLINE_COLOR, Color.BLACK);
+                values.put(Theme.BUTTON_ACTIVE_COLOR, Color.GRAY.withAlpha(150));
+                values.put(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(116, 165, 229));
+                values.put(Theme.BUTTON_CLICK_COLOR, Color.GRAY.withAlpha(150).darker());
+                values.put(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(116, 165, 229).darker());
+                values.put(Theme.BUTTON_CORNER_RADIUS, 0);
+                values.put(Theme.BUTTON_OUTLINE_WIDTH, 3);
             }
         });
 

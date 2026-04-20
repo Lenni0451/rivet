@@ -85,7 +85,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         this.barCornerRadius = new ThemeOption<>(rivet, Theme.SCROLL_BAR_CORNER_RADIUS);
         this.barOutlineWidth = new ThemeOption<>(rivet, Theme.SCROLL_BAR_OUTLINE_WIDTH);
         this.barOutlineColor = new ThemeOption<>(rivet, Theme.SCROLL_BAR_OUTLINE_COLOR);
-        this.scrollSpeed = new ThemeOption<>(rivet, Theme.SCROLL_SPEED, () -> rivet.backend().getTextHeight() * 4);
+        this.scrollSpeed = new ThemeOption<>(rivet, Theme.SCROLL_SPEED);
         this.smoothScrolling = new ThemeOption<>(rivet, Theme.SCROLL_SMOOTH);
         this.animationDuration = new ThemeOption<>(rivet, Theme.SCROLL_ANIMATION_DURATION);
     }

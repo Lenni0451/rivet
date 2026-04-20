@@ -1,7 +1,6 @@
 package net.lenni0451.rivet;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.Renderer;
@@ -35,15 +34,22 @@ public class Rivet {
     @Getter
     private Component focusedComponent;
     @Getter
-    @Setter
     private Theme theme;
     private boolean recalculate = false;
+
+    public Rivet theme(final Theme theme) {
+        this.theme = theme;
+        this.theme.apply(this);
+        this.recalculateNextFrame();
+        return this;
+    }
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
         this.backend = backend;
         this.rootContainer = new Container(this, layout);
         this.size = size;
         this.theme = new DefaultDark();
+        this.theme.apply(this);
     }
 
     public void rootContainer(final Container rootContainer) {
