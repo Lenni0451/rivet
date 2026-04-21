@@ -162,13 +162,19 @@ public class Rivet {
         List<Layer> layers = this.layers.get();
         for (int i = layers.size() - 1; i >= 0; i--) {
             Layer layer = layers.get(i);
-            if (!intercepted && layer.container().intercepts(x, y)) {
-                layer.container().onMouseMove(event.withX(x).withY(y), this.size.scale(this.scale, this.scale));
-                intercepted = true;
+            if (this.clickedLayer.element() != null) {
+                if (this.clickedLayer.is(layer)) {
+                    layer.container().onMouseMove(event.withX(x).withY(y), this.size.scale(this.scale, this.scale));
+                } else {
+                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), this.size.scale(this.scale, this.scale));
+                }
             } else {
-                // Pass the mouse move event to lower layers to allow them to update hover states
-                // Use an invalid position to make sure everything is unhovered
-                layer.container().onMouseMove(new MouseMoveEvent(-1, -1), this.size.scale(this.scale, this.scale));
+                if (!intercepted && layer.container().intercepts(x, y)) {
+                    layer.container().onMouseMove(event.withX(x).withY(y), this.size.scale(this.scale, this.scale));
+                    intercepted = true;
+                } else {
+                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), this.size.scale(this.scale, this.scale));
+                }
             }
         }
     }

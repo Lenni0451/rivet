@@ -1,12 +1,16 @@
 package net.lenni0451.rivet.input;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Accessors(fluent = true)
 public class ClickedElement<E> {
 
+    @Getter
     private E element;
     private final Set<MouseButton> buttons = new HashSet<>();
 
