@@ -126,7 +126,7 @@ public class Test extends GLFWApplicationRunner {
             }
         });
 
-        Container container = this.rivet.rootContainer();
+        Container container = this.rivet.baseLayer().container();
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Singleplayer"), event -> {})
                 .layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
         container.addChild(new Button(this.rivet, new Label(this.rivet, "Minecraft Realms"), event -> {})

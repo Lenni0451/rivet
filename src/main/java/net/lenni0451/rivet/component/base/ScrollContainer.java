@@ -188,14 +188,21 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         if (this.verticalScrolling && event.scrollY() != 0 && !this.vBarPressed) {
             float contentHeight = this.childSize.height();
             float maxScroll = Math.max(0, contentHeight - size.height());
-            this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
-            if (!this.smoothScrolling.value()) this.scrollY = this.targetScrollY;
+            if (maxScroll > 0) {
+                this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
+                if (!this.smoothScrolling.value()) this.scrollY = this.targetScrollY;
+            }
         }
         if (this.horizontalScrolling && event.scrollX() != 0 && !this.hBarPressed) {
             float contentWidth = this.childSize.width();
             float maxScroll = Math.max(0, contentWidth - size.width());
-            this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
-            if (!this.smoothScrolling.value()) this.scrollX = this.targetScrollX;
+            if (maxScroll > 0) {
+                this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
+                if (!this.smoothScrolling.value()) this.scrollX = this.targetScrollX;
+            }
+        }
+        if (this.child instanceof MouseListener mouseListener) {
+            mouseListener.onMouseScroll(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.childSize);
         }
     }
 

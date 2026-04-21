@@ -2,6 +2,7 @@ package net.lenni0451.rivet.component;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.layout.LayoutOptions;
@@ -21,6 +22,9 @@ public abstract class Component {
     private Size maxSize = new Size(Float.MAX_VALUE, Float.MAX_VALUE);
     @Getter
     private LayoutOptions layoutOptions;
+    @Getter
+    @Setter
+    private boolean interactive = true;
 
     public Component minSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
