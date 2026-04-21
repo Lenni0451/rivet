@@ -30,6 +30,7 @@ public class Checkbox extends Component implements MouseListener, Renderable {
     @Getter
     private String text;
     private ShapedText shapedText;
+    private boolean hovered = false;
 
     @Getter
     private final ThemeOption<Float> cornerRadius;
@@ -88,8 +89,18 @@ public class Checkbox extends Component implements MouseListener, Renderable {
     }
 
     @Override
+    public void onMouseEnter() {
+        this.hovered = true;
+    }
+
+    @Override
+    public void onMouseLeave() {
+        this.hovered = false;
+    }
+
+    @Override
     public void onMouseUp(final MouseButtonEvent event, final Size size) {
-        if (event.button().equals(MouseButton.LEFT)) {
+        if (this.hovered && event.button().equals(MouseButton.LEFT)) {
             this.checked(!this.checked);
         }
     }
