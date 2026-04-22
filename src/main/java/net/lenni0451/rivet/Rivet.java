@@ -140,8 +140,10 @@ public class Rivet {
     }
 
     public void onMouseUp(final MouseButtonEvent event) {
-        if (event.x() < 0 || event.x() >= this.size.width()) return;
-        if (event.y() < 0 || event.y() >= this.size.height()) return;
+        if (!this.clickedLayer.isClicked()) {
+            if (event.x() < 0 || event.x() >= this.size.width()) return;
+            if (event.y() < 0 || event.y() >= this.size.height()) return;
+        }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         List<Layer> layers = this.layers.get();
@@ -154,8 +156,10 @@ public class Rivet {
     }
 
     public void onMouseMove(final MouseMoveEvent event) {
-        if (event.x() < 0 || event.x() >= this.size.width()) return;
-        if (event.y() < 0 || event.y() >= this.size.height()) return;
+        if (!this.clickedLayer.isClicked()) {
+            if (event.x() < 0 || event.x() >= this.size.width()) return;
+            if (event.y() < 0 || event.y() >= this.size.height()) return;
+        }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         boolean intercepted = false;
@@ -180,8 +184,10 @@ public class Rivet {
     }
 
     public void onMouseScroll(final MouseScrollEvent event) {
-        if (event.x() < 0 || event.x() >= this.size.width()) return;
-        if (event.y() < 0 || event.y() >= this.size.height()) return;
+        if (!this.clickedLayer.isClicked()) {
+            if (event.x() < 0 || event.x() >= this.size.width()) return;
+            if (event.y() < 0 || event.y() >= this.size.height()) return;
+        }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         Layer layer = this.findLayerAt(x, y);

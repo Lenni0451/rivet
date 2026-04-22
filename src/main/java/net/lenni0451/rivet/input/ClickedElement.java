@@ -38,4 +38,8 @@ public class ClickedElement<E> {
         }
     }
 
+    public boolean isClicked() {
+        return !this.buttons.isEmpty();
+    }
+
 }
