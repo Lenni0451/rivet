@@ -4,21 +4,22 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Container;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Accessors(fluent = true)
 public class LayerList {
 
     @Getter
     private final Layer baseLayer;
-    private final List<Layer> overlays = new ArrayList<>();
+    private final Map<LayerBucket, List<Layer>> layers = new EnumMap<>(LayerBucket.class);
     private List<Layer> allLayers = new ArrayList<>();
 
     public LayerList(final Container baseContainer) {
-        this.baseLayer = new Layer(baseContainer, Layer.BASE_LAYER);
+        for (LayerBucket bucket : LayerBucket.values()) {
+            this.layers.put(bucket, new ArrayList<>());
+        }
+        this.baseLayer = new Layer(baseContainer, LayerBucket.BASE);
+        this.layers.get(LayerBucket.BASE).add(this.baseLayer);
         this.updateAllLayers();
     }
 
@@ -27,16 +28,15 @@ public class LayerList {
     }
 
     public void add(final Layer layer) {
-        if (layer.priority() == Layer.BASE_LAYER) {
-            throw new IllegalArgumentException("Cannot add a layer with base layer priority (" + Layer.BASE_LAYER + "), base layer is already set");
+        if (layer.bucket().equals(LayerBucket.BASE)) {
+            throw new IllegalArgumentException("Cannot add a layer to the base bucket, base layer is already set");
         }
-        this.overlays.add(layer);
-        this.overlays.sort(Comparator.comparingInt(Layer::priority));
+        this.layers.get(layer.bucket()).add(layer);
         this.updateAllLayers();
     }
 
     public boolean remove(final Layer layer) {
-        if (this.overlays.remove(layer)) {
+        if (this.layers.get(layer.bucket()).remove(layer)) {
             this.updateAllLayers();
             return true;
         }
@@ -44,9 +44,10 @@ public class LayerList {
     }
 
     private void updateAllLayers() {
-        List<Layer> newAllLayers = new ArrayList<>(this.overlays.size() + 1);
-        newAllLayers.add(this.baseLayer);
-        newAllLayers.addAll(this.overlays);
+        List<Layer> newAllLayers = new ArrayList<>();
+        for (LayerBucket bucket : LayerBucket.values()) {
+            newAllLayers.addAll(this.layers.get(bucket));
+        }
         this.allLayers = newAllLayers;
     }
 
