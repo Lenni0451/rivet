@@ -98,6 +98,27 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     }
 
     @Override
+    public void onKeyDown(final KeyEvent event) {
+        if (this.child instanceof KeyboardListener keyboardListener) {
+            keyboardListener.onKeyDown(event);
+        }
+    }
+
+    @Override
+    public void onKeyUp(final KeyEvent event) {
+        if (this.child instanceof KeyboardListener keyboardListener) {
+            keyboardListener.onKeyUp(event);
+        }
+    }
+
+    @Override
+    public void onCharTyped(final CharEvent event) {
+        if (this.child instanceof KeyboardListener keyboardListener) {
+            keyboardListener.onCharTyped(event);
+        }
+    }
+
+    @Override
     public void onMouseDown(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             Rectangle vBar = this.getVBarBounds(size);
@@ -164,27 +185,6 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
                 }
                 mouseListener.onMouseMove(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), this.childSize);
             }
-        }
-    }
-
-    @Override
-    public void onKeyDown(final KeyEvent event) {
-        if (this.child instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyDown(event);
-        }
-    }
-
-    @Override
-    public void onKeyUp(final KeyEvent event) {
-        if (this.child instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyUp(event);
-        }
-    }
-
-    @Override
-    public void onCharTyped(final CharEvent event) {
-        if (this.child instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onCharTyped(event);
         }
     }
 
