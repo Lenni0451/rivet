@@ -41,6 +41,8 @@ public class DefaultDark extends BaseTheme {
         values.put(Theme.CHECKBOX_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
         values.put(Theme.CHECKBOX_OUTLINE_COLOR, Color.GRAY);
         values.put(Theme.CHECKBOX_CHECK_COLOR, Color.WHITE);
+
+        values.put(Theme.COLOR_PICKER_OUTLINE_COLOR, Color.GRAY);
     }
 
 }

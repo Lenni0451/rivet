@@ -124,6 +124,12 @@ public class ThinGLRenderer {
                             horizontalOrigin
                     );
                 }
+                case RenderCommand.FillGradientRect fillGradientRect -> ThinGL.renderer2D().filledRectangle(
+                        matrixStack,
+                        fillGradientRect.x(), fillGradientRect.y(),
+                        fillGradientRect.x() + fillGradientRect.width(), fillGradientRect.y() + fillGradientRect.height(),
+                        fillGradientRect.cbl(), fillGradientRect.cbr(), fillGradientRect.ctr(), fillGradientRect.ctl()
+                );
             }
         }
         for (RenderList subList : renderList.subLists()) {

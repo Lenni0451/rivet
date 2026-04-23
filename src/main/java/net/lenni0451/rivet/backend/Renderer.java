@@ -104,4 +104,8 @@ public class Renderer {
         this.currentRenderList.peek().render(new RenderCommand.Line(x1, y1, x2, y2, width, color));
     }
 
+    public void fillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr) {
+        this.currentRenderList.peek().render(new RenderCommand.FillGradientRect(x, y, width, height, ctl, cbl, cbr, ctr));
+    }
+
 }

@@ -7,10 +7,7 @@ import net.lenni0451.rivet.backend.thingl.ThinGLRenderer;
 import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.base.ScrollContainer;
-import net.lenni0451.rivet.component.impl.Checkbox;
-import net.lenni0451.rivet.component.impl.Label;
-import net.lenni0451.rivet.component.impl.Slider;
-import net.lenni0451.rivet.component.impl.TextField;
+import net.lenni0451.rivet.component.impl.*;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -150,6 +147,8 @@ public class Test extends GLFWApplicationRunner {
         ((Checkbox) container.children().getLast()).cornerRadius().set(8F);
         container.addChild(new Slider(this.rivet, 0, 100, 1)
                 .layoutOptions(new GridLayoutOptions(0, 6).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+        container.addChild(new ColorPicker(this.rivet, Color.RED)
+                .layoutOptions(new GridLayoutOptions(0, 7).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
     }
 
     @Override

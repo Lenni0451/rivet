@@ -73,6 +73,13 @@ public abstract class Theme {
     public static final ThemeKey<Float> CHECKBOX_TEXT_GAP = register("checkbox.text_gap", Float.class);
     public static final ThemeKey<Integer> CHECKBOX_ANIMATION_DURATION = register("checkbox.animation_duration", Integer.class);
 
+    // ColorPicker
+    public static final ThemeKey<Float> COLOR_PICKER_OUTLINE_WIDTH = register("color_picker.outline_width", Float.class);
+    public static final ThemeKey<Color> COLOR_PICKER_OUTLINE_COLOR = register("color_picker.outline_color", Color.class);
+    public static final ThemeKey<Float> COLOR_PICKER_PICKER_SIZE = register("color_picker.picker_size", Float.class);
+    public static final ThemeKey<Float> COLOR_PICKER_SLIDER_WIDTH = register("color_picker.slider_width", Float.class);
+    public static final ThemeKey<Float> COLOR_PICKER_GAP = register("color_picker.gap", Float.class);
+
     private static <T> ThemeKey<T> register(final String key, final Class<T> type) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type);
         ALL_KEYS.add(themeKey);

@@ -8,7 +8,7 @@ import net.lenni0451.rivet.text.TextOrigin;
 public sealed interface RenderCommand permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
         RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Text,
-        RenderCommand.Line {
+        RenderCommand.Line, RenderCommand.FillGradientRect {
 
     Rectangle bounds();
 
@@ -81,6 +81,13 @@ public sealed interface RenderCommand permits
             float maxX = Math.max(this.x1, this.x2) + this.width / 2F;
             float maxY = Math.max(this.y1, this.y2) + this.width / 2F;
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+        }
+    }
+
+    record FillGradientRect(float x, float y, float width, float height, Color ctl, Color cbl, Color cbr, Color ctr) implements RenderCommand {
+        @Override
+        public Rectangle bounds() {
+            return new Rectangle(this.x, this.y, this.width, this.height);
         }
     }
 

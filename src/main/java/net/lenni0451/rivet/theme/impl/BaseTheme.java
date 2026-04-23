@@ -39,6 +39,11 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.CHECKBOX_CHECK_WIDTH, 2F);
         values.put(Theme.CHECKBOX_TEXT_GAP, 0F);
         values.put(Theme.CHECKBOX_ANIMATION_DURATION, 100);
+
+        values.put(Theme.COLOR_PICKER_OUTLINE_WIDTH, 1F);
+        values.put(Theme.COLOR_PICKER_PICKER_SIZE, rivet.backend().getTextHeight() * 8F);
+        values.put(Theme.COLOR_PICKER_SLIDER_WIDTH, rivet.backend().getTextHeight());
+        values.put(Theme.COLOR_PICKER_GAP, rivet.backend().getTextHeight() / 3F);
     }
 
 }
