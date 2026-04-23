@@ -13,13 +13,15 @@ import org.joml.Matrix4fStack;
 public class ThinGLRenderer {
 
     public static void render(final Matrix4fStack matrixStack, final RenderList renderList) {
-        matrixStack.pushMatrix();
         switch (renderList.transform()) {
-            case TransformCommand.Scale scale -> matrixStack.scale(
-                    scale.x(),
-                    scale.y(),
-                    1
-            );
+            case TransformCommand.Scale scale -> {
+                matrixStack.pushMatrix();
+                matrixStack.scale(
+                        scale.x(),
+                        scale.y(),
+                        1
+                );
+            }
             case TransformCommand.Scissor scissor -> ThinGL.scissorStack().pushIntersection(
                     matrixStack,
                     scissor.x(),
@@ -27,11 +29,14 @@ public class ThinGLRenderer {
                     scissor.x() + scissor.width(),
                     scissor.y() + scissor.height()
             );
-            case TransformCommand.Translate translate -> matrixStack.translate(
-                    translate.x(),
-                    translate.y(),
-                    0
-            );
+            case TransformCommand.Translate translate -> {
+                matrixStack.pushMatrix();
+                matrixStack.translate(
+                        translate.x(),
+                        translate.y(),
+                        0
+                );
+            }
             case null -> {
             }
         }
@@ -124,10 +129,13 @@ public class ThinGLRenderer {
         for (RenderList subList : renderList.subLists()) {
             render(matrixStack, subList);
         }
-        if (renderList.transform() instanceof TransformCommand.Scissor) {
-            ThinGL.scissorStack().pop();
+        switch (renderList.transform()) {
+            case TransformCommand.Scale _ -> matrixStack.popMatrix();
+            case TransformCommand.Scissor _ -> ThinGL.scissorStack().pop();
+            case TransformCommand.Translate _ -> matrixStack.popMatrix();
+            case null -> {
+            }
         }
-        matrixStack.popMatrix();
     }
 
 }
