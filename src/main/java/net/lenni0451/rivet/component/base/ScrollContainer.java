@@ -12,8 +12,6 @@ import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.Renderable;
-import net.lenni0451.rivet.input.keyboard.CharEvent;
-import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.keyboard.KeyboardListener;
 import net.lenni0451.rivet.input.mouse.*;
 import net.lenni0451.rivet.math.Rectangle;
@@ -95,27 +93,6 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
 
         this.scrollXAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
         this.scrollYAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
-    }
-
-    @Override
-    public void onKeyDown(final KeyEvent event) {
-        if (this.child instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyDown(event);
-        }
-    }
-
-    @Override
-    public void onKeyUp(final KeyEvent event) {
-        if (this.child instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyUp(event);
-        }
-    }
-
-    @Override
-    public void onCharTyped(final CharEvent event) {
-        if (this.child instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onCharTyped(event);
-        }
     }
 
     @Override
