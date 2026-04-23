@@ -42,13 +42,6 @@ public class Rivet {
     private Theme theme;
     private boolean recalculate = false;
 
-    public Rivet theme(final Theme theme) {
-        this.theme = theme;
-        this.theme.apply(this);
-        this.recalculateNextFrame();
-        return this;
-    }
-
     public Rivet(final Backend backend, final Layout layout, final Size size) {
         this.backend = backend;
         this.layers = new LayerList(new Container(this, layout));
@@ -81,6 +74,13 @@ public class Rivet {
             return true;
         }
         return false;
+    }
+
+    public Rivet theme(final Theme theme) {
+        this.theme = theme;
+        this.theme.apply(this);
+        this.recalculateNextFrame();
+        return this;
     }
 
     public void size(final Size size) {
