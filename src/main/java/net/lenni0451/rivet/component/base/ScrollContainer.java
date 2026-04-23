@@ -2,6 +2,9 @@ package net.lenni0451.rivet.component.base;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.lenni0451.commons.animation.DynamicAnimation;
+import net.lenni0451.commons.animation.easing.EasingFunction;
+import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
@@ -56,7 +59,8 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     private float scrollY;
     private float targetScrollX;
     private float targetScrollY;
-    private long lastUpdate;
+    private final DynamicAnimation scrollXAnimation;
+    private final DynamicAnimation scrollYAnimation;
 
     private boolean vBarHovered;
     private boolean vBarPressed;
@@ -88,6 +92,9 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         this.scrollSpeed = new ThemeOption<>(rivet, Theme.SCROLL_SPEED);
         this.smoothScrolling = new ThemeOption<>(rivet, Theme.SCROLL_SMOOTH);
         this.animationDuration = new ThemeOption<>(rivet, Theme.SCROLL_ANIMATION_DURATION);
+
+        this.scrollXAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
+        this.scrollYAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
     }
 
     @Override
@@ -138,7 +145,6 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
             float scrollableHeight = size.height() - barHeight;
             float dragDelta = event.y() - this.dragStartY;
             this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
-            if (!this.smoothScrolling.value()) this.scrollY = this.targetScrollY;
         } else if (this.hBarPressed && hBar != null) {
             float contentWidth = this.childSize.width();
             float maxScroll = contentWidth - size.width();
@@ -146,7 +152,6 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
             float scrollableWidth = size.width() - barWidth;
             float dragDelta = event.x() - this.dragStartX;
             this.targetScrollX = MathUtils.clamp(this.initialScrollX + (dragDelta / scrollableWidth) * maxScroll, 0, maxScroll);
-            if (!this.smoothScrolling.value()) this.scrollX = this.targetScrollX;
         } else {
             if (this.child instanceof MouseListener mouseListener) {
                 boolean contains = new Rectangle(0, 0, size.width(), size.height()).contains(event.x(), event.y());
@@ -190,7 +195,6 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
             float maxScroll = Math.max(0, contentHeight - size.height());
             if (maxScroll > 0) {
                 this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
-                if (!this.smoothScrolling.value()) this.scrollY = this.targetScrollY;
             }
         }
         if (this.horizontalScrolling && event.scrollX() != 0 && !this.hBarPressed) {
@@ -198,7 +202,6 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
             float maxScroll = Math.max(0, contentWidth - size.width());
             if (maxScroll > 0) {
                 this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
-                if (!this.smoothScrolling.value()) this.scrollX = this.targetScrollX;
             }
         }
         if (this.child instanceof MouseListener mouseListener) {
@@ -223,31 +226,15 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     }
 
     private void updateAnimation() {
-        if (this.lastUpdate == 0) {
-            this.lastUpdate = System.currentTimeMillis();
-            return;
-        }
-        long now = System.currentTimeMillis();
-        float dt = (now - this.lastUpdate) / 1000F;
-        this.lastUpdate = now;
-
         if (this.smoothScrolling.value()) {
-            float duration = this.animationDuration.value() / 1000F;
-            float t = MathUtils.clamp(dt / duration, 0, 1);
-            if (Math.abs(this.targetScrollX - this.scrollX) > 0.1F) {
-                this.scrollX = this.scrollX + (this.targetScrollX - this.scrollX) * t;
-            } else {
-                this.scrollX = this.targetScrollX;
-            }
-            if (Math.abs(this.targetScrollY - this.scrollY) > 0.1F) {
-                this.scrollY = this.scrollY + (this.targetScrollY - this.scrollY) * t;
-            } else {
-                this.scrollY = this.targetScrollY;
-            }
+            this.scrollXAnimation.setTarget(this.targetScrollX);
+            this.scrollYAnimation.setTarget(this.targetScrollY);
         } else {
-            this.scrollX = this.targetScrollX;
-            this.scrollY = this.targetScrollY;
+            this.scrollXAnimation.setTarget(this.targetScrollX).finish();
+            this.scrollYAnimation.setTarget(this.targetScrollY).finish();
         }
+        this.scrollX = this.scrollXAnimation.getValue();
+        this.scrollY = this.scrollYAnimation.getValue();
     }
 
     private void renderBar(final Renderer renderer, final Rectangle bounds, final boolean hovered, final boolean pressed) {

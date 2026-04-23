@@ -3,8 +3,12 @@ package net.lenni0451.rivet.component.base;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.lenni0451.commons.animation.Animation;
+import net.lenni0451.commons.animation.AnimationDirection;
+import net.lenni0451.commons.animation.EasingBehavior;
+import net.lenni0451.commons.animation.easing.EasingFunction;
+import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
@@ -49,7 +53,7 @@ public class Button extends Component implements MouseListener, Renderable {
     private Padding innerPadding = new Padding(20, 5, 20, 5);
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
-    private long hoverStateChange = 0;
+    private final Animation hoverAnimation;
 
     public Button(final Rivet rivet, final Component child, final Consumer<MouseButtonEvent> clickListener) {
         super(rivet);
@@ -65,18 +69,22 @@ public class Button extends Component implements MouseListener, Renderable {
         this.clickColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_COLOR);
         this.clickOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_OUTLINE_COLOR);
         this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
+
+        this.hoverAnimation = new Animation()
+                .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
+                .finish(AnimationDirection.BACKWARDS);
     }
 
     @Override
     public void onMouseEnter() {
         this.hovered = true;
-        this.hoverStateChange = System.currentTimeMillis();
+        this.hoverAnimation.runInDirection(AnimationDirection.FORWARDS);
     }
 
     @Override
     public void onMouseLeave() {
         this.hovered = false;
-        this.hoverStateChange = System.currentTimeMillis();
+        this.hoverAnimation.runInDirection(AnimationDirection.BACKWARDS);
     }
 
     @Override
@@ -96,12 +104,12 @@ public class Button extends Component implements MouseListener, Renderable {
     public void render(final Renderer renderer, final Size size) {
         float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
-        float animationProgress = MathUtils.clamp((System.currentTimeMillis() - this.hoverStateChange) / (float) this.animationDuration.value(), 0, 1);
+        float animationProgress = this.hoverAnimation.getValue();
         Color color;
         Color outlineColor;
         if (this.pressed.isEmpty()) {
-            color = this.hovered ? Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value()) : Color.interpolate(animationProgress, this.activeColor.value(), this.inactiveColor.value());
-            outlineColor = this.hovered ? Color.interpolate(animationProgress, this.inactiveOutlineColor.value(), this.activeOutlineColor.value()) : Color.interpolate(animationProgress, this.activeOutlineColor.value(), this.inactiveOutlineColor.value());
+            color = Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value());
+            outlineColor = Color.interpolate(animationProgress, this.inactiveOutlineColor.value(), this.activeOutlineColor.value());
         } else {
             color = this.clickColor.value();
             outlineColor = this.clickOutlineColor.value();
