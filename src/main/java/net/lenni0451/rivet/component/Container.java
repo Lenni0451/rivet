@@ -95,11 +95,11 @@ public class Container extends Component implements MouseListener, Renderable {
         this.mouseDown = true;
         Child child = this.findChildAt(event.x(), event.y());
         if (child != null) {
+            this.rivet.focusedComponent(child.component);
             if (child.component instanceof MouseListener mouseListener) {
                 mouseListener.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
             }
             this.clickedComponent.down(child.component, event.button());
-            this.rivet.focusedComponent(child.component);
         }
     }
 
