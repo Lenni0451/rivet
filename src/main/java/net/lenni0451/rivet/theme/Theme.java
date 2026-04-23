@@ -79,6 +79,7 @@ public abstract class Theme {
     public static final ThemeKey<Float> COLOR_PICKER_PICKER_SIZE = register("color_picker.picker_size", Float.class);
     public static final ThemeKey<Float> COLOR_PICKER_SLIDER_WIDTH = register("color_picker.slider_width", Float.class);
     public static final ThemeKey<Float> COLOR_PICKER_GAP = register("color_picker.gap", Float.class);
+    public static final ThemeKey<Float> COLOR_PICKER_SELECTOR_SIZE = register("color_picker.selector_size", Float.class);
 
     private static <T> ThemeKey<T> register(final String key, final Class<T> type) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type);

@@ -44,6 +44,7 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.COLOR_PICKER_PICKER_SIZE, rivet.backend().getTextHeight() * 8F);
         values.put(Theme.COLOR_PICKER_SLIDER_WIDTH, rivet.backend().getTextHeight());
         values.put(Theme.COLOR_PICKER_GAP, rivet.backend().getTextHeight() / 3F);
+        values.put(Theme.COLOR_PICKER_SELECTOR_SIZE, 4F);
     }
 
 }

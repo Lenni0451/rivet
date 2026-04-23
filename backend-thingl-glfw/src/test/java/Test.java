@@ -123,6 +123,7 @@ public class Test extends GLFWApplicationRunner {
                 values.put(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(116, 165, 229).darker());
                 values.put(Theme.BUTTON_CORNER_RADIUS, 0);
                 values.put(Theme.BUTTON_OUTLINE_WIDTH, 3);
+                values.put(Theme.COLOR_PICKER_SELECTOR_SIZE, 6F);
             }
         });
 

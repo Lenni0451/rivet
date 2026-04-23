@@ -44,6 +44,7 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     private final ThemeOption<Float> pickerSize;
     private final ThemeOption<Float> sliderWidth;
     private final ThemeOption<Float> gap;
+    private final ThemeOption<Float> selectorSize;
 
     public ColorPicker(final Rivet rivet, final Color color) {
         super(rivet);
@@ -55,6 +56,7 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
         this.pickerSize = new ThemeOption<>(rivet, Theme.COLOR_PICKER_PICKER_SIZE);
         this.sliderWidth = new ThemeOption<>(rivet, Theme.COLOR_PICKER_SLIDER_WIDTH);
         this.gap = new ThemeOption<>(rivet, Theme.COLOR_PICKER_GAP);
+        this.selectorSize = new ThemeOption<>(rivet, Theme.COLOR_PICKER_SELECTOR_SIZE);
     }
 
     public ColorPicker color(final Color color) {
@@ -168,7 +170,7 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
         // Selection circle
         float cursorX = this.saturation * pickerSize;
         float cursorY = (1 - this.brightness) * pickerSize;
-        renderer.outlineCircle(cursorX, cursorY, 4, 1, this.brightness > 0.5 ? Color.BLACK : Color.WHITE);
+        renderer.outlineCircle(cursorX, cursorY, this.selectorSize.value(), 1, this.brightness > 0.5 ? Color.BLACK : Color.WHITE);
         renderer.outlineRect(0, 0, pickerSize, pickerSize, this.outlineWidth.value(), this.outlineColor.value());
     }
 
