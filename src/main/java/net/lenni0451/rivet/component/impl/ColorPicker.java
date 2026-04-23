@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 @Accessors(fluent = true, chain = true)
 public class ColorPicker extends Component implements MouseListener, Renderable {
 
-    private static final int SATURATION_STEPS = 16;
     private static final int HUE_STEPS = 12;
 
     @Getter
@@ -144,28 +143,9 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     }
 
     private void renderSaturationValue(final Renderer renderer, final float pickerSize) {
-        // Subdivide the saturation/value box into a grid of quads for smooth interpolation.
-        float stepSize = pickerSize / SATURATION_STEPS;
-        for (int x = 0; x < SATURATION_STEPS; x++) {
-            for (int y = 0; y < SATURATION_STEPS; y++) {
-                float x1 = x * stepSize;
-                float y1 = y * stepSize;
-                float x2 = (x + 1) * stepSize;
-                float y2 = (y + 1) * stepSize;
-
-                float s1 = (float) x / SATURATION_STEPS;
-                float s2 = (float) (x + 1) / SATURATION_STEPS;
-                float b1 = 1 - (float) y / SATURATION_STEPS;
-                float b2 = 1 - (float) (y + 1) / SATURATION_STEPS;
-
-                Color ctl = Color.fromHSB(this.hue, s1, b1);
-                Color ctr = Color.fromHSB(this.hue, s2, b1);
-                Color cbr = Color.fromHSB(this.hue, s2, b2);
-                Color cbl = Color.fromHSB(this.hue, s1, b2);
-
-                renderer.fillGradientRect(x1, y1, x2 - x1, y2 - y1, ctl, cbl, cbr, ctr);
-            }
-        }
+        renderer.fillRect(0, 0, pickerSize, pickerSize, Color.fromHSB(this.hue, 1F, 1F));
+        renderer.fillGradientRect(0, 0, pickerSize, pickerSize, Color.WHITE, Color.WHITE, Color.WHITE.withAlpha(0), Color.WHITE.withAlpha(0));
+        renderer.fillGradientRect(0, 0, pickerSize, pickerSize, Color.BLACK.withAlpha(0), Color.BLACK, Color.BLACK, Color.BLACK.withAlpha(0));
 
         // Selection circle
         float cursorX = this.saturation * pickerSize;
