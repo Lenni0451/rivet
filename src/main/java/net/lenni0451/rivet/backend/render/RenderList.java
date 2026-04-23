@@ -12,32 +12,23 @@ import java.util.List;
 @ToString
 @RequiredArgsConstructor
 @Accessors(fluent = true, chain = true)
-public class RenderList {
+public final class RenderList implements RenderElement {
 
     @Getter
     @Nullable
     private final TransformCommand transform;
-    private final List<RenderCommand> renders = new ArrayList<>();
-    private final List<RenderList> subLists = new ArrayList<>();
+    private final List<RenderElement> elements = new ArrayList<>();
 
     public RenderList() {
         this(null);
     }
 
-    public List<RenderCommand> renders() {
-        return List.copyOf(this.renders);
+    public List<RenderElement> elements() {
+        return List.copyOf(this.elements);
     }
 
-    public void render(final RenderCommand command) {
-        this.renders.add(command);
-    }
-
-    public List<RenderList> subLists() {
-        return List.copyOf(this.subLists);
-    }
-
-    public void subList(final RenderList subList) {
-        this.subLists.add(subList);
+    public void render(final RenderElement element) {
+        this.elements.add(element);
     }
 
 }

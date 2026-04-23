@@ -5,7 +5,7 @@ import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.TextOrigin;
 
-public sealed interface RenderCommand permits
+public sealed interface RenderCommand extends RenderElement permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
         RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Text,
         RenderCommand.Line, RenderCommand.FillGradientRect {

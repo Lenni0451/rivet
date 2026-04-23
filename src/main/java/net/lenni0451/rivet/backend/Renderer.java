@@ -40,7 +40,7 @@ public class Renderer {
         this.currentRenderList.push(new RenderList(command));
         renderer.run();
         RenderList subList = this.currentRenderList.pop();
-        this.currentRenderList.peek().subList(subList);
+        this.currentRenderList.peek().render(subList);
     }
 
 
