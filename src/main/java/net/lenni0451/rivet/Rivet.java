@@ -221,7 +221,7 @@ public class Rivet {
     private Layer findLayerAt(final float x, final float y) {
         for (int i = this.layers.get().size() - 1; i >= 0; i--) {
             Layer layer = this.layers.get().get(i);
-            if (layer.container().intercepts(x, y)) {
+            if (layer.bucket().interceptable() && layer.container().intercepts(x, y)) {
                 return layer;
             }
         }
