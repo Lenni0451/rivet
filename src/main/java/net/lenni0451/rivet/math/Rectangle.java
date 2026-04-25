@@ -17,6 +17,14 @@ public record Rectangle(float x, float y, float width, float height) {
         this(x, y, size.width(), size.height());
     }
 
+    public float maxX() {
+        return this.x + this.width;
+    }
+
+    public float maxY() {
+        return this.y + this.height;
+    }
+
     public Size size() {
         return new Size(this.width, this.height);
     }

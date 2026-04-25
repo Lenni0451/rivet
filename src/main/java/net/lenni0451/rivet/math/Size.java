@@ -13,8 +13,4 @@ public record Size(float width, float height) {
         return new Size(this.width * x, this.height * y);
     }
 
-    public Rectangle at(final float x, final float y) {
-        return new Rectangle(x, y, this.width, this.height);
-    }
-
 }

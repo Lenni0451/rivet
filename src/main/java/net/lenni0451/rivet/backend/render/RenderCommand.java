@@ -69,7 +69,7 @@ public sealed interface RenderCommand extends RenderElement permits
     record Text(ShapedText shapedText, float x, float y, TextOrigin.Horizontal horizontalOrigin, TextOrigin.Vertical verticalOrigin) implements RenderCommand {
         @Override
         public Rectangle bounds() {
-            return this.shapedText.visualSize().at(this.x, this.y);
+            return new Rectangle(this.x, this.y, this.shapedText.visualSize());
         }
     }
 
