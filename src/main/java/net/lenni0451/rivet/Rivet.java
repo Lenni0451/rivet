@@ -17,6 +17,7 @@ import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerList;
 import net.lenni0451.rivet.layout.Layout;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.impl.DefaultDark;
@@ -137,7 +138,7 @@ public class Rivet {
         float y = event.y() / this.scale;
         Layer layer = this.findLayerAt(x, y);
         if (layer != null) {
-            layer.container().onMouseDown(event.withX(x).withY(y), this.scaledSize());
+            layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
             this.clickedLayer.down(layer, event.button());
         }
     }
@@ -152,7 +153,7 @@ public class Rivet {
         List<Layer> layers = this.layers.get();
         for (Layer layer : layers) {
             if (this.clickedLayer.is(layer)) {
-                layer.container().onMouseUp(event.withX(x).withY(y), this.scaledSize());
+                layer.container().onMouseUp(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
                 this.clickedLayer.up(event.button());
             }
         }
@@ -171,16 +172,16 @@ public class Rivet {
             Layer layer = layers.get(i);
             if (this.clickedLayer.element() != null) {
                 if (this.clickedLayer.is(layer)) {
-                    layer.container().onMouseMove(event.withX(x).withY(y), this.scaledSize());
+                    layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
                 } else {
-                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), this.scaledSize());
+                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
                 }
             } else {
                 if (!intercepted && layer.container().intercepts(x, y)) {
-                    layer.container().onMouseMove(event.withX(x).withY(y), this.scaledSize());
+                    layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
                     intercepted = true;
                 } else {
-                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), this.scaledSize());
+                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
                 }
             }
         }
@@ -195,7 +196,7 @@ public class Rivet {
         float y = event.y() / this.scale;
         Layer layer = this.findLayerAt(x, y);
         if (layer != null) {
-            layer.container().onMouseScroll(event.withX(x).withY(y), this.scaledSize());
+            layer.container().onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
         }
     }
 
@@ -214,7 +215,7 @@ public class Rivet {
         renderer.scale(this.scale, () -> {
             //TODO: Pass viewport to container to allow skipping out of viewport components
             for (Layer layer : layers) {
-                layer.container().render(renderer, scaledSize);
+                layer.container().render(renderer, new Rectangle(scaledSize));
             }
         });
         return renderer.renderList();

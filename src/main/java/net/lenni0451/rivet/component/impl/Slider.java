@@ -14,6 +14,7 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -113,30 +114,30 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Size size) {
+    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
-            this.updateValue(event.x(), size);
+            this.updateValue(event.x(), bounds);
         }
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Size size) {
+    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = false;
         }
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Size size) {
+    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.dragged) {
-            this.updateValue(event.x(), size);
+            this.updateValue(event.x(), bounds);
         }
     }
 
-    private void updateValue(final float mouseX, final Size size) {
+    private void updateValue(final float mouseX, final Rectangle bounds) {
         float thumbWidth = this.thumbWidth.value();
-        float barWidth = this.barWidth(size);
+        float barWidth = this.barWidth(bounds);
         float progress = (mouseX - thumbWidth / 2F) / barWidth;
         progress = MathUtils.clamp(progress, 0, 1);
         double newValue = this.min + progress * (this.max - this.min);
@@ -145,25 +146,25 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    public void render(final Renderer renderer, final Rectangle bounds) {
         float thumbWidth = this.thumbWidth.value();
         float thumbHeight = this.thumbHeight.value();
         float barHeight = this.barHeight.value();
-        float sliderCenter = this.ticks != null ? thumbHeight / 2F : size.height() / 2F;
-        float barWidth = this.barWidth(size);
+        float sliderCenter = this.ticks != null ? thumbHeight / 2F : bounds.height() / 2F;
+        float barWidth = this.barWidth(bounds);
         double progress = (this.value - this.min) / (this.max - this.min);
         float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
 
-        this.renderBar(renderer, size, sliderCenter, barHeight, thumbWidth);
+        this.renderBar(renderer, bounds, sliderCenter, barHeight, thumbWidth);
         this.renderThumb(renderer, sliderCenter, thumbWidth, thumbHeight, thumbX);
         if (this.ticks != null) this.renderTicks(renderer, sliderCenter, barHeight, thumbWidth, thumbHeight, barWidth);
     }
 
-    private void renderBar(final Renderer renderer, final Size size, final float sliderCenter, final float barHeight, final float thumbWidth) {
+    private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth) {
         if (this.thumbEncased.value()) {
-            renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, bounds.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
         } else {
-            renderer.fillOptimizedRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.fillOptimizedRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, bounds.width() - thumbWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
         }
     }
 
@@ -232,8 +233,8 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.idealSize = new Size(this.rivet.backend().getTextHeight() * 10, height);
     }
 
-    private float barWidth(final Size size) {
-        return size.width() - this.thumbWidth.value();
+    private float barWidth(final Rectangle bounds) {
+        return bounds.width() - this.thumbWidth.value();
     }
 
 

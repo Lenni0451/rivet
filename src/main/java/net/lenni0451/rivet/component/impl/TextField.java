@@ -20,6 +20,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -169,7 +170,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Size size) {
+    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             long now = System.currentTimeMillis();
             if (now - this.lastClick < 250) {
@@ -198,30 +199,30 @@ public class TextField extends Component implements Renderable, KeyboardListener
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Size size) {
+    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.selecting = false;
         }
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Size size) {
+    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.selecting) {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.left() + this.scrollX);
         }
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
-        float visibleWidth = size.width() - this.innerPadding.left() - this.innerPadding.right();
+    public void render(final Renderer renderer, final Rectangle bounds) {
+        float visibleWidth = bounds.width() - this.innerPadding.left() - this.innerPadding.right();
         float textHeight = this.rivet.backend().getTextHeight();
         this.ensureCursorVisible(visibleWidth);
 
-        renderer.fillOptimizedRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.backgroundColor.value());
-        renderer.outlineOptimizedRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.rivet.focusedComponent() == this ? this.focusedOutlineColor.value() : this.outlineColor.value());
+        renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
+        renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.rivet.focusedComponent() == this ? this.focusedOutlineColor.value() : this.outlineColor.value());
 
-        renderer.scissor(this.innerPadding.left(), this.innerPadding.top(), visibleWidth, size.height() - this.innerPadding.top() - this.innerPadding.bottom(), () -> {
-            renderer.translate(this.innerPadding.left(), this.innerPadding.top() + (size.height() - this.innerPadding.top() - this.innerPadding.bottom()) / 2F, () -> {
+        renderer.scissor(this.innerPadding.left(), this.innerPadding.top(), visibleWidth, bounds.height() - this.innerPadding.top() - this.innerPadding.bottom(), () -> {
+            renderer.translate(this.innerPadding.left(), this.innerPadding.top() + (bounds.height() - this.innerPadding.top() - this.innerPadding.bottom()) / 2F, () -> {
                 renderer.translate(-this.scrollX, 0, () -> {
                     if (this.cursor != this.selection) {
                         float x1 = this.shapedText.cursorPosition(this.cursor);

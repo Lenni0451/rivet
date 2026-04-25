@@ -91,24 +91,24 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Size size) {
+    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         this.mouseDown = true;
         Child child = this.findChildAt(event.x(), event.y());
         if (child != null) {
             this.rivet.focusedComponent(child.component);
             if (child.component instanceof MouseListener mouseListener) {
-                mouseListener.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
+                mouseListener.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
             }
             this.clickedComponent.down(child.component, event.button());
         }
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Size size) {
+    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         for (Child child : this.children) {
             if (this.clickedComponent.is(child.component)) {
                 if (child.component instanceof MouseListener mouseListener) {
-                    mouseListener.onMouseUp(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
+                    mouseListener.onMouseUp(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
                 }
                 this.clickedComponent.up(event.button());
             }
@@ -117,7 +117,7 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Size size) {
+    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Child topChild = this.findChildAt(event.x(), event.y());
         for (Child child : this.children) {
             if (child.component instanceof MouseListener mouseListener) {
@@ -137,27 +137,27 @@ public class Container extends Component implements MouseListener, Renderable {
                 }
 
                 if ((isTop && !this.mouseDown) || isDragged) {
-                    mouseListener.onMouseMove(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
+                    mouseListener.onMouseMove(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
                 }
             }
         }
     }
 
     @Override
-    public void onMouseScroll(final MouseScrollEvent event, final Size size) {
+    public void onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
         if (child != null && child.component instanceof MouseListener mouseListener) {
-            mouseListener.onMouseScroll(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.size());
+            mouseListener.onMouseScroll(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
         }
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    public void render(final Renderer renderer, final Rectangle bounds) {
         for (Child child : this.children) {
             if (child.component instanceof Renderable renderable) {
                 renderer.translate(child.bounds.x(), child.bounds.y(), () -> {
                     renderer.scissor(0, 0, child.bounds.width(), child.bounds.height(), () -> {
-                        renderable.render(renderer, child.bounds.size());
+                        renderable.render(renderer, child.bounds.add(bounds.x(), bounds.y()));
                     });
                 });
             }

@@ -8,7 +8,7 @@ import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
-import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.TextFormat;
 import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.text.TextParser;
@@ -73,21 +73,21 @@ public class FormattedLabel extends Component implements Renderable {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    public void render(final Renderer renderer, final Rectangle bounds) {
         float x = switch (this.horizontalOrigin) {
             case LOGICAL_LEFT -> 0;
             case VISUAL_LEFT -> 0;
-            case VISUAL_CENTER -> size.width() / 2F;
-            case VISUAL_RIGHT -> size.width();
+            case VISUAL_CENTER -> bounds.width() / 2F;
+            case VISUAL_RIGHT -> bounds.width();
         };
         float y = switch (this.verticalOrigin) {
-            case BASELINE -> size.height() / 2F;
+            case BASELINE -> bounds.height() / 2F;
             case LOGICAL_TOP -> 0;
-            case LOGICAL_CENTER -> size.height() / 2F;
-            case LOGICAL_BOTTOM -> size.height();
+            case LOGICAL_CENTER -> bounds.height() / 2F;
+            case LOGICAL_BOTTOM -> bounds.height();
             case VISUAL_TOP -> 0;
-            case VISUAL_CENTER -> size.height() / 2F;
-            case VISUAL_BOTTOM -> size.height();
+            case VISUAL_CENTER -> bounds.height() / 2F;
+            case VISUAL_BOTTOM -> bounds.height();
         };
         renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
     }

@@ -17,6 +17,7 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -88,12 +89,12 @@ public class Button extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Size size) {
+    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         this.pressed.add(event.button());
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Size size) {
+    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (this.hovered) {
             this.clickListener.accept(event);
         }
@@ -101,8 +102,8 @@ public class Button extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
-        float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
+    public void render(final Renderer renderer, final Rectangle bounds) {
+        float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(bounds.width(), bounds.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
         float animationProgress = this.hoverAnimation.getValue();
         Color color;
@@ -114,18 +115,18 @@ public class Button extends Component implements MouseListener, Renderable {
             color = this.clickColor.value();
             outlineColor = this.clickOutlineColor.value();
         }
-        renderer.fillOptimizedRoundedRect(0, 0, size.width(), size.height(), cornerRadius, color);
+        renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, color);
         if (outlineWidth > 0) {
-            renderer.outlineOptimizedRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
+            renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, outlineWidth, outlineColor);
         }
 
         if (this.child instanceof Renderable renderable) {
-            float width = size.width() - this.innerPadding.left() - this.innerPadding.right();
-            float height = size.height() - this.innerPadding.top() - this.innerPadding.bottom();
+            float width = bounds.width() - this.innerPadding.left() - this.innerPadding.right();
+            float height = bounds.height() - this.innerPadding.top() - this.innerPadding.bottom();
 
             renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
                 renderer.scissor(0, 0, width, height, () -> {
-                    renderable.render(renderer, new Size(width, height));
+                    renderable.render(renderer, new Rectangle(bounds.x() + this.innerPadding.left(), bounds.y() + this.innerPadding.top(), width, height));
                 });
             });
         }

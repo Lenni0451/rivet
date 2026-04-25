@@ -13,6 +13,7 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -78,7 +79,7 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Size size) {
+    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (!event.button().equals(MouseButton.LEFT)) return;
 
         float pickerSize = this.pickerSize.value();
@@ -98,14 +99,14 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Size size) {
+    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         this.draggingPicker = false;
         this.draggingHue = false;
         this.draggingAlpha = false;
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Size size) {
+    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.draggingPicker) this.updatePicker(event.x(), event.y());
         else if (this.draggingHue) this.updateHue(event.y());
         else if (this.draggingAlpha) this.updateAlpha(event.x());
@@ -131,7 +132,7 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    public void render(final Renderer renderer, final Rectangle bounds) {
         float pickerSize = this.pickerSize.value();
         float sliderWidth = this.sliderWidth.value();
         float gap = this.gap.value();
