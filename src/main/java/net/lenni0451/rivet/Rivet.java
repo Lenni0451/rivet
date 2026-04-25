@@ -23,7 +23,6 @@ import net.lenni0451.rivet.theme.impl.DefaultDark;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
 public class Rivet {
@@ -200,7 +199,7 @@ public class Rivet {
         }
     }
 
-    public void render(final Consumer<RenderList> renderListConsumer) {
+    public RenderList render() {
         Size scaledSize = this.scaledSize();
         List<Layer> layers = this.layers.get();
         if (this.recalculate) {
@@ -218,7 +217,7 @@ public class Rivet {
                 layer.container().render(renderer, scaledSize);
             }
         });
-        renderListConsumer.accept(renderer.renderList());
+        return renderer.renderList();
     }
 
     @Nullable
