@@ -17,10 +17,9 @@ public class ThinGLRenderer {
         switch (renderList.transform()) {
             case TransformCommand.Scale scale -> {
                 matrixStack.pushMatrix();
-                matrixStack.scale(
+                matrixStack.scaleXY(
                         scale.x(),
-                        scale.y(),
-                        1
+                        scale.y()
                 );
             }
             case TransformCommand.Scissor scissor -> ThinGL.scissorStack().pushIntersection(

@@ -14,7 +14,9 @@ dependencies {
     api (libs.thingl) {
         exclude group: "org.jetbrains.kotlin"
     }
+    api libs.lwjgl
     api libs.lwjgl.glfw
+    api libs.lwjgl.opengl
 
     testImplementation libs.bundles.lwjgl
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
