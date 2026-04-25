@@ -154,8 +154,12 @@ public class Test extends GLFWApplicationRunner {
 
     @Override
     protected void render(final Matrix4fStack matrix4fStack) {
+        ThinGL.programs().getMsaa().bindInput();
         ThinGL.renderer2D().filledRectangle(matrix4fStack, 0, 0, 3000, 2000, Color.GRAY.darker().darker().darker().darker());
         this.rivet.render(renderList -> ThinGLRenderer.render(matrix4fStack, renderList));
+        ThinGL.programs().getMsaa().unbindInput();
+        ThinGL.programs().getMsaa().renderFullscreen();
+        ThinGL.programs().getMsaa().clearInput();
     }
 
     private float[] getMouseScale() {
