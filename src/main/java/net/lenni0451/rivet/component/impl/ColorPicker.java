@@ -206,6 +206,10 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     }
 
     private void renderPreview(final Renderer renderer, final float pickerSize, final float sliderWidth, final float gap) {
+        renderer.fillRect(pickerSize + gap, pickerSize + gap, sliderWidth / 2F, sliderWidth / 2F, Color.WHITE);
+        renderer.fillRect(pickerSize + gap + sliderWidth / 2F, pickerSize + gap, sliderWidth / 2F, sliderWidth / 2F, Color.LIGHT_GRAY);
+        renderer.fillRect(pickerSize + gap + sliderWidth / 2F, pickerSize + gap + sliderWidth / 2F, sliderWidth / 2F, sliderWidth / 2F, Color.WHITE);
+        renderer.fillRect(pickerSize + gap, pickerSize + gap + sliderWidth / 2F, sliderWidth / 2F, sliderWidth / 2F, Color.LIGHT_GRAY);
         renderer.fillRect(pickerSize + gap, pickerSize + gap, sliderWidth, sliderWidth, this.color);
         renderer.outlineRect(pickerSize + gap, pickerSize + gap, sliderWidth, sliderWidth, this.outlineWidth.value(), this.outlineColor.value());
     }
