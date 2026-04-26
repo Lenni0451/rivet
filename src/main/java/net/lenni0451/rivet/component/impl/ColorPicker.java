@@ -151,8 +151,8 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
         // Selection circle
         float cursorX = this.saturation * pickerSize;
         float cursorY = (1 - this.brightness) * pickerSize;
-        renderer.outlineCircle(cursorX, cursorY, this.selectorSize.value(), 1, this.brightness > 0.5 ? Color.BLACK : Color.WHITE);
         renderer.outlineRect(0, 0, pickerSize, pickerSize, this.outlineWidth.value(), this.outlineColor.value());
+        renderer.outlineCircle(cursorX, cursorY, this.selectorSize.value(), 1, this.brightness > 0.5 ? Color.BLACK : Color.WHITE);
     }
 
     private void renderHueSlider(final Renderer renderer, final float pickerSize, final float sliderWidth, final float gap) {
