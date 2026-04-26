@@ -9,10 +9,8 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
-import net.lenni0451.rivet.input.mouse.MouseButton;
-import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseListener;
-import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.input.keyboard.ModifierKey;
+import net.lenni0451.rivet.input.mouse.*;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
@@ -110,6 +108,20 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
         if (this.draggingPicker) this.updatePicker(event.x(), event.y());
         else if (this.draggingHue) this.updateHue(event.y());
         else if (this.draggingAlpha) this.updateAlpha(event.x());
+    }
+
+    @Override
+    public boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+        if (this.rivet.backend().isKeyDown(ModifierKey.SHIFT)) {
+            this.alpha = MathUtils.clamp(this.alpha + event.scrollY() / 20, 0, 1);
+            this.updateColor();
+            return true;
+        } else if (this.rivet.backend().isKeyDown(ModifierKey.CONTROL)) {
+            this.hue = MathUtils.clamp(this.hue - event.scrollY() / 20, 0, 1);
+            this.updateColor();
+            return true;
+        }
+        return false;
     }
 
     private void updatePicker(float mouseX, float mouseY) {

@@ -3,6 +3,7 @@ package net.lenni0451.rivet.backend.thingl;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.ShapedText;
+import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.text.TextSection;
 import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
@@ -65,6 +66,11 @@ public record ThinGLBackend(long window, FontSet fontSet) implements Backend {
         } finally {
             MemoryUtil.memFree(buffer);
         }
+    }
+
+    @Override
+    public boolean isKeyDown(final Key key) {
+        return GLFW.glfwGetKey(this.window, GLFWMapper.mapKey(key)) == GLFW.GLFW_PRESS;
     }
 
 }
