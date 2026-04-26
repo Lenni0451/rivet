@@ -97,7 +97,9 @@ public class Renderer {
     }
 
     public void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
-        this.currentRenderList.peek().render(new RenderCommand.Text(shapedText, x, y, horizontalOrigin, verticalOrigin));
+        float tx = x + shapedText.offset(horizontalOrigin);
+        float ty = y + shapedText.offset(verticalOrigin);
+        this.currentRenderList.peek().render(new RenderCommand.Text(shapedText, tx, ty));
     }
 
     public void line(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {

@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.backend.thingl;
 
 import net.lenni0451.rivet.backend.ShapedText;
-import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.math.Rectangle;
 import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
@@ -11,15 +11,15 @@ import org.joml.primitives.Rectanglef;
 public record ThinGLShapedText(ShapedTextLine shapedTextLine) implements ShapedText {
 
     @Override
-    public Size visualSize() {
+    public Rectangle visualBounds() {
         Rectanglef bounds = this.shapedTextLine.visualBounds();
-        return new Size(bounds.lengthX(), bounds.lengthY());
+        return new Rectangle(bounds.minX, bounds.minY, bounds.lengthX(), bounds.lengthY());
     }
 
     @Override
-    public Size logicalSize() {
+    public Rectangle logicalBounds() {
         Rectanglef bounds = this.shapedTextLine.logicalBounds();
-        return new Size(bounds.lengthX(), bounds.lengthY());
+        return new Rectangle(bounds.minX, bounds.minY, bounds.lengthX(), bounds.lengthY());
     }
 
     @Override
@@ -35,7 +35,7 @@ public record ThinGLShapedText(ShapedTextLine shapedTextLine) implements ShapedT
                 }
             }
         }
-        return this.logicalSize().width();
+        return this.logicalBounds().width();
     }
 
     @Override

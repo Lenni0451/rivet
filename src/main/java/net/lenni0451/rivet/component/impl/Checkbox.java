@@ -135,7 +135,7 @@ public class Checkbox extends Component implements MouseListener, Renderable {
         float height = this.rivet.backend().getTextHeight();
         float width = height;
         if (!this.text.isEmpty()) {
-            width += this.textGap.value() + this.shapedText.logicalSize().width();
+            width += this.textGap.value() + this.shapedText.logicalBounds().width();
         }
         this.idealSize = new Size(width, height);
     }

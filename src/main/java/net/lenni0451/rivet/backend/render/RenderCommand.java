@@ -3,7 +3,6 @@ package net.lenni0451.rivet.backend.render;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
-import net.lenni0451.rivet.text.TextOrigin;
 
 public sealed interface RenderCommand extends RenderElement permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
@@ -66,10 +65,10 @@ public sealed interface RenderCommand extends RenderElement permits
         }
     }
 
-    record Text(ShapedText shapedText, float x, float y, TextOrigin.Horizontal horizontalOrigin, TextOrigin.Vertical verticalOrigin) implements RenderCommand {
+    record Text(ShapedText shapedText, float x, float y) implements RenderCommand {
         @Override
         public Rectangle bounds() {
-            return new Rectangle(this.x, this.y, this.shapedText.visualSize());
+            return this.shapedText.visualBounds().add(this.x, this.y);
         }
     }
 

@@ -115,30 +115,13 @@ public class ThinGLRenderer {
                     line.width(),
                     line.color()
             );
-            case RenderCommand.Text text -> {
-                RendererText.VerticalOrigin verticalOrigin = switch (text.verticalOrigin()) {
-                    case BASELINE -> RendererText.VerticalOrigin.BASELINE;
-                    case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
-                    case LOGICAL_CENTER -> RendererText.VerticalOrigin.LOGICAL_CENTER;
-                    case LOGICAL_BOTTOM -> RendererText.VerticalOrigin.LOGICAL_BOTTOM;
-                    case VISUAL_TOP -> RendererText.VerticalOrigin.VISUAL_TOP;
-                    case VISUAL_CENTER -> RendererText.VerticalOrigin.VISUAL_CENTER;
-                    case VISUAL_BOTTOM -> RendererText.VerticalOrigin.VISUAL_BOTTOM;
-                };
-                RendererText.HorizontalOrigin horizontalOrigin = switch (text.horizontalOrigin()) {
-                    case LOGICAL_LEFT -> RendererText.HorizontalOrigin.LOGICAL_LEFT;
-                    case VISUAL_LEFT -> RendererText.HorizontalOrigin.VISUAL_LEFT;
-                    case VISUAL_CENTER -> RendererText.HorizontalOrigin.VISUAL_CENTER;
-                    case VISUAL_RIGHT -> RendererText.HorizontalOrigin.VISUAL_RIGHT;
-                };
-                ThinGL.rendererText().textLine(
-                        matrixStack,
-                        ((ThinGLShapedText) text.shapedText()).shapedTextLine(),
-                        text.x(), text.y(),
-                        verticalOrigin,
-                        horizontalOrigin
-                );
-            }
+            case RenderCommand.Text text -> ThinGL.rendererText().textLine(
+                                matrixStack,
+                                ((ThinGLShapedText) text.shapedText()).shapedTextLine(),
+                                text.x(), text.y(),
+                                RendererText.VerticalOrigin.BASELINE,
+                                RendererText.HorizontalOrigin.LOGICAL_LEFT
+            );
             case RenderCommand.FillGradientRect fillGradientRect -> ThinGL.renderer2D().filledRectangle(
                     matrixStack,
                     fillGradientRect.x(), fillGradientRect.y(),

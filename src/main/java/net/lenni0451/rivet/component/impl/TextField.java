@@ -257,7 +257,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
         } else if (cursorX > this.scrollX + visibleWidth) {
             this.scrollX = cursorX - visibleWidth;
         }
-        this.scrollX = Math.max(0, Math.min(this.scrollX, Math.max(0, this.shapedText.logicalSize().width() - visibleWidth)));
+        this.scrollX = Math.max(0, Math.min(this.scrollX, Math.max(0, this.shapedText.logicalBounds().width() - visibleWidth)));
     }
 
     private void deleteSelection() {

@@ -74,27 +74,14 @@ public class FormattedLabel extends Component implements Renderable {
 
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
-        float x = switch (this.horizontalOrigin) {
-            case LOGICAL_LEFT -> 0;
-            case VISUAL_LEFT -> 0;
-            case VISUAL_CENTER -> bounds.width() / 2F;
-            case VISUAL_RIGHT -> bounds.width();
-        };
-        float y = switch (this.verticalOrigin) {
-            case BASELINE -> bounds.height() / 2F;
-            case LOGICAL_TOP -> 0;
-            case LOGICAL_CENTER -> bounds.height() / 2F;
-            case LOGICAL_BOTTOM -> bounds.height();
-            case VISUAL_TOP -> 0;
-            case VISUAL_CENTER -> bounds.height() / 2F;
-            case VISUAL_BOTTOM -> bounds.height();
-        };
+        float x = this.horizontalOrigin.offset(bounds.width());
+        float y = this.verticalOrigin.offset(bounds.height());
         renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
     }
 
     @Override
     public void computeIdealSize() {
-        this.idealSize = this.shapedText.logicalSize();
+        this.idealSize = this.shapedText.logicalBounds().size();
     }
 
 }
