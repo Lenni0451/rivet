@@ -22,6 +22,13 @@ public class ThinGLRenderer {
                         scale.y()
                 );
             }
+            case TransformCommand.ComponentBounds bounds -> ThinGL.scissorStack().pushIntersection(
+                    matrixStack,
+                    bounds.x(),
+                    bounds.y(),
+                    bounds.x() + bounds.width(),
+                    bounds.y() + bounds.height()
+            );
             case TransformCommand.Scissor scissor -> ThinGL.scissorStack().pushIntersection(
                     matrixStack,
                     scissor.x(),
@@ -48,6 +55,7 @@ public class ThinGLRenderer {
         }
         switch (renderList.transform()) {
             case TransformCommand.Scale _ -> matrixStack.popMatrix();
+            case TransformCommand.ComponentBounds _ -> ThinGL.scissorStack().pop();
             case TransformCommand.Scissor _ -> ThinGL.scissorStack().pop();
             case TransformCommand.Translate _ -> matrixStack.popMatrix();
             case null -> {
@@ -116,11 +124,11 @@ public class ThinGLRenderer {
                     line.color()
             );
             case RenderCommand.Text text -> ThinGL.rendererText().textLine(
-                                matrixStack,
-                                ((ThinGLShapedText) text.shapedText()).shapedTextLine(),
-                                text.x(), text.y(),
-                                RendererText.VerticalOrigin.BASELINE,
-                                RendererText.HorizontalOrigin.LOGICAL_LEFT
+                    matrixStack,
+                    ((ThinGLShapedText) text.shapedText()).shapedTextLine(),
+                    text.x(), text.y(),
+                    RendererText.VerticalOrigin.BASELINE,
+                    RendererText.HorizontalOrigin.LOGICAL_LEFT
             );
             case RenderCommand.FillGradientRect fillGradientRect -> ThinGL.renderer2D().filledRectangle(
                     matrixStack,

@@ -59,6 +59,9 @@ public class BatchedThinGLRenderer {
                 matrixStack.pushMatrix();
                 matrixStack.scaleXY(scale.x(), scale.y());
             }
+            case TransformCommand.ComponentBounds bounds -> {
+                // TODO: Implement
+            }
             case TransformCommand.Scissor scissor -> {
                 // TODO: Implement
             }
@@ -91,6 +94,9 @@ public class BatchedThinGLRenderer {
         }
         switch (renderList.transform()) {
             case TransformCommand.Scale _ -> matrixStack.popMatrix();
+            case TransformCommand.ComponentBounds _ -> {
+                // TODO: Implement
+            }
             case TransformCommand.Scissor _ -> {
                 // TODO: Implement
             }

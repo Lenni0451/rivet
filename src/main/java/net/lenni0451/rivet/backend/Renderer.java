@@ -21,11 +21,15 @@ public class Renderer {
     }
 
     public void translate(final float x, final float y, final Runnable renderer) {
-        this.pushTransform(new TransformCommand.Translate(x, y), renderer);
+        this.transform(new TransformCommand.Translate(x, y), renderer);
+    }
+
+    public void componentBounds(final float x, final float y, final float width, final float height, final Runnable renderer) {
+        this.transform(new TransformCommand.ComponentBounds(x, y, width, height), renderer);
     }
 
     public void scissor(final float x, final float y, final float width, final float height, final Runnable renderer) {
-        this.pushTransform(new TransformCommand.Scissor(x, y, width, height), renderer);
+        this.transform(new TransformCommand.Scissor(x, y, width, height), renderer);
     }
 
     public void scale(final float xy, final Runnable renderer) {
@@ -33,10 +37,10 @@ public class Renderer {
     }
 
     public void scale(final float x, final float y, final Runnable renderer) {
-        this.pushTransform(new TransformCommand.Scale(x, y), renderer);
+        this.transform(new TransformCommand.Scale(x, y), renderer);
     }
 
-    private void pushTransform(final TransformCommand command, final Runnable renderer) {
+    private void transform(final TransformCommand command, final Runnable renderer) {
         this.currentRenderList.push(new RenderList(command));
         renderer.run();
         RenderList subList = this.currentRenderList.pop();

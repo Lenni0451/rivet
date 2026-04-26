@@ -190,7 +190,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.updateAnimation();
 
-        renderer.scissor(0, 0, bounds.width(), bounds.height(), () -> {
+        renderer.componentBounds(0, 0, bounds.width(), bounds.height(), () -> {
             renderer.translate(-this.scrollX, -this.scrollY, () -> {
                 if (this.child instanceof Renderable renderable) {
                     renderable.render(renderer, new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));

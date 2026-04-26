@@ -125,7 +125,7 @@ public class Button extends Component implements MouseListener, Renderable {
             float height = bounds.height() - this.innerPadding.top() - this.innerPadding.bottom();
 
             renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
-                renderer.scissor(0, 0, width, height, () -> {
+                renderer.componentBounds(0, 0, width, height, () -> {
                     renderable.render(renderer, new Rectangle(bounds.x() + this.innerPadding.left(), bounds.y() + this.innerPadding.top(), width, height));
                 });
             });
