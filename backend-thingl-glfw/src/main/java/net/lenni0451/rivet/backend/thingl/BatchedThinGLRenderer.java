@@ -6,8 +6,6 @@ import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.backend.render.TransformCommand;
 import net.lenni0451.rivet.backend.thingl.util.MathUtil;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.gl.renderer.impl.Renderer2D;
-import net.raphimc.thingl.gl.renderer.impl.RendererText;
 import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import org.joml.Matrix4f;
@@ -21,18 +19,18 @@ import java.util.List;
 
 public class BatchedThinGLRenderer {
 
-    public static void render(final Matrix4fStack matrixStack, final RenderList renderList) {
-        render(matrixStack, buildLayerList(renderList));
+    public static void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
+        renderLayers(matrixStack, buildLayers(renderList));
     }
 
-    public static List<Layer> buildLayerList(final RenderList renderList) {
+    public static List<Layer> buildLayers(final RenderList renderList) {
         final List<Layer> layers = new ArrayList<>();
         final Matrix4fStack matrixStack = new Matrix4fStack(32);
-        buildLayerList(layers, matrixStack, renderList);
+        buildLayers(layers, matrixStack, renderList);
         return layers;
     }
 
-    public static void render(final Matrix4fStack matrixStack, final List<Layer> layers) {
+    public static void renderLayers(final Matrix4fStack matrixStack, final List<Layer> layers) {
         final MultiDrawBatchDataHolder multiDrawBatchDataHolder = new ImmediateMultiDrawBatchDataHolder();
         ThinGL.renderer2D().beginBuffering(multiDrawBatchDataHolder);
         ThinGL.rendererText().beginBuffering(multiDrawBatchDataHolder);
@@ -42,96 +40,7 @@ public class BatchedThinGLRenderer {
             for (Layer.CommandState commandState : layer.commandStates()) {
                 matrixStack.pushMatrix();
                 matrixStack.mul(commandState.matrix());
-                switch (commandState.command()) {
-                    case RenderCommand.FillCircle fillCircle -> ThinGL.renderer2D().filledCircle(
-                            matrixStack,
-                            fillCircle.x(), fillCircle.y(),
-                            fillCircle.radius(),
-                            fillCircle.color()
-                    );
-                    case RenderCommand.FillRect fillRect -> ThinGL.renderer2D().filledRectangle(
-                            matrixStack,
-                            fillRect.x(), fillRect.y(),
-                            fillRect.x() + fillRect.width(), fillRect.y() + fillRect.height(),
-                            fillRect.color()
-                    );
-                    case RenderCommand.FillRoundedRect fillRoundedRect -> ThinGL.renderer2D().filledRoundedRectangle(
-                            matrixStack,
-                            fillRoundedRect.x(), fillRoundedRect.y(),
-                            fillRoundedRect.x() + fillRoundedRect.width(), fillRoundedRect.y() + fillRoundedRect.height(),
-                            fillRoundedRect.cornerRadius(),
-                            fillRoundedRect.color()
-                    );
-                    case RenderCommand.FillTriangle fillTriangle -> ThinGL.renderer2D().filledTriangle(
-                            matrixStack,
-                            fillTriangle.x1(), fillTriangle.y1(),
-                            fillTriangle.x2(), fillTriangle.y2(),
-                            fillTriangle.x3(), fillTriangle.y3(),
-                            fillTriangle.color()
-                    );
-                    case RenderCommand.OutlineCircle outlineCircle -> ThinGL.renderer2D().outlinedCircle(
-                            matrixStack,
-                            outlineCircle.x(), outlineCircle.y(),
-                            outlineCircle.radius(),
-                            outlineCircle.color(),
-                            outlineCircle.outlineWidth(),
-                            Renderer2D.OUTLINE_STYLE_INNER_BIT
-                    );
-                    case RenderCommand.OutlineRect outlineRect -> ThinGL.renderer2D().outlinedRectangle(
-                            matrixStack,
-                            outlineRect.x(), outlineRect.y(),
-                            outlineRect.x() + outlineRect.width(), outlineRect.y() + outlineRect.height(),
-                            outlineRect.color(),
-                            outlineRect.outlineWidth(),
-                            Renderer2D.OUTLINE_STYLE_INNER_BIT
-                    );
-                    case RenderCommand.OutlineRoundedRect outlineRoundedRect -> ThinGL.renderer2D().outlinedRoundedRectangle(
-                            matrixStack,
-                            outlineRoundedRect.x(), outlineRoundedRect.y(),
-                            outlineRoundedRect.x() + outlineRoundedRect.width(), outlineRoundedRect.y() + outlineRoundedRect.height(),
-                            outlineRoundedRect.cornerRadius(),
-                            outlineRoundedRect.color(),
-                            outlineRoundedRect.outlineWidth(),
-                            Renderer2D.OUTLINE_STYLE_INNER_BIT
-                    );
-                    case RenderCommand.Line line -> ThinGL.renderer2D().line(
-                            matrixStack,
-                            line.x1(), line.y1(),
-                            line.x2(), line.y2(),
-                            line.width(),
-                            line.color()
-                    );
-                    case RenderCommand.Text text -> {
-                        RendererText.VerticalOrigin verticalOrigin = switch (text.verticalOrigin()) {
-                            case BASELINE -> RendererText.VerticalOrigin.BASELINE;
-                            case LOGICAL_TOP -> RendererText.VerticalOrigin.LOGICAL_TOP;
-                            case LOGICAL_CENTER -> RendererText.VerticalOrigin.LOGICAL_CENTER;
-                            case LOGICAL_BOTTOM -> RendererText.VerticalOrigin.LOGICAL_BOTTOM;
-                            case VISUAL_TOP -> RendererText.VerticalOrigin.VISUAL_TOP;
-                            case VISUAL_CENTER -> RendererText.VerticalOrigin.VISUAL_CENTER;
-                            case VISUAL_BOTTOM -> RendererText.VerticalOrigin.VISUAL_BOTTOM;
-                        };
-                        RendererText.HorizontalOrigin horizontalOrigin = switch (text.horizontalOrigin()) {
-                            case LOGICAL_LEFT -> RendererText.HorizontalOrigin.LOGICAL_LEFT;
-                            case VISUAL_LEFT -> RendererText.HorizontalOrigin.VISUAL_LEFT;
-                            case VISUAL_CENTER -> RendererText.HorizontalOrigin.VISUAL_CENTER;
-                            case VISUAL_RIGHT -> RendererText.HorizontalOrigin.VISUAL_RIGHT;
-                        };
-                        ThinGL.rendererText().textLine(
-                                matrixStack,
-                                ((ThinGLShapedText) text.shapedText()).shapedTextLine(),
-                                text.x(), text.y(),
-                                verticalOrigin,
-                                horizontalOrigin
-                        );
-                    }
-                    case RenderCommand.FillGradientRect fillGradientRect -> ThinGL.renderer2D().filledRectangle(
-                            matrixStack,
-                            fillGradientRect.x(), fillGradientRect.y(),
-                            fillGradientRect.x() + fillGradientRect.width(), fillGradientRect.y() + fillGradientRect.height(),
-                            fillGradientRect.cbl(), fillGradientRect.cbr(), fillGradientRect.ctr(), fillGradientRect.ctl()
-                    );
-                }
+                ThinGLRenderer.renderCommand(matrixStack, commandState.command());
                 matrixStack.popMatrix();
             }
             GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Layer " + i);
@@ -144,7 +53,7 @@ public class BatchedThinGLRenderer {
     }
 
 
-    private static void buildLayerList(final List<Layer> layers, final Matrix4fStack matrixStack, final RenderList renderList) {
+    private static void buildLayers(final List<Layer> layers, final Matrix4fStack matrixStack, final RenderList renderList) {
         switch (renderList.transform()) {
             case TransformCommand.Scale scale -> {
                 matrixStack.pushMatrix();
@@ -177,7 +86,7 @@ public class BatchedThinGLRenderer {
                     }
                     layers.get(insertionIndex).commandStates.add(new Layer.CommandState(bounds, new Matrix4f(matrixStack), command));
                 }
-                case RenderList subRenderList -> buildLayerList(layers, matrixStack, subRenderList);
+                case RenderList subRenderList -> buildLayers(layers, matrixStack, subRenderList);
             }
         }
         switch (renderList.transform()) {

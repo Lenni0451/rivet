@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @ToString
@@ -24,7 +25,7 @@ public final class RenderList implements RenderElement {
     }
 
     public List<RenderElement> elements() {
-        return List.copyOf(this.elements);
+        return Collections.unmodifiableList(this.elements);
     }
 
     public void render(final RenderElement element) {

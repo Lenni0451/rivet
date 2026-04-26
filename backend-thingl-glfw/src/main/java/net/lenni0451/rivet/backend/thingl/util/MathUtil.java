@@ -8,7 +8,7 @@ import org.joml.primitives.Rectanglef;
 public class MathUtil {
 
     public static Rectanglef convert(final Rectangle rectangle) {
-        return new Rectanglef(rectangle.x(), rectangle.y(), rectangle.x() + rectangle.width(), rectangle.y() + rectangle.height());
+        return new Rectanglef(rectangle.x(), rectangle.y(), rectangle.maxX(), rectangle.maxY());
     }
 
     public static Rectanglef transform(final Rectanglef rectangle, final Matrix4f matrix) {
