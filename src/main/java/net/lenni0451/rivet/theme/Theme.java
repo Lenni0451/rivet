@@ -2,7 +2,8 @@ package net.lenni0451.rivet.theme;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.component.impl.Slider;
+import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.math.Padding;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -40,6 +41,12 @@ public abstract class Theme {
     public static final ThemeKey<Float> SLIDER_THUMB_CORNER_RADIUS = register("slider.thumb_corner_radius", Float.class);
     public static final ThemeKey<Boolean> SLIDER_THUMB_ENCASED = register("slider.thumb_encased", Boolean.class);
     public static final ThemeKey<Slider.ThumbShape> SLIDER_THUMB_SHAPE = register("slider.thumb_shape", Slider.ThumbShape.class);
+    public static final ThemeKey<Color> SLIDER_TOOLTIP_BACKGROUND_COLOR = register("slider.tooltip_background_color", Color.class);
+    public static final ThemeKey<Color> SLIDER_TOOLTIP_TEXT_COLOR = register("slider.tooltip_text_color", Color.class);
+    public static final ThemeKey<Float> SLIDER_TOOLTIP_CORNER_RADIUS = register("slider.tooltip_corner_radius", Float.class);
+    public static final ThemeKey<Float> SLIDER_TOOLTIP_TRIANGLE_SIZE = register("slider.tooltip_triangle_size", Float.class);
+    public static final ThemeKey<Padding> SLIDER_TOOLTIP_PADDING = register("slider.tooltip_padding", Padding.class);
+    public static final ThemeKey<String> SLIDER_TOOLTIP_FORMAT = register("slider.tooltip_format", String.class);
 
     // ScrollContainer
     public static final ThemeKey<Color> SCROLL_BAR_COLOR = register("scroll.bar_color", Color.class);

@@ -1,0 +1,127 @@
+package net.lenni0451.rivet.component.impl.slider;
+
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import net.lenni0451.commons.color.Color;
+import net.lenni0451.commons.math.MathUtils;
+import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.ShapedText;
+import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.Renderable;
+import net.lenni0451.rivet.layer.Layer;
+import net.lenni0451.rivet.layer.LayerBucket;
+import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
+import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
+import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.text.TextOrigin;
+import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeOption;
+
+@Setter
+@Accessors(fluent = true, chain = true)
+public class SliderTooltip extends Component implements Renderable {
+
+    private final ThemeOption<Color> backgroundColor;
+    private final ThemeOption<Color> textColor;
+    private final ThemeOption<Float> cornerRadius;
+    private final ThemeOption<Float> triangleSize;
+    private final ThemeOption<Padding> padding;
+    private ShapedText shapedText;
+    private final Layer layer;
+    private float pointerOffset;
+    private Position position;
+
+    public SliderTooltip(final Rivet rivet, final String text) {
+        super(rivet);
+        this.backgroundColor = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_BACKGROUND_COLOR);
+        this.textColor = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_TEXT_COLOR);
+        this.cornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_CORNER_RADIUS);
+        this.triangleSize = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_TRIANGLE_SIZE);
+        this.padding = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_PADDING);
+        this.text(text);
+
+        Container container = new Container(rivet, AbsoluteLayout.INSTANCE);
+        container.addChild(this);
+        this.layer = new Layer(container, LayerBucket.TOOLTIP);
+        rivet.addLayer(this.layer);
+    }
+
+    public void text(final String text) {
+        this.shapedText = this.rivet.backend().shapeText(text, this.textColor.value());
+    }
+
+    public void position(final float x, final float y, final float height) {
+        this.computeIdealSize();
+        Size screenBounds = this.rivet.scaledSize();
+
+        float posX = x - this.idealSize.width() / 2F;
+        float clampedX = MathUtils.clamp(posX, 0, screenBounds.width() - this.idealSize.width());
+        this.pointerOffset = clampedX - posX;
+
+        float posY = y - this.idealSize.height();
+        if (posY < 0) {
+            posY = y + height;
+            this.position = Position.BELOW;
+        } else {
+            this.position = Position.ABOVE;
+        }
+
+        this.layoutOptions(new AbsoluteLayoutOptions(
+                clampedX,
+                posY
+        ));
+        this.rivet.recalculateNextFrame();
+    }
+
+    public void remove() {
+        this.rivet.removeLayer(this.layer);
+    }
+
+    @Override
+    public void render(final Renderer renderer, final Rectangle bounds) {
+        float triangleSize = this.triangleSize.value();
+        Color backgroundColor = this.backgroundColor.value();
+        float cornerRadius = this.cornerRadius.value();
+        Padding padding = this.padding.value();
+
+        switch (this.position) {
+            case ABOVE -> {
+                renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height() - triangleSize, cornerRadius, backgroundColor);
+                renderer.fillTriangle(
+                        bounds.width() / 2F - triangleSize - this.pointerOffset, bounds.height() - triangleSize,
+                        bounds.width() / 2F - this.pointerOffset, bounds.height(),
+                        bounds.width() / 2F + triangleSize - this.pointerOffset, bounds.height() - triangleSize,
+                        backgroundColor
+                );
+                renderer.renderText(this.shapedText, padding.left(), padding.top(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
+            }
+            case BELOW -> {
+                renderer.fillOptimizedRoundedRect(0, triangleSize, bounds.width(), bounds.height() - triangleSize, cornerRadius, backgroundColor);
+                renderer.fillTriangle(
+                        bounds.width() / 2F - triangleSize - this.pointerOffset, triangleSize,
+                        bounds.width() / 2F + triangleSize - this.pointerOffset, triangleSize,
+                        bounds.width() / 2F - this.pointerOffset, 0,
+                        backgroundColor
+                );
+                renderer.renderText(this.shapedText, padding.left(), triangleSize + padding.top(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
+            }
+        }
+    }
+
+    @Override
+    public void computeIdealSize() {
+        Padding padding = this.padding.value();
+        this.idealSize = this.shapedText.logicalBounds().size()
+                .add(padding.left() + padding.right(), padding.top() + padding.bottom() + this.triangleSize.value());
+    }
+
+
+    private enum Position {
+        ABOVE, BELOW
+    }
+
+}

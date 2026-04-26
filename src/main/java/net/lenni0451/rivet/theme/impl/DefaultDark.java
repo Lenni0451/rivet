@@ -26,6 +26,8 @@ public class DefaultDark extends BaseTheme {
         values.put(Theme.SLIDER_THUMB_COLOR, Color.fromRGB(120, 120, 125));
         values.put(Theme.SLIDER_THUMB_CLICK_COLOR, Color.fromRGB(100, 100, 105));
         values.put(Theme.SLIDER_TICK_COLOR, Color.fromRGB(160, 160, 165));
+        values.put(Theme.SLIDER_TOOLTIP_BACKGROUND_COLOR, Color.fromRGB(45, 45, 48));
+        values.put(Theme.SLIDER_TOOLTIP_TEXT_COLOR, Color.WHITE);
 
         values.put(Theme.SCROLL_BAR_COLOR, Color.fromRGBA(120, 120, 125, 100));
         values.put(Theme.SCROLL_BAR_HOVER_COLOR, Color.fromRGBA(140, 140, 145, 150));

@@ -1,7 +1,8 @@
 package net.lenni0451.rivet.theme.impl;
 
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.component.impl.Slider;
+import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
 
@@ -22,6 +23,10 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.SLIDER_THUMB_CORNER_RADIUS, 0F); // Calculated in Slider if needed, or set here
         values.put(Theme.SLIDER_THUMB_ENCASED, false);
         values.put(Theme.SLIDER_THUMB_SHAPE, Slider.ThumbShape.CIRCLE);
+        values.put(Theme.SLIDER_TOOLTIP_CORNER_RADIUS, 4F);
+        values.put(Theme.SLIDER_TOOLTIP_TRIANGLE_SIZE, rivet.backend().getTextHeight() / 4F);
+        values.put(Theme.SLIDER_TOOLTIP_PADDING, new Padding(5F, 0, 5F, 0));
+        values.put(Theme.SLIDER_TOOLTIP_FORMAT, "%,f");
 
         values.put(Theme.SCROLL_BAR_WIDTH, 8F);
         values.put(Theme.SCROLL_BAR_CORNER_RADIUS, 4F);

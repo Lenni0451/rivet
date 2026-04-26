@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.component.impl;
+package net.lenni0451.rivet.component.impl.slider;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +43,7 @@ public class Slider extends Component implements MouseListener, Renderable {
     @Nullable
     private Ticks ticks;
     private boolean dragged;
+    private SliderTooltip tooltip;
     private final Map<Double, ShapedText> tickLabels = new HashMap<>();
 
     @Getter
@@ -67,6 +68,8 @@ public class Slider extends Component implements MouseListener, Renderable {
     private final ThemeOption<Boolean> thumbEncased;
     @Getter
     private final ThemeOption<ThumbShape> thumbShape;
+    @Getter
+    private final ThemeOption<String> tooltipFormat;
 
     public Slider(final Rivet rivet, final double min, final double max, final double value) {
         this(rivet, min, max, 1, value);
@@ -93,6 +96,7 @@ public class Slider extends Component implements MouseListener, Renderable {
             return Math.min(this.thumbWidth.value(), this.thumbHeight.value()) / 2F;
         });
         this.thumbEncased = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_ENCASED);
+        this.tooltipFormat = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_FORMAT);
     }
 
     public Slider min(final double min) {
@@ -117,7 +121,9 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
+            this.tooltip = new SliderTooltip(this.rivet, String.format(this.tooltipFormat.value(), this.value));
             this.updateValue(event.x(), bounds);
+            this.updateTooltipPosition(bounds);
         }
     }
 
@@ -125,6 +131,8 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = false;
+            this.tooltip.remove();
+            this.tooltip = null;
         }
     }
 
@@ -132,6 +140,7 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.dragged) {
             this.updateValue(event.x(), bounds);
+            this.updateTooltipPosition(bounds);
         }
     }
 
@@ -143,6 +152,17 @@ public class Slider extends Component implements MouseListener, Renderable {
         double newValue = this.min + progress * (this.max - this.min);
         newValue = Math.round(newValue / this.step) * this.step;
         this.value = MathUtils.clamp(newValue, this.min, this.max);
+        if (this.tooltip != null) {
+            this.tooltip.text(String.format(this.tooltipFormat.value(), this.value));
+        }
+    }
+
+    private void updateTooltipPosition(final Rectangle bounds) {
+        float thumbWidth = this.thumbWidth.value();
+        float barWidth = this.barWidth(bounds);
+        double progress = (this.value - this.min) / (this.max - this.min);
+        float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
+        this.tooltip.position(bounds.x() + thumbX, bounds.y(), bounds.height());
     }
 
     @Override
