@@ -20,6 +20,8 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 @Accessors(fluent = true, chain = true)
 public class ScrollContainer extends Component implements MouseListener, KeyboardListener, Renderable {
@@ -50,9 +52,12 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     private final ThemeOption<Boolean> smoothScrolling;
     @Getter
     private final ThemeOption<Integer> animationDuration;
+    @Getter
+    private final ThemeOption<Long> nestedScrollTimeout;
 
     private Size childSize = Size.EMPTY;
 
+    private final NestedScrollCoordinator nestedScrollCoordinator = new NestedScrollCoordinator();
     private float scrollX;
     private float scrollY;
     private float targetScrollX;
@@ -90,6 +95,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         this.scrollSpeed = new ThemeOption<>(rivet, Theme.SCROLL_SPEED);
         this.smoothScrolling = new ThemeOption<>(rivet, Theme.SCROLL_SMOOTH);
         this.animationDuration = new ThemeOption<>(rivet, Theme.SCROLL_ANIMATION_DURATION);
+        this.nestedScrollTimeout = new ThemeOption<>(rivet, Theme.SCROLL_NESTED_SCROLL_TIMEOUT);
 
         this.scrollXAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
         this.scrollYAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
@@ -166,24 +172,34 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     }
 
     @Override
-    public void onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
-        if (this.verticalScrolling && event.scrollY() != 0 && !this.vBarPressed) {
-            float contentHeight = this.childSize.height();
-            float maxScroll = Math.max(0, contentHeight - bounds.height());
-            if (maxScroll > 0) {
-                this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
-            }
-        }
-        if (this.horizontalScrolling && event.scrollX() != 0 && !this.hBarPressed) {
-            float contentWidth = this.childSize.width();
-            float maxScroll = Math.max(0, contentWidth - bounds.width());
-            if (maxScroll > 0) {
-                this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
-            }
-        }
-        if (this.child instanceof MouseListener mouseListener) {
-            mouseListener.onMouseScroll(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
-        }
+    public boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+        return this.nestedScrollCoordinator.handleScrolling(
+                () -> {
+                    if (this.verticalScrolling && event.scrollY() != 0 && !this.vBarPressed) {
+                        float contentHeight = this.childSize.height();
+                        float maxScroll = Math.max(0, contentHeight - bounds.height());
+                        if (maxScroll > 0) {
+                            this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
+                            return true;
+                        }
+                    }
+                    if (this.horizontalScrolling && event.scrollX() != 0 && !this.hBarPressed) {
+                        float contentWidth = this.childSize.width();
+                        float maxScroll = Math.max(0, contentWidth - bounds.width());
+                        if (maxScroll > 0) {
+                            this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                () -> {
+                    if (this.child instanceof MouseListener mouseListener) {
+                        return mouseListener.onMouseScroll(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
+                    }
+                    return false;
+                }
+        );
     }
 
     @Override
@@ -284,6 +300,39 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
         float maxScrollX = Math.max(0, contentWidth - size.width());
         this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
         this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
+    }
+
+
+    private class NestedScrollCoordinator {
+        @Nullable
+        private ScrollTarget lastTarget;
+        private long lastScroll;
+
+        public boolean handleScrolling(final BooleanSupplier parent, final BooleanSupplier child) {
+            if (System.nanoTime() - this.lastScroll > TimeUnit.MILLISECONDS.toNanos(ScrollContainer.this.nestedScrollTimeout.value())) {
+                this.lastTarget = null;
+            }
+            if (this.lastTarget == null || this.lastTarget.equals(ScrollTarget.CHILD)) {
+                if (child.getAsBoolean()) {
+                    this.lastTarget = ScrollTarget.CHILD;
+                    this.lastScroll = System.nanoTime();
+                    return true;
+                }
+            }
+            if (this.lastTarget == null || this.lastTarget.equals(ScrollTarget.PARENT)) {
+                if (parent.getAsBoolean()) {
+                    this.lastTarget = ScrollTarget.PARENT;
+                    this.lastScroll = System.nanoTime();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        private enum ScrollTarget {
+            PARENT, CHILD
+        }
     }
 
 }

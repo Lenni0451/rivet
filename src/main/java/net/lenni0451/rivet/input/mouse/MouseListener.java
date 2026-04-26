@@ -19,7 +19,8 @@ public interface MouseListener {
     default void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
     }
 
-    default void onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    default boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+        return false;
     }
 
 }

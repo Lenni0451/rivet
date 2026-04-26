@@ -34,6 +34,7 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.SCROLL_SPEED, rivet.backend().getTextHeight() * 4);
         values.put(Theme.SCROLL_SMOOTH, true);
         values.put(Theme.SCROLL_ANIMATION_DURATION, 100);
+        values.put(Theme.SCROLL_NESTED_SCROLL_TIMEOUT, 150L);
 
         values.put(Theme.TEXT_FIELD_CURSOR_WIDTH, 1F);
         values.put(Theme.TEXT_FIELD_OUTLINE_WIDTH, 1F);

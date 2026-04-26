@@ -59,6 +59,7 @@ public abstract class Theme {
     public static final ThemeKey<Float> SCROLL_SPEED = register("scroll.speed", Float.class);
     public static final ThemeKey<Boolean> SCROLL_SMOOTH = register("scroll.smooth", Boolean.class);
     public static final ThemeKey<Integer> SCROLL_ANIMATION_DURATION = register("scroll.animation_duration", Integer.class);
+    public static final ThemeKey<Long> SCROLL_NESTED_SCROLL_TIMEOUT = register("scroll.nested_scroll_timeout", Long.class);
 
     // TextField
     public static final ThemeKey<Color> TEXT_FIELD_BACKGROUND_COLOR = register("text_field.background_color", Color.class);

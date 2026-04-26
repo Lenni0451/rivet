@@ -144,11 +144,12 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    public boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
         if (child != null && child.component instanceof MouseListener mouseListener) {
-            mouseListener.onMouseScroll(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
+            return mouseListener.onMouseScroll(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
         }
+        return false;
     }
 
     @Override
