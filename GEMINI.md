@@ -37,18 +37,11 @@ Do not modify the ThinGL under any circumstances, as it is a third-party library
 - **Theme System:** Styles are managed via `Theme` and `ThemeKey`. Components should query the current theme for colors, fonts, and other stylistic properties.
 - **Input Handling:** Input events (Keyboard, Mouse) are propagated through the component tree, often starting from the `Rivet` root context.
 
-### Testing Strategy
-- **JUnit 5:** Use JUnit 5 for all automated tests.
-- **Assertions:** Use `org.junit.jupiter.api.Assertions` for standard assertions.
-- **Test Locations:** Unit tests should be located in `src/test/java/net/lenni0451/rivet/`.
-- **Validation:** When adding new features or components, include tests for layout calculations, event propagation, and state changes.
-
 ## Development Workflow
 1. **Research:** Map the existing component hierarchy or layout logic before making changes.
 2. **Implementation:** Adhere strictly to the fluent API and Lombok patterns.
 3. **Verification:**
-    - Run `./gradlew checkstyleMain` to ensure style compliance.
-    - Run `./gradlew test` to verify behavioral correctness.
+    - Run `./gradlew clean build` to ensure the code compiles and is checkstyle compliant.
 
 ## Security & Integrity
 - **Credential Protection:** Never commit API keys or secrets.
