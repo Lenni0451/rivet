@@ -282,8 +282,8 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     @Override
     public void computeLayout(final Size size) {
         Size childSize = new Size(
-                MathUtils.clamp(Math.max(this.child.idealSize().width(), size.width()), this.child.minSize().width(), this.child.maxSize().width()),
-                MathUtils.clamp(Math.max(this.child.idealSize().height(), size.height()), this.child.minSize().height(), this.child.maxSize().height())
+                MathUtils.clamp(size.width(), this.child.minSize().width(), this.child.maxSize().width()),
+                MathUtils.clamp(size.height(), this.child.minSize().height(), this.child.maxSize().height())
         );
         this.child.computeLayout(childSize);
         if (this.child instanceof Container container) {
