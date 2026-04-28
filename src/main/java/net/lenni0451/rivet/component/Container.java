@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
 public class Container extends Component implements MouseListener, Renderable {
@@ -36,11 +37,16 @@ public class Container extends Component implements MouseListener, Renderable {
         this.layout = layout;
     }
 
-    public <T extends Component> T addChild(final T component) {
+    public Container addChild(final Component component) {
+        return this.addChild(component, c -> {});
+    }
+
+    public <E extends Component> Container addChild(final E component, final Consumer<E> initializer) {
+        initializer.accept(component);
         this.removeChild(component);
         this.children.add(new Child(component));
         this.rivet.recalculateNextFrame();
-        return component;
+        return this;
     }
 
     public List<Component> children() {

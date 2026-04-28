@@ -17,6 +17,7 @@ import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
+import net.lenni0451.rivet.layout.flow.VerticalFlowLayout;
 import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.layout.grid.GridAnchor;
 import net.lenni0451.rivet.layout.grid.GridFill;
@@ -133,33 +134,44 @@ public class Test extends GLFWApplicationRunner {
 
         Container container = new Container(this.rivet, new GridLayout(10, 10).homogeneousColumns(true));
         this.rivet.root().addChild(new ScrollContainer(this.rivet, container, true, true));
-        container.addChild(new Button(this.rivet, new Label(this.rivet, "Singleplayer"), _ -> {})
-                .layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
-        container.addChild(new Button(this.rivet, new Label(this.rivet, "Minecraft Realms"), _ -> {})
-                .layoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
-        container.addChild(new Button(this.rivet, new Label(this.rivet, "Multiplayer"), _ -> {})
-                .layoutOptions(new GridLayoutOptions(1, 1).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL)));
-        container.addChild(new Button(this.rivet, new Label(this.rivet, "DeepClient Menu"), _ -> {})
-                .layoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
-        container.addChild(new Button(this.rivet, new Label(this.rivet, "Options..."), _ -> {})
-                .layoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
-        container.addChild(new Button(this.rivet, new Label(this.rivet, "Quit Game"), _ -> {})
-                .layoutOptions(new GridLayoutOptions(1, 3).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20))));
-        container.addChild(new TextField(this.rivet)
-                .layoutOptions(new GridLayoutOptions(0, 4).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
-        container.addChild(new Checkbox(this.rivet, "Test Test Test", true)
-                .layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
-        ((Checkbox) container.children().getLast()).cornerRadius().set(8F);
-        container.addChild(new Slider(this.rivet, 0, 100, 1)
-                .layoutOptions(new GridLayoutOptions(0, 6).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
-        container.addChild(new ColorPicker(this.rivet, Color.RED)
-                .layoutOptions(new GridLayoutOptions(0, 7).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Singleplayer"), _ -> {}), button -> {
+            button.layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+        });
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Minecraft Realms"), _ -> {}), button -> {
+            button.layoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL));
+        });
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Multiplayer"), _ -> {}), button -> {
+            button.layoutOptions(new GridLayoutOptions(1, 1).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL));
+        });
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "DeepClient Menu"), _ -> {}), button -> {
+            button.layoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+        });
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Options..."), _ -> {}), button -> {
+            button.layoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
+        });
+        container.addChild(new Button(this.rivet, new Label(this.rivet, "Quit Game"), _ -> {}), button -> {
+            button.layoutOptions(new GridLayoutOptions(1, 3).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
+        });
+        container.addChild(new TextField(this.rivet), button -> {
+            button.layoutOptions(new GridLayoutOptions(0, 4).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+        });
+        Container comboBoxContainer = new Container(this.rivet, new VerticalFlowLayout(5, 5));
+        container.addChild(new Checkbox(this.rivet, "Test Test Test", true), checkbox -> {
+            checkbox.layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            checkbox.cornerRadius().set(8F);
+        });
+        container.addChild(new Slider(this.rivet, 0, 100, 1), slider -> {
+            slider.layoutOptions(new GridLayoutOptions(0, 6).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+        });
+        container.addChild(new ColorPicker(this.rivet, Color.RED), colorPicker -> {
+            colorPicker.layoutOptions(new GridLayoutOptions(0, 7).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+        });
     }
 
     @Override
     protected void render(final Matrix4fStack matrix4fStack) {
         ThinGL.programs().getMsaa().bindInput();
-        ThinGL.renderer2D().filledRectangle(matrix4fStack, 0, 0, 3000, 2000, Color.GRAY.darker().darker().darker().darker());
+        ThinGL.renderer2D().filledRectangle(matrix4fStack, 0, 0, ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight(), Color.GRAY.darker().darker().darker().darker());
         ThinGLRenderer.renderList(matrix4fStack, this.rivet.render());
         //BatchedThinGLRenderer.renderList(matrix4fStack, this.rivet.render());
         ThinGL.programs().getMsaa().unbindInput();
