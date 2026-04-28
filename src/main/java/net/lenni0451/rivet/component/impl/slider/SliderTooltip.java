@@ -60,20 +60,28 @@ public class SliderTooltip extends Component implements Renderable {
 
         float posX = x - this.idealSize.width() / 2F;
         float clampedX = MathUtils.clamp(posX, 0, screenBounds.width() - this.idealSize.width());
-        this.pointerOffset = clampedX - posX;
-
+        float pointerOffset = clampedX - posX;
         float posY = y - this.idealSize.height();
+        Position position;
         if (posY < 0) {
             posY = y + height;
-            this.position = Position.BELOW;
+            position = Position.BELOW;
         } else {
-            this.position = Position.ABOVE;
+            position = Position.ABOVE;
         }
 
-        this.layoutOptions(new AbsoluteLayoutOptions(
-                clampedX,
-                posY
-        ));
+        this.update(position, clampedX, posY, pointerOffset);
+    }
+
+    private void update(final Position position, final float x, final float y, final float pointerOffset) {
+        if (this.layoutOptions() instanceof AbsoluteLayoutOptions options) {
+            if (options.x() == x && options.y() == y && this.position.equals(position) && this.pointerOffset == pointerOffset) {
+                return;
+            }
+        }
+        this.layoutOptions(new AbsoluteLayoutOptions(x, y));
+        this.position = position;
+        this.pointerOffset = pointerOffset;
         this.rivet.recalculateNextFrame();
     }
 

@@ -123,7 +123,6 @@ public class Slider extends Component implements MouseListener, Renderable {
             this.dragged = true;
             this.tooltip = new SliderTooltip(this.rivet, String.format(this.tooltipFormat.value(), this.value));
             this.updateValue(event.x(), bounds);
-            this.updateTooltipPosition(bounds);
         }
     }
 
@@ -140,7 +139,6 @@ public class Slider extends Component implements MouseListener, Renderable {
     public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.dragged) {
             this.updateValue(event.x(), bounds);
-            this.updateTooltipPosition(bounds);
         }
     }
 
@@ -157,14 +155,6 @@ public class Slider extends Component implements MouseListener, Renderable {
         }
     }
 
-    private void updateTooltipPosition(final Rectangle bounds) {
-        float thumbWidth = this.thumbWidth.value();
-        float barWidth = this.barWidth(bounds);
-        double progress = (this.value - this.min) / (this.max - this.min);
-        float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
-        this.tooltip.position(bounds.x() + thumbX, bounds.y(), bounds.height());
-    }
-
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         float thumbWidth = this.thumbWidth.value();
@@ -178,6 +168,9 @@ public class Slider extends Component implements MouseListener, Renderable {
         this.renderBar(renderer, bounds, sliderCenter, barHeight, thumbWidth);
         this.renderThumb(renderer, sliderCenter, thumbWidth, thumbHeight, thumbX);
         if (this.ticks != null) this.renderTicks(renderer, sliderCenter, barHeight, thumbWidth, thumbHeight, barWidth);
+        if (this.tooltip != null) {
+            this.tooltip.position(bounds.x() + thumbX, bounds.y(), bounds.height());
+        }
     }
 
     private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth) {

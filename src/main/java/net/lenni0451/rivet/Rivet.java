@@ -202,22 +202,18 @@ public class Rivet {
 
     public RenderList render() {
         Size scaledSize = this.scaledSize();
-        List<Layer> layers = this.layers.get();
-        if (this.recalculate) {
-            for (Layer layer : layers) {
-                layer.container().computeIdealSize();
-                layer.container().computeLayout(scaledSize);
-            }
-            this.recalculate = false;
-        }
-
         Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
             //TODO: Pass viewport to container to allow skipping out of viewport components
-            for (Layer layer : layers) {
+            for (Layer layer : this.layers.get()) {
+                if (this.recalculate) {
+                    layer.container().computeIdealSize();
+                    layer.container().computeLayout(scaledSize);
+                }
                 layer.container().render(renderer, new Rectangle(scaledSize));
             }
         });
+        this.recalculate = false;
         return renderer.renderList();
     }
 
