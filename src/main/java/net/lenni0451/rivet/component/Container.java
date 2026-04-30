@@ -172,11 +172,11 @@ public class Container extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void computeIdealSize() {
+    public void computeIdealSize(final Size constraints) {
         for (Child child : this.children) {
-            child.component.computeIdealSize();
+            child.component.computeIdealSize(constraints);
         }
-        this.idealSize = this.layout.computeIdealSize(this.children.stream().map(child -> child.component).toList());
+        this.idealSize = this.layout.computeIdealSize(constraints, this.children.stream().map(child -> child.component).toList());
     }
 
     @Override

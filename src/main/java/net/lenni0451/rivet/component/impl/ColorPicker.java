@@ -215,7 +215,7 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     }
 
     @Override
-    public void computeIdealSize() {
+    public void computeIdealSize(final Size constraints) {
         float pickerSize = this.pickerSize.value();
         float sliderWidth = this.sliderWidth.value();
         float gap = this.gap.value();

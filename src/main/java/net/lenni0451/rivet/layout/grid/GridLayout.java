@@ -31,7 +31,7 @@ public class GridLayout implements Layout {
     }
 
     @Override
-    public Size computeIdealSize(final Collection<Component> components) {
+    public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
         GridInfo info = new GridInfo(components);
         float width = 0;
         float height = 0;

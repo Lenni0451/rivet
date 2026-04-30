@@ -242,7 +242,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
     }
 
     @Override
-    public void computeIdealSize() {
+    public void computeIdealSize(final Size constraints) {
         float textHeight = this.rivet.backend().getTextHeight();
         this.idealSize = new Size(
                 textHeight * 10 + this.innerPadding.left() + this.innerPadding.right(),

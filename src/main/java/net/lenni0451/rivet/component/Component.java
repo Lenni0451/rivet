@@ -57,7 +57,7 @@ public abstract class Component {
     public void onFocusLost() {
     }
 
-    public abstract void computeIdealSize();
+    public abstract void computeIdealSize(final Size constraints);
 
     public void computeLayout(final Size size) {
     }

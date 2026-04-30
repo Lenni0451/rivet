@@ -207,7 +207,7 @@ public class Rivet {
             //TODO: Pass viewport to container to allow skipping out of viewport components
             for (Layer layer : this.layers.get()) {
                 if (this.recalculate) {
-                    layer.container().computeIdealSize();
+                    layer.container().computeIdealSize(scaledSize);
                     layer.container().computeLayout(scaledSize);
                 }
                 layer.container().render(renderer, new Rectangle(scaledSize));

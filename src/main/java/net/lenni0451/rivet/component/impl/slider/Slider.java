@@ -236,7 +236,7 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void computeIdealSize() {
+    public void computeIdealSize(final Size constraints) {
         float height;
         if (this.ticks == null) {
             height = this.thumbHeight.value();

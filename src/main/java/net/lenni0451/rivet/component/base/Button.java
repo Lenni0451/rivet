@@ -133,8 +133,11 @@ public class Button extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void computeIdealSize() {
-        this.child.computeIdealSize();
+    public void computeIdealSize(final Size constraints) {
+        this.child.computeIdealSize(constraints.minus(
+                this.innerPadding.left() + this.innerPadding.right(),
+                this.innerPadding.top() + this.innerPadding.bottom()
+        ));
         this.idealSize = new Size(
                 this.child.idealSize().width() + this.innerPadding.left() + this.innerPadding.right(),
                 this.child.idealSize().height() + this.innerPadding.top() + this.innerPadding.bottom()

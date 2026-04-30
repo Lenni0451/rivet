@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface Layout {
 
-    Size computeIdealSize(final Collection<Component> components);
+    Size computeIdealSize(final Size constraints, final Collection<Component> components);
 
     Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components);
 

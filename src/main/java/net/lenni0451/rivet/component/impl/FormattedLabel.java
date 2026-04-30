@@ -9,6 +9,7 @@ import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextFormat;
 import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.text.TextParser;
@@ -80,7 +81,7 @@ public class FormattedLabel extends Component implements Renderable {
     }
 
     @Override
-    public void computeIdealSize() {
+    public void computeIdealSize(final Size constraints) {
         this.idealSize = this.shapedText.logicalBounds().size();
     }
 

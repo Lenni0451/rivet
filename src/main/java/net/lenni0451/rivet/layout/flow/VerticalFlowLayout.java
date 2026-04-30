@@ -17,15 +17,27 @@ public class VerticalFlowLayout implements Layout {
     private final int verticalGap;
 
     @Override
-    public Size computeIdealSize(final Collection<Component> components) {
-        float width = 0;
-        float height = 0;
+    public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
+        float currentWidth = 0;
+        float currentHeight = 0;
+        float totalWidth = 0;
+        float totalHeight = 0;
         for (Component component : components) {
-            width = Math.max(width, this.widthOf(component));
-            height += this.heightOf(component);
+            float yGap = currentHeight > 0 ? this.verticalGap : 0;
+            float componentWidth = this.widthOf(component);
+            float componentHeight = this.heightOf(component);
+            if (currentHeight > 0 && currentHeight + yGap + componentHeight > constraints.height()) {
+                if (totalWidth > 0) totalWidth += this.horizontalGap;
+                totalWidth += currentWidth;
+                currentWidth = 0;
+
+                totalHeight = Math.max(totalHeight, currentHeight);
+                currentHeight = 0;
+            }
+            currentWidth = Math.max(currentWidth, componentWidth);
+            currentHeight += yGap + componentHeight;
         }
-        height += (components.size() - 1) * this.verticalGap;
-        return new Size(width, height);
+        return new Size(totalWidth, totalHeight);
     }
 
     @Override

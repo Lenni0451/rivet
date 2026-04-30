@@ -55,7 +55,7 @@ public class SliderTooltip extends Component implements Renderable {
     }
 
     public void position(final float x, final float y, final float height) {
-        this.computeIdealSize();
+        this.computeIdealSize(null);
         Size screenBounds = this.rivet.scaledSize();
 
         float posX = x - this.idealSize.width() / 2F;
@@ -121,7 +121,7 @@ public class SliderTooltip extends Component implements Renderable {
     }
 
     @Override
-    public void computeIdealSize() {
+    public void computeIdealSize(final Size constraints) {
         Padding padding = this.padding.value();
         this.idealSize = this.shapedText.logicalBounds().size()
                 .add(padding.left() + padding.right(), padding.top() + padding.bottom() + this.triangleSize.value());

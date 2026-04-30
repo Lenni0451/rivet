@@ -274,8 +274,11 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     }
 
     @Override
-    public void computeIdealSize() {
-        this.child.computeIdealSize();
+    public void computeIdealSize(final Size constraints) {
+        this.child.computeIdealSize(new Size(
+                this.horizontalScrolling ? Float.MAX_VALUE : constraints.width(),
+                this.verticalScrolling ? Float.MAX_VALUE : constraints.height()
+        ));
         this.idealSize = this.child.idealSize();
     }
 
