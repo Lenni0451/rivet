@@ -13,7 +13,7 @@ public record Size(float width, float height) {
         return new Size(this.width * x, this.height * y);
     }
 
-    public Size add(final float x, final float y) {
+    public Size plus(final float x, final float y) {
         return new Size(this.width + x, this.height + y);
     }
 

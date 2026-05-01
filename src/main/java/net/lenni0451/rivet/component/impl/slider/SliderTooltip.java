@@ -124,7 +124,7 @@ public class SliderTooltip extends Component implements Renderable {
     public void computeIdealSize(final Size constraints) {
         Padding padding = this.padding.value();
         this.idealSize = this.shapedText.logicalBounds().size()
-                .add(padding.left() + padding.right(), padding.top() + padding.bottom() + this.triangleSize.value());
+                .plus(padding.left() + padding.right(), padding.top() + padding.bottom() + this.triangleSize.value());
     }
 
 
