@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.theme.impl;
 
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
@@ -35,6 +36,9 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.SCROLL_SMOOTH, true);
         values.put(Theme.SCROLL_ANIMATION_DURATION, 100);
         values.put(Theme.SCROLL_NESTED_SCROLL_TIMEOUT, 150L);
+        values.put(Theme.SCROLL_BAR_TYPE, ScrollContainer.ScrollBarType.FLOATING);
+        values.put(Theme.SCROLL_RAIL_CLICK_JUMP, true);
+        values.put(Theme.SCROLL_RAIL_OUTLINE_WIDTH, 0F);
 
         values.put(Theme.TEXT_FIELD_CURSOR_WIDTH, 1F);
         values.put(Theme.TEXT_FIELD_OUTLINE_WIDTH, 1F);

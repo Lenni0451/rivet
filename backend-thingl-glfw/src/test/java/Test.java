@@ -129,6 +129,7 @@ public class Test extends GLFWApplicationRunner {
                 values.put(Theme.BUTTON_CORNER_RADIUS, 0);
                 values.put(Theme.BUTTON_OUTLINE_WIDTH, 3);
                 values.put(Theme.COLOR_PICKER_SELECTOR_SIZE, 6F);
+                values.put(Theme.SCROLL_BAR_TYPE, ScrollContainer.ScrollBarType.NORMAL);
             }
         });
 

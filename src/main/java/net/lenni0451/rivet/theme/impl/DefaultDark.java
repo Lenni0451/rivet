@@ -33,6 +33,8 @@ public class DefaultDark extends BaseTheme {
         values.put(Theme.SCROLL_BAR_HOVER_COLOR, Color.fromRGBA(140, 140, 145, 150));
         values.put(Theme.SCROLL_BAR_CLICK_COLOR, Color.fromRGBA(100, 100, 105, 200));
         values.put(Theme.SCROLL_BAR_OUTLINE_COLOR, Color.fromRGB(65, 65, 70));
+        values.put(Theme.SCROLL_RAIL_COLOR, Color.fromRGB(37, 37, 38));
+        values.put(Theme.SCROLL_RAIL_OUTLINE_COLOR, Color.fromRGB(51, 51, 52));
 
         values.put(Theme.TEXT_FIELD_BACKGROUND_COLOR, Color.fromRGB(30, 30, 30));
         values.put(Theme.TEXT_FIELD_OUTLINE_COLOR, Color.GRAY);

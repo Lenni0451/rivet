@@ -2,6 +2,7 @@ package net.lenni0451.rivet.theme;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Padding;
 
@@ -60,6 +61,11 @@ public abstract class Theme {
     public static final ThemeKey<Boolean> SCROLL_SMOOTH = register("scroll.smooth", Boolean.class);
     public static final ThemeKey<Integer> SCROLL_ANIMATION_DURATION = register("scroll.animation_duration", Integer.class);
     public static final ThemeKey<Long> SCROLL_NESTED_SCROLL_TIMEOUT = register("scroll.nested_scroll_timeout", Long.class);
+    public static final ThemeKey<ScrollContainer.ScrollBarType> SCROLL_BAR_TYPE = register("scroll.bar_type", ScrollContainer.ScrollBarType.class);
+    public static final ThemeKey<Boolean> SCROLL_RAIL_CLICK_JUMP = register("scroll.rail_click_jump", Boolean.class);
+    public static final ThemeKey<Color> SCROLL_RAIL_COLOR = register("scroll.rail_color", Color.class);
+    public static final ThemeKey<Color> SCROLL_RAIL_OUTLINE_COLOR = register("scroll.rail_outline_color", Color.class);
+    public static final ThemeKey<Float> SCROLL_RAIL_OUTLINE_WIDTH = register("scroll.rail_outline_width", Float.class);
 
     // TextField
     public static final ThemeKey<Color> TEXT_FIELD_BACKGROUND_COLOR = register("text_field.background_color", Color.class);
