@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.animation.AnimationMode;
@@ -34,9 +33,6 @@ public class TextField extends Component implements Renderable, KeyboardListener
     private int cursor = 0;
     @Getter
     private int selection = 0;
-    @Getter
-    @Setter
-    private Padding innerPadding = new Padding(5, 5, 5, 5);
 
     private final Animation cursorAnimation = new Animation(AnimationMode.LOOP)
             .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 1, 250, EasingBehavior.KEEP)
@@ -65,6 +61,8 @@ public class TextField extends Component implements Renderable, KeyboardListener
     private final ThemeOption<Float> outlineWidth;
     @Getter
     private final ThemeOption<Float> cornerRadius;
+    @Getter
+    private final ThemeOption<Padding> innerPadding;
 
     public TextField(final Rivet rivet) {
         super(rivet);
@@ -76,6 +74,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
         this.cursorWidth = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CURSOR_WIDTH);
         this.outlineWidth = new ThemeOption<>(rivet, Theme.TEXT_FIELD_OUTLINE_WIDTH);
         this.cornerRadius = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CORNER_RADIUS);
+        this.innerPadding = new ThemeOption<>(rivet, Theme.TEXT_FIELD_INNER_PADDING);
 
         this.updateShapedText();
     }
@@ -180,7 +179,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
             }
             this.lastClick = now;
 
-            this.cursor = this.shapedText.index(event.x() - this.innerPadding.left() + this.scrollX);
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX);
             if (!event.modifiers().contains(ModifierKey.SHIFT)) {
                 this.selection = this.cursor;
             }
@@ -208,21 +207,21 @@ public class TextField extends Component implements Renderable, KeyboardListener
     @Override
     public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.selecting) {
-            this.cursor = this.shapedText.index(event.x() - this.innerPadding.left() + this.scrollX);
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX);
         }
     }
 
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
-        float visibleWidth = bounds.width() - this.innerPadding.left() - this.innerPadding.right();
+        float visibleWidth = bounds.width() - this.innerPadding.value().left() - this.innerPadding.value().right();
         float textHeight = this.rivet.backend().getTextHeight();
         this.ensureCursorVisible(visibleWidth);
 
         renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
         renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.rivet.focusedComponent() == this ? this.focusedOutlineColor.value() : this.outlineColor.value());
 
-        renderer.scissor(this.innerPadding.left(), this.innerPadding.top(), visibleWidth, bounds.height() - this.innerPadding.top() - this.innerPadding.bottom(), () -> {
-            renderer.translate(this.innerPadding.left(), this.innerPadding.top() + (bounds.height() - this.innerPadding.top() - this.innerPadding.bottom()) / 2F, () -> {
+        renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
+            renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
                 renderer.translate(-this.scrollX, 0, () -> {
                     if (this.cursor != this.selection) {
                         float x1 = this.shapedText.cursorPosition(this.cursor);
@@ -245,8 +244,8 @@ public class TextField extends Component implements Renderable, KeyboardListener
     public void computeIdealSize(final Size constraints) {
         float textHeight = this.rivet.backend().getTextHeight();
         this.idealSize = new Size(
-                textHeight * 10 + this.innerPadding.left() + this.innerPadding.right(),
-                this.rivet.backend().getTextHeight() + this.innerPadding.top() + this.innerPadding.bottom()
+                textHeight * 10 + this.innerPadding.value().left() + this.innerPadding.value().right(),
+                this.rivet.backend().getTextHeight() + this.innerPadding.value().top() + this.innerPadding.value().bottom()
         );
     }
 

@@ -29,6 +29,7 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_CLICK_COLOR = register("button.click_color", Color.class);
     public static final ThemeKey<Color> BUTTON_CLICK_OUTLINE_COLOR = register("button.click_outline_color", Color.class);
     public static final ThemeKey<Integer> BUTTON_ANIMATION_DURATION = register("button.animation_duration", Integer.class);
+    public static final ThemeKey<Padding> BUTTON_INNER_PADDING = register("button.inner_padding", Padding.class);
 
     // Slider
     public static final ThemeKey<Color> SLIDER_BAR_COLOR = register("slider.bar_color", Color.class);
@@ -76,6 +77,7 @@ public abstract class Theme {
     public static final ThemeKey<Float> TEXT_FIELD_CURSOR_WIDTH = register("text_field.cursor_width", Float.class);
     public static final ThemeKey<Float> TEXT_FIELD_OUTLINE_WIDTH = register("text_field.outline_width", Float.class);
     public static final ThemeKey<Float> TEXT_FIELD_CORNER_RADIUS = register("text_field.corner_radius", Float.class);
+    public static final ThemeKey<Padding> TEXT_FIELD_INNER_PADDING = register("text_field.inner_padding", Padding.class);
 
     // Checkbox
     public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = register("checkbox.corner_radius", Float.class);

@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component.base;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.animation.AnimationDirection;
@@ -50,8 +49,7 @@ public class Button extends Component implements MouseListener, Renderable {
     @Getter
     private final ThemeOption<Integer> animationDuration;
     @Getter
-    @Setter
-    private Padding innerPadding = new Padding(20, 5, 20, 5);
+    private final ThemeOption<Padding> innerPadding;
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
     private final Animation hoverAnimation;
@@ -70,6 +68,7 @@ public class Button extends Component implements MouseListener, Renderable {
         this.clickColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_COLOR);
         this.clickOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_OUTLINE_COLOR);
         this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
+        this.innerPadding = new ThemeOption<>(rivet, Theme.BUTTON_INNER_PADDING);
 
         this.hoverAnimation = new Animation()
                 .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
@@ -121,12 +120,12 @@ public class Button extends Component implements MouseListener, Renderable {
         }
 
         if (this.child instanceof Renderable renderable) {
-            float width = bounds.width() - this.innerPadding.left() - this.innerPadding.right();
-            float height = bounds.height() - this.innerPadding.top() - this.innerPadding.bottom();
+            float width = bounds.width() - this.innerPadding.value().left() - this.innerPadding.value().right();
+            float height = bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom();
 
-            renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
+            renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
                 renderer.componentBounds(0, 0, width, height, () -> {
-                    renderable.render(renderer, new Rectangle(bounds.x() + this.innerPadding.left(), bounds.y() + this.innerPadding.top(), width, height));
+                    renderable.render(renderer, new Rectangle(bounds.x() + this.innerPadding.value().left(), bounds.y() + this.innerPadding.value().top(), width, height));
                 });
             });
         }
@@ -135,20 +134,20 @@ public class Button extends Component implements MouseListener, Renderable {
     @Override
     public void computeIdealSize(final Size constraints) {
         this.child.computeIdealSize(constraints.minus(
-                this.innerPadding.left() + this.innerPadding.right(),
-                this.innerPadding.top() + this.innerPadding.bottom()
+                this.innerPadding.value().left() + this.innerPadding.value().right(),
+                this.innerPadding.value().top() + this.innerPadding.value().bottom()
         ));
         this.idealSize = new Size(
-                this.child.idealSize().width() + this.innerPadding.left() + this.innerPadding.right(),
-                this.child.idealSize().height() + this.innerPadding.top() + this.innerPadding.bottom()
+                this.child.idealSize().width() + this.innerPadding.value().left() + this.innerPadding.value().right(),
+                this.child.idealSize().height() + this.innerPadding.value().top() + this.innerPadding.value().bottom()
         );
     }
 
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(new Size(
-                size.width() - this.innerPadding.left() - this.innerPadding.right(),
-                size.height() - this.innerPadding.top() - this.innerPadding.bottom()
+                size.width() - this.innerPadding.value().left() - this.innerPadding.value().right(),
+                size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()
         ));
     }
 

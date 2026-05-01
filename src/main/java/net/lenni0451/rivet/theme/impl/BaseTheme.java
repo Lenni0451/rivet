@@ -16,6 +16,7 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.BUTTON_CORNER_RADIUS, 4);
         values.put(Theme.BUTTON_OUTLINE_WIDTH, 2);
         values.put(Theme.BUTTON_ANIMATION_DURATION, 150);
+        values.put(Theme.BUTTON_INNER_PADDING, new Padding(20, 5, 20, 5));
 
         values.put(Theme.SLIDER_BAR_HEIGHT, rivet.backend().getTextHeight() / 3F);
         values.put(Theme.SLIDER_THUMB_WIDTH, rivet.backend().getTextHeight() / 3F * 2F);
@@ -43,6 +44,7 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.TEXT_FIELD_CURSOR_WIDTH, 1F);
         values.put(Theme.TEXT_FIELD_OUTLINE_WIDTH, 1F);
         values.put(Theme.TEXT_FIELD_CORNER_RADIUS, 0F);
+        values.put(Theme.TEXT_FIELD_INNER_PADDING, new Padding(5, 5, 5, 5));
 
         values.put(Theme.CHECKBOX_CORNER_RADIUS, 2F);
         values.put(Theme.CHECKBOX_OUTLINE_WIDTH, 1F);
