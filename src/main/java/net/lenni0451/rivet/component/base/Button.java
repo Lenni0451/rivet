@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.component.base;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.animation.AnimationDirection;
@@ -26,8 +27,11 @@ import java.util.function.Consumer;
 @Accessors(fluent = true, chain = true)
 public class Button extends Component {
 
+    @Getter
     private final Component child;
-    private final Consumer<MouseButtonEvent> clickListener;
+    @Getter
+    @Setter
+    private Consumer<MouseButtonEvent> clickListener;
     @Getter
     private final ThemeOption<Integer> cornerRadius;
     @Getter
