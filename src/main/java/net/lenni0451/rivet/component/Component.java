@@ -15,8 +15,6 @@ import net.lenni0451.rivet.layout.LayoutOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
@@ -39,17 +37,28 @@ public abstract class Component {
     @Setter
     private boolean interactive = true;
 
-    private final List<BooleanSupplier> focusGainedListeners = new ArrayList<>();
-    private final List<BooleanSupplier> focusLostListeners = new ArrayList<>();
-    private final List<Predicate<KeyEvent>> keyDownListeners = new ArrayList<>();
-    private final List<Predicate<KeyEvent>> keyUpListeners = new ArrayList<>();
-    private final List<Predicate<CharEvent>> charTypedListeners = new ArrayList<>();
-    private final List<BooleanSupplier> mouseEnterListeners = new ArrayList<>();
-    private final List<BooleanSupplier> mouseLeaveListeners = new ArrayList<>();
-    private final List<BiPredicate<MouseButtonEvent, Rectangle>> mouseDownListeners = new ArrayList<>();
-    private final List<BiPredicate<MouseButtonEvent, Rectangle>> mouseUpListeners = new ArrayList<>();
-    private final List<BiPredicate<MouseMoveEvent, Rectangle>> mouseMoveListeners = new ArrayList<>();
-    private final List<BiPredicate<MouseScrollEvent, Rectangle>> mouseScrollListeners = new ArrayList<>();
+    @Getter
+    private final ListenerList<BooleanSupplier> focusGainedListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BooleanSupplier> focusLostListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Predicate<KeyEvent>> keyDownListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Predicate<KeyEvent>> keyUpListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Predicate<CharEvent>> charTypedListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BooleanSupplier> mouseEnterListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BooleanSupplier> mouseLeaveListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BiPredicate<MouseButtonEvent, Rectangle>> mouseDownListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BiPredicate<MouseButtonEvent, Rectangle>> mouseUpListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BiPredicate<MouseMoveEvent, Rectangle>> mouseMoveListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BiPredicate<MouseScrollEvent, Rectangle>> mouseScrollListener = new ListenerList<>();
 
     public final Component minSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
@@ -75,148 +84,29 @@ public abstract class Component {
         return this;
     }
 
-    public final Component addFocusGainedListener(final BooleanSupplier listener) {
-        this.focusGainedListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeFocusGainedListener(final BooleanSupplier listener) {
-        this.focusGainedListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addFocusLostListener(final BooleanSupplier listener) {
-        this.focusLostListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeFocusLostListener(final BooleanSupplier listener) {
-        this.focusLostListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addKeyDownListener(final Predicate<KeyEvent> listener) {
-        this.keyDownListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeKeyDownListener(final Predicate<KeyEvent> listener) {
-        this.keyDownListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addKeyUpListener(final Predicate<KeyEvent> listener) {
-        this.keyUpListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeKeyUpListener(final Predicate<KeyEvent> listener) {
-        this.keyUpListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addCharTypedListener(final Predicate<CharEvent> listener) {
-        this.charTypedListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeCharTypedListener(final Predicate<CharEvent> listener) {
-        this.charTypedListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addMouseEnterListener(final BooleanSupplier listener) {
-        this.mouseEnterListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeMouseEnterListener(final BooleanSupplier listener) {
-        this.mouseEnterListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addMouseLeaveListener(final BooleanSupplier listener) {
-        this.mouseLeaveListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeMouseLeaveListener(final BooleanSupplier listener) {
-        this.mouseLeaveListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addMouseDownListener(final BiPredicate<MouseButtonEvent, Rectangle> listener) {
-        this.mouseDownListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeMouseDownListener(final BiPredicate<MouseButtonEvent, Rectangle> listener) {
-        this.mouseDownListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addMouseUpListener(final BiPredicate<MouseButtonEvent, Rectangle> listener) {
-        this.mouseUpListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeMouseUpListener(final BiPredicate<MouseButtonEvent, Rectangle> listener) {
-        this.mouseUpListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addMouseMoveListener(final BiPredicate<MouseMoveEvent, Rectangle> listener) {
-        this.mouseMoveListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeMouseMoveListener(final BiPredicate<MouseMoveEvent, Rectangle> listener) {
-        this.mouseMoveListeners.remove(listener);
-        return this;
-    }
-
-    public final Component addMouseScrollListener(final BiPredicate<MouseScrollEvent, Rectangle> listener) {
-        this.mouseScrollListeners.add(listener);
-        return this;
-    }
-
-    public final Component removeMouseScrollListener(final BiPredicate<MouseScrollEvent, Rectangle> listener) {
-        this.mouseScrollListeners.remove(listener);
-        return this;
-    }
-
 
     public final void onFocusGained() {
-        for (BooleanSupplier listener : this.focusGainedListeners) {
-            if (listener.getAsBoolean()) {
-                return;
-            }
-        }
-        this.onComponentFocusGained();
+        this.focusGainedListener.call(BooleanSupplier::getAsBoolean, () -> {
+            this.onComponentFocusGained();
+            return false;
+        });
     }
 
     protected void onComponentFocusGained() {
     }
 
     public final void onFocusLost() {
-        for (BooleanSupplier listener : this.focusLostListeners) {
-            if (listener.getAsBoolean()) {
-                return;
-            }
-        }
-        this.onComponentFocusLost();
+        this.focusLostListener.call(BooleanSupplier::getAsBoolean, () -> {
+            this.onComponentFocusLost();
+            return false;
+        });
     }
 
     protected void onComponentFocusLost() {
     }
 
     public final boolean onKeyDown(final KeyEvent event) {
-        for (Predicate<KeyEvent> listener : this.keyDownListeners) {
-            if (listener.test(event)) {
-                return true;
-            }
-        }
-        return this.onComponentKeyDown(event);
+        return this.keyDownListener.call(l -> l.test(event), () -> this.onComponentKeyDown(event));
     }
 
     protected boolean onComponentKeyDown(final KeyEvent event) {
@@ -224,12 +114,7 @@ public abstract class Component {
     }
 
     public final boolean onKeyUp(final KeyEvent event) {
-        for (Predicate<KeyEvent> listener : this.keyUpListeners) {
-            if (listener.test(event)) {
-                return true;
-            }
-        }
-        return this.onComponentKeyUp(event);
+        return this.keyUpListener.call(l -> l.test(event), () -> this.onComponentKeyUp(event));
     }
 
     protected boolean onComponentKeyUp(final KeyEvent event) {
@@ -237,12 +122,7 @@ public abstract class Component {
     }
 
     public final boolean onCharTyped(final CharEvent event) {
-        for (Predicate<CharEvent> listener : this.charTypedListeners) {
-            if (listener.test(event)) {
-                return true;
-            }
-        }
-        return this.onComponentCharTyped(event);
+        return this.charTypedListener.call(l -> l.test(event), () -> this.onComponentCharTyped(event));
     }
 
     protected boolean onComponentCharTyped(final CharEvent event) {
@@ -250,36 +130,27 @@ public abstract class Component {
     }
 
     public final void onMouseEnter() {
-        for (BooleanSupplier listener : this.mouseEnterListeners) {
-            if (listener.getAsBoolean()) {
-                return;
-            }
-        }
-        this.onComponentMouseEnter();
+        this.mouseEnterListener.call(BooleanSupplier::getAsBoolean, () -> {
+            this.onComponentMouseEnter();
+            return false;
+        });
     }
 
     protected void onComponentMouseEnter() {
     }
 
     public final void onMouseLeave() {
-        for (BooleanSupplier listener : this.mouseLeaveListeners) {
-            if (listener.getAsBoolean()) {
-                return;
-            }
-        }
-        this.onComponentMouseLeave();
+        this.mouseLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
+            this.onComponentMouseLeave();
+            return false;
+        });
     }
 
     protected void onComponentMouseLeave() {
     }
 
     public final boolean onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        for (BiPredicate<MouseButtonEvent, Rectangle> listener : this.mouseDownListeners) {
-            if (listener.test(event, bounds)) {
-                return true;
-            }
-        }
-        return this.onComponentMouseDown(event, bounds);
+        return this.mouseDownListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseDown(event, bounds));
     }
 
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
@@ -287,12 +158,7 @@ public abstract class Component {
     }
 
     public final boolean onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        for (BiPredicate<MouseButtonEvent, Rectangle> listener : this.mouseUpListeners) {
-            if (listener.test(event, bounds)) {
-                return true;
-            }
-        }
-        return this.onComponentMouseUp(event, bounds);
+        return this.mouseUpListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseUp(event, bounds));
     }
 
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
@@ -300,12 +166,7 @@ public abstract class Component {
     }
 
     public final boolean onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
-        for (BiPredicate<MouseMoveEvent, Rectangle> listener : this.mouseMoveListeners) {
-            if (listener.test(event, bounds)) {
-                return true;
-            }
-        }
-        return this.onComponentMouseMove(event, bounds);
+        return this.mouseMoveListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseMove(event, bounds));
     }
 
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
@@ -313,12 +174,7 @@ public abstract class Component {
     }
 
     public final boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
-        for (BiPredicate<MouseScrollEvent, Rectangle> listener : this.mouseScrollListeners) {
-            if (listener.test(event, bounds)) {
-                return true;
-            }
-        }
-        return this.onComponentMouseScroll(event, bounds);
+        return this.mouseScrollListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseScroll(event, bounds));
     }
 
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
