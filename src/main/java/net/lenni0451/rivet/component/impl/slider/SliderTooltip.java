@@ -9,7 +9,6 @@ import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
@@ -23,7 +22,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 
 @Setter
 @Accessors(fluent = true, chain = true)
-public class SliderTooltip extends Component implements Renderable {
+public class SliderTooltip extends Component {
 
     private final ThemeOption<Color> backgroundColor;
     private final ThemeOption<Color> textColor;

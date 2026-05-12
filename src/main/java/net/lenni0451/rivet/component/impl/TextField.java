@@ -12,11 +12,12 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.Renderable;
-import net.lenni0451.rivet.input.keyboard.*;
+import net.lenni0451.rivet.input.keyboard.CharEvent;
+import net.lenni0451.rivet.input.keyboard.Key;
+import net.lenni0451.rivet.input.keyboard.KeyEvent;
+import net.lenni0451.rivet.input.keyboard.ModifierKey;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
@@ -26,7 +27,7 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
 @Accessors(fluent = true, chain = true)
-public class TextField extends Component implements Renderable, KeyboardListener, MouseListener {
+public class TextField extends Component {
 
     private final StringBuffer text = new StringBuffer();
     @Getter
@@ -97,7 +98,7 @@ public class TextField extends Component implements Renderable, KeyboardListener
     }
 
     @Override
-    public void onKeyDown(final KeyEvent event) {
+    public boolean onComponentKeyDown(final KeyEvent event) {
         boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
         boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
 
@@ -155,60 +156,67 @@ public class TextField extends Component implements Renderable, KeyboardListener
             this.deleteSelection();
         }
         this.cursorAnimation.reset().start();
+        return true;
     }
 
     @Override
-    public void onCharTyped(final CharEvent event) {
-        if (event.character() < 32 || event.character() == 127) return;
+    public boolean onComponentCharTyped(final CharEvent event) {
+        if (event.character() < 32 || event.character() == 127) return false;
         this.deleteSelection();
         this.text.insert(this.cursor, event.character());
         this.cursor++;
         this.selection = this.cursor;
         this.cursorAnimation.reset().start();
         this.updateShapedText();
+        return true;
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        if (event.button().equals(MouseButton.LEFT)) {
-            long now = System.currentTimeMillis();
-            if (now - this.lastClick < 250) {
-                this.clickCount++;
-            } else {
-                this.clickCount = 1;
-            }
-            this.lastClick = now;
+    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        if (!event.button().equals(MouseButton.LEFT)) return false;
 
-            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX);
-            if (!event.modifiers().contains(ModifierKey.SHIFT)) {
-                this.selection = this.cursor;
-            }
-            this.selecting = true;
-
-            if (this.clickCount == 2) {
-                this.selection = this.findWordStart(this.cursor);
-                this.cursor = this.findWordEnd(this.cursor);
-            } else if (this.clickCount == 3) {
-                this.selection = 0;
-                this.cursor = this.text.length();
-            } else {
-                this.clickCount = 1;
-            }
+        long now = System.currentTimeMillis();
+        if (now - this.lastClick < 250) {
+            this.clickCount++;
+        } else {
+            this.clickCount = 1;
         }
+        this.lastClick = now;
+
+        this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX);
+        if (!event.modifiers().contains(ModifierKey.SHIFT)) {
+            this.selection = this.cursor;
+        }
+        this.selecting = true;
+
+        if (this.clickCount == 2) {
+            this.selection = this.findWordStart(this.cursor);
+            this.cursor = this.findWordEnd(this.cursor);
+        } else if (this.clickCount == 3) {
+            this.selection = 0;
+            this.cursor = this.text.length();
+        } else {
+            this.clickCount = 1;
+        }
+        return true;
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.selecting = false;
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.selecting) {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX);
+            return true;
         }
+        return false;
     }
 
     @Override

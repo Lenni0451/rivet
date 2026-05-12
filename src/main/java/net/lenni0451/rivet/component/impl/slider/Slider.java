@@ -9,10 +9,8 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -25,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Accessors(fluent = true, chain = true)
-public class Slider extends Component implements MouseListener, Renderable {
+public class Slider extends Component {
 
     private static final int TICK_OFFSET = 2;
 
@@ -118,28 +116,34 @@ public class Slider extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
             this.tooltip = new SliderTooltip(this.rivet, String.format(this.tooltipFormat.value(), this.value));
             this.updateValue(event.x(), bounds);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = false;
             this.tooltip.remove();
             this.tooltip = null;
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.dragged) {
             this.updateValue(event.x(), bounds);
+            return true;
         }
+        return false;
     }
 
     private void updateValue(final float mouseX, final Rectangle bounds) {

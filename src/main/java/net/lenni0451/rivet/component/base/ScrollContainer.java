@@ -11,9 +11,10 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.component.Renderable;
-import net.lenni0451.rivet.input.keyboard.KeyboardListener;
-import net.lenni0451.rivet.input.mouse.*;
+import net.lenni0451.rivet.input.mouse.MouseButton;
+import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 @Accessors(fluent = true, chain = true)
-public class ScrollContainer extends Component implements MouseListener, KeyboardListener, Renderable {
+public class ScrollContainer extends Component {
 
     private final Component child;
     @Getter
@@ -123,7 +124,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             Rectangle vThumb = this.getVThumbBounds(bounds);
             Rectangle vRail = this.getVRailBounds(bounds);
@@ -134,7 +135,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
                 this.vBarPressed = true;
                 this.dragStartY = event.y();
                 this.initialScrollY = this.targetScrollY;
-                return;
+                return true;
             } else if (vRail != null && vRail.contains(event.x(), event.y())) {
                 this.vRailPressed = true;
                 float visibleHeight = this.visibleHeight(bounds);
@@ -148,12 +149,12 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
                     if (event.y() < vThumb.y()) this.targetScrollY = MathUtils.clamp(this.targetScrollY - visibleHeight, 0, maxScroll);
                     else this.targetScrollY = MathUtils.clamp(this.targetScrollY + visibleHeight, 0, maxScroll);
                 }
-                return;
+                return true;
             } else if (hThumb != null && hThumb.contains(event.x(), event.y())) {
                 this.hBarPressed = true;
                 this.dragStartX = event.x();
                 this.initialScrollX = this.targetScrollX;
-                return;
+                return true;
             } else if (hRail != null && hRail.contains(event.x(), event.y())) {
                 this.hRailPressed = true;
                 float visibleWidth = this.visibleWidth(bounds);
@@ -167,30 +168,26 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
                     if (event.x() < hThumb.x()) this.targetScrollX = MathUtils.clamp(this.targetScrollX - visibleWidth, 0, maxScroll);
                     else this.targetScrollX = MathUtils.clamp(this.targetScrollX + visibleWidth, 0, maxScroll);
                 }
-                return;
+                return true;
             }
         }
         this.rivet.focusedComponent(this.child);
-        if (this.child instanceof MouseListener mouseListener) {
-            mouseListener.onMouseDown(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
-        }
+        return this.child.onMouseDown(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.vBarPressed = false;
             this.vRailPressed = false;
             this.hBarPressed = false;
             this.hRailPressed = false;
         }
-        if (this.child instanceof MouseListener mouseListener) {
-            mouseListener.onMouseUp(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
-        }
+        return this.child.onMouseUp(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Rectangle vThumb = this.getVThumbBounds(bounds);
         Rectangle vRail = this.getVRailBounds(bounds);
         Rectangle hThumb = this.getHThumbBounds(bounds);
@@ -220,24 +217,23 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
             float dragDelta = event.x() - this.dragStartX;
             this.targetScrollX = MathUtils.clamp(this.initialScrollX + (dragDelta / scrollableWidth) * maxScroll, 0, maxScroll);
         } else {
-            if (this.child instanceof MouseListener mouseListener) {
-                float childWidth = this.visibleWidth(bounds);
-                float childHeight = this.visibleHeight(bounds);
-                boolean contains = new Rectangle(0, 0, childWidth, childHeight).contains(event.x(), event.y());
-                if (contains && !this.childHovered) {
-                    this.childHovered = true;
-                    mouseListener.onMouseEnter();
-                } else if (!contains && this.childHovered) {
-                    this.childHovered = false;
-                    mouseListener.onMouseLeave();
-                }
-                mouseListener.onMouseMove(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
+            float childWidth = this.visibleWidth(bounds);
+            float childHeight = this.visibleHeight(bounds);
+            boolean contains = new Rectangle(0, 0, childWidth, childHeight).contains(event.x(), event.y());
+            if (contains && !this.childHovered) {
+                this.childHovered = true;
+                this.child.onMouseEnter();
+            } else if (!contains && this.childHovered) {
+                this.childHovered = false;
+                this.child.onMouseLeave();
             }
+            return this.child.onMouseMove(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
         }
+        return false;
     }
 
     @Override
-    public boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         return this.nestedScrollCoordinator.handleScrolling(
                 () -> {
                     if (this.vScrollVisible && event.scrollY() != 0 && !this.vBarPressed) {
@@ -261,10 +257,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
                     return false;
                 },
                 () -> {
-                    if (this.child instanceof MouseListener mouseListener) {
-                        return mouseListener.onMouseScroll(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
-                    }
-                    return false;
+                    return this.child.onMouseScroll(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
                 }
         );
     }
@@ -278,9 +271,7 @@ public class ScrollContainer extends Component implements MouseListener, Keyboar
 
         renderer.componentBounds(0, 0, childWidth, childHeight, () -> {
             renderer.translate(-this.scrollX, -this.scrollY, () -> {
-                if (this.child instanceof Renderable renderable) {
-                    renderable.render(renderer, new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
-                }
+                this.child.render(renderer, new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
             });
         });
 

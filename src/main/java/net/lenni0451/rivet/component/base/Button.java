@@ -11,10 +11,8 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -26,7 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class Button extends Component implements MouseListener, Renderable {
+public class Button extends Component {
 
     private final Component child;
     private final Consumer<MouseButtonEvent> clickListener;
@@ -88,16 +86,18 @@ public class Button extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         this.pressed.add(event.button());
+        return true;
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (this.hovered) {
             this.clickListener.accept(event);
         }
         this.pressed.remove(event.button());
+        return true;
     }
 
     @Override
@@ -119,16 +119,13 @@ public class Button extends Component implements MouseListener, Renderable {
             renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, outlineWidth, outlineColor);
         }
 
-        if (this.child instanceof Renderable renderable) {
-            float width = bounds.width() - this.innerPadding.value().left() - this.innerPadding.value().right();
-            float height = bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom();
-
-            renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
-                renderer.componentBounds(0, 0, width, height, () -> {
-                    renderable.render(renderer, new Rectangle(bounds.x() + this.innerPadding.value().left(), bounds.y() + this.innerPadding.value().top(), width, height));
-                });
+        float width = bounds.width() - this.innerPadding.value().left() - this.innerPadding.value().right();
+        float height = bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom();
+        renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
+            renderer.componentBounds(0, 0, width, height, () -> {
+                this.child.render(renderer, new Rectangle(bounds.x() + this.innerPadding.value().left(), bounds.y() + this.innerPadding.value().top(), width, height));
             });
-        }
+        });
     }
 
     @Override

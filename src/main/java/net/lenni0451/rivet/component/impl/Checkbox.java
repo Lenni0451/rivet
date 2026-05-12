@@ -8,10 +8,8 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseListener;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextOrigin;
@@ -21,7 +19,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class Checkbox extends Component implements MouseListener, Renderable {
+public class Checkbox extends Component {
 
     @Getter
     private boolean checked;
@@ -100,10 +98,12 @@ public class Checkbox extends Component implements MouseListener, Renderable {
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (this.hovered && event.button().equals(MouseButton.LEFT)) {
             this.checked(!this.checked);
+            return true;
         }
+        return false;
     }
 
     @Override

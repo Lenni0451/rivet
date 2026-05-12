@@ -10,7 +10,6 @@ import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.input.ClickedElement;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
-import net.lenni0451.rivet.input.keyboard.KeyboardListener;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
@@ -113,98 +112,107 @@ public class Rivet {
     }
 
 
-    public void onKeyDown(final KeyEvent event) {
-        if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyDown(event);
+    public boolean onKeyDown(final KeyEvent event) {
+        if (this.focusedComponent != null) {
+            return this.focusedComponent.onKeyDown(event);
         }
+        return false;
     }
 
-    public void onKeyUp(final KeyEvent event) {
-        if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onKeyUp(event);
+    public boolean onKeyUp(final KeyEvent event) {
+        if (this.focusedComponent != null) {
+            return this.focusedComponent.onKeyUp(event);
         }
+        return false;
     }
 
-    public void onCharTyped(final CharEvent event) {
-        if (this.focusedComponent instanceof KeyboardListener keyboardListener) {
-            keyboardListener.onCharTyped(event);
+    public boolean onCharTyped(final CharEvent event) {
+        if (this.focusedComponent != null) {
+            return this.focusedComponent.onCharTyped(event);
         }
+        return false;
     }
 
-    public void onMouseDown(final MouseButtonEvent event) {
-        if (event.x() < 0 || event.x() >= this.size.width()) return;
-        if (event.y() < 0 || event.y() >= this.size.height()) return;
+    public boolean onMouseDown(final MouseButtonEvent event) {
+        if (event.x() < 0 || event.x() >= this.size.width()) return false;
+        if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         Layer layer = this.findLayerAt(x, y);
         if (layer != null) {
-            layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
+            boolean consumed = layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
             this.clickedLayer.down(layer, event.button());
+            return consumed;
         }
+        return false;
     }
 
-    public void onMouseUp(final MouseButtonEvent event) {
+    public boolean onMouseUp(final MouseButtonEvent event) {
         if (!this.clickedLayer.isClicked()) {
-            if (event.x() < 0 || event.x() >= this.size.width()) return;
-            if (event.y() < 0 || event.y() >= this.size.height()) return;
+            if (event.x() < 0 || event.x() >= this.size.width()) return false;
+            if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
+        boolean consumed = false;
         List<Layer> layers = this.layers.get();
         for (Layer layer : layers) {
             if (this.clickedLayer.is(layer)) {
-                layer.container().onMouseUp(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
+                consumed |= layer.container().onMouseUp(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
                 this.clickedLayer.up(event.button());
             }
         }
+        return consumed;
     }
 
-    public void onMouseMove(final MouseMoveEvent event) {
+    public boolean onMouseMove(final MouseMoveEvent event) {
         if (!this.clickedLayer.isClicked()) {
-            if (event.x() < 0 || event.x() >= this.size.width()) return;
-            if (event.y() < 0 || event.y() >= this.size.height()) return;
+            if (event.x() < 0 || event.x() >= this.size.width()) return false;
+            if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
+        boolean consumed = false;
         boolean intercepted = false;
         List<Layer> layers = this.layers.get();
         for (int i = layers.size() - 1; i >= 0; i--) {
             Layer layer = layers.get(i);
             if (this.clickedLayer.element() != null) {
                 if (this.clickedLayer.is(layer)) {
-                    layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
+                    consumed |= layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
                 } else {
-                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
+                    consumed |= layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
                 }
             } else {
                 if (!intercepted && layer.container().intercepts(x, y)) {
-                    layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
+                    consumed |= layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
                     intercepted = true;
                 } else {
-                    layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
+                    consumed |= layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
                 }
             }
         }
+        return consumed;
     }
 
-    public void onMouseScroll(final MouseScrollEvent event) {
+    public boolean onMouseScroll(final MouseScrollEvent event) {
         if (!this.clickedLayer.isClicked()) {
-            if (event.x() < 0 || event.x() >= this.size.width()) return;
-            if (event.y() < 0 || event.y() >= this.size.height()) return;
+            if (event.x() < 0 || event.x() >= this.size.width()) return false;
+            if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         Layer layer = this.findLayerAt(x, y);
         if (layer != null) {
-            layer.container().onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
+            return layer.container().onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
         }
+        return false;
     }
 
     public RenderList render() {
         Size scaledSize = this.scaledSize();
         Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
-            //TODO: Pass viewport to container to allow skipping out of viewport components
             for (Layer layer : this.layers.get()) {
                 if (this.recalculate) {
                     layer.container().computeIdealSize(scaledSize);

@@ -5,7 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.input.keyboard.CharEvent;
+import net.lenni0451.rivet.input.keyboard.KeyEvent;
+import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.layout.LayoutOptions;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 @RequiredArgsConstructor
@@ -55,6 +62,71 @@ public abstract class Component {
     }
 
     public void onFocusLost() {
+    }
+
+    public final boolean onKeyDown(final KeyEvent event) {
+        return this.onComponentKeyDown(event);
+    }
+
+    public boolean onComponentKeyDown(final KeyEvent event) {
+        return false;
+    }
+
+    public final boolean onKeyUp(final KeyEvent event) {
+        return this.onComponentKeyUp(event);
+    }
+
+    public boolean onComponentKeyUp(final KeyEvent event) {
+        return false;
+    }
+
+    public final boolean onCharTyped(final CharEvent event) {
+        return this.onComponentCharTyped(event);
+    }
+
+    public boolean onComponentCharTyped(final CharEvent event) {
+        return false;
+    }
+
+    public void onMouseEnter() {
+    }
+
+    public void onMouseLeave() {
+    }
+
+    public final boolean onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        return this.onComponentMouseDown(event, bounds);
+    }
+
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        return false;
+    }
+
+    public final boolean onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+        return this.onComponentMouseUp(event, bounds);
+    }
+
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+        return false;
+    }
+
+    public final boolean onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+        return this.onComponentMouseMove(event, bounds);
+    }
+
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+        return false;
+    }
+
+    public final boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+        return this.onComponentMouseScroll(event, bounds);
+    }
+
+    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+        return false;
+    }
+
+    public void render(final Renderer renderer, final Rectangle bounds) {
     }
 
     public abstract void computeIdealSize(final Size constraints);

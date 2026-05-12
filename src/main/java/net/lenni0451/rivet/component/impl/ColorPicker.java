@@ -8,9 +8,11 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
-import net.lenni0451.rivet.input.mouse.*;
+import net.lenni0451.rivet.input.mouse.MouseButton;
+import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
@@ -19,7 +21,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class ColorPicker extends Component implements MouseListener, Renderable {
+public class ColorPicker extends Component {
 
     private static final int HUE_STEPS = 12;
 
@@ -77,8 +79,8 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
     }
 
     @Override
-    public void onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        if (!event.button().equals(MouseButton.LEFT)) return;
+    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        if (!event.button().equals(MouseButton.LEFT)) return false;
 
         float pickerSize = this.pickerSize.value();
         float sliderWidth = this.sliderWidth.value();
@@ -94,24 +96,35 @@ public class ColorPicker extends Component implements MouseListener, Renderable 
             this.draggingAlpha = true;
             this.updateAlpha(event.x());
         }
+        return true;
     }
 
     @Override
-    public void onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+        boolean consumed = this.draggingPicker || this.draggingHue || this.draggingAlpha;
         this.draggingPicker = false;
         this.draggingHue = false;
         this.draggingAlpha = false;
+        return consumed;
     }
 
     @Override
-    public void onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
-        if (this.draggingPicker) this.updatePicker(event.x(), event.y());
-        else if (this.draggingHue) this.updateHue(event.y());
-        else if (this.draggingAlpha) this.updateAlpha(event.x());
+    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+        if (this.draggingPicker) {
+            this.updatePicker(event.x(), event.y());
+            return true;
+        } else if (this.draggingHue) {
+            this.updateHue(event.y());
+            return true;
+        } else if (this.draggingAlpha) {
+            this.updateAlpha(event.x());
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         if (this.rivet.backend().isKeyDown(ModifierKey.SHIFT)) {
             this.alpha = MathUtils.clamp(this.alpha + event.scrollY() / 20, 0, 1);
             this.updateColor();

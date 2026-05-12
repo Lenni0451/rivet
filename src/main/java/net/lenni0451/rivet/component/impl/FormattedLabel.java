@@ -7,7 +7,6 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.Renderable;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextFormat;
@@ -19,7 +18,7 @@ import net.lenni0451.rivet.theme.Theme;
 import java.util.List;
 
 @Accessors(fluent = true, chain = true)
-public class FormattedLabel extends Component implements Renderable {
+public class FormattedLabel extends Component {
 
     @Getter
     private String text;
