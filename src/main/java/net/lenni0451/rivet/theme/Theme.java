@@ -106,7 +106,7 @@ public abstract class Theme {
 
     private final Map<ThemeKey<?>, Object> values = new HashMap<>();
 
-    public void apply(final Rivet rivet) {
+    public final void apply(final Rivet rivet) {
         this.values.clear();
         this.addValues(rivet, this.values);
         this.validate();
@@ -122,13 +122,13 @@ public abstract class Theme {
         }
     }
 
-    public <T> T get(final ThemeKey<T> key) {
+    public final <T> T get(final ThemeKey<T> key) {
         T value = this.getOrDefault(key, null);
         if (value == null) throw new IllegalStateException("No value for key " + key);
         return value;
     }
 
-    public <T> T getOrDefault(final ThemeKey<T> key, @Nullable final T defaultValue) {
+    public final <T> T getOrDefault(final ThemeKey<T> key, @Nullable final T defaultValue) {
         Object value = this.values.get(key);
         if (value == null) return defaultValue;
         return (T) value;

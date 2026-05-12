@@ -1,7 +1,9 @@
 package net.lenni0451.rivet.text;
 
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class TextOrigin {
 
     @RequiredArgsConstructor

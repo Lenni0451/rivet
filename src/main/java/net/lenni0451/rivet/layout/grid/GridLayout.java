@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true)
-public class GridLayout implements Layout {
+public final class GridLayout implements Layout {
 
     private final int horizontalGap;
     private final int verticalGap;

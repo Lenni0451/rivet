@@ -7,7 +7,7 @@ import net.lenni0451.rivet.component.Container;
 import java.util.*;
 
 @Accessors(fluent = true)
-public class LayerList {
+public final class LayerList {
 
     @Getter
     private final Layer baseLayer;

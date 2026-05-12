@@ -12,7 +12,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AbsoluteLayout implements Layout {
+public final class AbsoluteLayout implements Layout {
 
     public static final AbsoluteLayout INSTANCE = new AbsoluteLayout();
 

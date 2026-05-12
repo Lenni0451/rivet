@@ -12,7 +12,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FullSizeLayout implements Layout {
+public final class FullSizeLayout implements Layout {
 
     public static final FullSizeLayout INSTANCE = new FullSizeLayout();
 

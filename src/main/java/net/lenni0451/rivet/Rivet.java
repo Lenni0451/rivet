@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @Accessors(fluent = true, chain = true)
-public class Rivet {
+public final class Rivet {
 
     @Getter
     private final Backend backend;

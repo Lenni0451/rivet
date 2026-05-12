@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true)
-public class ThemeOption<T> {
+public final class ThemeOption<T> {
 
     @Getter
     private final Rivet rivet;

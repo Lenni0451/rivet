@@ -11,7 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class VerticalFlowLayout implements Layout {
+public final class VerticalFlowLayout implements Layout {
 
     private final int horizontalGap;
     private final int verticalGap;

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Accessors(fluent = true)
-public class ClickedElement<E> {
+public final class ClickedElement<E> {
 
     @Getter
     private E element;

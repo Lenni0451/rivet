@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.text;
 
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.text.FormatParser.HandlerException;
 
@@ -92,6 +93,7 @@ import java.util.function.Function;
  *     <br>Example: <code>&lt;color=red bold italic=true&gt;</code>
  * </p>
  */
+@UtilityClass
 public class TextParser {
 
     private static final List<ColorFormat> COLOR_FORMATS = List.of(

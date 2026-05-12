@@ -8,7 +8,7 @@ import net.lenni0451.rivet.text.TextOrigin;
 
 import java.util.Stack;
 
-public class Renderer {
+public final class Renderer {
 
     private final Stack<RenderList> currentRenderList = new Stack<>();
 
