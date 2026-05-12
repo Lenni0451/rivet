@@ -89,14 +89,17 @@ public class ColorPicker extends Component {
         if (event.x() >= 0 && event.x() <= pickerSize && event.y() >= 0 && event.y() <= pickerSize) {
             this.draggingPicker = true;
             this.updatePicker(event.x(), event.y());
+            return true;
         } else if (event.x() >= pickerSize + gap && event.x() <= pickerSize + gap + sliderWidth && event.y() >= 0 && event.y() <= pickerSize) {
             this.draggingHue = true;
             this.updateHue(event.y());
+            return true;
         } else if (event.x() >= 0 && event.x() <= pickerSize && event.y() >= pickerSize + gap && event.y() <= pickerSize + gap + sliderWidth) {
             this.draggingAlpha = true;
             this.updateAlpha(event.x());
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override

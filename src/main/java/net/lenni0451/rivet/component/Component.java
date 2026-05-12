@@ -58,17 +58,25 @@ public abstract class Component {
     }
 
 
-    public void onFocusGained() {
+    public final void onFocusGained() {
+        this.onComponentFocusGained();
     }
 
-    public void onFocusLost() {
+    protected void onComponentFocusGained() {
+    }
+
+    public final void onFocusLost() {
+        this.onComponentFocusLost();
+    }
+
+    protected void onComponentFocusLost() {
     }
 
     public final boolean onKeyDown(final KeyEvent event) {
         return this.onComponentKeyDown(event);
     }
 
-    public boolean onComponentKeyDown(final KeyEvent event) {
+    protected boolean onComponentKeyDown(final KeyEvent event) {
         return false;
     }
 
@@ -76,7 +84,7 @@ public abstract class Component {
         return this.onComponentKeyUp(event);
     }
 
-    public boolean onComponentKeyUp(final KeyEvent event) {
+    protected boolean onComponentKeyUp(final KeyEvent event) {
         return false;
     }
 
@@ -84,14 +92,22 @@ public abstract class Component {
         return this.onComponentCharTyped(event);
     }
 
-    public boolean onComponentCharTyped(final CharEvent event) {
+    protected boolean onComponentCharTyped(final CharEvent event) {
         return false;
     }
 
-    public void onMouseEnter() {
+    public final void onMouseEnter() {
+        this.onComponentMouseEnter();
     }
 
-    public void onMouseLeave() {
+    protected void onComponentMouseEnter() {
+    }
+
+    public final void onMouseLeave() {
+        this.onComponentMouseLeave();
+    }
+
+    protected void onComponentMouseLeave() {
     }
 
     public final boolean onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {

@@ -74,13 +74,13 @@ public class Button extends Component {
     }
 
     @Override
-    public void onMouseEnter() {
+    protected void onComponentMouseEnter() {
         this.hovered = true;
         this.hoverAnimation.runInDirection(AnimationDirection.FORWARDS);
     }
 
     @Override
-    public void onMouseLeave() {
+    protected void onComponentMouseLeave() {
         this.hovered = false;
         this.hoverAnimation.runInDirection(AnimationDirection.BACKWARDS);
     }

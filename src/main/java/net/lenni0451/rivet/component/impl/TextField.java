@@ -98,7 +98,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public boolean onComponentKeyDown(final KeyEvent event) {
+    protected boolean onComponentKeyDown(final KeyEvent event) {
         boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
         boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
 
@@ -160,7 +160,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public boolean onComponentCharTyped(final CharEvent event) {
+    protected boolean onComponentCharTyped(final CharEvent event) {
         if (event.character() < 32 || event.character() == 127) return false;
         this.deleteSelection();
         this.text.insert(this.cursor, event.character());
