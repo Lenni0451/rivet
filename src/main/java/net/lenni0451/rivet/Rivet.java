@@ -23,6 +23,8 @@ import net.lenni0451.rivet.theme.impl.DefaultDark;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Accessors(fluent = true, chain = true)
 public final class Rivet {
@@ -39,6 +41,7 @@ public final class Rivet {
     private Component focusedComponent;
     @Getter
     private Theme theme;
+    private final Queue<Runnable> tasks = new LinkedBlockingQueue<>();
     private boolean recalculate = false;
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
@@ -61,9 +64,10 @@ public final class Rivet {
         return this.layers.get();
     }
 
-    public void addLayer(final Layer layer) {
+    public Rivet addLayer(final Layer layer) {
         this.layers.add(layer);
         this.recalculate = true;
+        return this;
     }
 
     public boolean removeLayer(final Layer layer) {
@@ -82,22 +86,24 @@ public final class Rivet {
         return this;
     }
 
-    public void size(final Size size) {
+    public Rivet size(final Size size) {
         this.size = size;
         this.recalculate = true;
+        return this;
     }
 
     public Size scaledSize() {
         return this.size.scale(this.scale, this.scale);
     }
 
-    public void scale(final float scale) {
+    public Rivet scale(final float scale) {
         this.scale = scale;
         this.recalculate = true;
+        return this;
     }
 
-    public void focusedComponent(final Component component) {
-        if (this.focusedComponent == component) return;
+    public Rivet focusedComponent(final Component component) {
+        if (this.focusedComponent == component) return this;
         if (this.focusedComponent != null) {
             this.focusedComponent.onFocusLost();
         }
@@ -105,10 +111,17 @@ public final class Rivet {
         if (component != null) {
             component.onFocusGained();
         }
+        return this;
     }
 
-    public void recalculateNextFrame() {
+    public Rivet runSync(final Runnable task) {
+        this.tasks.offer(task);
+        return this;
+    }
+
+    public Rivet recalculateNextFrame() {
         this.recalculate = true;
+        return this;
     }
 
 
@@ -210,6 +223,9 @@ public final class Rivet {
     }
 
     public RenderList render() {
+        Runnable task;
+        while ((task = this.tasks.poll()) != null) task.run();
+
         Size scaledSize = this.scaledSize();
         Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
