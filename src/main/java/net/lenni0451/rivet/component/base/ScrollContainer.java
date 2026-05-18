@@ -76,14 +76,14 @@ public class ScrollContainer extends Component {
     private final DynamicAnimation scrollXAnimation;
     private final DynamicAnimation scrollYAnimation;
 
-    private boolean vBarHovered;
-    private boolean vBarPressed;
-    private boolean vRailHovered;
-    private boolean vRailPressed;
     private boolean hBarHovered;
     private boolean hBarPressed;
     private boolean hRailHovered;
     private boolean hRailPressed;
+    private boolean vBarHovered;
+    private boolean vBarPressed;
+    private boolean vRailHovered;
+    private boolean vRailPressed;
     private float dragStartX;
     private float dragStartY;
     private float initialScrollX;
@@ -126,31 +126,12 @@ public class ScrollContainer extends Component {
     @Override
     public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
-            Rectangle vThumb = this.getVThumbBounds(bounds);
-            Rectangle vRail = this.getVRailBounds(bounds);
             Rectangle hThumb = this.getHThumbBounds(bounds);
             Rectangle hRail = this.getHRailBounds(bounds);
+            Rectangle vThumb = this.getVThumbBounds(bounds);
+            Rectangle vRail = this.getVRailBounds(bounds);
 
-            if (vThumb != null && vThumb.contains(event.x(), event.y())) {
-                this.vBarPressed = true;
-                this.dragStartY = event.y();
-                this.initialScrollY = this.targetScrollY;
-                return true;
-            } else if (vRail != null && vRail.contains(event.x(), event.y())) {
-                this.vRailPressed = true;
-                float visibleHeight = this.visibleHeight(bounds);
-                float maxScroll = Math.max(0, this.childSize.height() - visibleHeight);
-                if (this.railClickJump.value()) {
-                    float thumbHeight = vThumb.height();
-                    float scrollableHeight = vRail.height() - thumbHeight;
-                    float clickY = event.y() - vRail.y() - thumbHeight / 2F;
-                    this.targetScrollY = MathUtils.clamp((clickY / scrollableHeight) * maxScroll, 0, maxScroll);
-                } else {
-                    if (event.y() < vThumb.y()) this.targetScrollY = MathUtils.clamp(this.targetScrollY - visibleHeight, 0, maxScroll);
-                    else this.targetScrollY = MathUtils.clamp(this.targetScrollY + visibleHeight, 0, maxScroll);
-                }
-                return true;
-            } else if (hThumb != null && hThumb.contains(event.x(), event.y())) {
+            if (hThumb != null && hThumb.contains(event.x(), event.y())) {
                 this.hBarPressed = true;
                 this.dragStartX = event.x();
                 this.initialScrollX = this.targetScrollX;
@@ -169,45 +150,61 @@ public class ScrollContainer extends Component {
                     else this.targetScrollX = MathUtils.clamp(this.targetScrollX + visibleWidth, 0, maxScroll);
                 }
                 return true;
+            } else if (vThumb != null && vThumb.contains(event.x(), event.y())) {
+                this.vBarPressed = true;
+                this.dragStartY = event.y();
+                this.initialScrollY = this.targetScrollY;
+                return true;
+            } else if (vRail != null && vRail.contains(event.x(), event.y())) {
+                this.vRailPressed = true;
+                float visibleHeight = this.visibleHeight(bounds);
+                float maxScroll = Math.max(0, this.childSize.height() - visibleHeight);
+                if (this.railClickJump.value()) {
+                    float thumbHeight = vThumb.height();
+                    float scrollableHeight = vRail.height() - thumbHeight;
+                    float clickY = event.y() - vRail.y() - thumbHeight / 2F;
+                    this.targetScrollY = MathUtils.clamp((clickY / scrollableHeight) * maxScroll, 0, maxScroll);
+                } else {
+                    if (event.y() < vThumb.y()) this.targetScrollY = MathUtils.clamp(this.targetScrollY - visibleHeight, 0, maxScroll);
+                    else this.targetScrollY = MathUtils.clamp(this.targetScrollY + visibleHeight, 0, maxScroll);
+                }
+                return true;
             }
         }
         this.rivet.focusedComponent(this.child);
-        return this.child.onMouseDown(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
+        return this.child.onMouseDown(
+                event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
+        );
     }
 
     @Override
     public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
-            this.vBarPressed = false;
-            this.vRailPressed = false;
             this.hBarPressed = false;
             this.hRailPressed = false;
+            this.vBarPressed = false;
+            this.vRailPressed = false;
         }
-        return this.child.onMouseUp(event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY), new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize));
+        return this.child.onMouseUp(
+                event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
+        );
     }
 
     @Override
     public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
-        Rectangle vThumb = this.getVThumbBounds(bounds);
-        Rectangle vRail = this.getVRailBounds(bounds);
         Rectangle hThumb = this.getHThumbBounds(bounds);
         Rectangle hRail = this.getHRailBounds(bounds);
+        Rectangle vThumb = this.getVThumbBounds(bounds);
+        Rectangle vRail = this.getVRailBounds(bounds);
 
-        this.vBarHovered = vThumb != null && vThumb.contains(event.x(), event.y());
-        this.vRailHovered = vRail != null && vRail.contains(event.x(), event.y());
         this.hBarHovered = hThumb != null && hThumb.contains(event.x(), event.y());
         this.hRailHovered = hRail != null && hRail.contains(event.x(), event.y());
+        this.vBarHovered = vThumb != null && vThumb.contains(event.x(), event.y());
+        this.vRailHovered = vRail != null && vRail.contains(event.x(), event.y());
 
-        if (this.vBarPressed && vThumb != null) {
-            float contentHeight = this.childSize.height();
-            float visibleHeight = this.visibleHeight(bounds);
-            float maxScroll = Math.max(0, contentHeight - visibleHeight);
-            Rectangle rail = this.getVRailBounds(bounds);
-            float barHeight = vThumb.height();
-            float scrollableHeight = rail.height() - barHeight;
-            float dragDelta = event.y() - this.dragStartY;
-            this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
-        } else if (this.hBarPressed && hThumb != null) {
+        if (this.hBarPressed && hThumb != null) {
             float contentWidth = this.childSize.width();
             float visibleWidth = this.visibleWidth(bounds);
             float maxScroll = Math.max(0, contentWidth - visibleWidth);
@@ -216,6 +213,15 @@ public class ScrollContainer extends Component {
             float scrollableWidth = rail.width() - barWidth;
             float dragDelta = event.x() - this.dragStartX;
             this.targetScrollX = MathUtils.clamp(this.initialScrollX + (dragDelta / scrollableWidth) * maxScroll, 0, maxScroll);
+        } else if (this.vBarPressed && vThumb != null) {
+            float contentHeight = this.childSize.height();
+            float visibleHeight = this.visibleHeight(bounds);
+            float maxScroll = Math.max(0, contentHeight - visibleHeight);
+            Rectangle rail = this.getVRailBounds(bounds);
+            float barHeight = vThumb.height();
+            float scrollableHeight = rail.height() - barHeight;
+            float dragDelta = event.y() - this.dragStartY;
+            this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
         } else {
             float childWidth = this.visibleWidth(bounds);
             float childHeight = this.visibleHeight(bounds);
@@ -236,21 +242,21 @@ public class ScrollContainer extends Component {
     public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         return this.nestedScrollCoordinator.handleScrolling(
                 () -> {
-                    if (this.vScrollVisible && event.scrollY() != 0 && !this.vBarPressed) {
-                        float contentHeight = this.childSize.height();
-                        float visibleHeight = this.visibleHeight(bounds);
-                        float maxScroll = Math.max(0, contentHeight - visibleHeight);
-                        if (maxScroll > 0) {
-                            this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
-                            return true;
-                        }
-                    }
                     if (this.hScrollVisible && event.scrollX() != 0 && !this.hBarPressed) {
                         float contentWidth = this.childSize.width();
                         float visibleWidth = this.visibleWidth(bounds);
                         float maxScroll = Math.max(0, contentWidth - visibleWidth);
                         if (maxScroll > 0) {
                             this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
+                            return true;
+                        }
+                    }
+                    if (this.vScrollVisible && event.scrollY() != 0 && !this.vBarPressed) {
+                        float contentHeight = this.childSize.height();
+                        float visibleHeight = this.visibleHeight(bounds);
+                        float maxScroll = Math.max(0, contentHeight - visibleHeight);
+                        if (maxScroll > 0) {
+                            this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
                             return true;
                         }
                     }
@@ -275,8 +281,8 @@ public class ScrollContainer extends Component {
             });
         });
 
-        this.renderVerticalScrollbar(renderer, bounds);
         this.renderHorizontalScrollbar(renderer, bounds);
+        this.renderVerticalScrollbar(renderer, bounds);
         this.renderCorner(renderer, bounds);
     }
 
@@ -292,15 +298,6 @@ public class ScrollContainer extends Component {
         this.scrollY = this.scrollYAnimation.getValue();
     }
 
-    private void renderVerticalScrollbar(final Renderer renderer, final Rectangle bounds) {
-        Rectangle rail = this.getVRailBounds(bounds);
-        if (rail == null) return;
-        if (this.barType.value() == ScrollBarType.NORMAL) {
-            this.renderRail(renderer, rail, this.vRailHovered, this.vRailPressed);
-        }
-        this.renderThumb(renderer, this.getVThumbBounds(bounds), this.vBarHovered, this.vBarPressed);
-    }
-
     private void renderHorizontalScrollbar(final Renderer renderer, final Rectangle bounds) {
         Rectangle rail = this.getHRailBounds(bounds);
         if (rail == null) return;
@@ -308,6 +305,15 @@ public class ScrollContainer extends Component {
             this.renderRail(renderer, rail, this.hRailHovered, this.hRailPressed);
         }
         this.renderThumb(renderer, this.getHThumbBounds(bounds), this.hBarHovered, this.hBarPressed);
+    }
+
+    private void renderVerticalScrollbar(final Renderer renderer, final Rectangle bounds) {
+        Rectangle rail = this.getVRailBounds(bounds);
+        if (rail == null) return;
+        if (this.barType.value() == ScrollBarType.NORMAL) {
+            this.renderRail(renderer, rail, this.vRailHovered, this.vRailPressed);
+        }
+        this.renderThumb(renderer, this.getVThumbBounds(bounds), this.vBarHovered, this.vBarPressed);
     }
 
     private void renderCorner(final Renderer renderer, final Rectangle bounds) {
@@ -346,31 +352,6 @@ public class ScrollContainer extends Component {
     }
 
     @Nullable
-    private Rectangle getVScrollArea(final Rectangle bounds) {
-        if (!this.vScrollVisible) return null;
-        float barWidth = this.barWidth.value();
-        return new Rectangle(bounds.width() - barWidth, 0, barWidth, bounds.height() - (this.hScrollVisible && this.barType.value() == ScrollBarType.NORMAL ? barWidth : 0));
-    }
-
-    @Nullable
-    private Rectangle getVRailBounds(final Rectangle bounds) {
-        return this.getVScrollArea(bounds);
-    }
-
-    @Nullable
-    private Rectangle getVThumbBounds(final Rectangle bounds) {
-        Rectangle rail = this.getVRailBounds(bounds);
-        if (rail == null) return null;
-        float contentHeight = this.childSize.height();
-        float visibleHeight = this.visibleHeight(bounds);
-        float thumbHeight = Math.max(20, (visibleHeight / contentHeight) * rail.height());
-        float maxScroll = Math.max(1, contentHeight - visibleHeight);
-        float scrollPercentage = this.scrollY / maxScroll;
-        float thumbY = rail.y() + scrollPercentage * (rail.height() - thumbHeight);
-        return new Rectangle(rail.x(), thumbY, rail.width(), thumbHeight);
-    }
-
-    @Nullable
     private Rectangle getHScrollArea(final Rectangle bounds) {
         if (!this.hScrollVisible) return null;
         float barWidth = this.barWidth.value();
@@ -395,6 +376,31 @@ public class ScrollContainer extends Component {
         return new Rectangle(thumbX, rail.y(), thumbWidth, rail.height());
     }
 
+    @Nullable
+    private Rectangle getVScrollArea(final Rectangle bounds) {
+        if (!this.vScrollVisible) return null;
+        float barWidth = this.barWidth.value();
+        return new Rectangle(bounds.width() - barWidth, 0, barWidth, bounds.height() - (this.hScrollVisible && this.barType.value() == ScrollBarType.NORMAL ? barWidth : 0));
+    }
+
+    @Nullable
+    private Rectangle getVRailBounds(final Rectangle bounds) {
+        return this.getVScrollArea(bounds);
+    }
+
+    @Nullable
+    private Rectangle getVThumbBounds(final Rectangle bounds) {
+        Rectangle rail = this.getVRailBounds(bounds);
+        if (rail == null) return null;
+        float contentHeight = this.childSize.height();
+        float visibleHeight = this.visibleHeight(bounds);
+        float thumbHeight = Math.max(20, (visibleHeight / contentHeight) * rail.height());
+        float maxScroll = Math.max(1, contentHeight - visibleHeight);
+        float scrollPercentage = this.scrollY / maxScroll;
+        float thumbY = rail.y() + scrollPercentage * (rail.height() - thumbHeight);
+        return new Rectangle(rail.x(), thumbY, rail.width(), thumbHeight);
+    }
+
     @Override
     public void computeIdealSize(final Size constraints) {
         this.child.computeIdealSize(new Size(
@@ -409,19 +415,19 @@ public class ScrollContainer extends Component {
         float availableWidth = size.width();
         float availableHeight = size.height();
 
-        this.vScrollVisible = false;
         this.hScrollVisible = false;
+        this.vScrollVisible = false;
         if (this.barType.value() == ScrollBarType.NORMAL) {
             Size idealChildSize = this.child.idealSize();
 
-            this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > availableHeight;
             this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() > (this.vScrollVisible ? availableWidth - this.barWidth.value() : availableWidth);
+            this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > availableHeight;
             if (this.hScrollVisible && !this.vScrollVisible) {
                 this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > (availableHeight - this.barWidth.value());
             }
 
-            if (this.vScrollVisible) availableWidth -= this.barWidth.value();
             if (this.hScrollVisible) availableHeight -= this.barWidth.value();
+            if (this.vScrollVisible) availableWidth -= this.barWidth.value();
         }
 
         Size childSize = new Size(
@@ -434,21 +440,24 @@ public class ScrollContainer extends Component {
         }
         this.childSize = childSize;
 
-        float contentHeight = childSize.height();
-        if (this.barType.value() == ScrollBarType.FLOATING) {
-            this.vScrollVisible = this.verticalScrolling && contentHeight > availableHeight;
+        { // Horizontal scroll bar
+            float contentWidth = childSize.width();
+            if (this.barType.value() == ScrollBarType.FLOATING) {
+                this.hScrollVisible = this.horizontalScrolling && contentWidth > availableWidth;
+            }
+            float maxScrollX = Math.max(0, contentWidth - availableWidth);
+            this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
+            this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
         }
-        float maxScrollY = Math.max(0, contentHeight - availableHeight);
-        this.targetScrollY = MathUtils.clamp(this.targetScrollY, 0, maxScrollY);
-        this.scrollY = MathUtils.clamp(this.scrollY, 0, maxScrollY);
-
-        float contentWidth = childSize.width();
-        if (this.barType.value() == ScrollBarType.FLOATING) {
-            this.hScrollVisible = this.horizontalScrolling && contentWidth > availableWidth;
+        { // Vertical scroll bar
+            float contentHeight = childSize.height();
+            if (this.barType.value() == ScrollBarType.FLOATING) {
+                this.vScrollVisible = this.verticalScrolling && contentHeight > availableHeight;
+            }
+            float maxScrollY = Math.max(0, contentHeight - availableHeight);
+            this.targetScrollY = MathUtils.clamp(this.targetScrollY, 0, maxScrollY);
+            this.scrollY = MathUtils.clamp(this.scrollY, 0, maxScrollY);
         }
-        float maxScrollX = Math.max(0, contentWidth - availableWidth);
-        this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
-        this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
     }
 
 
