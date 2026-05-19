@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.component.base;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.DynamicAnimation;
 import net.lenni0451.commons.animation.easing.EasingFunction;
@@ -32,6 +33,12 @@ public class ScrollContainer extends Component {
     private final boolean horizontalScrolling;
     @Getter
     private final boolean verticalScrolling;
+    @Getter
+    @Setter
+    private boolean autoScroll;
+    @Getter
+    @Setter
+    private float autoScrollThreshold = 0.1F;
 
     @Getter
     private final ThemeOption<Color> barColor;
@@ -412,6 +419,8 @@ public class ScrollContainer extends Component {
 
     @Override
     public void computeLayout(final Size size) {
+        float previousMaxScrollX = this.childSize.width() - this.visibleWidth(new Rectangle(size));
+        float previousMaxScrollY = this.childSize.height() - this.visibleHeight(new Rectangle(size));
         float availableWidth = size.width();
         float availableHeight = size.height();
 
@@ -455,7 +464,11 @@ public class ScrollContainer extends Component {
                 this.vScrollVisible = this.verticalScrolling && contentHeight > availableHeight;
             }
             float maxScrollY = Math.max(0, contentHeight - availableHeight);
-            this.targetScrollY = MathUtils.clamp(this.targetScrollY, 0, maxScrollY);
+            if (this.autoScroll && previousMaxScrollY - this.targetScrollY <= availableHeight * this.autoScrollThreshold) {
+                this.targetScrollY = maxScrollY;
+            } else {
+                this.targetScrollY = MathUtils.clamp(this.targetScrollY, 0, maxScrollY);
+            }
             this.scrollY = MathUtils.clamp(this.scrollY, 0, maxScrollY);
         }
     }
