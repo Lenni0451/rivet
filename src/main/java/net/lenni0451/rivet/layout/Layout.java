@@ -18,8 +18,16 @@ public interface Layout {
         return MathUtils.clamp(component.idealSize().width(), component.minSize().width(), component.maxSize().width());
     }
 
+    default float widthOf(final Component component, final float width) {
+        return MathUtils.clamp(width, component.minSize().width(), component.maxSize().width());
+    }
+
     default float heightOf(final Component component) {
         return MathUtils.clamp(component.idealSize().height(), component.minSize().height(), component.maxSize().height());
+    }
+
+    default float heightOf(final Component component, final float height) {
+        return MathUtils.clamp(height, component.minSize().height(), component.maxSize().height());
     }
 
 }

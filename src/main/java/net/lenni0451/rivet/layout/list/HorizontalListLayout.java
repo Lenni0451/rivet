@@ -14,6 +14,7 @@ import java.util.Map;
 public class HorizontalListLayout implements Layout {
 
     private final int gap;
+    private final boolean fullHeight;
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
@@ -26,7 +27,7 @@ public class HorizontalListLayout implements Layout {
         if (!components.isEmpty()) {
             width += this.gap * (components.size() - 1);
         }
-        return new Size(width, height);
+        return new Size(width, this.fullHeight ? constraints.height() : height);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class HorizontalListLayout implements Layout {
         float x = 0;
         for (Component component : components) {
             float width = this.widthOf(component);
-            float height = this.heightOf(component);
+            float height = this.fullHeight ? this.heightOf(component, containerSize.height()) : this.heightOf(component);
             if (x > 0) x += this.gap;
             layout.put(component, new Rectangle(x, 0, width, height));
             x += width;

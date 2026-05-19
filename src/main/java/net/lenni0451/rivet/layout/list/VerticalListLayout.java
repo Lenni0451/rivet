@@ -14,6 +14,7 @@ import java.util.Map;
 public class VerticalListLayout implements Layout {
 
     private final int gap;
+    private final boolean fullWidth;
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
@@ -26,7 +27,7 @@ public class VerticalListLayout implements Layout {
         if (!components.isEmpty()) {
             height += this.gap * (components.size() - 1);
         }
-        return new Size(width, height);
+        return new Size(this.fullWidth ? constraints.width() : width, height);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class VerticalListLayout implements Layout {
         Map<Component, Rectangle> layout = new IdentityHashMap<>();
         float y = 0;
         for (Component component : components) {
-            float width = this.widthOf(component);
+            float width = this.fullWidth ? this.widthOf(component, containerSize.width()) : this.widthOf(component);
             float height = this.heightOf(component);
             if (y != 0) y += this.gap;
             layout.put(component, new Rectangle(0, y, width, height));
