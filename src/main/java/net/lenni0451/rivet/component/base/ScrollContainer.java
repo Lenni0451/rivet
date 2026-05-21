@@ -429,10 +429,10 @@ public class ScrollContainer extends Component {
         if (this.barType.value() == ScrollBarType.NORMAL) {
             Size idealChildSize = this.child.idealSize();
 
-            this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() > (this.vScrollVisible ? availableWidth - this.barWidth.value() : availableWidth);
-            this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > availableHeight;
+            this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() < Float.MAX_VALUE && idealChildSize.width() > (this.vScrollVisible ? availableWidth - this.barWidth.value() : availableWidth);
+            this.vScrollVisible = this.verticalScrolling && idealChildSize.height() < Float.MAX_VALUE && idealChildSize.height() > availableHeight;
             if (this.hScrollVisible && !this.vScrollVisible) {
-                this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > (availableHeight - this.barWidth.value());
+                this.vScrollVisible = this.verticalScrolling && idealChildSize.height() < Float.MAX_VALUE && idealChildSize.height() > (availableHeight - this.barWidth.value());
             }
 
             if (this.hScrollVisible) availableHeight -= this.barWidth.value();
