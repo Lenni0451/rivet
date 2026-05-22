@@ -27,7 +27,7 @@ public class HorizontalListLayout implements Layout {
         if (!components.isEmpty()) {
             width += this.gap * (components.size() - 1);
         }
-        return new Size(width, this.fullHeight ? constraints.height() : height);
+        return new Size(width, height);
     }
 
     @Override

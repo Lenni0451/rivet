@@ -27,7 +27,7 @@ public class VerticalListLayout implements Layout {
         if (!components.isEmpty()) {
             height += this.gap * (components.size() - 1);
         }
-        return new Size(this.fullWidth ? constraints.width() : width, height);
+        return new Size(width, height);
     }
 
     @Override
