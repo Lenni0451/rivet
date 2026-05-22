@@ -123,7 +123,7 @@ public class SliderTooltip extends Component {
     public void computeIdealSize(final Size constraints) {
         Padding padding = this.padding.value();
         this.idealSize = this.shapedText.logicalBounds().size()
-                .plus(padding.left() + padding.right(), padding.top() + padding.bottom() + this.triangleSize.value());
+                .plus(padding.horizontal(), padding.vertical() + this.triangleSize.value());
     }
 
 

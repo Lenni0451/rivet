@@ -221,7 +221,7 @@ public class TextField extends Component {
 
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
-        float visibleWidth = bounds.width() - this.innerPadding.value().left() - this.innerPadding.value().right();
+        float visibleWidth = bounds.width() - this.innerPadding.value().horizontal();
         float textHeight = this.rivet.backend().getTextHeight();
         this.ensureCursorVisible(visibleWidth);
 
@@ -252,8 +252,8 @@ public class TextField extends Component {
     public void computeIdealSize(final Size constraints) {
         float textHeight = this.rivet.backend().getTextHeight();
         this.idealSize = new Size(
-                textHeight * 10 + this.innerPadding.value().left() + this.innerPadding.value().right(),
-                this.rivet.backend().getTextHeight() + this.innerPadding.value().top() + this.innerPadding.value().bottom()
+                textHeight * 10 + this.innerPadding.value().horizontal(),
+                this.rivet.backend().getTextHeight() + this.innerPadding.value().vertical()
         );
     }
 

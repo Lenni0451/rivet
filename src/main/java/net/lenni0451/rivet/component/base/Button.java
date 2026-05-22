@@ -60,11 +60,11 @@ public class Button extends Component {
         this(rivet, child, c -> {}, clickListener);
     }
 
-    public <C extends Component> Button(final Rivet rivet, final C child, final Consumer<C> childConsumer, final Consumer<MouseButtonEvent> clickListener) {
+    public <C extends Component> Button(final Rivet rivet, final C child, final Consumer<C> childConsumer, final Consumer<MouseButtonEvent> initializer) {
         super(rivet);
         this.child = child;
         childConsumer.accept(child);
-        this.clickListener = clickListener;
+        this.clickListener = initializer;
 
         this.cornerRadius = new ThemeOption<>(rivet, Theme.BUTTON_CORNER_RADIUS);
         this.outlineWidth = new ThemeOption<>(rivet, Theme.BUTTON_OUTLINE_WIDTH);
@@ -128,8 +128,8 @@ public class Button extends Component {
             renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, outlineWidth, outlineColor);
         }
 
-        float width = bounds.width() - this.innerPadding.value().left() - this.innerPadding.value().right();
-        float height = bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom();
+        float width = bounds.width() - this.innerPadding.value().horizontal();
+        float height = bounds.height() - this.innerPadding.value().vertical();
         renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
             renderer.componentBounds(0, 0, width, height, () -> {
                 this.child.render(renderer, new Rectangle(bounds.x() + this.innerPadding.value().left(), bounds.y() + this.innerPadding.value().top(), width, height));
@@ -140,20 +140,20 @@ public class Button extends Component {
     @Override
     public void computeIdealSize(final Size constraints) {
         this.child.computeIdealSize(constraints.minus(
-                this.innerPadding.value().left() + this.innerPadding.value().right(),
-                this.innerPadding.value().top() + this.innerPadding.value().bottom()
+                this.innerPadding.value().horizontal(),
+                this.innerPadding.value().vertical()
         ));
         this.idealSize = new Size(
-                this.child.idealSize().width() + this.innerPadding.value().left() + this.innerPadding.value().right(),
-                this.child.idealSize().height() + this.innerPadding.value().top() + this.innerPadding.value().bottom()
+                this.child.idealSize().width() + this.innerPadding.value().horizontal(),
+                this.child.idealSize().height() + this.innerPadding.value().vertical()
         );
     }
 
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(new Size(
-                size.width() - this.innerPadding.value().left() - this.innerPadding.value().right(),
-                size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()
+                size.width() - this.innerPadding.value().horizontal(),
+                size.height() - this.innerPadding.value().vertical()
         ));
     }
 

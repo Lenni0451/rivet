@@ -122,8 +122,8 @@ public final class GridLayout implements Layout {
                 }
             }
 
-            float availableWidth = cellWidth - options.padding().left() - options.padding().right();
-            float availableHeight = cellHeight - options.padding().top() - options.padding().bottom();
+            float availableWidth = cellWidth - options.padding().horizontal();
+            float availableHeight = cellHeight - options.padding().vertical();
             float idealWidth = this.widthOf(component, options);
             float idealHeight = this.heightOf(component, options);
 
@@ -210,8 +210,8 @@ public final class GridLayout implements Layout {
             for (Component component : components) {
                 GridLayoutOptions options = (GridLayoutOptions) component.layoutOptions();
                 if (options == null) options = GridLayoutOptions.EMPTY;
-                float width = GridLayout.this.widthOf(component, options) + options.padding().left() + options.padding().right();
-                float height = GridLayout.this.heightOf(component, options) + options.padding().top() + options.padding().bottom();
+                float width = GridLayout.this.widthOf(component, options) + options.padding().horizontal();
+                float height = GridLayout.this.heightOf(component, options) + options.padding().vertical();
 
                 if (options.columnSpan() == 1) {
                     this.columnWidths[options.column()] = Math.max(this.columnWidths[options.column()], width);
@@ -227,8 +227,8 @@ public final class GridLayout implements Layout {
             for (Component component : components) {
                 GridLayoutOptions options = (GridLayoutOptions) component.layoutOptions();
                 if (options == null) options = GridLayoutOptions.EMPTY;
-                float width = GridLayout.this.widthOf(component, options) + options.padding().left() + options.padding().right();
-                float height = GridLayout.this.heightOf(component, options) + options.padding().top() + options.padding().bottom();
+                float width = GridLayout.this.widthOf(component, options) + options.padding().horizontal();
+                float height = GridLayout.this.heightOf(component, options) + options.padding().vertical();
 
                 if (options.columnSpan() > 1) {
                     float currentWidth = 0;
