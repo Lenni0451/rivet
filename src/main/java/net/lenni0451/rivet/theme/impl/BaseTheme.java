@@ -21,8 +21,8 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.SLIDER_BAR_HEIGHT, rivet.backend().getTextHeight() / 3F);
         values.put(Theme.SLIDER_THUMB_WIDTH, rivet.backend().getTextHeight() / 3F * 2F);
         values.put(Theme.SLIDER_THUMB_HEIGHT, rivet.backend().getTextHeight() / 3F * 2F);
-        values.put(Theme.SLIDER_BAR_CORNER_RADIUS, (Float) values.get(Theme.SLIDER_BAR_HEIGHT) / 2F);
-        values.put(Theme.SLIDER_THUMB_CORNER_RADIUS, 0F); // Calculated in Slider if needed, or set here
+        values.put(Theme.SLIDER_BAR_CORNER_RADIUS, Float.MAX_VALUE);
+        values.put(Theme.SLIDER_THUMB_CORNER_RADIUS, Float.MAX_VALUE);
         values.put(Theme.SLIDER_THUMB_ENCASED, false);
         values.put(Theme.SLIDER_THUMB_SHAPE, Slider.ThumbShape.CIRCLE);
         values.put(Theme.SLIDER_TOOLTIP_CORNER_RADIUS, 4F);

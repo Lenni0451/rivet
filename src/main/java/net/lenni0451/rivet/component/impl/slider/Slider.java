@@ -87,12 +87,9 @@ public class Slider extends Component {
         this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT);
         this.thumbWidth = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_WIDTH);
         this.thumbHeight = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_HEIGHT);
-        this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS, () -> this.barHeight.value() / 2F);
+        this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS);
         this.thumbShape = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_SHAPE);
-        this.thumbCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CORNER_RADIUS, () -> {
-            if (this.thumbShape.value() == ThumbShape.PIN) return 0F;
-            return Math.min(this.thumbWidth.value(), this.thumbHeight.value()) / 2F;
-        });
+        this.thumbCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CORNER_RADIUS);
         this.thumbEncased = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_ENCASED);
         this.tooltipFormat = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_FORMAT);
     }
@@ -196,7 +193,7 @@ public class Slider extends Component {
             }
             case RECTANGLE -> renderer.fillOptimizedRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, color);
             case PIN -> {
-                renderer.fillOptimizedRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight / 2F, cornerRadius, color);
+                renderer.fillRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight / 2F, color);
                 renderer.fillTriangle(thumbX - thumbWidth / 2F, sliderCenter, thumbX, sliderCenter + thumbHeight / 2F, thumbX + thumbWidth / 2F, sliderCenter, color);
             }
         }

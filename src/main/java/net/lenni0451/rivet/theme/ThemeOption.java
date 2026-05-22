@@ -15,29 +15,28 @@ public final class ThemeOption<T> {
     @Getter
     private final ThemeKey<T> key;
     @Nullable
-    private final Supplier<T> defaultSupplier;
-    private T value;
+    private Supplier<T> value;
 
     public ThemeOption(final Rivet rivet, final ThemeKey<T> key) {
-        this(rivet, key, null);
-    }
-
-    public ThemeOption(final Rivet rivet, final ThemeKey<T> key, @Nullable final Supplier<T> defaultSupplier) {
         this.rivet = rivet;
         this.key = key;
-        this.defaultSupplier = defaultSupplier;
     }
 
     public T value() {
-        if (this.value != null) return this.value;
-        T themeValue = this.rivet.theme().getOrDefault(this.key, null);
-        if (themeValue != null) return themeValue;
-        if (this.defaultSupplier != null) return this.defaultSupplier.get();
+        if (this.value != null) return this.value.get();
         return this.rivet.theme().get(this.key);
     }
 
     public void set(@Nullable final T value) {
-        this.value = value;
+        if (value == null) {
+            this.value = null;
+        } else {
+            this.value = () -> value;
+        }
+    }
+
+    public void set(@Nullable final Supplier<T> valueSupplier) {
+        this.value = valueSupplier;
     }
 
     public void reset() {
