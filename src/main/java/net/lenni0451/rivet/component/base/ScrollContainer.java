@@ -24,6 +24,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
 public class ScrollContainer extends Component {
@@ -103,9 +104,18 @@ public class ScrollContainer extends Component {
         this(rivet, child, false, true);
     }
 
+    public <C extends Component> ScrollContainer(final Rivet rivet, final C child, final Consumer<C> childConsumer) {
+        this(rivet, child, childConsumer, false, true);
+    }
+
     public ScrollContainer(final Rivet rivet, final Component child, final boolean horizontalScrolling, final boolean verticalScrolling) {
+        this(rivet, child, c -> {}, horizontalScrolling, verticalScrolling);
+    }
+
+    public <C extends Component> ScrollContainer(final Rivet rivet, final C child, final Consumer<C> childConsumer, final boolean horizontalScrolling, final boolean verticalScrolling) {
         super(rivet);
         this.child = child;
+        childConsumer.accept(child);
         this.horizontalScrolling = horizontalScrolling;
         this.verticalScrolling = verticalScrolling;
 

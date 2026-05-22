@@ -57,8 +57,13 @@ public class Button extends Component {
     private final Animation hoverAnimation;
 
     public Button(final Rivet rivet, final Component child, final Consumer<MouseButtonEvent> clickListener) {
+        this(rivet, child, c -> {}, clickListener);
+    }
+
+    public <C extends Component> Button(final Rivet rivet, final C child, final Consumer<C> childConsumer, final Consumer<MouseButtonEvent> clickListener) {
         super(rivet);
         this.child = child;
+        childConsumer.accept(child);
         this.clickListener = clickListener;
 
         this.cornerRadius = new ThemeOption<>(rivet, Theme.BUTTON_CORNER_RADIUS);
