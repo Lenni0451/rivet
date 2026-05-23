@@ -1,6 +1,8 @@
 package net.lenni0451.rivet.text;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.text.model.TextFormat;
+import net.lenni0451.rivet.text.model.TextSection;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,7 +13,7 @@ class TextParserTest {
 
     @Test
     void basicFormats() {
-        List<TextSection> sections = TextParser.parse("<italic bold underlined strikethrough>Test");
+        List<TextSection> sections = TextParser.parse("<italic bold underlined strikethrough>Test").sections();
         assertEquals(1, sections.size());
         assertEquals("Test", sections.get(0).text());
         TextFormat format = sections.get(0).format();
@@ -24,7 +26,7 @@ class TextParserTest {
     @Test
     void defaultFormat() {
         TextFormat format = new TextFormat(Color.RED, Color.GREEN, true, true, true, true, true);
-        List<TextSection> sections = TextParser.parse("Test", format);
+        List<TextSection> sections = TextParser.parse("Test", format).sections();
         assertEquals(1, sections.size());
         assertEquals("Test", sections.get(0).text());
         assertEquals(format, sections.get(0).format());
@@ -33,7 +35,7 @@ class TextParserTest {
     @Test
     void disableDefaultFormat() {
         TextFormat format = new TextFormat(Color.RED, Color.GREEN, true, true, true, true, true);
-        List<TextSection> sections = TextParser.parse("<italic=false bold=false>Test", format);
+        List<TextSection> sections = TextParser.parse("<italic=false bold=false>Test", format).sections();
         assertEquals(1, sections.size());
         assertEquals("Test", sections.get(0).text());
         TextFormat sectionFormat = sections.get(0).format();
@@ -45,7 +47,7 @@ class TextParserTest {
 
     @Test
     void closeFormats() {
-        List<TextSection> sections = TextParser.parse("<bold italic>Test 1</bold>Test 2");
+        List<TextSection> sections = TextParser.parse("<bold italic>Test 1</bold>Test 2").sections();
         assertEquals(2, sections.size());
         assertEquals("Test 1", sections.get(0).text());
         TextFormat format1 = sections.get(0).format();
@@ -66,7 +68,7 @@ class TextParserTest {
                 "<italic>Italic Text</italic>",
                 "<underlined>Underlined Text</underlined>",
                 "<strikethrough>Strikethrough Text</strikethrough>"
-        ));
+        )).sections();
         assertEquals(6, sections.size());
         assertEquals(Color.RED, sections.get(0).format().color());
         assertEquals(Color.BLUE, sections.get(1).format().outlineColor());
@@ -100,7 +102,7 @@ class TextParserTest {
                 "<color=cyan>cyan</color>",
                 "<color=pink>pink</color>",
                 "<color=magenta>magenta</color>"
-        ));
+        )).sections();
         assertEquals(21, sections.size());
         assertEquals(Color.RED, sections.get(0).format().color());
         assertEquals(Color.GREEN, sections.get(1).format().color());
@@ -127,7 +129,7 @@ class TextParserTest {
 
     @Test
     void testEscape() {
-        List<TextSection> sections = TextParser.parse("\\<italic>Not Italic\\</italic>");
+        List<TextSection> sections = TextParser.parse("\\<italic>Not Italic\\</italic>").sections();
         assertEquals(1, sections.size());
         assertEquals("<italic>Not Italic</italic>", sections.get(0).text());
         TextFormat format = sections.get(0).format();

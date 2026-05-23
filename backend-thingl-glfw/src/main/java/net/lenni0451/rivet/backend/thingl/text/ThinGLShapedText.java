@@ -1,6 +1,6 @@
-package net.lenni0451.rivet.backend.thingl;
+package net.lenni0451.rivet.backend.thingl.text;
 
-import net.lenni0451.rivet.backend.ShapedText;
+import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;

@@ -5,17 +5,17 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.backend.ShapedText;
+import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
-import net.lenni0451.rivet.text.TextFormat;
-import net.lenni0451.rivet.text.TextOrigin;
 import net.lenni0451.rivet.text.TextParser;
-import net.lenni0451.rivet.text.TextSection;
+import net.lenni0451.rivet.text.TextWrapper;
+import net.lenni0451.rivet.text.model.TextFormat;
+import net.lenni0451.rivet.text.model.TextLine;
+import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
-
-import java.util.List;
 
 @Accessors(fluent = true, chain = true)
 public class FormattedLabel extends Component {
@@ -23,7 +23,7 @@ public class FormattedLabel extends Component {
     @Getter
     private String text;
     @Getter
-    private List<TextSection> sections;
+    private TextLine line;
     private ShapedText shapedText;
     @Getter
     @Setter
@@ -39,15 +39,13 @@ public class FormattedLabel extends Component {
     public FormattedLabel(final Rivet rivet, final String text, final TextFormat defaultFormat) {
         super(rivet);
         this.text = text;
-        this.sections = TextParser.parse(text, defaultFormat);
-        this.shapedText = rivet.backend().shapeText(this.sections);
+        this.line = TextParser.parse(text, defaultFormat);
     }
 
-    public FormattedLabel(final Rivet rivet, final List<TextSection> sections) {
+    public FormattedLabel(final Rivet rivet, final TextLine line) {
         super(rivet);
         this.text = null;
-        this.sections = sections;
-        this.shapedText = rivet.backend().shapeText(this.sections);
+        this.line = line;
     }
 
     public FormattedLabel text(final String text) {
@@ -57,17 +55,15 @@ public class FormattedLabel extends Component {
     public FormattedLabel text(final String text, final TextFormat defaultFormat) {
         if (this.text == null || !this.text.equals(text)) {
             this.text = text;
-            this.sections = TextParser.parse(text, defaultFormat);
-            this.shapedText = this.rivet.backend().shapeText(this.sections);
+            this.line = TextParser.parse(text, defaultFormat);
             this.rivet.recalculateNextFrame();
         }
         return this;
     }
 
-    public FormattedLabel sections(final List<TextSection> sections) {
+    public FormattedLabel sections(final TextLine line) {
         this.text = null;
-        this.sections = sections;
-        this.shapedText = this.rivet.backend().shapeText(this.sections);
+        this.line = line;
         this.rivet.recalculateNextFrame();
         return this;
     }
@@ -81,10 +77,16 @@ public class FormattedLabel extends Component {
 
     @Override
     public void computeIdealSize(final Size constraints) {
+        ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.rivet.backend(), this.line, constraints.width());
         this.idealSize = new Size(
-                this.shapedText.visualBounds().width(),
-                this.shapedText.logicalBounds().height()
+                shapedTextBlock.visualBounds().width(),
+                shapedTextBlock.logicalBounds().height()
         );
+    }
+
+    @Override
+    public void computeLayout(final Size size) {
+        this.shapedText = TextWrapper.wrapLine(this.rivet.backend(), this.line, size.width());
     }
 
 }

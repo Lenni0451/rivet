@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.text.FormatParser.HandlerException;
+import net.lenni0451.rivet.text.model.TextFormat;
+import net.lenni0451.rivet.text.model.TextLine;
+import net.lenni0451.rivet.text.model.TextSection;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -120,11 +123,11 @@ public class TextParser {
             new StaticColorFormat("magenta", Color.MAGENTA)
     );
 
-    public static List<TextSection> parse(final String text) {
+    public static TextLine parse(final String text) {
         return parse(text, TextFormat.DEFAULT);
     }
 
-    public static List<TextSection> parse(final String text, final TextFormat defaultFormat) {
+    public static TextLine parse(final String text, final TextFormat defaultFormat) {
         FormatParser parser = new FormatParser(text);
         List<TextSection> sections = new ArrayList<>();
         TextFormat[] currentFormat = {defaultFormat};
@@ -136,7 +139,7 @@ public class TextParser {
                 currentFormat[0] = applyOption(defaultFormat, currentFormat[0], option);
             }
         });
-        return sections;
+        return new TextLine(sections);
     }
 
     private static TextFormat applyOption(final TextFormat defaultFormat, final TextFormat currentFormat, final FormatParser.Option option) {

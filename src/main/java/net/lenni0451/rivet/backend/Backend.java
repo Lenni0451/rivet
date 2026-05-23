@@ -1,12 +1,15 @@
 package net.lenni0451.rivet.backend;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
-import net.lenni0451.rivet.text.TextSection;
+import net.lenni0451.rivet.text.model.TextBlock;
+import net.lenni0451.rivet.text.model.TextLine;
+import net.lenni0451.rivet.text.model.TextSection;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public interface Backend {
 
@@ -14,7 +17,13 @@ public interface Backend {
 
     ShapedText shapeText(final String text, final Color color);
 
-    ShapedText shapeText(final List<TextSection> sections);
+    default ShapedText shapeText(final TextSection section) {
+        return this.shapeText(new TextLine(section));
+    }
+
+    ShapedText shapeText(final TextLine line);
+
+    ShapedTextBlock shapeText(final TextBlock block);
 
     @Nullable
     String getClipboard();

@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.text;
+package net.lenni0451.rivet.text.model;
 
 import lombok.With;
 import lombok.experimental.WithBy;

@@ -4,7 +4,8 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.backend.render.TransformCommand;
-import net.lenni0451.rivet.text.TextOrigin;
+import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.text.model.TextOrigin;
 
 import java.util.Stack;
 

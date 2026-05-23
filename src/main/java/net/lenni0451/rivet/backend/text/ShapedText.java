@@ -1,7 +1,7 @@
-package net.lenni0451.rivet.backend;
+package net.lenni0451.rivet.backend.text;
 
 import net.lenni0451.rivet.math.Rectangle;
-import net.lenni0451.rivet.text.TextOrigin;
+import net.lenni0451.rivet.text.model.TextOrigin;
 
 public interface ShapedText {
 

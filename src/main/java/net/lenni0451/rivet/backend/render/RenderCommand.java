@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.backend.render;
 
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.ShapedText;
+import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 
 public sealed interface RenderCommand extends RenderElement permits

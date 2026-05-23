@@ -5,7 +5,7 @@ import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
-import net.lenni0451.rivet.text.TextOrigin;
+import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.theme.impl.DefaultDark;

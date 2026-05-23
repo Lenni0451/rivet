@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.text;
+package net.lenni0451.rivet.text.model;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
