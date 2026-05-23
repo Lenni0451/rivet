@@ -181,8 +181,8 @@ public class Container extends Component {
             child.bounds = bounds;
             child.component.computeLayout(bounds.size());
             contentSize = new Size(
-                    Math.max(size.width(), bounds.x() + bounds.width()),
-                    Math.max(size.height(), bounds.y() + bounds.height())
+                    Math.max(contentSize.width(), bounds.x() + bounds.width()),
+                    Math.max(contentSize.height(), bounds.y() + bounds.height())
             );
         }
         this.contentSize = contentSize;
