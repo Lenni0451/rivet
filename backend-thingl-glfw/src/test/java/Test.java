@@ -3,6 +3,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.base.Button;
+import net.lenni0451.rivet.component.base.DecoratedContainer;
 import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.Checkbox;
 import net.lenni0451.rivet.component.impl.ColorPicker;
@@ -18,9 +19,11 @@ import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.theme.impl.DefaultDark;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.font.FontSet;
+import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Map;
@@ -61,7 +64,12 @@ public class Test extends RivetThinGLApplication {
         });
 
         Container container = new Container(rivet, new GridLayout(10, 10).homogeneousColumns(true));
-        rivet.root().addChild(new ScrollContainer(rivet, container, true, true));
+        rivet.root().addChild(new DecoratedContainer(rivet, new ScrollContainer(rivet, container, true, true)), decoratedContainer -> {
+            decoratedContainer.backgroundColor(Color.fromARGB(Integer.MIN_VALUE));
+            decoratedContainer.backgroundCornerRadius(20F);
+            decoratedContainer.innerPadding(new Padding(20, 20, 20, 20));
+            decoratedContainer.backgroundOutlineColor(Color.GREEN);
+        });
         container.addChild(new Button(rivet, new Label(rivet, "Singleplayer"), _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
@@ -100,6 +108,11 @@ public class Test extends RivetThinGLApplication {
         container.addChild(new ColorPicker(rivet, Color.RED), colorPicker -> {
             colorPicker.layoutOptions(new GridLayoutOptions(0, 7).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
+    }
+
+    @Override
+    protected void renderBackground(final Matrix4fStack matrix4fStack) {
+        ThinGL.renderer2D().filledRectangle(matrix4fStack, 0, 0, ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight(), Color.getRainbowColor(0, 10));
     }
 
 }
