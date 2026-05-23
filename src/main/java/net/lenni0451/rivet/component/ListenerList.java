@@ -2,8 +2,8 @@ package net.lenni0451.rivet.component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 public final class ListenerList<L> {
 
@@ -19,12 +19,12 @@ public final class ListenerList<L> {
         return this;
     }
 
-    public <R> R call(final Function<L, R> listenerInvoker, final Supplier<R> task) {
+    public boolean call(final Predicate<L> listenerInvoker, final BooleanSupplier task) {
         for (L listener : this.listeners) {
-            R value = listenerInvoker.apply(listener);
-            if (value != null) return value;
+            boolean value = listenerInvoker.test(listener);
+            if (value) return true;
         }
-        return task.get();
+        return task.getAsBoolean();
     }
 
 }
