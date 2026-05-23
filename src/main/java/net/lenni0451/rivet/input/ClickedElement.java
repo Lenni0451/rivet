@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 @Accessors(fluent = true)
@@ -12,7 +12,7 @@ public final class ClickedElement<E> {
 
     @Getter
     private E element;
-    private final Set<MouseButton> buttons = new HashSet<>();
+    private final Set<MouseButton> buttons = EnumSet.noneOf(MouseButton.class);
 
     public boolean is(final E element) {
         return this.element == element;
@@ -31,11 +31,12 @@ public final class ClickedElement<E> {
         this.buttons.add(button);
     }
 
-    public void up(final MouseButton button) {
-        this.buttons.remove(button);
+    public boolean up(final MouseButton button) {
+        boolean removed = this.buttons.remove(button);
         if (this.buttons.isEmpty()) {
             this.element = null;
         }
+        return removed;
     }
 
     public boolean isClicked() {

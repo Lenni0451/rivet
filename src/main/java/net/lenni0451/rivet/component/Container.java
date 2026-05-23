@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
-import net.lenni0451.rivet.input.ClickedElement;
+import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
@@ -26,8 +26,7 @@ public class Container extends Component {
     @Getter
     private final Layout layout;
     private final List<Child> children = new ArrayList<>();
-    private boolean mouseDown;
-    private final ClickedElement<Component> clickedComponent = new ClickedElement<>();
+    private final ContainerMouseHandler<Component> mouseHandler = new ContainerMouseHandler<>();
     @Getter
     private Size contentSize = Size.EMPTY;
 
@@ -63,9 +62,7 @@ public class Container extends Component {
     }
 
     public boolean removeChild(final Component component) {
-        if (this.clickedComponent.is(component)) {
-            this.clickedComponent.unset();
-        }
+        this.mouseHandler.checkAndRemove(component);
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
@@ -81,7 +78,7 @@ public class Container extends Component {
     }
 
     public void clearChildren() {
-        this.clickedComponent.unset();
+        this.mouseHandler.clear();
         for (Child child : this.children) {
             if (this.rivet.focusedComponent() == child.component) {
                 this.rivet.focusedComponent(null);
@@ -96,65 +93,62 @@ public class Container extends Component {
     }
 
     @Override
+    protected void onComponentMouseLeave() {
+        this.mouseHandler.onComponentMouseLeave(Component::onMouseLeave);
+    }
+
+    @Override
     public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        this.mouseDown = true;
         Child child = this.findChildAt(event.x(), event.y());
-        if (child != null) {
-            this.rivet.focusedComponent(child.component);
-            boolean consumed = child.component.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
-            this.clickedComponent.down(child.component, event.button());
-            return consumed;
-        }
-        return false;
+        return this.mouseHandler.onComponentMouseDown(
+                event,
+                child == null ? null : child.component,
+                component -> {
+                    this.rivet.focusedComponent(component);
+                    return component.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
+                },
+                () -> false
+        );
     }
 
     @Override
     public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        boolean consumed = false;
-        for (Child child : this.children) {
-            if (this.clickedComponent.is(child.component)) {
-                consumed |= child.component.onMouseUp(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
-                this.clickedComponent.up(event.button());
-            }
-        }
-        this.mouseDown = false;
-        return consumed;
+        return this.mouseHandler.onComponentMouseUp(
+                event,
+                component -> {
+                    Rectangle childBounds = this.childBounds(component);
+                    return component.onMouseUp(event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()), childBounds.add(bounds.x(), bounds.y()));
+                },
+                () -> false
+        );
     }
 
     @Override
     public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
-        boolean consumed = false;
         Child topChild = this.findChildAt(event.x(), event.y());
-        for (Child child : this.children) {
-            boolean isTop = child == topChild;
-            boolean isDragged = this.clickedComponent.is(child.component);
-
-            if (isTop && (!this.mouseDown || isDragged)) {
-                if (!child.hovered) {
-                    child.hovered = true;
-                    child.component.onMouseEnter();
-                }
-            } else {
-                if (child.hovered) {
-                    child.hovered = false;
-                    child.component.onMouseLeave();
-                }
-            }
-
-            if ((isTop && !this.mouseDown) || isDragged) {
-                consumed |= child.component.onMouseMove(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
-            }
-        }
-        return consumed;
+        return this.mouseHandler.onComponentMouseMove(
+                topChild == null ? null : topChild.component,
+                Component::onMouseEnter,
+                Component::onMouseLeave,
+                component -> {
+                    Rectangle childBounds = this.childBounds(component);
+                    return component.onMouseMove(event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()), childBounds.add(bounds.x(), bounds.y()));
+                },
+                () -> false
+        );
     }
 
     @Override
     public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
-        if (child != null) {
-            return child.component.onMouseScroll(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
-        }
-        return false;
+        return this.mouseHandler.onComponentMouseScroll(
+                child != null,
+                () -> child.component.onMouseScroll(
+                        event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
+                        child.bounds.add(bounds.x(), bounds.y())
+                ),
+                () -> false
+        );
     }
 
     @Override

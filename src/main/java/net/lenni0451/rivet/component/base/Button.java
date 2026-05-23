@@ -132,29 +132,23 @@ public class Button extends Component {
         float height = bounds.height() - this.innerPadding.value().vertical();
         renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
             renderer.componentBounds(0, 0, width, height, () -> {
-                this.child.render(renderer, new Rectangle(bounds.x() + this.innerPadding.value().left(), bounds.y() + this.innerPadding.value().top(), width, height));
+                this.child.render(renderer, new Rectangle(
+                        bounds.x() + this.innerPadding.value().left(), bounds.y() + this.innerPadding.value().top(),
+                        width, height
+                ));
             });
         });
     }
 
     @Override
     public void computeIdealSize(final Size constraints) {
-        this.child.computeIdealSize(constraints.minus(
-                this.innerPadding.value().horizontal(),
-                this.innerPadding.value().vertical()
-        ));
-        this.idealSize = new Size(
-                this.child.idealSize().width() + this.innerPadding.value().horizontal(),
-                this.child.idealSize().height() + this.innerPadding.value().vertical()
-        );
+        this.child.computeIdealSize(constraints.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()));
+        this.idealSize = this.child.idealSize().plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
     }
 
     @Override
     public void computeLayout(final Size size) {
-        this.child.computeLayout(new Size(
-                size.width() - this.innerPadding.value().horizontal(),
-                size.height() - this.innerPadding.value().vertical()
-        ));
+        this.child.computeLayout(size.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()));
     }
 
 }
