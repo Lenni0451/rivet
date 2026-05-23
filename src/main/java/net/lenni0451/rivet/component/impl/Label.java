@@ -49,7 +49,10 @@ public class Label extends Component {
 
     @Override
     public void computeIdealSize(final Size constraints) {
-        this.idealSize = this.shapedText.logicalBounds().size();
+        this.idealSize = new Size(
+                this.shapedText.visualBounds().width(),
+                this.shapedText.logicalBounds().height()
+        );
     }
 
 }

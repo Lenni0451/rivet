@@ -104,7 +104,7 @@ public class SliderTooltip extends Component {
                         bounds.width() / 2F + triangleSize - this.pointerOffset, bounds.height() - triangleSize,
                         backgroundColor
                 );
-                renderer.renderText(this.shapedText, padding.left(), padding.top(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
+                renderer.renderText(this.shapedText, padding.left(), padding.top(), TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
             }
             case BELOW -> {
                 renderer.fillOptimizedRoundedRect(0, triangleSize, bounds.width(), bounds.height() - triangleSize, cornerRadius, backgroundColor);
@@ -114,7 +114,7 @@ public class SliderTooltip extends Component {
                         bounds.width() / 2F - this.pointerOffset, 0,
                         backgroundColor
                 );
-                renderer.renderText(this.shapedText, padding.left(), triangleSize + padding.top(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
+                renderer.renderText(this.shapedText, padding.left(), triangleSize + padding.top(), TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
             }
         }
     }
@@ -122,8 +122,10 @@ public class SliderTooltip extends Component {
     @Override
     public void computeIdealSize(final Size constraints) {
         Padding padding = this.padding.value();
-        this.idealSize = this.shapedText.logicalBounds().size()
-                .plus(padding.horizontal(), padding.vertical() + this.triangleSize.value());
+        this.idealSize = new Size(
+                this.shapedText.visualBounds().width() + padding.horizontal(),
+                this.shapedText.logicalBounds().height() + padding.vertical() + this.triangleSize.value()
+        );
     }
 
 
