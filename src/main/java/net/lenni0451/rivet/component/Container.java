@@ -14,10 +14,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
@@ -62,7 +59,10 @@ public class Container extends Component {
     }
 
     public boolean removeChild(final Component component) {
-        this.mouseHandler.checkAndRemove(component, Component::onMouseLeave);
+        this.mouseHandler.checkAndRemove(component, Component::onMouseLeave, (comp, mouseButton) -> {
+            Rectangle componentBounds = this.childBounds(comp);
+            comp.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
+        });
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
@@ -78,7 +78,10 @@ public class Container extends Component {
     }
 
     public void clearChildren() {
-        this.mouseHandler.clear(Component::onComponentMouseLeave);
+        this.mouseHandler.clear(Component::onComponentMouseLeave, (component, mouseButton) -> {
+            Rectangle componentBounds = this.childBounds(component);
+            component.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
+        });
         for (Child child : this.children) {
             if (this.rivet.focusedComponent() == child.component) {
                 this.rivet.focusedComponent(null);

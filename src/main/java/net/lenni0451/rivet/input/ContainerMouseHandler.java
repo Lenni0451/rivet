@@ -6,6 +6,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -21,21 +22,24 @@ public class ContainerMouseHandler<C> {
         return !this.componentMouseButtons.isEmpty() || !this.nonComponentMouseButtons.isEmpty();
     }
 
-    public void checkAndRemove(final C component, final Consumer<C> componentMouseLeave) {
+    public void checkAndRemove(final C component, final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp) {
         if (component == null) return;
         if (this.hoveredComponent == component) {
             componentMouseLeave.accept(this.hoveredComponent);
             this.hoveredComponent = null;
         }
         if (this.clickedComponent == component) {
+            for (MouseButton mouseButton : this.componentMouseButtons) {
+                componentMouseUp.accept(this.clickedComponent, mouseButton);
+            }
             this.clickedComponent = null;
             this.componentMouseButtons.clear();
         }
     }
 
-    public void clear(final Consumer<C> componentMouseLeave) {
-        this.checkAndRemove(this.hoveredComponent, componentMouseLeave);
-        this.checkAndRemove(this.clickedComponent, componentMouseLeave);
+    public void clear(final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp) {
+        this.checkAndRemove(this.hoveredComponent, componentMouseLeave, componentMouseUp);
+        this.checkAndRemove(this.clickedComponent, componentMouseLeave, componentMouseUp);
     }
 
 

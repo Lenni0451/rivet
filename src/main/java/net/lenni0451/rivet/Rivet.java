@@ -24,6 +24,7 @@ import net.lenni0451.rivet.theme.impl.DefaultDark;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Accessors(fluent = true, chain = true)
@@ -72,7 +73,9 @@ public final class Rivet {
 
     public boolean removeLayer(final Layer layer) {
         if (this.layers.remove(layer)) {
-            this.mouseHandler.checkAndRemove(layer, l -> l.container().onMouseLeave());
+            this.mouseHandler.checkAndRemove(layer, l -> l.container().onMouseLeave(), (l, mouseButton) -> {
+                l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
+            });
             this.recalculate = true;
             return true;
         }
@@ -127,7 +130,9 @@ public final class Rivet {
     }
 
     public void unfocus() {
-        this.mouseHandler.clear(l -> l.container().onMouseLeave());
+        this.mouseHandler.clear(l -> l.container().onMouseLeave(), (l, mouseButton) -> {
+            l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
+        });
     }
 
 
