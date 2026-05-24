@@ -78,7 +78,7 @@ public class Button extends Component {
         this.clickOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_OUTLINE_COLOR);
         this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
         this.innerPadding = new ThemeOption<>(rivet, Theme.BUTTON_INNER_PADDING);
-        this.clickOn = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_ON_RELEASE);
+        this.clickOn = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_ON);
 
         this.hoverAnimation = new Animation()
                 .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)

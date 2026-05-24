@@ -19,7 +19,7 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.BUTTON_OUTLINE_WIDTH, 2);
         values.put(Theme.BUTTON_ANIMATION_DURATION, 150);
         values.put(Theme.BUTTON_INNER_PADDING, new Padding(20, 5, 20, 5));
-        values.put(Theme.BUTTON_CLICK_ON_RELEASE, Button.ClickOn.UP);
+        values.put(Theme.BUTTON_CLICK_ON, Button.ClickOn.UP);
 
         values.put(Theme.SLIDER_BAR_HEIGHT, rivet.backend().getTextHeight() / 3F);
         values.put(Theme.SLIDER_THUMB_WIDTH, rivet.backend().getTextHeight() / 3F * 2F);
