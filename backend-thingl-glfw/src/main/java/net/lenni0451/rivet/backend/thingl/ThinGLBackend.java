@@ -9,6 +9,7 @@ import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.text.model.TextSection;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.text.TextBlock;
 import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextStyle;
@@ -24,7 +25,7 @@ public record ThinGLBackend(long window, FontSet fontSet) implements Backend {
 
     @Override
     public float getTextHeight() {
-        return this.fontSet.getMainFont().getHeight();
+        return this.fontSet.getMainFont().getHeight() * ThinGL.rendererText().getGlobalScale();
     }
 
     @Override
