@@ -6,6 +6,7 @@ import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedText;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
+import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.text.model.TextSection;
 import net.raphimc.thingl.text.TextBlock;

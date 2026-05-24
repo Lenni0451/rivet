@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.backend.thingl;
+package net.lenni0451.rivet.backend.thingl.render;
 
 import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderElement;

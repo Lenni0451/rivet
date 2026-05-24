@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.backend.thingl;
+package net.lenni0451.rivet.backend.thingl.util;
 
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;

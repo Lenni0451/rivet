@@ -5,6 +5,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
+import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;

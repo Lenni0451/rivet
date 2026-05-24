@@ -39,7 +39,7 @@ public record ThinGLShapedTextBlock(ShapedTextBlock shapedTextBlock) implements 
         if (this.shapedTextBlock.lines().isEmpty()) {
             return new Point(0, 0);
         }
-        ShapedTextLine lastLine = this.shapedTextBlock.lines().get(this.shapedTextBlock.lines().size() - 1);
+        ShapedTextLine lastLine = this.shapedTextBlock.lines().getLast();
         return new Point(lastLine.logicalBounds().lengthX(), currentY - lastLine.logicalBounds().lengthY());
     }
 
@@ -50,7 +50,7 @@ public record ThinGLShapedTextBlock(ShapedTextBlock shapedTextBlock) implements 
         float currentY = 0F;
         for (ShapedTextLine line : this.shapedTextBlock.lines()) {
             float lineBottomY = currentY + line.logicalBounds().lengthY();
-            boolean isLastLine = line == this.shapedTextBlock.lines().get(this.shapedTextBlock.lines().size() - 1);
+            boolean isLastLine = line == this.shapedTextBlock.lines().getLast();
             if (y <= lineBottomY || isLastLine) {
                 if (x <= 0) return currentIndex;
                 for (int i = 0; i < line.runs().size(); i++) {
