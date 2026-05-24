@@ -87,8 +87,10 @@ public final class Rivet {
     }
 
     public Rivet size(final Size size) {
-        this.size = size;
-        this.recalculate = true;
+        if (!this.size.equals(size)) {
+            this.size = size;
+            this.recalculate = true;
+        }
         return this;
     }
 
