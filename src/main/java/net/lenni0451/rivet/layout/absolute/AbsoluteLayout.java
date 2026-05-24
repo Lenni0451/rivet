@@ -21,8 +21,9 @@ public final class AbsoluteLayout implements Layout {
         float width = 0;
         float height = 0;
         for (Component component : components) {
-            float componentWidth = this.widthOf(component);
-            float componentHeight = this.heightOf(component);
+            Size idealSize = component.computeIdealSize(constraints);
+            float componentWidth = this.widthOf(component, idealSize);
+            float componentHeight = this.heightOf(component, idealSize);
             if (component.layoutOptions() instanceof AbsoluteLayoutOptions options) {
                 if (options.width() != null) {
                     componentWidth = options.width();
@@ -45,10 +46,11 @@ public final class AbsoluteLayout implements Layout {
     public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
         Map<Component, Rectangle> layout = new IdentityHashMap<>();
         for (Component component : components) {
+            Size idealSize = component.computeIdealSize(containerSize);
             float x = 0;
             float y = 0;
-            float width = this.widthOf(component);
-            float height = this.heightOf(component);
+            float width = this.widthOf(component, idealSize);
+            float height = this.heightOf(component, idealSize);
             if (component.layoutOptions() instanceof AbsoluteLayoutOptions options) {
                 x = options.x();
                 y = options.y();

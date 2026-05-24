@@ -237,14 +237,14 @@ public class Slider extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
+    public Size computeIdealSize(final Size constraints) {
         float height;
         if (this.ticks == null) {
             height = this.thumbHeight.value();
         } else {
             height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet.backend().getTextHeight() / 2F;
         }
-        this.idealSize = new Size(this.rivet.backend().getTextHeight() * 10, height);
+        return new Size(this.rivet.backend().getTextHeight() * 10, height);
     }
 
     private float barWidth(final Rectangle bounds) {

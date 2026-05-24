@@ -28,8 +28,6 @@ public abstract class Component {
     @Getter
     private Size minSize = Size.EMPTY;
     @Getter
-    protected Size idealSize = Size.EMPTY;
-    @Getter
     private Size maxSize = new Size(Float.MAX_VALUE, Float.MAX_VALUE);
     @Getter
     private LayoutOptions layoutOptions;
@@ -184,7 +182,7 @@ public abstract class Component {
     public void render(final Renderer renderer, final Rectangle bounds) {
     }
 
-    public abstract void computeIdealSize(final Size constraints);
+    public abstract Size computeIdealSize(final Size constraints);
 
     public void computeLayout(final Size size) {
     }

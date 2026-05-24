@@ -1,8 +1,12 @@
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.impl.FormattedLabel;
-import net.lenni0451.rivet.layout.list.VerticalListLayout;
+import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.layout.grid.GridFill;
+import net.lenni0451.rivet.layout.grid.GridLayout;
+import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
@@ -27,9 +31,13 @@ public class Test3 extends RivetThinGLApplication {
 
     @Override
     protected void init(final Rivet rivet) {
-        Container container = new Container(rivet, new VerticalListLayout(10, true));
+        Container container = new Container(rivet, new GridLayout(10, 10));
         container.addChild(new FormattedLabel(rivet, "<color=red italic bold underlined>Hello this is a really cool test string how are you doing lol\n<color=blue> <color=red>a\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), label -> {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
+            label.layoutOptions(new GridLayoutOptions(0, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
+        });
+        container.addChild(new Button(rivet, new Label(rivet, "Testing Testing Testing Testing Testing Testing Testing"), e -> {}), button -> {
+            button.layoutOptions(new GridLayoutOptions(0, 1).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
         rivet.root().addChild(container);
     }

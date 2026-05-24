@@ -21,8 +21,9 @@ public final class FullSizeLayout implements Layout {
         float width = 0;
         float height = 0;
         for (Component component : components) {
-            width = Math.max(width, component.idealSize().width());
-            height = Math.max(height, component.idealSize().height());
+            Size idealSize = component.computeIdealSize(constraints);
+            width = Math.max(width, this.widthOf(component, idealSize));
+            height = Math.max(height, this.heightOf(component, idealSize));
         }
         return new Size(
                 Math.min(width, constraints.width()),

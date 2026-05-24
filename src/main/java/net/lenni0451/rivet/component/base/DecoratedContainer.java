@@ -130,9 +130,9 @@ public class DecoratedContainer extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
-        this.child.computeIdealSize(constraints.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()));
-        this.idealSize = this.child.idealSize().plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
+    public Size computeIdealSize(final Size constraints) {
+        return this.child.computeIdealSize(constraints.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()))
+                .plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
     }
 
     @Override

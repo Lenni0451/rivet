@@ -249,9 +249,9 @@ public class TextField extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
+    public Size computeIdealSize(final Size constraints) {
         float textHeight = this.rivet.backend().getTextHeight();
-        this.idealSize = new Size(
+        return new Size(
                 textHeight * 10 + this.innerPadding.value().horizontal(),
                 textHeight + this.innerPadding.value().vertical()
         );

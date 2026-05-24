@@ -76,9 +76,9 @@ public class FormattedLabel extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
+    public Size computeIdealSize(final Size constraints) {
         ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.rivet.backend(), this.line, constraints.width());
-        this.idealSize = new Size(
+        return new Size(
                 shapedTextBlock.visualBounds().width(),
                 shapedTextBlock.logicalBounds().height()
         );

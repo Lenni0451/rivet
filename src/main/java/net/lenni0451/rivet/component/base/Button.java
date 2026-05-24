@@ -141,9 +141,9 @@ public class Button extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
-        this.child.computeIdealSize(constraints.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()));
-        this.idealSize = this.child.idealSize().plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
+    public Size computeIdealSize(final Size constraints) {
+        return this.child.computeIdealSize(constraints.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()))
+                .plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
     }
 
     @Override

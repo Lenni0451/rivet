@@ -23,9 +23,10 @@ public final class HorizontalFlowLayout implements Layout {
         float totalWidth = 0;
         float totalHeight = 0;
         for (Component component : components) {
+            Size idealSize = component.computeIdealSize(constraints);
             float xGap = currentWidth > 0 ? this.horizontalGap : 0;
-            float componentWidth = this.widthOf(component);
-            float componentHeight = this.heightOf(component);
+            float componentWidth = this.widthOf(component, idealSize);
+            float componentHeight = this.heightOf(component, idealSize);
             if (currentWidth > 0 && currentWidth + xGap + componentWidth > constraints.width()) {
                 totalWidth = Math.max(totalWidth, currentWidth);
                 currentWidth = 0;
@@ -47,8 +48,9 @@ public final class HorizontalFlowLayout implements Layout {
         float y = 0;
         float maxHeight = 0;
         for (Component component : components) {
-            float width = this.widthOf(component);
-            float height = this.heightOf(component);
+            Size idealSize = component.computeIdealSize(containerSize);
+            float width = this.widthOf(component, idealSize);
+            float height = this.heightOf(component, idealSize);
             if (x + width > containerSize.width() && x > 0) {
                 x = 0;
                 y += maxHeight + this.verticalGap;

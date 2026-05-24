@@ -451,12 +451,11 @@ public class ScrollContainer extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
-        this.child.computeIdealSize(new Size(
+    public Size computeIdealSize(final Size constraints) {
+        return this.child.computeIdealSize(new Size(
                 this.horizontalScrolling ? Float.MAX_VALUE : constraints.width(),
                 this.verticalScrolling ? Float.MAX_VALUE : constraints.height()
         ));
-        this.idealSize = this.child.idealSize();
     }
 
     @Override
@@ -469,7 +468,10 @@ public class ScrollContainer extends Component {
         this.hScrollVisible = false;
         this.vScrollVisible = false;
         if (this.barType.value() == ScrollBarType.NORMAL) {
-            Size idealChildSize = this.child.idealSize();
+            Size idealChildSize = this.child.computeIdealSize(new Size(
+                    this.horizontalScrolling ? Float.MAX_VALUE : size.width(),
+                    this.verticalScrolling ? Float.MAX_VALUE : size.height()
+            ));
 
             this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() > (this.vScrollVisible ? availableWidth - this.barWidth.value() : availableWidth);
             this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > availableHeight;

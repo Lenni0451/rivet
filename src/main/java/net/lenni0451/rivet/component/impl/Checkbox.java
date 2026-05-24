@@ -131,13 +131,13 @@ public class Checkbox extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
+    public Size computeIdealSize(final Size constraints) {
         float height = this.shapedText.logicalBounds().height();
         float width = height;
         if (!this.text.isEmpty()) {
             width += this.textGap.value() + this.shapedText.visualBounds().width();
         }
-        this.idealSize = new Size(width, height);
+        return new Size(width, height);
     }
 
 }

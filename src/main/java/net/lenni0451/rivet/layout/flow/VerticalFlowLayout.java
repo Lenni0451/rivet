@@ -23,9 +23,10 @@ public final class VerticalFlowLayout implements Layout {
         float totalWidth = 0;
         float totalHeight = 0;
         for (Component component : components) {
+            Size idealSize = component.computeIdealSize(constraints);
             float yGap = currentHeight > 0 ? this.verticalGap : 0;
-            float componentWidth = this.widthOf(component);
-            float componentHeight = this.heightOf(component);
+            float componentWidth = this.widthOf(component, idealSize);
+            float componentHeight = this.heightOf(component, idealSize);
             if (currentHeight > 0 && currentHeight + yGap + componentHeight > constraints.height()) {
                 if (totalWidth > 0) totalWidth += this.horizontalGap;
                 totalWidth += currentWidth;
@@ -47,8 +48,9 @@ public final class VerticalFlowLayout implements Layout {
         float y = 0;
         float maxWidth = 0;
         for (Component component : components) {
-            float width = this.widthOf(component);
-            float height = this.heightOf(component);
+            Size idealSize = component.computeIdealSize(containerSize);
+            float width = this.widthOf(component, idealSize);
+            float height = this.heightOf(component, idealSize);
             if (y + height > containerSize.height() && y > 0) {
                 x += maxWidth + this.horizontalGap;
                 y = 0;

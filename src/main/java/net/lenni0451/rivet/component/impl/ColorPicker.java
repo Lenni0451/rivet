@@ -231,11 +231,11 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
+    public Size computeIdealSize(final Size constraints) {
         float pickerSize = this.pickerSize.value();
         float sliderWidth = this.sliderWidth.value();
         float gap = this.gap.value();
-        this.idealSize = new Size(pickerSize + gap + sliderWidth, pickerSize + gap + sliderWidth);
+        return new Size(pickerSize + gap + sliderWidth, pickerSize + gap + sliderWidth);
     }
 
 }

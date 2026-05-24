@@ -163,11 +163,8 @@ public class Container extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
-        for (Child child : this.children) {
-            child.component.computeIdealSize(constraints);
-        }
-        this.idealSize = this.layout.computeIdealSize(constraints, this.children.stream().map(child -> child.component).toList());
+    public Size computeIdealSize(final Size constraints) {
+        return this.layout.computeIdealSize(constraints, this.children.stream().map(child -> child.component).toList());
     }
 
     @Override
@@ -204,7 +201,6 @@ public class Container extends Component {
     private static final class Child {
         private final Component component;
         private Rectangle bounds = Rectangle.EMPTY;
-        private boolean hovered = false;
     }
 
 }

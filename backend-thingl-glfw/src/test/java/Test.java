@@ -61,7 +61,7 @@ public class Test extends RivetThinGLApplication {
             }
         });
 
-        Container container = new Container(rivet, new GridLayout(10, 10).homogeneousColumns(true));
+        Container container = new Container(rivet, new GridLayout(10, 10).homogeneousColumns(true).shrinkColumns(true));
         rivet.root().addChild(new DecoratedContainer(rivet, new ScrollContainer(rivet, container, false, true)), decoratedContainer -> {
             decoratedContainer.backgroundColor(Color.fromARGB(Integer.MIN_VALUE));
             decoratedContainer.backgroundCornerRadius(20F);

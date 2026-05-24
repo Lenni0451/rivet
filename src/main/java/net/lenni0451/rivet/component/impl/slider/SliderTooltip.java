@@ -54,13 +54,13 @@ public class SliderTooltip extends Component {
     }
 
     public void position(final float x, final float y, final float height) {
-        this.computeIdealSize(null);
+        Size idealSize = this.computeIdealSize(null);
         Size screenBounds = this.rivet.scaledSize();
 
-        float posX = x - this.idealSize.width() / 2F;
-        float clampedX = MathUtils.clamp(posX, 0, screenBounds.width() - this.idealSize.width());
+        float posX = x - idealSize.width() / 2F;
+        float clampedX = MathUtils.clamp(posX, 0, screenBounds.width() - idealSize.width());
         float pointerOffset = clampedX - posX;
-        float posY = y - this.idealSize.height();
+        float posY = y - idealSize.height();
         Position position;
         if (posY < 0) {
             posY = y + height;
@@ -120,9 +120,9 @@ public class SliderTooltip extends Component {
     }
 
     @Override
-    public void computeIdealSize(final Size constraints) {
+    public Size computeIdealSize(final Size constraints) {
         Padding padding = this.padding.value();
-        this.idealSize = new Size(
+        return new Size(
                 this.shapedText.visualBounds().width() + padding.horizontal(),
                 this.shapedText.logicalBounds().height() + padding.vertical() + this.triangleSize.value()
         );

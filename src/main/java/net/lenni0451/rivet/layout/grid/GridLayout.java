@@ -9,12 +9,16 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+/**
+ * This class is completely AI generated.
+ */
 @RequiredArgsConstructor
-@Accessors(fluent = true)
+@Accessors(fluent = true, chain = true)
 public final class GridLayout implements Layout {
 
     private final int horizontalGap;
@@ -25,6 +29,12 @@ public final class GridLayout implements Layout {
     @Getter
     @Setter
     private boolean homogeneousRows = false;
+    @Getter
+    @Setter
+    private boolean shrinkColumns = false;
+    @Getter
+    @Setter
+    private boolean shrinkRows = false;
 
     public GridLayout() {
         this(0, 0);
@@ -32,110 +42,73 @@ public final class GridLayout implements Layout {
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
-        GridInfo info = new GridInfo(components);
-        float width = 0;
-        float height = 0;
-        for (float columnWidth : info.columnWidths) {
-            width += columnWidth;
+        final GridDimensions dims = this.calculateDimensions(components);
+        if (dims.isEmpty()) {
+            return Size.EMPTY;
         }
-        for (float rowHeight : info.rowHeights) {
-            height += rowHeight;
-        }
-        if (info.columns > 0) {
-            width += (info.columns - 1) * this.horizontalGap;
-        }
-        if (info.rows > 0) {
-            height += (info.rows - 1) * this.verticalGap;
-        }
+
+        final ColumnsInfo columnsInfo = this.calculateColumns(constraints, components, dims.columns());
+        final RowsInfo rowsInfo = this.calculateRows(constraints, components, dims.rows(), columnsInfo.widths());
+
+        float width = this.sum(columnsInfo.widths()) + this.getGaps(dims.columns(), this.horizontalGap);
+        float height = this.sum(rowsInfo.heights()) + this.getGaps(dims.rows(), this.verticalGap);
+
         return new Size(width, height);
     }
 
     @Override
     public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
-        GridInfo info = new GridInfo(components);
-        float totalWidth = 0;
-        float totalHeight = 0;
-        for (float columnWidth : info.columnWidths) {
-            totalWidth += columnWidth;
-        }
-        for (float rowHeight : info.rowHeights) {
-            totalHeight += rowHeight;
-        }
-        if (info.columns > 0) {
-            totalWidth += (info.columns - 1) * this.horizontalGap;
-        }
-        if (info.rows > 0) {
-            totalHeight += (info.rows - 1) * this.verticalGap;
+        final GridDimensions dims = this.calculateDimensions(components);
+        if (dims.isEmpty()) {
+            return new IdentityHashMap<>();
         }
 
-        float extraWidth = Math.max(0, containerSize.width() - totalWidth);
-        float extraHeight = Math.max(0, containerSize.height() - totalHeight);
+        final ColumnsInfo columnsInfo = this.calculateColumns(containerSize, components, dims.columns());
+        final float[] colWidths = columnsInfo.widths().clone();
 
-        float[] colWidths = info.columnWidths.clone();
-        float[] rowHeights = info.rowHeights.clone();
+        // Adjust column widths for shrinking or weighting (growing)
+        this.adjustSizes(colWidths, containerSize.width(), dims.columns(), this.horizontalGap,
+                this.shrinkColumns, columnsInfo.weights(), columnsInfo.totalWeight());
 
-        if (extraWidth > 0 && info.totalWeightX > 0) {
-            for (int i = 0; i < info.columns; i++) {
-                colWidths[i] += extraWidth * (info.columnWeights[i] / info.totalWeightX);
-            }
-        }
-        if (extraHeight > 0 && info.totalWeightY > 0) {
-            for (int i = 0; i < info.rows; i++) {
-                rowHeights[i] += extraHeight * (info.rowWeights[i] / info.totalWeightY);
-            }
-        }
+        final RowsInfo rowsInfo = this.calculateRows(containerSize, components, dims.rows(), colWidths);
+        final float[] rowHeights = rowsInfo.heights().clone();
 
-        float[] colOffsets = new float[info.columns];
-        float[] rowOffsets = new float[info.rows];
-        float currentX = 0;
-        for (int i = 0; i < info.columns; i++) {
-            colOffsets[i] = currentX;
-            currentX += colWidths[i] + this.horizontalGap;
-        }
-        float currentY = 0;
-        for (int i = 0; i < info.rows; i++) {
-            rowOffsets[i] = currentY;
-            currentY += rowHeights[i] + this.verticalGap;
-        }
+        // Adjust row heights for shrinking or weighting (growing)
+        this.adjustSizes(rowHeights, containerSize.height(), dims.rows(), this.verticalGap,
+                this.shrinkRows, rowsInfo.weights(), rowsInfo.totalWeight());
 
-        Map<Component, Rectangle> layout = new IdentityHashMap<>();
-        for (Component component : components) {
-            GridLayoutOptions options = (GridLayoutOptions) component.layoutOptions();
-            if (options == null) {
-                options = GridLayoutOptions.EMPTY;
-            }
+        // Pre-calculate offsets
+        final float[] colOffsets = this.calculateOffsets(colWidths, this.horizontalGap);
+        final float[] rowOffsets = this.calculateOffsets(rowHeights, this.verticalGap);
 
-            float cellX = colOffsets[options.column()];
-            float cellY = rowOffsets[options.row()];
-            float cellWidth = 0;
-            for (int i = 0; i < options.columnSpan(); i++) {
-                cellWidth += colWidths[options.column() + i];
-                if (i > 0) {
-                    cellWidth += this.horizontalGap;
-                }
-            }
-            float cellHeight = 0;
-            for (int i = 0; i < options.rowSpan(); i++) {
-                cellHeight += rowHeights[options.row() + i];
-                if (i > 0) {
-                    cellHeight += this.verticalGap;
-                }
-            }
+        final Map<Component, Rectangle> layout = new IdentityHashMap<>();
 
-            float availableWidth = cellWidth - options.padding().horizontal();
-            float availableHeight = cellHeight - options.padding().vertical();
-            float idealWidth = this.widthOf(component, options);
-            float idealHeight = this.heightOf(component, options);
+        for (final Component component : components) {
+            GridLayoutOptions options = this.getSafeOptions(component);
+
+            final float cellX = colOffsets[options.column()];
+            final float cellY = rowOffsets[options.row()];
+
+            float cellWidth = this.sumRange(colWidths, options.column(), options.columnSpan())
+                    + this.getGaps(options.columnSpan(), this.horizontalGap);
+            float cellHeight = this.sumRange(rowHeights, options.row(), options.rowSpan())
+                    + this.getGaps(options.rowSpan(), this.verticalGap);
+
+            final float availableWidth = Math.max(0, cellWidth - options.padding().horizontal());
+            final float availableHeight = Math.max(0, cellHeight - options.padding().vertical());
+
+            final Size componentConstraints = new Size(availableWidth, availableHeight);
+            final Size idealSize = component.computeIdealSize(componentConstraints);
+
+            final float idealWidth = options.width() != null ? options.width() : this.widthOf(component, idealSize);
+            final float idealHeight = options.height() != null ? options.height() : this.heightOf(component, idealSize);
 
             float width = idealWidth;
             float height = idealHeight;
 
-            if (options.fill() == GridFill.HORIZONTAL || options.fill() == GridFill.BOTH) {
-                width = availableWidth;
-            }
-            if (options.fill() == GridFill.VERTICAL || options.fill() == GridFill.BOTH) {
-                height = availableHeight;
-            }
+            if (options.fill() == GridFill.HORIZONTAL || options.fill() == GridFill.BOTH) width = availableWidth;
+            if (options.fill() == GridFill.VERTICAL || options.fill() == GridFill.BOTH) height = availableHeight;
+
             width = Math.max(0, Math.min(width, Math.min(availableWidth, component.maxSize().width())));
             height = Math.max(0, Math.min(height, Math.min(availableHeight, component.maxSize().height())));
 
@@ -172,123 +145,199 @@ public final class GridLayout implements Layout {
         return layout;
     }
 
-    private float widthOf(final Component component, final GridLayoutOptions options) {
-        if (options.width() != null) return options.width();
-        return this.widthOf(component);
-    }
+    private ColumnsInfo calculateColumns(final Size constraints, final Collection<Component> components, final int columns) {
+        final float[] columnWidths = new float[columns];
+        final float[] columnWeights = new float[columns];
 
-    private float heightOf(final Component component, final GridLayoutOptions options) {
-        if (options.height() != null) return options.height();
-        return this.heightOf(component);
-    }
-
-
-    private class GridInfo {
-        private int columns = 0;
-        private int rows = 0;
-        private final float[] columnWidths;
-        private final float[] rowHeights;
-        private final float[] columnWeights;
-        private final float[] rowWeights;
-        private float totalWeightX = 0;
-        private float totalWeightY = 0;
-
-        public GridInfo(final Collection<Component> components) {
-            for (Component component : components) {
-                GridLayoutOptions options = (GridLayoutOptions) component.layoutOptions();
-                if (options == null) options = GridLayoutOptions.EMPTY;
-                this.columns = Math.max(this.columns, options.column() + options.columnSpan());
-                this.rows = Math.max(this.rows, options.row() + options.rowSpan());
+        // 1st pass: non-spanning columns
+        for (final Component component : components) {
+            GridLayoutOptions options = this.getSafeOptions(component);
+            if (options.columnSpan() == 1) {
+                final Size idealSize = component.computeIdealSize(constraints);
+                float width = (options.width() != null ? options.width() : this.widthOf(component, idealSize)) + options.padding().horizontal();
+                columnWidths[options.column()] = Math.max(columnWidths[options.column()], width);
+                columnWeights[options.column()] = Math.max(columnWeights[options.column()], options.weightX());
             }
-
-            this.columnWidths = new float[this.columns];
-            this.rowHeights = new float[this.rows];
-            this.columnWeights = new float[this.columns];
-            this.rowWeights = new float[this.rows];
-
-            // 1st pass: non-spanning components
-            for (Component component : components) {
-                GridLayoutOptions options = (GridLayoutOptions) component.layoutOptions();
-                if (options == null) options = GridLayoutOptions.EMPTY;
-                float width = GridLayout.this.widthOf(component, options) + options.padding().horizontal();
-                float height = GridLayout.this.heightOf(component, options) + options.padding().vertical();
-
-                if (options.columnSpan() == 1) {
-                    this.columnWidths[options.column()] = Math.max(this.columnWidths[options.column()], width);
-                    this.columnWeights[options.column()] = Math.max(this.columnWeights[options.column()], options.weightX());
-                }
-                if (options.rowSpan() == 1) {
-                    this.rowHeights[options.row()] = Math.max(this.rowHeights[options.row()], height);
-                    this.rowWeights[options.row()] = Math.max(this.rowWeights[options.row()], options.weightY());
-                }
-            }
-
-            // 2nd pass: spanning components
-            for (Component component : components) {
-                GridLayoutOptions options = (GridLayoutOptions) component.layoutOptions();
-                if (options == null) options = GridLayoutOptions.EMPTY;
-                float width = GridLayout.this.widthOf(component, options) + options.padding().horizontal();
-                float height = GridLayout.this.heightOf(component, options) + options.padding().vertical();
-
-                if (options.columnSpan() > 1) {
-                    float currentWidth = 0;
-                    float currentWeight = 0;
-                    for (int i = 0; i < options.columnSpan(); i++) {
-                        currentWidth += this.columnWidths[options.column() + i];
-                        currentWeight += this.columnWeights[options.column() + i];
-                        if (i > 0) currentWidth += GridLayout.this.horizontalGap;
-                    }
-                    if (width > currentWidth) {
-                        float diff = width - currentWidth;
-                        for (int i = 0; i < options.columnSpan(); i++) {
-                            this.columnWidths[options.column() + i] += diff / options.columnSpan();
-                        }
-                    }
-                    if (options.weightX() > currentWeight) {
-                        float diff = options.weightX() - currentWeight;
-                        for (int i = 0; i < options.columnSpan(); i++) {
-                            this.columnWeights[options.column() + i] += diff / options.columnSpan();
-                        }
-                    }
-                }
-                if (options.rowSpan() > 1) {
-                    float currentHeight = 0;
-                    float currentWeight = 0;
-                    for (int i = 0; i < options.rowSpan(); i++) {
-                        currentHeight += this.rowHeights[options.row() + i];
-                        currentWeight += this.rowWeights[options.row() + i];
-                        if (i > 0) currentHeight += GridLayout.this.verticalGap;
-                    }
-                    if (height > currentHeight) {
-                        float diff = height - currentHeight;
-                        for (int i = 0; i < options.rowSpan(); i++) {
-                            this.rowHeights[options.row() + i] += diff / options.rowSpan();
-                        }
-                    }
-                    if (options.weightY() > currentWeight) {
-                        float diff = options.weightY() - currentWeight;
-                        for (int i = 0; i < options.rowSpan(); i++) {
-                            this.rowHeights[options.row() + i] += diff / options.rowSpan();
-                        }
-                    }
-                }
-            }
-
-            // Apply homogeneity
-            if (GridLayout.this.homogeneousColumns) {
-                float maxWidth = 0;
-                for (float w : this.columnWidths) maxWidth = Math.max(maxWidth, w);
-                for (int i = 0; i < this.columns; i++) this.columnWidths[i] = maxWidth;
-            }
-            if (GridLayout.this.homogeneousRows) {
-                float maxHeight = 0;
-                for (float h : this.rowHeights) maxHeight = Math.max(maxHeight, h);
-                for (int i = 0; i < this.rows; i++) this.rowHeights[i] = maxHeight;
-            }
-
-            for (float w : this.columnWeights) this.totalWeightX += w;
-            for (float w : this.rowWeights) this.totalWeightY += w;
         }
+
+        // 2nd pass: spanning columns
+        for (final Component component : components) {
+            GridLayoutOptions options = this.getSafeOptions(component);
+            if (options.columnSpan() > 1) {
+                final Size idealSize = component.computeIdealSize(constraints);
+                float width = (options.width() != null ? options.width() : this.widthOf(component, idealSize)) + options.padding().horizontal();
+
+                float currentWidth = this.sumRange(columnWidths, options.column(), options.columnSpan()) + this.getGaps(options.columnSpan(), this.horizontalGap);
+                float currentWeight = this.sumRange(columnWeights, options.column(), options.columnSpan());
+
+                if (width > currentWidth) {
+                    final float diff = width - currentWidth;
+                    for (int i = 0; i < options.columnSpan(); i++) {
+                        columnWidths[options.column() + i] += diff / options.columnSpan();
+                    }
+                }
+                if (options.weightX() > currentWeight) {
+                    final float diff = options.weightX() - currentWeight;
+                    for (int i = 0; i < options.columnSpan(); i++) {
+                        columnWeights[options.column() + i] += diff / options.columnSpan();
+                    }
+                }
+            }
+        }
+
+        // Apply homogeneity
+        if (this.homogeneousColumns) {
+            float maxWidth = this.max(columnWidths);
+            Arrays.fill(columnWidths, maxWidth);
+        }
+
+        return new ColumnsInfo(columnWidths, columnWeights, this.sum(columnWeights));
+    }
+
+    private RowsInfo calculateRows(final Size constraints, final Collection<Component> components, final int rows, final float[] colWidths) {
+        final float[] rowHeights = new float[rows];
+        final float[] rowWeights = new float[rows];
+        final Map<Component, Float> componentHeights = new IdentityHashMap<>();
+
+        // 1st pass: non-spanning rows
+        for (final Component component : components) {
+            GridLayoutOptions options = this.getSafeOptions(component);
+
+            float cellWidth = this.sumRange(colWidths, options.column(), options.columnSpan()) + this.getGaps(options.columnSpan(), this.horizontalGap);
+            final float availableWidth = Math.max(0, cellWidth - options.padding().horizontal());
+
+            final Size componentConstraints = new Size(availableWidth, constraints.height() - options.padding().vertical());
+            final Size idealSize = component.computeIdealSize(componentConstraints);
+
+            float height = (options.height() != null ? options.height() : this.heightOf(component, idealSize)) + options.padding().vertical();
+            componentHeights.put(component, height);
+
+            if (options.rowSpan() == 1) {
+                rowHeights[options.row()] = Math.max(rowHeights[options.row()], height);
+                rowWeights[options.row()] = Math.max(rowWeights[options.row()], options.weightY());
+            }
+        }
+
+        // 2nd pass: spanning rows
+        for (final Component component : components) {
+            GridLayoutOptions options = this.getSafeOptions(component);
+            if (options.rowSpan() > 1) {
+                final float height = componentHeights.get(component);
+
+                float currentHeight = this.sumRange(rowHeights, options.row(), options.rowSpan()) + this.getGaps(options.rowSpan(), this.verticalGap);
+                float currentWeight = this.sumRange(rowWeights, options.row(), options.rowSpan());
+
+                if (height > currentHeight) {
+                    final float diff = height - currentHeight;
+                    for (int i = 0; i < options.rowSpan(); i++) {
+                        rowHeights[options.row() + i] += diff / options.rowSpan();
+                    }
+                }
+                if (options.weightY() > currentWeight) {
+                    final float diff = options.weightY() - currentWeight;
+                    for (int i = 0; i < options.rowSpan(); i++) {
+                        rowHeights[options.row() + i] += diff / options.rowSpan();
+                    }
+                }
+            }
+        }
+
+        // Apply homogeneity
+        if (this.homogeneousRows) {
+            float maxHeight = this.max(rowHeights);
+            Arrays.fill(rowHeights, maxHeight);
+        }
+
+        return new RowsInfo(rowHeights, rowWeights, this.sum(rowWeights));
+    }
+
+    // --- Helper Methods ---
+
+    private GridLayoutOptions getSafeOptions(Component component) {
+        if (component.layoutOptions() instanceof GridLayoutOptions options) {
+            return options;
+        }
+        return GridLayoutOptions.EMPTY;
+    }
+
+    private GridDimensions calculateDimensions(Collection<Component> components) {
+        int cols = 0;
+        int rows = 0;
+        for (final Component component : components) {
+            GridLayoutOptions options = this.getSafeOptions(component);
+            cols = Math.max(cols, options.column() + options.columnSpan());
+            rows = Math.max(rows, options.row() + options.rowSpan());
+        }
+        return new GridDimensions(cols, rows);
+    }
+
+    private void adjustSizes(float[] sizes, float containerSpace, int count, int gap, boolean shrink, float[] weights, float totalWeight) {
+        float totalSize = this.sum(sizes) + this.getGaps(count, gap);
+
+        if (shrink && containerSpace < totalSize) {
+            float totalGaps = this.getGaps(count, gap);
+            float available = Math.max(0, containerSpace - totalGaps);
+            float originalSum = totalSize - totalGaps;
+            if (originalSum > 0) {
+                float scale = available / originalSum;
+                for (int i = 0; i < count; i++) sizes[i] *= scale;
+            } else {
+                Arrays.fill(sizes, 0);
+            }
+        } else {
+            float extraSpace = containerSpace - totalSize;
+            if (extraSpace > 0 && totalWeight > 0) {
+                for (int i = 0; i < count; i++) {
+                    sizes[i] += extraSpace * (weights[i] / totalWeight);
+                }
+            }
+        }
+    }
+
+    private float[] calculateOffsets(float[] sizes, int gap) {
+        float[] offsets = new float[sizes.length];
+        float current = 0;
+        for (int i = 0; i < sizes.length; i++) {
+            offsets[i] = current;
+            current += sizes[i] + gap;
+        }
+        return offsets;
+    }
+
+    private float sum(float[] array) {
+        float sum = 0;
+        for (float v : array) sum += v;
+        return sum;
+    }
+
+    private float sumRange(float[] array, int start, int length) {
+        float sum = 0;
+        for (int i = 0; i < length; i++) sum += array[start + i];
+        return sum;
+    }
+
+    private float max(float[] array) {
+        float max = 0;
+        for (float v : array) max = Math.max(max, v);
+        return max;
+    }
+
+    private float getGaps(int count, int gap) {
+        return count > 0 ? (count - 1) * gap : 0;
+    }
+
+    // --- Records ---
+
+    private record GridDimensions(int columns, int rows) {
+        public boolean isEmpty() {
+            return this.columns == 0 || this.rows == 0;
+        }
+    }
+
+    private record ColumnsInfo(float[] widths, float[] weights, float totalWeight) {
+    }
+
+    private record RowsInfo(float[] heights, float[] weights, float totalWeight) {
     }
 
 }
