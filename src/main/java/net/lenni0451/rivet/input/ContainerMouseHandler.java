@@ -3,6 +3,7 @@ package net.lenni0451.rivet.input;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -15,6 +16,10 @@ public class ContainerMouseHandler<C> {
     private C clickedComponent;
     private final Set<MouseButton> componentMouseButtons = EnumSet.noneOf(MouseButton.class);
     private final Set<MouseButton> nonComponentMouseButtons = EnumSet.noneOf(MouseButton.class);
+
+    public boolean isMouseHeld() {
+        return !this.componentMouseButtons.isEmpty() || !this.nonComponentMouseButtons.isEmpty();
+    }
 
     public void checkAndRemove(final C component) {
         if (this.hoveredComponent == component) {
@@ -32,14 +37,15 @@ public class ContainerMouseHandler<C> {
         this.componentMouseButtons.clear();
     }
 
-    public void onComponentMouseLeave(final Consumer<C> mouseLeaveInvoker) {
+
+    public void onMouseLeave(final Consumer<C> mouseLeaveInvoker) {
         if (this.hoveredComponent != null) {
             mouseLeaveInvoker.accept(this.hoveredComponent);
             this.hoveredComponent = null;
         }
     }
 
-    public boolean onComponentMouseDown(final MouseButtonEvent event, final C hoveredComponent, final Predicate<C> componentMouseDown, final BooleanSupplier containerMouseDown) {
+    public boolean onMouseDown(final MouseButtonEvent event, @Nullable final C hoveredComponent, final Predicate<C> componentMouseDown, final BooleanSupplier containerMouseDown) {
         if (this.nonComponentMouseButtons.isEmpty() && hoveredComponent != null) {
             if (this.clickedComponent == null || this.clickedComponent == hoveredComponent) {
                 this.clickedComponent = hoveredComponent;
@@ -52,7 +58,7 @@ public class ContainerMouseHandler<C> {
         return containerMouseDown.getAsBoolean();
     }
 
-    public boolean onComponentMouseUp(final MouseButtonEvent event, final Predicate<C> componentMouseUp, final BooleanSupplier containerMouseUp) {
+    public boolean onMouseUp(final MouseButtonEvent event, final Predicate<C> componentMouseUp, final BooleanSupplier containerMouseUp) {
         this.nonComponentMouseButtons.remove(event.button());
         if (this.componentMouseButtons.remove(event.button())) {
             try {
@@ -66,7 +72,7 @@ public class ContainerMouseHandler<C> {
         return containerMouseUp.getAsBoolean();
     }
 
-    public boolean onComponentMouseMove(final C hoveredComponent, final Consumer<C> componentMouseEnter, final Consumer<C> componentMouseLeave, final Predicate<C> componentMouseMove, final BooleanSupplier containerMouseMove) {
+    public boolean onMouseMove(@Nullable final C hoveredComponent, final Consumer<C> componentMouseEnter, final Consumer<C> componentMouseLeave, final Predicate<C> componentMouseMove, final BooleanSupplier containerMouseMove) {
         if (this.hoveredComponent != null && (this.hoveredComponent != hoveredComponent || !this.nonComponentMouseButtons.isEmpty())) {
             componentMouseLeave.accept(this.hoveredComponent);
             this.hoveredComponent = null;
@@ -84,9 +90,9 @@ public class ContainerMouseHandler<C> {
         }
     }
 
-    public boolean onComponentMouseScroll(final boolean componentHovered, final BooleanSupplier componentMouseScroll, final BooleanSupplier containerMouseScroll) {
-        if (componentHovered) {
-            return componentMouseScroll.getAsBoolean();
+    public boolean onMouseScroll(@Nullable final C hoveredComponent, final Predicate<C> componentMouseScroll, final BooleanSupplier containerMouseScroll) {
+        if (hoveredComponent != null) {
+            return componentMouseScroll.test(hoveredComponent);
         } else {
             return containerMouseScroll.getAsBoolean();
         }

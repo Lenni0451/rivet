@@ -7,7 +7,7 @@ import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.input.ClickedElement;
+import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -32,7 +32,7 @@ public final class Rivet {
     @Getter
     private final Backend backend;
     private final LayerList layers;
-    private final ClickedElement<Layer> clickedLayer = new ClickedElement<>();
+    private final ContainerMouseHandler<Layer> mouseHandler = new ContainerMouseHandler<>();
     @Getter
     private Size size;
     @Getter
@@ -72,7 +72,7 @@ public final class Rivet {
 
     public boolean removeLayer(final Layer layer) {
         if (this.layers.remove(layer)) {
-            if (this.clickedLayer.is(layer)) this.clickedLayer.unset();
+            this.mouseHandler.checkAndRemove(layer);
             this.recalculate = true;
             return true;
         }
@@ -151,75 +151,54 @@ public final class Rivet {
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        Layer layer = this.findLayerAt(x, y);
-        if (layer != null) {
-            boolean consumed = layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
-            this.clickedLayer.down(layer, event.button());
-            return consumed;
-        }
-        return false;
+        return this.mouseHandler.onMouseDown(
+                event,
+                this.findLayerAt(x, y),
+                layer -> layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
+                () -> false
+        );
     }
 
     public boolean onMouseUp(final MouseButtonEvent event) {
-        if (!this.clickedLayer.isClicked()) {
+        if (!this.mouseHandler.isMouseHeld()) {
             if (event.x() < 0 || event.x() >= this.size.width()) return false;
             if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        boolean consumed = false;
-        List<Layer> layers = this.layers.get();
-        for (Layer layer : layers) {
-            if (this.clickedLayer.is(layer)) {
-                consumed |= layer.container().onMouseUp(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
-                this.clickedLayer.up(event.button());
-            }
-        }
-        return consumed;
+        return this.mouseHandler.onMouseUp(
+                event,
+                layer -> layer.container().onMouseUp(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
+                () -> false
+        );
     }
 
     public boolean onMouseMove(final MouseMoveEvent event) {
-        if (!this.clickedLayer.isClicked()) {
+        if (!this.mouseHandler.isMouseHeld()) {
             if (event.x() < 0 || event.x() >= this.size.width()) return false;
             if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        boolean consumed = false;
-        boolean intercepted = false;
-        List<Layer> layers = this.layers.get();
-        for (int i = layers.size() - 1; i >= 0; i--) {
-            Layer layer = layers.get(i);
-            if (this.clickedLayer.element() != null) {
-                if (this.clickedLayer.is(layer)) {
-                    consumed |= layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
-                } else {
-                    consumed |= layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
-                }
-            } else {
-                if (!intercepted && layer.container().intercepts(x, y)) {
-                    consumed |= layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
-                    intercepted = true;
-                } else {
-                    consumed |= layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize()));
-                }
-            }
-        }
-        return consumed;
+        return this.mouseHandler.onMouseMove(
+                this.findLayerAt(x, y),
+                layer -> {},
+                layer -> layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize())),
+                layer -> layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
+                () -> false
+        );
     }
 
     public boolean onMouseScroll(final MouseScrollEvent event) {
-        if (!this.clickedLayer.isClicked()) {
-            if (event.x() < 0 || event.x() >= this.size.width()) return false;
-            if (event.y() < 0 || event.y() >= this.size.height()) return false;
-        }
+        if (event.x() < 0 || event.x() >= this.size.width()) return false;
+        if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        Layer layer = this.findLayerAt(x, y);
-        if (layer != null) {
-            return layer.container().onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
-        }
-        return false;
+        return this.mouseHandler.onMouseScroll(
+                this.findLayerAt(x, y),
+                layer -> layer.container().onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
+                () -> false
+        );
     }
 
     public RenderList render() {

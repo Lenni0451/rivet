@@ -57,13 +57,13 @@ public class DecoratedContainer extends Component {
 
     @Override
     protected void onComponentMouseLeave() {
-        this.mouseHandler.onComponentMouseLeave(Component::onMouseLeave);
+        this.mouseHandler.onMouseLeave(Component::onMouseLeave);
     }
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
-        return this.mouseHandler.onComponentMouseDown(
+        return this.mouseHandler.onMouseDown(
                 event,
                 childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
                 component -> {
@@ -76,7 +76,7 @@ public class DecoratedContainer extends Component {
 
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onComponentMouseUp(
+        return this.mouseHandler.onMouseUp(
                 event,
                 component -> {
                     Rectangle childBounds = bounds.offset(this.innerPadding);
@@ -89,7 +89,7 @@ public class DecoratedContainer extends Component {
     @Override
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
-        return this.mouseHandler.onComponentMouseMove(
+        return this.mouseHandler.onMouseMove(
                 childBounds.contains(event.x(), event.y()) ? this.child : null,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
@@ -101,9 +101,9 @@ public class DecoratedContainer extends Component {
     @Override
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
-        return this.mouseHandler.onComponentMouseScroll(
-                childBounds.contains(event.x(), event.y()),
-                () -> this.child.onMouseScroll(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
+        return this.mouseHandler.onMouseScroll(
+                childBounds.contains(event.x(), event.y()) ? this.child : null,
+                component -> component.onMouseScroll(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
                 () -> false
         );
     }

@@ -143,7 +143,7 @@ public class ScrollContainer extends Component {
 
     @Override
     protected void onComponentMouseLeave() {
-        this.mouseHandler.onComponentMouseLeave(Component::onMouseLeave);
+        this.mouseHandler.onMouseLeave(Component::onMouseLeave);
         this.hBarHovered = false;
         this.hRailHovered = false;
         this.vBarHovered = false;
@@ -160,7 +160,7 @@ public class ScrollContainer extends Component {
                 && (hRail == null || !hRail.contains(event.x(), event.y()))
                 && (vThumb == null || !vThumb.contains(event.x(), event.y()))
                 && (vRail == null || !vRail.contains(event.x(), event.y()));
-        return this.mouseHandler.onComponentMouseDown(
+        return this.mouseHandler.onMouseDown(
                 event,
                 componentHovered ? this.child : null,
                 component -> {
@@ -219,7 +219,7 @@ public class ScrollContainer extends Component {
 
     @Override
     public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onComponentMouseUp(
+        return this.mouseHandler.onMouseUp(
                 event,
                 component -> component.onMouseUp(
                         event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
@@ -251,7 +251,7 @@ public class ScrollContainer extends Component {
         this.vRailHovered = vRail != null && vRail.contains(event.x(), event.y());
         boolean componentHovered = !this.hBarHovered && !this.hRailHovered && !this.vBarHovered && !this.vRailHovered;
 
-        return this.mouseHandler.onComponentMouseMove(
+        return this.mouseHandler.onMouseMove(
                 componentHovered ? this.child : null,
                 Component::onMouseEnter,
                 Component::onMouseLeave,

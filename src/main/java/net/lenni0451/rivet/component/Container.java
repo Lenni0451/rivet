@@ -94,13 +94,13 @@ public class Container extends Component {
 
     @Override
     protected void onComponentMouseLeave() {
-        this.mouseHandler.onComponentMouseLeave(Component::onMouseLeave);
+        this.mouseHandler.onMouseLeave(Component::onMouseLeave);
     }
 
     @Override
     public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onComponentMouseDown(
+        return this.mouseHandler.onMouseDown(
                 event,
                 child == null ? null : child.component,
                 component -> {
@@ -113,7 +113,7 @@ public class Container extends Component {
 
     @Override
     public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onComponentMouseUp(
+        return this.mouseHandler.onMouseUp(
                 event,
                 component -> {
                     Rectangle childBounds = this.childBounds(component);
@@ -126,7 +126,7 @@ public class Container extends Component {
     @Override
     public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Child topChild = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onComponentMouseMove(
+        return this.mouseHandler.onMouseMove(
                 topChild == null ? null : topChild.component,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
@@ -141,9 +141,9 @@ public class Container extends Component {
     @Override
     public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onComponentMouseScroll(
-                child != null,
-                () -> child.component.onMouseScroll(
+        return this.mouseHandler.onMouseScroll(
+                child == null ? null : child.component,
+                component -> component.onMouseScroll(
                         event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
                         child.bounds.add(bounds.x(), bounds.y())
                 ),
