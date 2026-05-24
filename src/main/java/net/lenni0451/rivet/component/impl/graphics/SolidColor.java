@@ -47,7 +47,7 @@ public class SolidColor extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        return constraints;
+        return Size.EMPTY;
     }
 
 }
