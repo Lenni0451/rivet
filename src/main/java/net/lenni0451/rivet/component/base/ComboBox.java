@@ -1,0 +1,154 @@
+package net.lenni0451.rivet.component.base;
+
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.input.mouse.MouseButton;
+import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.layer.Layer;
+import net.lenni0451.rivet.layer.LayerBucket;
+import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
+import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
+import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.text.model.TextOrigin;
+import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeOption;
+
+import java.util.function.Consumer;
+
+@Accessors(fluent = true, chain = true)
+public class ComboBox extends Component {
+
+    private final Label text;
+    private final Button button;
+    private final Component child;
+    private Layer layer;
+
+    @Getter
+    private final ThemeOption<Color> arrowColor;
+    @Getter
+    private final ThemeOption<Float> arrowSize;
+    @Getter
+    private final ThemeOption<Float> maxPopupHeight;
+
+    public ComboBox(final Rivet rivet, final String text, final Component child) {
+        this(rivet, text, child, c -> {});
+    }
+
+    public <C extends Component> ComboBox(final Rivet rivet, final String text, final C child, final Consumer<C> initializer) {
+        super(rivet);
+        this.text = new Label(rivet, text).horizontalOrigin(TextOrigin.Horizontal.LOGICAL_LEFT);
+        this.button = new Button(rivet, this.text, event -> {
+            if (event.button().equals(MouseButton.LEFT)) {
+                if (this.isOpen()) {
+                    this.close();
+                } else {
+                    this.open();
+                }
+            }
+        });
+        this.child = child;
+        initializer.accept(child);
+        this.arrowColor = new ThemeOption<>(rivet, Theme.COMBOBOX_ARROW_COLOR);
+        this.arrowSize = new ThemeOption<>(rivet, Theme.COMBOBOX_ARROW_SIZE);
+        this.maxPopupHeight = new ThemeOption<>(rivet, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
+    }
+
+    public ComboBox open() {
+        if (this.isOpen()) return this;
+        Container container = new Container(this.rivet, AbsoluteLayout.INSTANCE);
+        container.addChild(this.child);
+        this.layer = new Layer(container, LayerBucket.OVERLAY);
+        this.rivet.addLayer(this.layer);
+        return this;
+    }
+
+    public ComboBox close() {
+        if (!this.isOpen()) return this;
+        this.rivet.removeLayer(this.layer);
+        this.layer = null;
+        return this;
+    }
+
+    public boolean isOpen() {
+        return this.layer != null;
+    }
+
+    @Override
+    public void onComponentMouseEnter() {
+        this.button.onMouseEnter();
+    }
+
+    @Override
+    public void onComponentMouseLeave() {
+        this.button.onMouseLeave();
+    }
+
+    @Override
+    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        return this.button.onMouseDown(event, bounds);
+    }
+
+    @Override
+    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+        return this.button.onMouseUp(event, bounds);
+    }
+
+    @Override
+    public void render(final Renderer renderer, final Rectangle bounds) {
+        this.button.render(renderer, bounds);
+        float triangleSize = this.arrowSize.value();
+        if (this.isOpen()) {
+            renderer.fillTriangle(
+                    bounds.width() - this.button.innerPadding().value().right() - triangleSize,
+                    bounds.height() / 2F + triangleSize / 2F,
+                    bounds.width() - this.button.innerPadding().value().right(),
+                    bounds.height() / 2F + triangleSize / 2F,
+                    bounds.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
+                    bounds.height() / 2F - triangleSize / 2F,
+                    this.arrowColor.value()
+            );
+        } else {
+            renderer.fillTriangle(
+                    bounds.width() - this.button.innerPadding().value().right() - triangleSize,
+                    bounds.height() / 2F - triangleSize / 2F,
+                    bounds.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
+                    bounds.height() / 2F + triangleSize / 2F,
+                    bounds.width() - this.button.innerPadding().value().right(),
+                    bounds.height() / 2F - triangleSize / 2F,
+                    this.arrowColor.value()
+            );
+        }
+        if (this.isOpen()) {
+            Size screenSize = this.rivet.scaledSize();
+            Rectangle region = new Rectangle(
+                    bounds.x(),
+                    bounds.y() + bounds.height(),
+                    Math.min(screenSize.width() - bounds.x(), bounds.width()),
+                    screenSize.height() - bounds.y() - bounds.height()
+            );
+            Size idealSize = this.child.computeIdealSize(region.size());
+            float maxHeight = Math.min(region.height(), this.maxPopupHeight.value());
+            region = region.withHeight(Math.min(idealSize.height(), maxHeight));
+            if (!(this.child.layoutOptions() instanceof AbsoluteLayoutOptions options)
+                    || options.x() != region.x() || options.y() != region.y()
+                    || options.width() == null || options.width() != region.width()
+                    || options.height() == null || options.height() != region.height()) {
+                this.child.layoutOptions(new AbsoluteLayoutOptions(region));
+                this.rivet.recalculateNextFrame();
+            }
+        }
+    }
+
+    @Override
+    public Size computeIdealSize(final Size constraints) {
+        return this.button.computeIdealSize(constraints);
+    }
+
+}

@@ -90,7 +90,7 @@ public class DecoratedContainer extends Component {
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
         return this.mouseHandler.onMouseMove(
-                childBounds.contains(event.x(), event.y()) ? this.child : null,
+                childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
                 component -> component.onMouseMove(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
@@ -102,7 +102,7 @@ public class DecoratedContainer extends Component {
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
         return this.mouseHandler.onMouseScroll(
-                childBounds.contains(event.x(), event.y()) ? this.child : null,
+                childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
                 component -> component.onMouseScroll(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
                 () -> false
         );

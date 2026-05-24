@@ -97,6 +97,11 @@ public abstract class Theme {
     public static final ThemeKey<Float> COLOR_PICKER_GAP = register("color_picker.gap", Float.class);
     public static final ThemeKey<Float> COLOR_PICKER_SELECTOR_SIZE = register("color_picker.selector_size", Float.class);
 
+    // ComboBox
+    public static final ThemeKey<Color> COMBOBOX_ARROW_COLOR = register("combobox.arrow_color", Color.class);
+    public static final ThemeKey<Float> COMBOBOX_ARROW_SIZE = register("combobox.arrow_size", Float.class);
+    public static final ThemeKey<Float> COMBOBOX_MAX_POPUP_HEIGHT = register("combobox.max_popup_height", Float.class);
+
     private static <T> ThemeKey<T> register(final String key, final Class<T> type) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type);
         ALL_KEYS.add(themeKey);

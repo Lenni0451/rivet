@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.theme.impl;
 
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
@@ -57,6 +58,10 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.COLOR_PICKER_SLIDER_WIDTH, rivet.backend().getTextHeight());
         values.put(Theme.COLOR_PICKER_GAP, rivet.backend().getTextHeight() / 3F);
         values.put(Theme.COLOR_PICKER_SELECTOR_SIZE, 4F);
+
+        values.put(Theme.COMBOBOX_ARROW_COLOR, Color.BLACK);
+        values.put(Theme.COMBOBOX_ARROW_SIZE, rivet.backend().getTextHeight() / 2F);
+        values.put(Theme.COMBOBOX_MAX_POPUP_HEIGHT, rivet.backend().getTextHeight() * 10F);
     }
 
 }

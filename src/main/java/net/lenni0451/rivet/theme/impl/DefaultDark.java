@@ -47,6 +47,8 @@ public class DefaultDark extends BaseTheme {
         values.put(Theme.CHECKBOX_CHECK_COLOR, Color.WHITE);
 
         values.put(Theme.COLOR_PICKER_OUTLINE_COLOR, Color.GRAY);
+
+        values.put(Theme.COMBOBOX_ARROW_COLOR, Color.WHITE);
     }
 
 }
