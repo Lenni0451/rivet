@@ -8,11 +8,7 @@ jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.1.0
 lombok = { module = "org.projectlombok:lombok", version = "1.18.46" }
 thingl = { module = "net.raphimc:thingl", version = "0.1.1-20260523.204029-16" }
 
-joml = { module = "org.joml:joml", version = "1.10.8" }
-joml-primitives = { module = "org.joml:joml-primitives", version = "1.10.0" }
-
 commons-core = { module = "net.lenni0451.commons:core", version.ref = "commons" }
-commons-logging = { module = "net.lenni0451.commons:logging", version.ref = "commons" }
 commons-animation = { module = "net.lenni0451.commons:animation", version.ref = "commons" }
 
 junit-bom = { module = "org.junit:junit-bom", version = "6.1.0" }
@@ -28,8 +24,7 @@ lwjgl-harfbuzz = { module = "org.lwjgl:lwjgl-harfbuzz", version.ref = "lwjgl" }
 lwjgl-par = { module = "org.lwjgl:lwjgl-par", version.ref = "lwjgl" }
 
 [bundles]
-joml = ["joml", "joml-primitives"]
-commons = ["commons-core", "commons-logging", "commons-animation"]
+commons = ["commons-core", "commons-animation"]
 lwjgl = ["lwjgl", "lwjgl-opengl", "lwjgl-stb", "lwjgl-glfw", "lwjgl-freetype", "lwjgl-harfbuzz", "lwjgl-par"]
 
 [plugins]
