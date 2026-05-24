@@ -183,7 +183,7 @@ public class TextField extends Component {
         }
         this.lastClick = now;
 
-        this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX);
+        this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
         if (!event.modifiers().contains(ModifierKey.SHIFT)) {
             this.selection = this.cursor;
         }
@@ -213,7 +213,7 @@ public class TextField extends Component {
     @Override
     public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.selecting) {
-            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX);
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
             return true;
         }
         return false;
@@ -232,15 +232,15 @@ public class TextField extends Component {
             renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
                 renderer.translate(-this.scrollX, 0, () -> {
                     if (this.cursor != this.selection) {
-                        float x1 = this.shapedText.cursorPosition(this.cursor);
-                        float x2 = this.shapedText.cursorPosition(this.selection);
+                        float x1 = this.shapedText.cursorPosition(this.cursor).x();
+                        float x2 = this.shapedText.cursorPosition(this.selection).x();
                         renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, this.selectionColor.value());
                     }
 
                     renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
                     if (this.rivet.focusedComponent() == this) {
-                        float cursorX = this.shapedText.cursorPosition(this.cursor);
+                        float cursorX = this.shapedText.cursorPosition(this.cursor).x();
                         renderer.fillRect(cursorX, -textHeight / 2F, this.cursorWidth.value(), textHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
                     }
                 });
@@ -258,7 +258,7 @@ public class TextField extends Component {
     }
 
     private void ensureCursorVisible(final float visibleWidth) {
-        float cursorX = this.shapedText.cursorPosition(this.cursor);
+        float cursorX = this.shapedText.cursorPosition(this.cursor).x();
         if (cursorX < this.scrollX) {
             this.scrollX = cursorX;
         } else if (cursorX > this.scrollX + visibleWidth) {

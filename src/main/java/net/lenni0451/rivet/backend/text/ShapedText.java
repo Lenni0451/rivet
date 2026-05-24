@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.backend.text;
 
+import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.model.TextOrigin;
 
@@ -34,8 +35,8 @@ public interface ShapedText {
         };
     }
 
-    float cursorPosition(final int index);
+    Point cursorPosition(final int index);
 
-    int index(final float x);
+    int index(final float x, final float y);
 
 }
