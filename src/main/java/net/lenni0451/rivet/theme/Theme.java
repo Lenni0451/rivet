@@ -2,6 +2,7 @@ package net.lenni0451.rivet.theme;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.component.base.Button;
 import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Padding;
@@ -30,6 +31,7 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_CLICK_OUTLINE_COLOR = register("button.click_outline_color", Color.class);
     public static final ThemeKey<Integer> BUTTON_ANIMATION_DURATION = register("button.animation_duration", Integer.class);
     public static final ThemeKey<Padding> BUTTON_INNER_PADDING = register("button.inner_padding", Padding.class);
+    public static final ThemeKey<Button.ClickOn> BUTTON_CLICK_ON_RELEASE = register("button.click_on_release", Button.ClickOn.class);
 
     // Slider
     public static final ThemeKey<Color> SLIDER_BAR_COLOR = register("slider.bar_color", Color.class);

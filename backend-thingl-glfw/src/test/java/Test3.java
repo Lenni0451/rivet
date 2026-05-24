@@ -36,7 +36,10 @@ public class Test3 extends RivetThinGLApplication {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
             label.layoutOptions(new GridLayoutOptions(0, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
-        container.addChild(new Button(rivet, new Label(rivet, "Testing Testing Testing Testing Testing Testing Testing"), e -> {}), button -> {
+        container.addChild(new Button(rivet, new Label(rivet, "Testing Testing Testing Testing Testing Testing Testing"), e -> {
+            System.out.println("click");
+        }), button -> {
+            button.clickOn().set(Button.ClickOn.BOTH);
             button.layoutOptions(new GridLayoutOptions(0, 1).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
         rivet.root().addChild(container);

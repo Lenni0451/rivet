@@ -52,6 +52,8 @@ public class Button extends Component {
     private final ThemeOption<Integer> animationDuration;
     @Getter
     private final ThemeOption<Padding> innerPadding;
+    @Getter
+    private final ThemeOption<ClickOn> clickOn;
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
     private final Animation hoverAnimation;
@@ -76,6 +78,7 @@ public class Button extends Component {
         this.clickOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_OUTLINE_COLOR);
         this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
         this.innerPadding = new ThemeOption<>(rivet, Theme.BUTTON_INNER_PADDING);
+        this.clickOn = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_ON_RELEASE);
 
         this.hoverAnimation = new Animation()
                 .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
@@ -96,13 +99,16 @@ public class Button extends Component {
 
     @Override
     public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
+            this.clickListener.accept(event);
+        }
         this.pressed.add(event.button());
         return true;
     }
 
     @Override
     public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        if (this.hovered) {
+        if (this.hovered && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
             this.clickListener.accept(event);
         }
         this.pressed.remove(event.button());
@@ -149,6 +155,11 @@ public class Button extends Component {
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(size.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()));
+    }
+
+
+    public enum ClickOn {
+        DOWN, UP, BOTH
     }
 
 }
