@@ -7,6 +7,7 @@ import net.lenni0451.rivet.component.base.ComboBox;
 import net.lenni0451.rivet.component.base.DecoratedContainer;
 import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.*;
+import net.lenni0451.rivet.component.impl.graphics.SolidColor;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.layout.grid.GridAnchor;
@@ -64,11 +65,12 @@ public class Test extends RivetThinGLApplication {
         });
 
         Container container = new Container(rivet, new GridLayout(10, 10).homogeneousColumns(true).shrinkColumns(true));
-        rivet.root().addChild(new DecoratedContainer(rivet, new ScrollContainer(rivet, container, false, true)), decoratedContainer -> {
-            decoratedContainer.backgroundColor(Color.fromARGB(Integer.MIN_VALUE));
-            decoratedContainer.backgroundCornerRadius(20F);
+        rivet.root().addChild(new DecoratedContainer(rivet, new SolidColor(rivet), new ScrollContainer(rivet, container, false, true)), decoratedContainer -> {
             decoratedContainer.innerPadding(new Padding(20, 20, 20, 20));
-            decoratedContainer.backgroundOutlineColor(Color.GREEN);
+            SolidColor background = (SolidColor) decoratedContainer.background();
+            background.color(Color.fromARGB(Integer.MIN_VALUE));
+            background.cornerRadius(20F);
+            background.outlineColor(Color.GREEN);
         });
         container.addChild(new FormattedLabel(rivet, "Hello this is a really cool test string how are you doing lol"), label -> {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
@@ -92,12 +94,12 @@ public class Test extends RivetThinGLApplication {
         container.addChild(new Button(rivet, new Label(rivet, "Quit Game"), _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(1, 4).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
         });
-        container.addChild(new ComboBox(rivet, "Testing since 2k26", new DecoratedContainer(rivet, new ScrollContainer(rivet, new Container(rivet, new VerticalListLayout(5, true)), comboBoxContainer -> {
+        container.addChild(new ComboBox(rivet, "Testing since 2k26", new DecoratedContainer(rivet, new SolidColor(rivet), new ScrollContainer(rivet, new Container(rivet, new VerticalListLayout(5, true)), comboBoxContainer -> {
             for (int i = 0; i < 10; i++) {
                 comboBoxContainer.addChild(new Button(rivet, new Label(rivet, "Test " + i), _ -> {}));
             }
         })), decoratedContainer -> {
-            decoratedContainer.backgroundColor(Color.GREEN);
+            ((SolidColor) decoratedContainer.background()).color(Color.GREEN);
         }), comboBox -> {
             comboBox.layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });

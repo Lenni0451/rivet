@@ -3,7 +3,6 @@ package net.lenni0451.rivet.component.base;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
@@ -21,38 +20,26 @@ import java.util.function.Consumer;
 public class DecoratedContainer extends Component {
 
     @Getter
+    private final Component background;
+    @Getter
     private final Component child;
     private final ContainerMouseHandler<Component> mouseHandler = new ContainerMouseHandler<>();
     @Getter
     @Setter
     private Padding innerPadding;
-    @Getter
-    @Setter
-    private Color backgroundColor;
-    @Getter
-    @Setter
-    private Color backgroundOutlineColor;
-    @Getter
-    @Setter
-    private float backgroundOutlineWidth;
-    @Getter
-    @Setter
-    private float backgroundCornerRadius;
 
-    public DecoratedContainer(final Rivet rivet, final Component child) {
-        this(rivet, child, c -> {});
+    public DecoratedContainer(final Rivet rivet, final Component background, final Component child) {
+        this(rivet, background, c -> {}, child, c -> {});
     }
 
-    public <C extends Component> DecoratedContainer(final Rivet rivet, final C child, final Consumer<C> initializer) {
+    public <B extends Component, C extends Component> DecoratedContainer(final Rivet rivet, final B background, final Consumer<B> backgroundInitializer, final C child, final Consumer<C> childInitializer) {
         super(rivet);
+        this.background = background;
+        backgroundInitializer.accept(background);
         this.child = child;
-        initializer.accept(child);
+        childInitializer.accept(child);
 
         this.innerPadding = new Padding(5, 5, 5, 5);
-        this.backgroundColor = Color.TRANSPARENT;
-        this.backgroundOutlineColor = Color.TRANSPARENT;
-        this.backgroundOutlineWidth = rivet.backend().getTextHeight() / 8F;
-        this.backgroundCornerRadius = 0;
     }
 
     @Override
@@ -70,7 +57,7 @@ public class DecoratedContainer extends Component {
                     this.rivet.focusedComponent(component);
                     return component.onMouseDown(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.left()), childBounds);
                 },
-                () -> this.backgroundColor.getAlpha() > 0
+                () -> false
         );
     }
 
@@ -82,7 +69,7 @@ public class DecoratedContainer extends Component {
                     Rectangle childBounds = bounds.offset(this.innerPadding);
                     return component.onMouseUp(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.left()), childBounds);
                 },
-                () -> this.backgroundColor.getAlpha() > 0
+                () -> false
         );
     }
 
@@ -110,13 +97,7 @@ public class DecoratedContainer extends Component {
 
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
-        if (this.backgroundColor.getAlpha() > 0) {
-            renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.backgroundCornerRadius, this.backgroundColor);
-        }
-        if (this.backgroundOutlineColor.getAlpha() > 0) {
-            renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.backgroundCornerRadius, this.backgroundOutlineWidth, this.backgroundOutlineColor);
-        }
-
+        this.background.render(renderer, bounds);
         float width = bounds.width() - this.innerPadding.horizontal();
         float height = bounds.height() - this.innerPadding.vertical();
         renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
