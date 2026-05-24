@@ -4,10 +4,12 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 
+import java.util.function.Consumer;
+
 public sealed interface RenderCommand extends RenderElement permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
         RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Text,
-        RenderCommand.Line, RenderCommand.FillGradientRect {
+        RenderCommand.Line, RenderCommand.FillGradientRect, RenderCommand.CustomRenderCommand {
 
     Rectangle bounds();
 
@@ -88,6 +90,9 @@ public sealed interface RenderCommand extends RenderElement permits
         public Rectangle bounds() {
             return new Rectangle(this.x, this.y, this.width, this.height);
         }
+    }
+
+    record CustomRenderCommand<T>(Consumer<T> action, Rectangle bounds) implements RenderCommand {
     }
 
 }

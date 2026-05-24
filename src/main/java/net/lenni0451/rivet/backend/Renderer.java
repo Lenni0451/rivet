@@ -5,9 +5,11 @@ import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.backend.render.TransformCommand;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.model.TextOrigin;
 
 import java.util.Stack;
+import java.util.function.Consumer;
 
 public final class Renderer {
 
@@ -113,6 +115,20 @@ public final class Renderer {
 
     public void fillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr) {
         this.currentRenderList.peek().render(new RenderCommand.FillGradientRect(x, y, width, height, ctl, cbl, cbr, ctr));
+    }
+
+    /**
+     * Push a custom render command to the backend.<br>
+     * The code in the renderer is highly backend specific and is not portable.<br>
+     * The backend may choose to execute the renderer in a separate thread, make sure all data passed is immutable.<br>
+     * <b>The type {@code T} is not checked. Make sure it matches the backend type!</b>
+     *
+     * @param renderer The custom renderer
+     * @param bounds   The bounds of the renderer
+     * @param <T>      The backend specific type
+     */
+    public <T> void custom(final Consumer<T> renderer, final Rectangle bounds) {
+        this.currentRenderList.peek().render(new RenderCommand.CustomRenderCommand<>(renderer, bounds));
     }
 
 }

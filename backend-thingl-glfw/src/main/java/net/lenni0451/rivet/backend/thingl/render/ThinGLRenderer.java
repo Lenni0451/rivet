@@ -150,6 +150,9 @@ public class ThinGLRenderer {
                     fillGradientRect.x() + fillGradientRect.width(), fillGradientRect.y() + fillGradientRect.height(),
                     fillGradientRect.cbl(), fillGradientRect.cbr(), fillGradientRect.ctr(), fillGradientRect.ctl()
             );
+            case RenderCommand.CustomRenderCommand customRenderCommand -> {
+                customRenderCommand.action().accept(matrixStack);
+            }
         }
     }
 

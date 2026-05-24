@@ -1,5 +1,8 @@
 package net.lenni0451.rivet.backend.thingl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.text.ShapedText;
@@ -21,7 +24,13 @@ import org.lwjgl.system.MemoryUtil;
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
-public record ThinGLBackend(long window, FontSet fontSet) implements Backend {
+@Getter
+@RequiredArgsConstructor
+@Accessors(fluent = true, chain = true)
+public class ThinGLBackend implements Backend {
+
+    private final long window;
+    private final FontSet fontSet;
 
     @Override
     public float getTextHeight() {
