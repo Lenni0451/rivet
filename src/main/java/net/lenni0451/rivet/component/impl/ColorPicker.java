@@ -79,7 +79,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (!event.button().equals(MouseButton.LEFT)) return false;
 
         float pickerSize = this.pickerSize.value();
@@ -103,7 +103,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         boolean consumed = this.draggingPicker || this.draggingHue || this.draggingAlpha;
         this.draggingPicker = false;
         this.draggingHue = false;
@@ -112,7 +112,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.draggingPicker) {
             this.updatePicker(event.x(), event.y());
             return true;
@@ -127,7 +127,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         if (this.rivet.backend().isKeyDown(ModifierKey.SHIFT)) {
             this.alpha = MathUtils.clamp(this.alpha + event.scrollY() / 20, 0, 1);
             this.updateColor();

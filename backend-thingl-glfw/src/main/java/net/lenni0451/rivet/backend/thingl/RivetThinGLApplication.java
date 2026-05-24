@@ -106,6 +106,11 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
             if (oldCallback[0] != null) oldCallback[0].invoke(window, width, height);
             this.rivet.size(new Size(width, height));
         });
+        GLFW.glfwSetWindowFocusCallback(this.window, (window, focused) -> {
+            if (!focused) {
+                this.rivet.unfocus();
+            }
+        });
     }
 
     @Override

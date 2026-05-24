@@ -151,7 +151,7 @@ public class ScrollContainer extends Component {
     }
 
     @Override
-    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         Rectangle hThumb = this.getHThumbBounds(bounds);
         Rectangle hRail = this.getHRailBounds(bounds);
         Rectangle vThumb = this.getVThumbBounds(bounds);
@@ -218,7 +218,7 @@ public class ScrollContainer extends Component {
     }
 
     @Override
-    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         return this.mouseHandler.onMouseUp(
                 event,
                 component -> component.onMouseUp(
@@ -239,7 +239,7 @@ public class ScrollContainer extends Component {
     }
 
     @Override
-    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Rectangle hThumb = this.getHThumbBounds(bounds);
         Rectangle hRail = this.getHRailBounds(bounds);
         Rectangle vThumb = this.getVThumbBounds(bounds);
@@ -287,7 +287,7 @@ public class ScrollContainer extends Component {
     }
 
     @Override
-    public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         return this.nestedScrollCoordinator.handleScrolling(
                 () -> {
                     if (this.hScrollVisible && event.scrollX() != 0 && !this.hBarPressed) {

@@ -172,7 +172,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (!event.button().equals(MouseButton.LEFT)) return false;
 
         long now = System.currentTimeMillis();
@@ -202,7 +202,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.selecting = false;
             return true;
@@ -211,7 +211,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.selecting) {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
             return true;

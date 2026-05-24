@@ -72,7 +72,7 @@ public final class Rivet {
 
     public boolean removeLayer(final Layer layer) {
         if (this.layers.remove(layer)) {
-            this.mouseHandler.checkAndRemove(layer);
+            this.mouseHandler.checkAndRemove(layer, l -> l.container().onMouseLeave());
             this.recalculate = true;
             return true;
         }
@@ -124,6 +124,10 @@ public final class Rivet {
     public Rivet recalculateNextFrame() {
         this.recalculate = true;
         return this;
+    }
+
+    public void unfocus() {
+        this.mouseHandler.clear(l -> l.container().onMouseLeave());
     }
 
 
@@ -185,7 +189,7 @@ public final class Rivet {
         return this.mouseHandler.onMouseMove(
                 this.findLayerAt(x, y),
                 layer -> {},
-                layer -> layer.container().onMouseMove(new MouseMoveEvent(-1, -1), new Rectangle(this.scaledSize())),
+                layer -> layer.container().onMouseMove(new MouseMoveEvent(-Float.MAX_VALUE, -Float.MAX_VALUE), new Rectangle(this.scaledSize())),
                 layer -> layer.container().onMouseMove(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
                 () -> false
         );

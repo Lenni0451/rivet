@@ -113,7 +113,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
             this.tooltip = new SliderTooltip(this.rivet, String.format(this.tooltipFormat.value(), this.value));
@@ -124,7 +124,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = false;
             this.tooltip.remove();
@@ -135,7 +135,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         if (this.dragged) {
             this.updateValue(event.x(), bounds);
             return true;

@@ -21,8 +21,10 @@ public class ContainerMouseHandler<C> {
         return !this.componentMouseButtons.isEmpty() || !this.nonComponentMouseButtons.isEmpty();
     }
 
-    public void checkAndRemove(final C component) {
+    public void checkAndRemove(final C component, final Consumer<C> componentMouseLeave) {
+        if (component == null) return;
         if (this.hoveredComponent == component) {
+            componentMouseLeave.accept(this.hoveredComponent);
             this.hoveredComponent = null;
         }
         if (this.clickedComponent == component) {
@@ -31,10 +33,9 @@ public class ContainerMouseHandler<C> {
         }
     }
 
-    public void clear() {
-        this.hoveredComponent = null;
-        this.clickedComponent = null;
-        this.componentMouseButtons.clear();
+    public void clear(final Consumer<C> componentMouseLeave) {
+        this.checkAndRemove(this.hoveredComponent, componentMouseLeave);
+        this.checkAndRemove(this.clickedComponent, componentMouseLeave);
     }
 
 

@@ -91,12 +91,12 @@ public class ComboBox extends Component {
     }
 
     @Override
-    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         return this.button.onMouseDown(event, bounds);
     }
 
     @Override
-    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         return this.button.onMouseUp(event, bounds);
     }
 

@@ -62,7 +62,7 @@ public class Container extends Component {
     }
 
     public boolean removeChild(final Component component) {
-        this.mouseHandler.checkAndRemove(component);
+        this.mouseHandler.checkAndRemove(component, Component::onMouseLeave);
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
@@ -78,7 +78,7 @@ public class Container extends Component {
     }
 
     public void clearChildren() {
-        this.mouseHandler.clear();
+        this.mouseHandler.clear(Component::onComponentMouseLeave);
         for (Child child : this.children) {
             if (this.rivet.focusedComponent() == child.component) {
                 this.rivet.focusedComponent(null);
@@ -98,7 +98,7 @@ public class Container extends Component {
     }
 
     @Override
-    public boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
         return this.mouseHandler.onMouseDown(
                 event,
@@ -112,7 +112,7 @@ public class Container extends Component {
     }
 
     @Override
-    public boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         return this.mouseHandler.onMouseUp(
                 event,
                 component -> {
@@ -124,7 +124,7 @@ public class Container extends Component {
     }
 
     @Override
-    public boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Child topChild = this.findChildAt(event.x(), event.y());
         return this.mouseHandler.onMouseMove(
                 topChild == null ? null : topChild.component,
@@ -139,7 +139,7 @@ public class Container extends Component {
     }
 
     @Override
-    public boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
         return this.mouseHandler.onMouseScroll(
                 child == null ? null : child.component,
