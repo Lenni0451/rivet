@@ -65,12 +65,12 @@ public class Test extends RivetThinGLApplication {
         });
 
         Container container = new Container(rivet, new GridLayout(10, 10).homogeneousColumns(true).shrinkColumns(true));
-        rivet.root().addChild(new DecoratedContainer(rivet, new SolidColor(rivet), new ScrollContainer(rivet, container, false, true)), decoratedContainer -> {
+        rivet.root().addChild(new DecoratedContainer(rivet, new SolidColor(rivet, solidColor -> {
+            solidColor.color(Color.fromARGB(Integer.MIN_VALUE));
+            solidColor.cornerRadius(20F);
+            solidColor.outlineColor(Color.GREEN);
+        }), new ScrollContainer(rivet, container, false, true)), decoratedContainer -> {
             decoratedContainer.innerPadding(new Padding(20, 20, 20, 20));
-            SolidColor background = (SolidColor) decoratedContainer.background();
-            background.color(Color.fromARGB(Integer.MIN_VALUE));
-            background.cornerRadius(20F);
-            background.outlineColor(Color.GREEN);
         });
         container.addChild(new FormattedLabel(rivet, "Hello this is a really cool test string how are you doing lol"), label -> {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
@@ -94,13 +94,13 @@ public class Test extends RivetThinGLApplication {
         container.addChild(new Button(rivet, new Label(rivet, "Quit Game"), _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(1, 4).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
         });
-        container.addChild(new ComboBox(rivet, "Testing since 2k26", new DecoratedContainer(rivet, new SolidColor(rivet), new ScrollContainer(rivet, new Container(rivet, new VerticalListLayout(5, true)), comboBoxContainer -> {
+        container.addChild(new ComboBox(rivet, "Testing since 2k26", new DecoratedContainer(rivet, new SolidColor(rivet, solidColor -> {
+            solidColor.color(Color.GREEN);
+        }), new ScrollContainer(rivet, new Container(rivet, new VerticalListLayout(5, true)), comboBoxContainer -> {
             for (int i = 0; i < 10; i++) {
                 comboBoxContainer.addChild(new Button(rivet, new Label(rivet, "Test " + i), _ -> {}));
             }
-        })), decoratedContainer -> {
-            ((SolidColor) decoratedContainer.background()).color(Color.GREEN);
-        }), comboBox -> {
+        }))), comboBox -> {
             comboBox.layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
         container.addChild(new TextField(rivet), textField -> {

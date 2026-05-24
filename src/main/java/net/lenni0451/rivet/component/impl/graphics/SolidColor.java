@@ -10,6 +10,8 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import java.util.function.Consumer;
+
 @Getter
 @Setter
 @Accessors(fluent = true, chain = true)
@@ -21,11 +23,16 @@ public class SolidColor extends Component {
     private float cornerRadius;
 
     public SolidColor(final Rivet rivet) {
+        this(rivet, s -> {});
+    }
+
+    public SolidColor(final Rivet rivet, final Consumer<SolidColor> initializer) {
         super(rivet);
         this.color = Color.TRANSPARENT;
         this.outlineColor = Color.TRANSPARENT;
         this.outlineWidth = rivet.backend().getTextHeight() / 8F;
         this.cornerRadius = 0;
+        initializer.accept(this);
     }
 
     @Override
