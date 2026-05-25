@@ -221,10 +221,7 @@ public final class Rivet {
         Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
             for (Layer layer : this.layers.get()) {
-                if (this.recalculate) {
-                    layer.container().computeIdealSize(scaledSize);
-                    layer.container().computeLayout(scaledSize);
-                }
+                if (this.recalculate) layer.container().computeLayout(scaledSize);
                 layer.container().render(renderer, new Rectangle(scaledSize));
             }
         });
