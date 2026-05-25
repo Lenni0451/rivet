@@ -6,13 +6,13 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.function.BiConsumer;
 
 public interface Layout {
 
     Size computeIdealSize(final Size constraints, final Collection<Component> components);
 
-    Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components);
+    void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds);
 
     default float widthOf(final Component component, final Size idealSize) {
         return this.widthOf(component, idealSize.width());

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * This class is completely AI generated.
@@ -57,11 +58,9 @@ public final class GridLayout implements Layout {
     }
 
     @Override
-    public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
+    public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         final GridDimensions dims = this.calculateDimensions(components);
-        if (dims.isEmpty()) {
-            return new IdentityHashMap<>();
-        }
+        if (dims.isEmpty()) return;
 
         final ColumnsInfo columnsInfo = this.calculateColumns(containerSize, components, dims.columns());
         final float[] colWidths = columnsInfo.widths().clone();
@@ -80,8 +79,6 @@ public final class GridLayout implements Layout {
         // Pre-calculate offsets
         final float[] colOffsets = this.calculateOffsets(colWidths, this.horizontalGap);
         final float[] rowOffsets = this.calculateOffsets(rowHeights, this.verticalGap);
-
-        final Map<Component, Rectangle> layout = new IdentityHashMap<>();
 
         for (final Component component : components) {
             GridLayoutOptions options = this.getSafeOptions(component);
@@ -140,9 +137,8 @@ public final class GridLayout implements Layout {
                 }
             }
 
-            layout.put(component, new Rectangle(x, y, width, height));
+            setBounds.accept(component, new Rectangle(x, y, width, height));
         }
-        return layout;
     }
 
     private ColumnsInfo calculateColumns(final Size constraints, final Collection<Component> components, final int columns) {

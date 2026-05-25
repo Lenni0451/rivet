@@ -7,8 +7,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.function.BiConsumer;
 
 @RequiredArgsConstructor
 public class VerticalListLayout implements Layout {
@@ -32,18 +31,16 @@ public class VerticalListLayout implements Layout {
     }
 
     @Override
-    public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
-        Map<Component, Rectangle> layout = new IdentityHashMap<>();
+    public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         float y = 0;
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(containerSize);
             float width = this.fullWidth ? this.widthOf(component, containerSize.width()) : this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
             if (y != 0) y += this.gap;
-            layout.put(component, new Rectangle(0, y, width, height));
+            setBounds.accept(component, new Rectangle(0, y, width, height));
             y += this.heightOf(component, idealSize);
         }
-        return layout;
     }
 
 }

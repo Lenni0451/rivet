@@ -7,8 +7,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.function.BiConsumer;
 
 @RequiredArgsConstructor
 public final class HorizontalFlowLayout implements Layout {
@@ -42,8 +41,7 @@ public final class HorizontalFlowLayout implements Layout {
     }
 
     @Override
-    public Map<Component, Rectangle> layoutComponents(final Size containerSize, final Collection<Component> components) {
-        Map<Component, Rectangle> layout = new IdentityHashMap<>();
+    public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         float x = 0;
         float y = 0;
         float maxHeight = 0;
@@ -56,11 +54,10 @@ public final class HorizontalFlowLayout implements Layout {
                 y += maxHeight + this.verticalGap;
                 maxHeight = height;
             }
-            layout.put(component, new Rectangle(x, y, width, height));
+            setBounds.accept(component, new Rectangle(x, y, width, height));
             x += width + this.horizontalGap;
             maxHeight = Math.max(maxHeight, height);
         }
-        return layout;
     }
 
 }

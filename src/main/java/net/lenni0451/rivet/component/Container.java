@@ -172,17 +172,19 @@ public class Container extends Component {
 
     @Override
     public void computeLayout(final Size size) {
-        Map<Component, Rectangle> layout = this.layout.layoutComponents(size, this.children.stream().map(child -> child.component).toList());
+        Map<Component, Rectangle> newBounds = new IdentityHashMap<>();
+        this.layout.layoutComponents(size, this.children.stream().map(child -> child.component).toList(), newBounds::put);
+        if (newBounds.size() != this.children.size()) {
+            throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for all children (" + newBounds.size() + " provided, but " + this.children.size() + " expected)");
+        }
+
         Size contentSize = Size.EMPTY;
         for (Child child : this.children) {
-            Rectangle bounds = layout.get(child.component);
-            if (bounds == null) throw new IllegalStateException("Layout did not provide bounds for all children!");
-
-            child.bounds = bounds;
-            child.component.computeLayout(bounds.size());
+            child.bounds = newBounds.get(child.component);
+            child.component.computeLayout(child.bounds.size());
             contentSize = new Size(
-                    Math.max(contentSize.width(), bounds.x() + bounds.width()),
-                    Math.max(contentSize.height(), bounds.y() + bounds.height())
+                    Math.max(contentSize.width(), child.bounds.x() + child.bounds.width()),
+                    Math.max(contentSize.height(), child.bounds.y() + child.bounds.height())
             );
         }
         this.contentSize = contentSize;
