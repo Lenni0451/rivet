@@ -62,8 +62,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
                         setBounds.accept(component, new Rectangle(
                                 column * (cellSize.width() + this.verticalGap),
                                 row * (cellSize.height() + this.horizontalGap),
-                                cellSize.width(),
-                                cellSize.height()
+                                this.widthOf(component, cellSize.width()),
+                                this.heightOf(component, cellSize.height())
                         ));
                     }
                 }
@@ -88,8 +88,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
             setBounds.accept(component, new Rectangle(
                     column * (cellSize.width() + this.verticalGap),
                     row * (cellSize.height() + this.horizontalGap),
-                    cellSize.width(),
-                    cellSize.height()
+                    this.widthOf(component, cellSize.width()),
+                    this.heightOf(component, cellSize.height())
             ));
         }
     }
