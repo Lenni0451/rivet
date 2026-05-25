@@ -99,19 +99,19 @@ public class Button extends Component {
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        this.pressed.add(event.button());
         if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
             this.clickListener.accept(event);
         }
-        this.pressed.add(event.button());
         return true;
     }
 
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+        this.pressed.remove(event.button());
         if (this.hovered && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
             this.clickListener.accept(event);
         }
-        this.pressed.remove(event.button());
         return true;
     }
 
