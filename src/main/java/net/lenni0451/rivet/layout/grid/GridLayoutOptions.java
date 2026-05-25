@@ -10,17 +10,13 @@ import javax.annotation.Nullable;
 @With
 @WithBy
 public record GridLayoutOptions(
-        int column,
-        int row,
-        int columnSpan,
-        int rowSpan,
-        float weightX,
-        float weightY,
+        int column, int row,
+        int columnSpan, int rowSpan,
+        float weightX, float weightY,
         GridAnchor anchor,
         GridFill fill,
         Padding padding,
-        @Nullable Float width,
-        @Nullable Float height
+        @Nullable Float width, @Nullable Float height
 ) implements LayoutOptions {
 
     public static final GridLayoutOptions EMPTY = new GridLayoutOptions(0, 0, 1, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY, null, null);

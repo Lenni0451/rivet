@@ -1,5 +1,7 @@
 package net.lenni0451.rivet.layout.flow;
 
+import lombok.With;
+import lombok.experimental.WithBy;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -8,7 +10,13 @@ import net.lenni0451.rivet.math.Size;
 import java.util.Collection;
 import java.util.function.BiConsumer;
 
+@With
+@WithBy
 public record HorizontalFlowLayout(int horizontalGap, int verticalGap) implements Layout {
+
+    public HorizontalFlowLayout() {
+        this(0, 0);
+    }
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {

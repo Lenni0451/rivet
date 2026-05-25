@@ -17,28 +17,24 @@ public final class AbsoluteLayout implements Layout {
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
-        float width = 0;
-        float height = 0;
+        Size size = Size.EMPTY;
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
-            float componentWidth = this.widthOf(component, idealSize);
-            float componentHeight = this.heightOf(component, idealSize);
+            float width = this.widthOf(component, idealSize);
+            float height = this.heightOf(component, idealSize);
             if (component.layoutOptions() instanceof AbsoluteLayoutOptions options) {
-                if (options.width() != null) {
-                    componentWidth = options.width();
-                } else {
-                    componentWidth += options.x();
-                }
-                if (options.height() != null) {
-                    componentHeight = options.height();
-                } else {
-                    componentHeight += options.y();
-                }
+                if (options.width() != null) width = options.width();
+                width += options.x();
+
+                if (options.height() != null) height = options.height();
+                height += options.y();
             }
-            width = Math.max(width, componentWidth);
-            height = Math.max(height, componentHeight);
+            size = new Size(
+                    Math.max(size.width(), width),
+                    Math.max(size.height(), height)
+            );
         }
-        return new Size(width, height);
+        return size;
     }
 
     @Override

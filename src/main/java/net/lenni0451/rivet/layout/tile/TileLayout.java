@@ -1,5 +1,7 @@
 package net.lenni0451.rivet.layout.tile;
 
+import lombok.With;
+import lombok.experimental.WithBy;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -11,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+@With
+@WithBy
 public record TileLayout(int columns, int rows, int horizontalGap, int verticalGap) implements Layout {
 
     public TileLayout(final int columns, final int rows) {
@@ -24,8 +28,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
             cellSize = new Size(
-                    Math.max(cellSize.width(), idealSize.width()),
-                    Math.max(cellSize.height(), idealSize.height())
+                    Math.max(cellSize.width(), this.widthOf(component, idealSize)),
+                    Math.max(cellSize.height(), this.heightOf(component, idealSize))
             );
         }
         return new Size(

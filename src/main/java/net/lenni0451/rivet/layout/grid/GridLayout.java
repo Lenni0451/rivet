@@ -1,9 +1,7 @@
 package net.lenni0451.rivet.layout.grid;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.With;
+import lombok.experimental.WithBy;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -18,24 +16,16 @@ import java.util.function.BiConsumer;
 /**
  * This class is completely AI generated.
  */
-@Getter
-@RequiredArgsConstructor
-@Accessors(fluent = true, chain = true)
-public final class GridLayout implements Layout {
-
-    private final int horizontalGap;
-    private final int verticalGap;
-    @Setter
-    private boolean homogeneousColumns = false;
-    @Setter
-    private boolean homogeneousRows = false;
-    @Setter
-    private boolean shrinkColumns = false;
-    @Setter
-    private boolean shrinkRows = false;
+@With
+@WithBy
+public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneousColumns, boolean homogeneousRows, boolean shrinkColumns, boolean shrinkRows) implements Layout {
 
     public GridLayout() {
         this(0, 0);
+    }
+
+    public GridLayout(final int horizontalGap, final int verticalGap) {
+        this(horizontalGap, verticalGap, false, false, false, false);
     }
 
     @Override
