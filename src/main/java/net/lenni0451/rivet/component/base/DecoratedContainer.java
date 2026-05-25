@@ -39,7 +39,7 @@ public class DecoratedContainer extends Component {
         this.child = child;
         childInitializer.accept(child);
 
-        this.innerPadding = new Padding(5, 5, 5, 5);
+        this.innerPadding = Padding.EMPTY;
     }
 
     @Override
