@@ -77,7 +77,7 @@ public class Container extends Component {
         return false;
     }
 
-    public void clearChildren() {
+    public Container clearChildren() {
         this.mouseHandler.clear(Component::onComponentMouseLeave, (component, mouseButton) -> {
             Rectangle componentBounds = this.childBounds(component);
             component.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
@@ -89,6 +89,7 @@ public class Container extends Component {
         }
         this.children.clear();
         this.rivet.recalculateNextFrame();
+        return this;
     }
 
     public boolean intercepts(final float x, final float y) {

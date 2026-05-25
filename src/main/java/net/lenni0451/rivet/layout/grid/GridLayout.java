@@ -18,22 +18,19 @@ import java.util.function.BiConsumer;
 /**
  * This class is completely AI generated.
  */
+@Getter
 @RequiredArgsConstructor
 @Accessors(fluent = true, chain = true)
 public final class GridLayout implements Layout {
 
     private final int horizontalGap;
     private final int verticalGap;
-    @Getter
     @Setter
     private boolean homogeneousColumns = false;
-    @Getter
     @Setter
     private boolean homogeneousRows = false;
-    @Getter
     @Setter
     private boolean shrinkColumns = false;
-    @Getter
     @Setter
     private boolean shrinkRows = false;
 

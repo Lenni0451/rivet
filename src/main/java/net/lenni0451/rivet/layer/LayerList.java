@@ -6,7 +6,7 @@ import net.lenni0451.rivet.component.Container;
 
 import java.util.*;
 
-@Accessors(fluent = true)
+@Accessors(fluent = true, chain = true)
 public final class LayerList {
 
     @Getter
@@ -27,12 +27,13 @@ public final class LayerList {
         return Collections.unmodifiableList(this.allLayers);
     }
 
-    public void add(final Layer layer) {
+    public LayerList add(final Layer layer) {
         if (layer.bucket().equals(LayerBucket.BASE)) {
             throw new IllegalArgumentException("Cannot add a layer to the base bucket, base layer is already set");
         }
         this.layers.get(layer.bucket()).add(layer);
         this.updateAllLayers();
+        return this;
     }
 
     public boolean remove(final Layer layer) {

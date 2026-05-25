@@ -27,20 +27,23 @@ public final class ThemeOption<T> {
         return this.rivet.theme().get(this.key);
     }
 
-    public void set(@Nullable final T value) {
+    public ThemeOption<T> set(@Nullable final T value) {
         if (value == null) {
             this.value = null;
         } else {
             this.value = () -> value;
         }
+        return this;
     }
 
-    public void set(@Nullable final Supplier<T> valueSupplier) {
+    public ThemeOption<T> set(@Nullable final Supplier<T> valueSupplier) {
         this.value = valueSupplier;
+        return this;
     }
 
-    public void reset() {
+    public ThemeOption<T> reset() {
         this.value = null;
+        return this;
     }
 
 }

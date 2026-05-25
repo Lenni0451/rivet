@@ -129,10 +129,11 @@ public final class Rivet {
         return this;
     }
 
-    public void unfocus() {
+    public Rivet unfocus() {
         this.mouseHandler.clear(l -> l.container().onMouseLeave(), (l, mouseButton) -> {
             l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
         });
+        return this;
     }
 
 
@@ -228,7 +229,7 @@ public final class Rivet {
             }
         });
         this.recalculate = false;
-        return renderer.renderList();
+        return renderer.complete();
     }
 
     @Nullable

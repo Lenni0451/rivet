@@ -1,6 +1,5 @@
 package net.lenni0451.rivet.layout.list;
 
-import lombok.RequiredArgsConstructor;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -9,11 +8,7 @@ import net.lenni0451.rivet.math.Size;
 import java.util.Collection;
 import java.util.function.BiConsumer;
 
-@RequiredArgsConstructor
-public class VerticalListLayout implements Layout {
-
-    private final int gap;
-    private final boolean fullWidth;
+public record VerticalListLayout(int gap, boolean fullWidth) implements Layout {
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {

@@ -1,35 +1,13 @@
 package net.lenni0451.rivet.backend.render;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.Accessors;
-
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-@ToString
-@RequiredArgsConstructor
-@Accessors(fluent = true, chain = true)
-public final class RenderList implements RenderElement {
+public record RenderList(@Nullable TransformCommand transform, List<RenderElement> elements) implements RenderElement {
 
-    @Getter
-    @Nullable
-    private final TransformCommand transform;
-    private final List<RenderElement> elements = new ArrayList<>();
-
-    public RenderList() {
-        this(null);
-    }
-
-    public List<RenderElement> elements() {
-        return Collections.unmodifiableList(this.elements);
-    }
-
-    public void render(final RenderElement element) {
-        this.elements.add(element);
+    public RenderList(@Nullable final TransformCommand transform, final List<RenderElement> elements) {
+        this.transform = transform;
+        this.elements = List.copyOf(elements);
     }
 
 }

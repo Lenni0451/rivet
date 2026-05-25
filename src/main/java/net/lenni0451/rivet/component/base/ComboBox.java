@@ -81,12 +81,12 @@ public class ComboBox extends Component {
     }
 
     @Override
-    public void onComponentMouseEnter() {
+    protected void onComponentMouseEnter() {
         this.button.onMouseEnter();
     }
 
     @Override
-    public void onComponentMouseLeave() {
+    protected void onComponentMouseLeave() {
         this.button.onMouseLeave();
     }
 
