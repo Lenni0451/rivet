@@ -74,6 +74,12 @@ public abstract class Component {
         return this;
     }
 
+    public final Component fixedSize(final Size size) {
+        this.minSize(size);
+        this.maxSize(size);
+        return this;
+    }
+
     public final Component layoutOptions(final LayoutOptions layoutOptions) {
         if (this.layoutOptions == null || !this.layoutOptions.equals(layoutOptions)) {
             this.layoutOptions = layoutOptions;
