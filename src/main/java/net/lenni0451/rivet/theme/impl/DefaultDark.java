@@ -3,14 +3,11 @@ package net.lenni0451.rivet.theme.impl;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.theme.Theme;
-import net.lenni0451.rivet.theme.ThemeKey;
-
-import java.util.Map;
 
 public class DefaultDark extends BaseTheme {
 
     @Override
-    protected void addValues(final Rivet rivet, final Map<ThemeKey<?>, Object> values) {
+    protected void addValues(final Rivet rivet, final Values values) {
         super.addValues(rivet, values);
 
         values.put(Theme.TEXT_COLOR, Color.WHITE);

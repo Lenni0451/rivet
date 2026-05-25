@@ -115,11 +115,11 @@ public abstract class Theme {
 
     public final void apply(final Rivet rivet) {
         this.values.clear();
-        this.addValues(rivet, this.values);
+        this.addValues(rivet, this.values::put);
         this.validate();
     }
 
-    protected abstract void addValues(final Rivet rivet, final Map<ThemeKey<?>, Object> values);
+    protected abstract void addValues(final Rivet rivet, final Values values);
 
     private void validate() {
         for (ThemeKey<?> key : ALL_KEYS) {
@@ -139,6 +139,11 @@ public abstract class Theme {
         Object value = this.values.get(key);
         if (value == null) return defaultValue;
         return (T) value;
+    }
+
+
+    public interface Values {
+        <T> void put(final ThemeKey<T> key, final T value);
     }
 
 }

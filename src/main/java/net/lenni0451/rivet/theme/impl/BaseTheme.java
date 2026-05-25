@@ -7,14 +7,11 @@ import net.lenni0451.rivet.component.base.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
-import net.lenni0451.rivet.theme.ThemeKey;
-
-import java.util.Map;
 
 public abstract class BaseTheme extends Theme {
 
     @Override
-    protected void addValues(final Rivet rivet, final Map<ThemeKey<?>, Object> values) {
+    protected void addValues(final Rivet rivet, final Values values) {
         values.put(Theme.BUTTON_CORNER_RADIUS, 4);
         values.put(Theme.BUTTON_OUTLINE_WIDTH, 2);
         values.put(Theme.BUTTON_ANIMATION_DURATION, 150);

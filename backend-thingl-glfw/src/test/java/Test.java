@@ -18,7 +18,6 @@ import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
-import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.theme.impl.DefaultDark;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.font.Font;
@@ -26,8 +25,6 @@ import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.font.FontSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Map;
 
 public class Test extends RivetThinGLApplication {
 
@@ -49,7 +46,7 @@ public class Test extends RivetThinGLApplication {
     protected void init(final Rivet rivet) {
         rivet.theme(new DefaultDark() {
             @Override
-            protected void addValues(final Rivet rivet, final Map<ThemeKey<?>, Object> values) {
+            protected void addValues(final Rivet rivet, final Values values) {
                 super.addValues(rivet, values);
                 values.put(Theme.BUTTON_INACTIVE_COLOR, Color.GRAY.withAlpha(50));
                 values.put(Theme.BUTTON_INACTIVE_OUTLINE_COLOR, Color.BLACK);
