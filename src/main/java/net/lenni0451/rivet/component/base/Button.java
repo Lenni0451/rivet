@@ -33,9 +33,9 @@ public class Button extends Component {
     @Setter
     private Consumer<MouseButtonEvent> clickListener;
     @Getter
-    private final ThemeOption<Integer> cornerRadius;
+    private final ThemeOption<Float> cornerRadius;
     @Getter
-    private final ThemeOption<Integer> outlineWidth;
+    private final ThemeOption<Float> outlineWidth;
     @Getter
     private final ThemeOption<Color> inactiveColor;
     @Getter

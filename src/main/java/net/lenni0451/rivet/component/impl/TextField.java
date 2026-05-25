@@ -240,8 +240,9 @@ public class TextField extends Component {
                     renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
                     if (this.rivet.focusedComponent() == this) {
+                        float cursorWidth = this.cursorWidth.value();
                         float cursorX = this.shapedText.cursorPosition(this.cursor).x();
-                        renderer.fillRect(cursorX, -textHeight / 2F, this.cursorWidth.value(), textHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
+                        renderer.fillRect(cursorX - cursorWidth / 2F, -textHeight / 2F, cursorWidth, textHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
                     }
                 });
             });

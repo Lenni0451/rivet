@@ -41,9 +41,8 @@ public class Test2 extends RivetThinGLApplication {
                 values.put(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(116, 165, 229));
                 values.put(Theme.BUTTON_CLICK_COLOR, Color.GRAY.withAlpha(150).darker());
                 values.put(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(116, 165, 229).darker());
-                values.put(Theme.BUTTON_CORNER_RADIUS, 0);
-                values.put(Theme.BUTTON_OUTLINE_WIDTH, 3);
-                values.put(Theme.COLOR_PICKER_SELECTOR_SIZE, 6F);
+                values.put(Theme.BUTTON_CORNER_RADIUS, 0F);
+                values.put(Theme.BUTTON_OUTLINE_WIDTH, 3F);
                 values.put(Theme.SCROLL_BAR_TYPE, ScrollContainer.ScrollBarType.NORMAL);
             }
         });
