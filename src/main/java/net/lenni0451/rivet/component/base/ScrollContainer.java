@@ -18,7 +18,9 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.math.Snapping;
 import net.lenni0451.rivet.theme.Theme;
+
 import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
@@ -358,8 +360,8 @@ public class ScrollContainer extends Component {
             this.scrollXAnimation.setTarget(this.targetScrollX).finish();
             this.scrollYAnimation.setTarget(this.targetScrollY).finish();
         }
-        this.scrollX = this.scrollXAnimation.getValue();
-        this.scrollY = this.scrollYAnimation.getValue();
+        this.scrollX = Snapping.snap(this.rivet, this.scrollXAnimation.getValue());
+        this.scrollY = Snapping.snap(this.rivet, this.scrollYAnimation.getValue());
     }
 
     private void renderHorizontalScrollbar(final Renderer renderer, final Rectangle bounds) {
@@ -515,7 +517,7 @@ public class ScrollContainer extends Component {
             }
             float maxScrollX = Math.max(0, contentWidth - availableWidth);
             this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
-            this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
+            this.scrollX = Snapping.snap(this.rivet, MathUtils.clamp(this.scrollX, 0, maxScrollX));
         }
         { // Vertical scroll bar
             float contentHeight = childSize.height();
@@ -528,7 +530,7 @@ public class ScrollContainer extends Component {
             } else {
                 this.targetScrollY = MathUtils.clamp(this.targetScrollY, 0, maxScrollY);
             }
-            this.scrollY = MathUtils.clamp(this.scrollY, 0, maxScrollY);
+            this.scrollY = Snapping.snap(this.rivet, MathUtils.clamp(this.scrollY, 0, maxScrollY));
         }
     }
 
