@@ -102,7 +102,10 @@ public final class Rivet {
     }
 
     public Size scaledSize() {
-        return this.size.scale(this.scale, this.scale);
+        return new Size(
+                this.size.width() / this.scale,
+                this.size.height() / this.scale
+        );
     }
 
     public Rivet scale(final float scale) {
