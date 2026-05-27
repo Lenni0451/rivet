@@ -202,7 +202,7 @@ public class Container extends Component {
     public void computeLayout(final Size size) {
         Map<Component, Rectangle> newBounds = new IdentityHashMap<>();
         this.layout.layoutComponents(size, this.children.stream().map(child -> child.component).toList(), (component, bounds) -> {
-            newBounds.put(component, Snapping.snap(this.rivet, bounds));
+            newBounds.put(component, Snapping.snap(this.rivet(), bounds));
         });
         if (newBounds.size() != this.children.size()) {
             throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for all children (" + newBounds.size() + " provided, but " + this.children.size() + " expected)");
