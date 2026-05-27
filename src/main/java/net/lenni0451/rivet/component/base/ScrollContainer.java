@@ -146,6 +146,14 @@ public class ScrollContainer extends Component {
     @Override
     protected void onComponentRemoved() {
         this.child.setRivet(null);
+        this.hBarHovered = false;
+        this.hBarPressed = false;
+        this.hRailHovered = false;
+        this.hRailPressed = false;
+        this.vBarHovered = false;
+        this.vBarPressed = false;
+        this.vRailHovered = false;
+        this.vRailPressed = false;
     }
 
     @Override

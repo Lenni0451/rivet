@@ -77,6 +77,13 @@ public class ColorPicker extends Component {
     }
 
     @Override
+    protected void onComponentRemoved() {
+        this.draggingPicker = false;
+        this.draggingHue = false;
+        this.draggingAlpha = false;
+    }
+
+    @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (!event.button().equals(MouseButton.LEFT)) return false;
 

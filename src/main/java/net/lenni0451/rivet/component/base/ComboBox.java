@@ -86,6 +86,7 @@ public class ComboBox extends Component {
 
     @Override
     protected void onComponentRemoved() {
+        this.close();
         this.button.setRivet(null);
     }
 

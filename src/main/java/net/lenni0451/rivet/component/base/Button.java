@@ -91,6 +91,11 @@ public class Button extends Component {
     @Override
     protected void onComponentRemoved() {
         this.child.setRivet(null);
+        this.hovered = false;
+        this.pressed.clear();
+        if (this.hoverAnimation != null) {
+            this.hoverAnimation.finish(AnimationDirection.BACKWARDS);
+        }
     }
 
     @Override

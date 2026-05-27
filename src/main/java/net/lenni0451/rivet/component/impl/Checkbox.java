@@ -97,6 +97,11 @@ public class Checkbox extends Component {
     }
 
     @Override
+    protected void onComponentRemoved() {
+        this.hovered = false;
+    }
+
+    @Override
     protected void onComponentMouseEnter() {
         this.hovered = true;
     }

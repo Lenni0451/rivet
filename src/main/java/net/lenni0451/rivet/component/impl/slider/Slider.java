@@ -116,6 +116,7 @@ public class Slider extends Component {
             this.tooltip.remove();
             this.tooltip = null;
         }
+        this.dragged = false;
     }
 
     @Override

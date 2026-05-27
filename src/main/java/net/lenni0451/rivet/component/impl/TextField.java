@@ -102,6 +102,13 @@ public class TextField extends Component {
     }
 
     @Override
+    protected void onComponentRemoved() {
+        this.focused = false;
+        this.selecting = false;
+        this.clickCount = 0;
+    }
+
+    @Override
     protected void onComponentFocusGained() {
         this.focused = true;
     }
