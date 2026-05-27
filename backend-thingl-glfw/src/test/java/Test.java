@@ -70,25 +70,25 @@ public class Test extends RivetThinGLApplication {
         });
         container.addChild(new FormattedLabel("Hello this is a really cool test string how are you doing lol"), label -> {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
-            label.layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            label.layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
         container.addChild(new Button(new Label("Singleplayer"), _ -> {}), button -> {
-            button.layoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            button.layoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
         container.addChild(new Button(new Label("Minecraft Realms"), _ -> {}), button -> {
-            button.layoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL));
+            button.layoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL));
         });
         container.addChild(new Button(new Label("Multiplayer"), _ -> {}), button -> {
-            button.layoutOptions(new GridLayoutOptions(1, 2).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL));
+            button.layoutOptions(new GridLayoutOptions(1, 2).withAnchor(GridAnchor.RIGHT).withWeightX(1).withFill(GridFill.HORIZONTAL));
         });
         container.addChild(new Button(new Label("DeepClient Menu"), _ -> {}), button -> {
-            button.layoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            button.layoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
         container.addChild(new Button(new Label("Options..."), _ -> {}), button -> {
-            button.layoutOptions(new GridLayoutOptions(0, 4).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
+            button.layoutOptions(new GridLayoutOptions(0, 4).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
         });
         container.addChild(new Button(new Label("Quit Game"), _ -> {}), button -> {
-            button.layoutOptions(new GridLayoutOptions(1, 4).withAnchor(GridAnchor.EAST).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
+            button.layoutOptions(new GridLayoutOptions(1, 4).withAnchor(GridAnchor.RIGHT).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
         });
         container.addChild(new ComboBox("Testing since 2k26", new DecoratedContainer(new SolidColor(solidColor -> {
             solidColor.color(Color.GREEN);
@@ -97,10 +97,10 @@ public class Test extends RivetThinGLApplication {
                 comboBoxContainer.addChild(new Button(new Label("Test " + i), _ -> {}));
             }
         }))), comboBox -> {
-            comboBox.layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            comboBox.layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
         container.addChild(new TextField(), textField -> {
-            textField.layoutOptions(new GridLayoutOptions(0, 6).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            textField.layoutOptions(new GridLayoutOptions(0, 6).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
             textField.keyDownListener().add(event -> {
                 if (event.key().isEquivalent(Key.ENTER)) {
                     System.out.println(textField.text());
@@ -110,14 +110,14 @@ public class Test extends RivetThinGLApplication {
             });
         });
         container.addChild(new Checkbox("Test Test Test", true), checkbox -> {
-            checkbox.layoutOptions(new GridLayoutOptions(0, 7).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            checkbox.layoutOptions(new GridLayoutOptions(0, 7).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
             checkbox.cornerRadius().set(8F);
         });
         container.addChild(new Slider(0, 100, 1), slider -> {
-            slider.layoutOptions(new GridLayoutOptions(0, 8).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            slider.layoutOptions(new GridLayoutOptions(0, 8).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
         container.addChild(new ColorPicker(Color.RED), colorPicker -> {
-            colorPicker.layoutOptions(new GridLayoutOptions(0, 9).withAnchor(GridAnchor.WEST).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+            colorPicker.layoutOptions(new GridLayoutOptions(0, 9).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
     }
 

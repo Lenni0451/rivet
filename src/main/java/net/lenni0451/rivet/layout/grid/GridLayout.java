@@ -100,25 +100,25 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             float y = cellY + options.padding().top();
 
             switch (options.anchor()) {
-                case NORTH_WEST -> {
+                case TOP_LEFT -> {
                 }
-                case NORTH -> x += (availableWidth - width) / 2F;
-                case NORTH_EAST -> x += availableWidth - width;
-                case WEST -> y += (availableHeight - height) / 2F;
+                case TOP -> x += (availableWidth - width) / 2F;
+                case TOP_RIGHT -> x += availableWidth - width;
+                case LEFT -> y += (availableHeight - height) / 2F;
                 case CENTER -> {
                     x += (availableWidth - width) / 2F;
                     y += (availableHeight - height) / 2F;
                 }
-                case EAST -> {
+                case RIGHT -> {
                     x += availableWidth - width;
                     y += (availableHeight - height) / 2F;
                 }
-                case SOUTH_WEST -> y += availableHeight - height;
-                case SOUTH -> {
+                case BOTTOM_LEFT -> y += availableHeight - height;
+                case BOTTOM -> {
                     x += (availableWidth - width) / 2F;
                     y += availableHeight - height;
                 }
-                case SOUTH_EAST -> {
+                case BOTTOM_RIGHT -> {
                     x += availableWidth - width;
                     y += availableHeight - height;
                 }

@@ -2,14 +2,14 @@ package net.lenni0451.rivet.layout.grid;
 
 public enum GridAnchor {
 
-    NORTH_WEST,
-    NORTH,
-    NORTH_EAST,
-    WEST,
+    TOP_LEFT,
+    TOP,
+    TOP_RIGHT,
+    LEFT,
     CENTER,
-    EAST,
-    SOUTH_WEST,
-    SOUTH,
-    SOUTH_EAST
+    RIGHT,
+    BOTTOM_LEFT,
+    BOTTOM,
+    BOTTOM_RIGHT
 
 }
