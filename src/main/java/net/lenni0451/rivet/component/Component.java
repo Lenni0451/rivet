@@ -66,32 +66,14 @@ public abstract class Component {
             if (this.rivet == null) {
                 throw new IllegalStateException("Component is not attached to any Rivet instance");
             }
-            this.removedListener.call(
-                    listener -> {
-                        listener.run();
-                        return false;
-                    },
-                    () -> {
-                        this.onComponentRemoved();
-                        return false;
-                    }
-            );
+            this.removedListener.callVoid(Runnable::run, this::onComponentRemoved);
             this.rivet = null;
         } else {
             if (this.rivet != null) {
                 throw new IllegalStateException("Component is already attached to a Rivet instance");
             }
             this.rivet = rivet;
-            this.addedListener.call(
-                    listener -> {
-                        listener.run();
-                        return false;
-                    },
-                    () -> {
-                        this.onComponentAdded();
-                        return false;
-                    }
-            );
+            this.addedListener.callVoid(Runnable::run, this::onComponentAdded);
         }
     }
 

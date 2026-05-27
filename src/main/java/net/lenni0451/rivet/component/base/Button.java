@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component.base;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.animation.AnimationDirection;
@@ -11,6 +10,7 @@ import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Padding;
@@ -29,8 +29,7 @@ public class Button extends Component {
     @Getter
     private final Component child;
     @Getter
-    @Setter
-    private Consumer<MouseButtonEvent> clickListener;
+    private final ListenerList<ClickListener> clickListener;
     @Getter
     private final ThemeOption<Float> cornerRadius;
     @Getter
@@ -57,14 +56,15 @@ public class Button extends Component {
     private final Set<MouseButton> pressed = new HashSet<>();
     private Animation hoverAnimation;
 
-    public Button(final Component child, final Consumer<MouseButtonEvent> clickListener) {
+    public Button(final Component child, final ClickListener clickListener) {
         this(child, c -> {}, clickListener);
     }
 
-    public <C extends Component> Button(final C child, final Consumer<C> childConsumer, final Consumer<MouseButtonEvent> initializer) {
+    public <C extends Component> Button(final C child, final Consumer<C> initializer, final ClickListener clickListener) {
         this.child = child;
-        childConsumer.accept(child);
-        this.clickListener = initializer;
+        initializer.accept(child);
+        this.clickListener = new ListenerList<>();
+        this.clickListener.add(clickListener);
 
         this.cornerRadius = new ThemeOption<>(this, Theme.BUTTON_CORNER_RADIUS);
         this.outlineWidth = new ThemeOption<>(this, Theme.BUTTON_OUTLINE_WIDTH);
@@ -109,7 +109,7 @@ public class Button extends Component {
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         this.pressed.add(event.button());
         if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
-            this.clickListener.accept(event);
+            this.clickListener.callVoid(listener -> listener.onClick(event), () -> {});
         }
         return true;
     }
@@ -118,7 +118,7 @@ public class Button extends Component {
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         this.pressed.remove(event.button());
         if (this.hovered && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
-            this.clickListener.accept(event);
+            this.clickListener.callVoid(listener -> listener.onClick(event), () -> {});
         }
         return true;
     }
@@ -165,6 +165,11 @@ public class Button extends Component {
         this.child.computeLayout(size.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()));
     }
 
+
+    @FunctionalInterface
+    public interface ClickListener {
+        void onClick(final MouseButtonEvent event);
+    }
 
     public enum ClickOn {
         DOWN, UP, BOTH

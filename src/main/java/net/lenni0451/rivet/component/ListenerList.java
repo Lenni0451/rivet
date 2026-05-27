@@ -3,6 +3,7 @@ package net.lenni0451.rivet.component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class ListenerList<L> {
@@ -25,6 +26,13 @@ public final class ListenerList<L> {
             if (value) return true;
         }
         return task.getAsBoolean();
+    }
+
+    public void callVoid(final Consumer<L> listenerInvoker, final Runnable task) {
+        for (L listener : this.listeners) {
+            listenerInvoker.accept(listener);
+        }
+        task.run();
     }
 
 }
