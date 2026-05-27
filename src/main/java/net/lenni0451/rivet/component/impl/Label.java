@@ -64,8 +64,8 @@ public class Label extends Component {
     public Size computeIdealSize(final Size constraints) {
         this.shapeText();
         return new Size(
-                shapedText.visualBounds().width(),
-                shapedText.logicalBounds().height()
+                this.shapedText.visualBounds().width(),
+                this.shapedText.logicalBounds().height()
         );
     }
 
