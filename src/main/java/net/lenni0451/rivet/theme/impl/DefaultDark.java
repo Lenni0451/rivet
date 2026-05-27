@@ -20,6 +20,7 @@ public class DefaultDark extends BaseTheme {
         values.put(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(110, 110, 115));
 
         values.put(Theme.SLIDER_BAR_COLOR, Color.fromRGB(65, 65, 70));
+        values.put(Theme.SLIDER_ACTIVE_BAR_COLOR, Color.fromRGB(80, 80, 85));
         values.put(Theme.SLIDER_THUMB_COLOR, Color.fromRGB(120, 120, 125));
         values.put(Theme.SLIDER_THUMB_CLICK_COLOR, Color.fromRGB(100, 100, 105));
         values.put(Theme.SLIDER_TICK_COLOR, Color.fromRGB(160, 160, 165));

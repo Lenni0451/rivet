@@ -35,6 +35,7 @@ public abstract class Theme {
 
     // Slider
     public static final ThemeKey<Color> SLIDER_BAR_COLOR = register("slider.bar_color", Color.class);
+    public static final ThemeKey<Color> SLIDER_ACTIVE_BAR_COLOR = register("slider.active_bar_color", Color.class);
     public static final ThemeKey<Color> SLIDER_THUMB_COLOR = register("slider.thumb_color", Color.class);
     public static final ThemeKey<Color> SLIDER_THUMB_CLICK_COLOR = register("slider.thumb_click_color", Color.class);
     public static final ThemeKey<Color> SLIDER_TICK_COLOR = register("slider.tick_color", Color.class);

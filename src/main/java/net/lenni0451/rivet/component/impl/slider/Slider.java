@@ -46,6 +46,8 @@ public class Slider extends Component {
     @Getter
     private final ThemeOption<Color> barColor;
     @Getter
+    private final ThemeOption<Color> activeBarColor;
+    @Getter
     private final ThemeOption<Color> thumbColor;
     @Getter
     private final ThemeOption<Color> thumbClickColor;
@@ -79,6 +81,7 @@ public class Slider extends Component {
         this.value = value;
 
         this.barColor = new ThemeOption<>(this, Theme.SLIDER_BAR_COLOR);
+        this.activeBarColor = new ThemeOption<>(this, Theme.SLIDER_ACTIVE_BAR_COLOR);
         this.thumbColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_COLOR);
         this.thumbClickColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_CLICK_COLOR);
         this.tickColor = new ThemeOption<>(this, Theme.SLIDER_TICK_COLOR);
@@ -174,7 +177,7 @@ public class Slider extends Component {
         double progress = (this.value - this.min) / (this.max - this.min);
         float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
 
-        this.renderBar(renderer, bounds, sliderCenter, barHeight, thumbWidth);
+        this.renderBar(renderer, bounds, sliderCenter, barHeight, thumbWidth, thumbX);
         this.renderThumb(renderer, sliderCenter, thumbWidth, thumbHeight, thumbX);
         if (this.ticks != null) this.renderTicks(renderer, sliderCenter, barHeight, thumbWidth, thumbHeight, barWidth);
         if (this.tooltip != null) {
@@ -182,11 +185,13 @@ public class Slider extends Component {
         }
     }
 
-    private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth) {
+    private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
         if (this.thumbEncased.value()) {
             renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, bounds.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
         } else {
             renderer.fillOptimizedRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, bounds.width() - thumbWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.fillOptimizedRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
         }
     }
 
