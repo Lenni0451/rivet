@@ -17,4 +17,8 @@ public record Size(float width, float height) {
         return new Size(Math.max(this.width - x, 0), Math.max(this.height - y, 0));
     }
 
+    public Size max(final Size other) {
+        return new Size(Math.max(this.width, other.width), Math.max(this.height, other.height));
+    }
+
 }
