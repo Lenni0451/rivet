@@ -61,6 +61,8 @@ public abstract class BaseTheme extends Theme {
 
         values.put(Theme.COMBOBOX_ARROW_SIZE, round(textHeight / 2F, 1));
         values.put(Theme.COMBOBOX_MAX_POPUP_HEIGHT, round(textHeight * 10F, 1));
+
+        values.put(Theme.SEPARATOR_THICKNESS, round(textHeight / 20F, 1));
     }
 
     private static float round(final float value, final float min) {

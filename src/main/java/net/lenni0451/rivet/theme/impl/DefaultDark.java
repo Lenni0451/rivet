@@ -47,6 +47,8 @@ public class DefaultDark extends BaseTheme {
         values.put(Theme.COLOR_PICKER_OUTLINE_COLOR, Color.GRAY);
 
         values.put(Theme.COMBOBOX_ARROW_COLOR, Color.WHITE);
+
+        values.put(Theme.SEPARATOR_COLOR, Color.fromRGB(65, 65, 70));
     }
 
 }
