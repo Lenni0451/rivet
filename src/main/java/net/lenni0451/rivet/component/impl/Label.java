@@ -24,6 +24,8 @@ public class Label extends Component {
     @Getter
     @Setter
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
+    @Getter
+    private float scale = 1F;
 
     public Label(final String text) {
         this.text = text;
@@ -33,6 +35,16 @@ public class Label extends Component {
         if (!this.text.equals(text)) {
             this.text = text;
             this.reshape = true;
+            if (this.rivet() != null) {
+                this.rivet().recalculateNextFrame();
+            }
+        }
+        return this;
+    }
+
+    public Label scale(final float scale) {
+        if (this.scale != scale) {
+            this.scale = scale;
             if (this.rivet() != null) {
                 this.rivet().recalculateNextFrame();
             }
@@ -55,17 +67,17 @@ public class Label extends Component {
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.shapeText();
-        float x = this.horizontalOrigin.offset(bounds.width());
-        float y = this.verticalOrigin.offset(bounds.height());
-        renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
+        float x = this.horizontalOrigin.offset(bounds.width() / this.scale);
+        float y = this.verticalOrigin.offset(bounds.height() / this.scale);
+        renderer.scale(this.scale, () -> renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin));
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
         this.shapeText();
         return new Size(
-                this.shapedText.visualBounds().width(),
-                this.shapedText.logicalBounds().height()
+                this.shapedText.visualBounds().width() * this.scale,
+                this.shapedText.logicalBounds().height() * this.scale
         );
     }
 

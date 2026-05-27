@@ -38,6 +38,8 @@ public class FormattedLabel extends Component {
     @Getter
     @Setter
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
+    @Getter
+    private float scale = 1F;
 
     public FormattedLabel(@Nonnull final String text) {
         this(text, null);
@@ -80,6 +82,16 @@ public class FormattedLabel extends Component {
         return this;
     }
 
+    public FormattedLabel scale(final float scale) {
+        if (this.scale != scale) {
+            this.scale = scale;
+            if (this.rivet() != null) {
+                this.rivet().recalculateNextFrame();
+            }
+        }
+        return this;
+    }
+
     private void parseLine() {
         if (this.line == null) {
             TextFormat format = TextFormat.DEFAULT.withColor(this.rivet().theme().get(Theme.TEXT_COLOR));
@@ -89,25 +101,27 @@ public class FormattedLabel extends Component {
 
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
-        float x = this.horizontalOrigin.offset(bounds.width());
-        float y = this.verticalOrigin.offset(bounds.height());
-        renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
+        float x = this.horizontalOrigin.offset(bounds.width() / this.scale);
+        float y = this.verticalOrigin.offset(bounds.height() / this.scale);
+        renderer.scale(this.scale, () -> {
+            renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
+        });
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
         this.parseLine();
-        ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.rivet().backend(), this.line, constraints.width());
+        ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.rivet().backend(), this.line, constraints.width() / this.scale);
         return new Size(
-                shapedTextBlock.visualBounds().width(),
-                shapedTextBlock.logicalBounds().height()
+                shapedTextBlock.visualBounds().width() * this.scale,
+                shapedTextBlock.logicalBounds().height() * this.scale
         );
     }
 
     @Override
     public void computeLayout(final Size size) {
         this.parseLine();
-        this.shapedText = TextWrapper.wrapLine(this.rivet().backend(), this.line, size.width());
+        this.shapedText = TextWrapper.wrapLine(this.rivet().backend(), this.line, size.width() / this.scale);
     }
 
 }

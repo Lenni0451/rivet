@@ -56,7 +56,11 @@ public final class Renderer {
     }
 
     public void scale(final float x, final float y, final Runnable renderer) {
-        this.transform(new TransformCommand.Scale(x, y), renderer);
+        if (x == 1 && y == 1) {
+            renderer.run();
+        } else {
+            this.transform(new TransformCommand.Scale(x, y), renderer);
+        }
     }
 
     private void transform(final TransformCommand command, final Runnable renderer) {
