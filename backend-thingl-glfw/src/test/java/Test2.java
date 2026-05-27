@@ -47,14 +47,14 @@ public class Test2 extends RivetThinGLApplication {
             }
         });
 
-        Container container = new Container(rivet, new VerticalListLayout(10, true));
-        rivet.root().addChild(new ScrollContainer(rivet, container, true, true).autoScroll(true));
+        Container container = new Container(new VerticalListLayout(10, true));
+        rivet.root().addChild(new ScrollContainer(container, true, true).autoScroll(true));
         Thread.ofVirtual().start(() -> {
             try {
                 for (int i = 0; i < 100; i++) {
                     final int finalI = i;
                     rivet.runSync(() -> {
-                        container.addChild(new Label(rivet, "Label " + finalI).horizontalOrigin(TextOrigin.Horizontal.VISUAL_RIGHT));
+                        container.addChild(new Label("Label " + finalI).horizontalOrigin(TextOrigin.Horizontal.VISUAL_RIGHT));
                     });
                     Thread.sleep(500);
                 }

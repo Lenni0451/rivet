@@ -3,7 +3,6 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
@@ -17,12 +16,20 @@ import net.lenni0451.rivet.text.model.TextLine;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 @Accessors(fluent = true, chain = true)
 public class FormattedLabel extends Component {
 
     @Getter
+    @Nullable
     private String text;
     @Getter
+    @Nullable
+    private TextFormat format;
+    @Getter
+    @Nullable
     private TextLine line;
     private ShapedText shapedText;
     @Getter
@@ -32,40 +39,52 @@ public class FormattedLabel extends Component {
     @Setter
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
 
-    public FormattedLabel(final Rivet rivet, final String text) {
-        this(rivet, text, TextFormat.DEFAULT.withColor(rivet.theme().get(Theme.TEXT_COLOR)));
+    public FormattedLabel(@Nonnull final String text) {
+        this(text, null);
     }
 
-    public FormattedLabel(final Rivet rivet, final String text, final TextFormat defaultFormat) {
-        super(rivet);
+    public FormattedLabel(@Nonnull final String text, @Nullable final TextFormat defaultFormat) {
         this.text = text;
-        this.line = TextParser.parse(text, defaultFormat);
+        this.format = defaultFormat;
     }
 
-    public FormattedLabel(final Rivet rivet, final TextLine line) {
-        super(rivet);
-        this.text = null;
+    public FormattedLabel(@Nonnull final TextLine line) {
         this.line = line;
     }
 
     public FormattedLabel text(final String text) {
-        return this.text(text, TextFormat.DEFAULT.withColor(this.rivet.theme().get(Theme.TEXT_COLOR)));
-    }
-
-    public FormattedLabel text(final String text, final TextFormat defaultFormat) {
-        if (this.text == null || !this.text.equals(text)) {
-            this.text = text;
-            this.line = TextParser.parse(text, defaultFormat);
-            this.rivet.recalculateNextFrame();
+        this.text = text;
+        this.line = null;
+        if (this.rivet() != null) {
+            this.rivet().recalculateNextFrame();
         }
         return this;
     }
 
-    public FormattedLabel sections(final TextLine line) {
+    public FormattedLabel text(final String text, final TextFormat defaultFormat) {
+        this.text = text;
+        this.format = defaultFormat;
+        this.line = null;
+        if (this.rivet() != null) {
+            this.rivet().recalculateNextFrame();
+        }
+        return this;
+    }
+
+    public FormattedLabel text(final TextLine line) {
         this.text = null;
         this.line = line;
-        this.rivet.recalculateNextFrame();
+        if (this.rivet() != null) {
+            this.rivet().recalculateNextFrame();
+        }
         return this;
+    }
+
+    private void parseLine() {
+        if (this.line == null) {
+            TextFormat format = TextFormat.DEFAULT.withColor(this.rivet().theme().get(Theme.TEXT_COLOR));
+            this.line = TextParser.parse(this.text, format);
+        }
     }
 
     @Override
@@ -77,7 +96,8 @@ public class FormattedLabel extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.rivet.backend(), this.line, constraints.width());
+        this.parseLine();
+        ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.rivet().backend(), this.line, constraints.width());
         return new Size(
                 shapedTextBlock.visualBounds().width(),
                 shapedTextBlock.logicalBounds().height()
@@ -86,7 +106,8 @@ public class FormattedLabel extends Component {
 
     @Override
     public void computeLayout(final Size size) {
-        this.shapedText = TextWrapper.wrapLine(this.rivet.backend(), this.line, size.width());
+        this.parseLine();
+        this.shapedText = TextWrapper.wrapLine(this.rivet().backend(), this.line, size.width());
     }
 
 }

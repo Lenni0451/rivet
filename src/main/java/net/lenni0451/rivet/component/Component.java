@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
@@ -15,16 +14,16 @@ import net.lenni0451.rivet.layout.LayoutOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import javax.annotation.Nullable;
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
-@RequiredArgsConstructor
 @Accessors(fluent = true, chain = true)
 public abstract class Component {
 
     @Getter
-    protected final Rivet rivet;
+    private Rivet rivet;
     @Getter
     private Size minSize = Size.EMPTY;
     @Getter
@@ -35,6 +34,10 @@ public abstract class Component {
     @Setter
     private boolean interactive = true;
 
+    @Getter
+    private final ListenerList<Runnable> addedListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Runnable> removedListener = new ListenerList<>();
     @Getter
     private final ListenerList<BooleanSupplier> focusGainedListener = new ListenerList<>();
     @Getter
@@ -58,10 +61,44 @@ public abstract class Component {
     @Getter
     private final ListenerList<BiPredicate<MouseScrollEvent, Rectangle>> mouseScrollListener = new ListenerList<>();
 
+    public final void setRivet(@Nullable final Rivet rivet) {
+        if (rivet == null) {
+            if (this.rivet == null) {
+                throw new IllegalStateException("Component is not attached to any Rivet instance");
+            }
+            this.removedListener.call(
+                    listener -> {
+                        listener.run();
+                        return false;
+                    },
+                    () -> {
+                        this.onComponentRemoved();
+                        return false;
+                    }
+            );
+            this.rivet = null;
+        } else {
+            if (this.rivet != null) {
+                throw new IllegalStateException("Component is already attached to a Rivet instance");
+            }
+            this.rivet = rivet;
+            this.addedListener.call(
+                    listener -> {
+                        listener.run();
+                        return false;
+                    },
+                    () -> {
+                        this.onComponentAdded();
+                        return false;
+                    }
+            );
+        }
+    }
+
     public final Component minSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
             this.minSize = minSize;
-            this.rivet.recalculateNextFrame();
+            if (this.rivet != null) this.rivet.recalculateNextFrame();
         }
         return this;
     }
@@ -69,7 +106,7 @@ public abstract class Component {
     public final Component maxSize(final Size maxSize) {
         if (!this.maxSize.equals(maxSize)) {
             this.maxSize = maxSize;
-            this.rivet.recalculateNextFrame();
+            if (this.rivet != null) this.rivet.recalculateNextFrame();
         }
         return this;
     }
@@ -83,11 +120,17 @@ public abstract class Component {
     public final Component layoutOptions(final LayoutOptions layoutOptions) {
         if (this.layoutOptions == null || !this.layoutOptions.equals(layoutOptions)) {
             this.layoutOptions = layoutOptions;
-            this.rivet.recalculateNextFrame();
+            if (this.rivet != null) this.rivet.recalculateNextFrame();
         }
         return this;
     }
 
+
+    protected void onComponentAdded() {
+    }
+
+    protected void onComponentRemoved() {
+    }
 
     public final void onFocusGained() {
         this.focusGainedListener.call(BooleanSupplier::getAsBoolean, () -> {

@@ -28,7 +28,7 @@ public class Test4 extends RivetThinGLApplication {
 
     @Override
     protected void init(final Rivet rivet) {
-        Container container = new Container(rivet, new TileLayout(3, 3, 10, 10));
+        Container container = new Container(new TileLayout(3, 3, 10, 10));
         for (int i = 0; i < 9; i++) {
             final int finalI = i;
             final int column = i % 3;
@@ -37,7 +37,7 @@ public class Test4 extends RivetThinGLApplication {
             if (column == 0 && row == 1) continue;
             if (column == 2 && row == 1) continue;
             if (column == 1 && row == 2) continue;
-            container.addChild(new Button(rivet, new Label(rivet, "Testing " + i), event -> {
+            container.addChild(new Button(new Label("Testing " + i), event -> {
                 System.out.println("Clicked " + finalI);
             }), button -> button.layoutOptions(new TileLayoutOptions(column, row)));
         }

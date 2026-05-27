@@ -29,33 +29,34 @@ public class SliderTooltip extends Component {
     private final ThemeOption<Float> cornerRadius;
     private final ThemeOption<Float> triangleSize;
     private final ThemeOption<Padding> padding;
+    private String text;
     private ShapedText shapedText;
     private final Layer layer;
     private float pointerOffset;
     private Position position;
 
-    public SliderTooltip(final Rivet rivet, final String text) {
-        super(rivet);
-        this.backgroundColor = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_BACKGROUND_COLOR);
-        this.textColor = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_TEXT_COLOR);
-        this.cornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_CORNER_RADIUS);
-        this.triangleSize = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_TRIANGLE_SIZE);
-        this.padding = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_PADDING);
-        this.text(text);
+    public SliderTooltip(final String text) {
+        this.text = text;
 
-        Container container = new Container(rivet, AbsoluteLayout.INSTANCE);
+        this.backgroundColor = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_BACKGROUND_COLOR);
+        this.textColor = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_TEXT_COLOR);
+        this.cornerRadius = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_CORNER_RADIUS);
+        this.triangleSize = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_TRIANGLE_SIZE);
+        this.padding = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_PADDING);
+
+        Container container = new Container(AbsoluteLayout.INSTANCE);
         container.addChild(this);
         this.layer = new Layer(container, LayerBucket.TOOLTIP);
-        rivet.addLayer(this.layer);
     }
 
     public void text(final String text) {
-        this.shapedText = this.rivet.backend().shapeText(text, this.textColor.value());
+        this.text = text;
+        this.shapedText = this.rivet().backend().shapeText(text, this.textColor.value());
     }
 
     public void position(final float x, final float y, final float height) {
         Size idealSize = this.computeIdealSize(null);
-        Size screenBounds = this.rivet.scaledSize();
+        Size screenBounds = this.rivet().scaledSize();
 
         float posX = x - idealSize.width() / 2F;
         float clampedX = MathUtils.clamp(posX, 0, screenBounds.width() - idealSize.width());
@@ -81,11 +82,20 @@ public class SliderTooltip extends Component {
         this.layoutOptions(new AbsoluteLayoutOptions(x, y));
         this.position = position;
         this.pointerOffset = pointerOffset;
-        this.rivet.recalculateNextFrame();
+        this.rivet().recalculateNextFrame();
+    }
+
+    public void add(final Rivet rivet) {
+        rivet.addLayer(this.layer);
     }
 
     public void remove() {
-        this.rivet.removeLayer(this.layer);
+        this.rivet().removeLayer(this.layer);
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.text(this.text);
     }
 
     @Override

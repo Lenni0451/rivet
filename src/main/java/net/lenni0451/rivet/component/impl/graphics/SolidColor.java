@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
@@ -17,22 +16,24 @@ import java.util.function.Consumer;
 @Accessors(fluent = true, chain = true)
 public class SolidColor extends Component {
 
-    private Color color;
-    private Color outlineColor;
-    private float outlineWidth;
-    private float cornerRadius;
+    private Color color = Color.TRANSPARENT;
+    private Color outlineColor = Color.TRANSPARENT;
+    private float outlineWidth = -1;
+    private float cornerRadius = 0;
 
-    public SolidColor(final Rivet rivet) {
-        this(rivet, s -> {});
+    public SolidColor() {
+        this(s -> {});
     }
 
-    public SolidColor(final Rivet rivet, final Consumer<SolidColor> initializer) {
-        super(rivet);
-        this.color = Color.TRANSPARENT;
-        this.outlineColor = Color.TRANSPARENT;
-        this.outlineWidth = rivet.backend().getTextHeight() / 8F;
-        this.cornerRadius = 0;
+    public SolidColor(final Consumer<SolidColor> initializer) {
         initializer.accept(this);
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        if (this.outlineWidth == -1) {
+            this.outlineWidth = this.rivet().backend().getTextHeight() / 8F;
+        }
     }
 
     @Override

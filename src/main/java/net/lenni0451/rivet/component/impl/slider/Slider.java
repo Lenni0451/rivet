@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
@@ -69,29 +68,28 @@ public class Slider extends Component {
     @Getter
     private final ThemeOption<String> tooltipFormat;
 
-    public Slider(final Rivet rivet, final double min, final double max, final double value) {
-        this(rivet, min, max, 1, value);
+    public Slider(final double min, final double max, final double value) {
+        this(min, max, 1, value);
     }
 
-    public Slider(final Rivet rivet, final double min, final double max, final double step, final double value) {
-        super(rivet);
+    public Slider(final double min, final double max, final double step, final double value) {
         this.min = min;
         this.max = max;
         this.step = step;
         this.value = value;
 
-        this.barColor = new ThemeOption<>(rivet, Theme.SLIDER_BAR_COLOR);
-        this.thumbColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_COLOR);
-        this.thumbClickColor = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CLICK_COLOR);
-        this.tickColor = new ThemeOption<>(rivet, Theme.SLIDER_TICK_COLOR);
-        this.barHeight = new ThemeOption<>(rivet, Theme.SLIDER_BAR_HEIGHT);
-        this.thumbWidth = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_WIDTH);
-        this.thumbHeight = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_HEIGHT);
-        this.barCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_BAR_CORNER_RADIUS);
-        this.thumbShape = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_SHAPE);
-        this.thumbCornerRadius = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_CORNER_RADIUS);
-        this.thumbEncased = new ThemeOption<>(rivet, Theme.SLIDER_THUMB_ENCASED);
-        this.tooltipFormat = new ThemeOption<>(rivet, Theme.SLIDER_TOOLTIP_FORMAT);
+        this.barColor = new ThemeOption<>(this, Theme.SLIDER_BAR_COLOR);
+        this.thumbColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_COLOR);
+        this.thumbClickColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_CLICK_COLOR);
+        this.tickColor = new ThemeOption<>(this, Theme.SLIDER_TICK_COLOR);
+        this.barHeight = new ThemeOption<>(this, Theme.SLIDER_BAR_HEIGHT);
+        this.thumbWidth = new ThemeOption<>(this, Theme.SLIDER_THUMB_WIDTH);
+        this.thumbHeight = new ThemeOption<>(this, Theme.SLIDER_THUMB_HEIGHT);
+        this.barCornerRadius = new ThemeOption<>(this, Theme.SLIDER_BAR_CORNER_RADIUS);
+        this.thumbShape = new ThemeOption<>(this, Theme.SLIDER_THUMB_SHAPE);
+        this.thumbCornerRadius = new ThemeOption<>(this, Theme.SLIDER_THUMB_CORNER_RADIUS);
+        this.thumbEncased = new ThemeOption<>(this, Theme.SLIDER_THUMB_ENCASED);
+        this.tooltipFormat = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_FORMAT);
     }
 
     public Slider min(final double min) {
@@ -113,10 +111,19 @@ public class Slider extends Component {
     }
 
     @Override
+    protected void onComponentRemoved() {
+        if (this.tooltip != null) {
+            this.tooltip.remove();
+            this.tooltip = null;
+        }
+    }
+
+    @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
-            this.tooltip = new SliderTooltip(this.rivet, String.format(this.tooltipFormat.value(), this.value));
+            this.tooltip = new SliderTooltip(String.format(this.tooltipFormat.value(), this.value));
+            this.tooltip.add(this.rivet());
             this.updateValue(event.x(), bounds);
             return true;
         }
@@ -216,7 +223,7 @@ public class Slider extends Component {
                 renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, color);
 
                 double tickValue = this.min + tick;
-                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet.backend().shapeText(this.ticks.labelProvider.getLabel(v), this.rivet.theme().get(Theme.TEXT_COLOR)));
+                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet().backend().shapeText(this.ticks.labelProvider.getLabel(v), this.rivet().theme().get(Theme.TEXT_COLOR)));
                 renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
                     renderer.scale(0.5F, () -> {
                         renderer.renderText(text, 0, 0, TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_TOP);
@@ -242,9 +249,9 @@ public class Slider extends Component {
         if (this.ticks == null) {
             height = this.thumbHeight.value();
         } else {
-            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet.backend().getTextHeight() / 2F;
+            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet().backend().getTextHeight() / 2F;
         }
-        return new Size(this.rivet.backend().getTextHeight() * 10, height);
+        return new Size(this.rivet().backend().getTextHeight() * 10, height);
     }
 
     private float barWidth(final Rectangle bounds) {

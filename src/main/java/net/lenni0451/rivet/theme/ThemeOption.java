@@ -3,6 +3,7 @@ package net.lenni0451.rivet.theme;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.component.Component;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -11,20 +12,24 @@ import java.util.function.Supplier;
 public final class ThemeOption<T> {
 
     @Getter
-    private final Rivet rivet;
+    private final Component component;
     @Getter
     private final ThemeKey<T> key;
     @Nullable
     private Supplier<T> value;
 
-    public ThemeOption(final Rivet rivet, final ThemeKey<T> key) {
-        this.rivet = rivet;
+    public ThemeOption(final Component component, final ThemeKey<T> key) {
+        this.component = component;
         this.key = key;
     }
 
     public T value() {
         if (this.value != null) return this.value.get();
-        return this.rivet.theme().get(this.key);
+        Rivet rivet = this.component.rivet();
+        if (rivet == null) {
+            throw new IllegalStateException("Unable to get theme value for key " + this.key + " without a rivet instance");
+        }
+        return rivet.theme().get(this.key);
     }
 
     public ThemeOption<T> set(@Nullable final T value) {

@@ -9,7 +9,6 @@ import net.lenni0451.commons.animation.EasingBehavior;
 import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -56,33 +55,42 @@ public class Button extends Component {
     private final ThemeOption<ClickOn> clickOn;
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
-    private final Animation hoverAnimation;
+    private Animation hoverAnimation;
 
-    public Button(final Rivet rivet, final Component child, final Consumer<MouseButtonEvent> clickListener) {
-        this(rivet, child, c -> {}, clickListener);
+    public Button(final Component child, final Consumer<MouseButtonEvent> clickListener) {
+        this(child, c -> {}, clickListener);
     }
 
-    public <C extends Component> Button(final Rivet rivet, final C child, final Consumer<C> childConsumer, final Consumer<MouseButtonEvent> initializer) {
-        super(rivet);
+    public <C extends Component> Button(final C child, final Consumer<C> childConsumer, final Consumer<MouseButtonEvent> initializer) {
         this.child = child;
         childConsumer.accept(child);
         this.clickListener = initializer;
 
-        this.cornerRadius = new ThemeOption<>(rivet, Theme.BUTTON_CORNER_RADIUS);
-        this.outlineWidth = new ThemeOption<>(rivet, Theme.BUTTON_OUTLINE_WIDTH);
-        this.inactiveColor = new ThemeOption<>(rivet, Theme.BUTTON_INACTIVE_COLOR);
-        this.inactiveOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_INACTIVE_OUTLINE_COLOR);
-        this.activeColor = new ThemeOption<>(rivet, Theme.BUTTON_ACTIVE_COLOR);
-        this.activeOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
-        this.clickColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_COLOR);
-        this.clickOutlineColor = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_OUTLINE_COLOR);
-        this.animationDuration = new ThemeOption<>(rivet, Theme.BUTTON_ANIMATION_DURATION);
-        this.innerPadding = new ThemeOption<>(rivet, Theme.BUTTON_INNER_PADDING);
-        this.clickOn = new ThemeOption<>(rivet, Theme.BUTTON_CLICK_ON);
+        this.cornerRadius = new ThemeOption<>(this, Theme.BUTTON_CORNER_RADIUS);
+        this.outlineWidth = new ThemeOption<>(this, Theme.BUTTON_OUTLINE_WIDTH);
+        this.inactiveColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_COLOR);
+        this.inactiveOutlineColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_OUTLINE_COLOR);
+        this.activeColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_COLOR);
+        this.activeOutlineColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
+        this.clickColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_COLOR);
+        this.clickOutlineColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_OUTLINE_COLOR);
+        this.animationDuration = new ThemeOption<>(this, Theme.BUTTON_ANIMATION_DURATION);
+        this.innerPadding = new ThemeOption<>(this, Theme.BUTTON_INNER_PADDING);
+        this.clickOn = new ThemeOption<>(this, Theme.BUTTON_CLICK_ON);
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.child.setRivet(this.rivet());
 
         this.hoverAnimation = new Animation()
                 .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
                 .finish(AnimationDirection.BACKWARDS);
+    }
+
+    @Override
+    protected void onComponentRemoved() {
+        this.child.setRivet(null);
     }
 
     @Override

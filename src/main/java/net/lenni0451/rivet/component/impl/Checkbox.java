@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
@@ -46,34 +45,33 @@ public class Checkbox extends Component {
     @Getter
     private final ThemeOption<Float> textGap;
 
-    public Checkbox(final Rivet rivet) {
-        this(rivet, false);
+    public Checkbox() {
+        this(false);
     }
 
-    public Checkbox(final Rivet rivet, final boolean checked) {
-        this(rivet, "", checked);
+    public Checkbox(final boolean checked) {
+        this("", checked);
     }
 
-    public Checkbox(final Rivet rivet, final String text, final boolean checked) {
-        super(rivet);
+    public Checkbox(final String text, final boolean checked) {
         this.checked = checked;
         this.text = text;
-        this.shapedText = rivet.backend().shapeText(text, rivet.theme().get(Theme.TEXT_COLOR));
 
-        this.cornerRadius = new ThemeOption<>(rivet, Theme.CHECKBOX_CORNER_RADIUS);
-        this.outlineWidth = new ThemeOption<>(rivet, Theme.CHECKBOX_OUTLINE_WIDTH);
-        this.backgroundColor = new ThemeOption<>(rivet, Theme.CHECKBOX_BACKGROUND_COLOR);
-        this.outlineColor = new ThemeOption<>(rivet, Theme.CHECKBOX_OUTLINE_COLOR);
-        this.checkColor = new ThemeOption<>(rivet, Theme.CHECKBOX_CHECK_COLOR);
-        this.checkWidth = new ThemeOption<>(rivet, Theme.CHECKBOX_CHECK_WIDTH);
-        this.textGap = new ThemeOption<>(rivet, Theme.CHECKBOX_TEXT_GAP);
+        this.cornerRadius = new ThemeOption<>(this, Theme.CHECKBOX_CORNER_RADIUS);
+        this.outlineWidth = new ThemeOption<>(this, Theme.CHECKBOX_OUTLINE_WIDTH);
+        this.backgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_BACKGROUND_COLOR);
+        this.outlineColor = new ThemeOption<>(this, Theme.CHECKBOX_OUTLINE_COLOR);
+        this.checkColor = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_COLOR);
+        this.checkWidth = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_WIDTH);
+        this.textGap = new ThemeOption<>(this, Theme.CHECKBOX_TEXT_GAP);
     }
 
     public Checkbox checked(final boolean checked) {
         if (this.checked != checked) {
             this.checked = checked;
-            if (this.onToggle != null) this.onToggle.accept(this.checked);
-            this.rivet.recalculateNextFrame();
+            if (this.onToggle != null) {
+                this.onToggle.accept(this.checked);
+            }
         }
         return this;
     }
@@ -81,10 +79,21 @@ public class Checkbox extends Component {
     public Checkbox text(final String text) {
         if (!this.text.equals(text)) {
             this.text = text;
-            this.shapedText = this.rivet.backend().shapeText(text, this.rivet.theme().get(Theme.TEXT_COLOR));
-            this.rivet.recalculateNextFrame();
+            if (this.rivet() != null) {
+                this.shapeText();
+                this.rivet().recalculateNextFrame();
+            }
         }
         return this;
+    }
+
+    private void shapeText() {
+        this.shapedText = this.rivet().backend().shapeText(this.text, this.rivet().theme().get(Theme.TEXT_COLOR));
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.shapeText();
     }
 
     @Override

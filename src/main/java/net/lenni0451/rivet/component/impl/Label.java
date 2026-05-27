@@ -3,7 +3,6 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
@@ -18,6 +17,7 @@ public class Label extends Component {
     @Getter
     private String text;
     private ShapedText shapedText;
+    private boolean reshape;
     @Getter
     @Setter
     private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;
@@ -25,23 +25,36 @@ public class Label extends Component {
     @Setter
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
 
-    public Label(final Rivet rivet, final String text) {
-        super(rivet);
+    public Label(final String text) {
         this.text = text;
-        this.shapedText = rivet.backend().shapeText(text, rivet.theme().get(Theme.TEXT_COLOR));
     }
 
     public Label text(final String text) {
         if (!this.text.equals(text)) {
             this.text = text;
-            this.shapedText = this.rivet.backend().shapeText(text, this.rivet.theme().get(Theme.TEXT_COLOR));
-            this.rivet.recalculateNextFrame();
+            this.reshape = true;
+            if (this.rivet() != null) {
+                this.rivet().recalculateNextFrame();
+            }
         }
         return this;
     }
 
+    private void shapeText() {
+        if (this.reshape) {
+            this.shapedText = this.rivet().backend().shapeText(this.text, this.rivet().theme().get(Theme.TEXT_COLOR));
+            this.reshape = false;
+        }
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.reshape = true;
+    }
+
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
+        this.shapeText();
         float x = this.horizontalOrigin.offset(bounds.width());
         float y = this.verticalOrigin.offset(bounds.height());
         renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
@@ -49,9 +62,10 @@ public class Label extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
+        this.shapeText();
         return new Size(
-                this.shapedText.visualBounds().width(),
-                this.shapedText.logicalBounds().height()
+                shapedText.visualBounds().width(),
+                shapedText.logicalBounds().height()
         );
     }
 

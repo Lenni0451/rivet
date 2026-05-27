@@ -3,7 +3,6 @@ package net.lenni0451.rivet.component.base;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.ContainerMouseHandler;
@@ -28,18 +27,29 @@ public class DecoratedContainer extends Component {
     @Setter
     private Padding innerPadding;
 
-    public DecoratedContainer(final Rivet rivet, final Component background, final Component child) {
-        this(rivet, background, c -> {}, child, c -> {});
+    public DecoratedContainer(final Component background, final Component child) {
+        this(background, c -> {}, child, c -> {});
     }
 
-    public <B extends Component, C extends Component> DecoratedContainer(final Rivet rivet, final B background, final Consumer<B> backgroundInitializer, final C child, final Consumer<C> childInitializer) {
-        super(rivet);
+    public <B extends Component, C extends Component> DecoratedContainer(final B background, final Consumer<B> backgroundInitializer, final C child, final Consumer<C> childInitializer) {
         this.background = background;
         backgroundInitializer.accept(background);
         this.child = child;
         childInitializer.accept(child);
 
         this.innerPadding = Padding.EMPTY;
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.background.setRivet(this.rivet());
+        this.child.setRivet(this.rivet());
+    }
+
+    @Override
+    protected void onComponentRemoved() {
+        this.background.setRivet(null);
+        this.child.setRivet(null);
     }
 
     @Override
@@ -54,7 +64,7 @@ public class DecoratedContainer extends Component {
                 event,
                 childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
                 component -> {
-                    this.rivet.focusedComponent(component);
+                    this.rivet().focusedComponent(component);
                     return component.onMouseDown(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.left()), childBounds);
                 },
                 () -> false

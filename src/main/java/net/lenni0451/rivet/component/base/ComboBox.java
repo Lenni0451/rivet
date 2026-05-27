@@ -3,7 +3,6 @@ package net.lenni0451.rivet.component.base;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
@@ -37,14 +36,13 @@ public class ComboBox extends Component {
     @Getter
     private final ThemeOption<Float> maxPopupHeight;
 
-    public ComboBox(final Rivet rivet, final String text, final Component child) {
-        this(rivet, text, child, c -> {});
+    public ComboBox(final String text, final Component child) {
+        this(text, child, c -> {});
     }
 
-    public <C extends Component> ComboBox(final Rivet rivet, final String text, final C child, final Consumer<C> initializer) {
-        super(rivet);
-        this.text = new Label(rivet, text).horizontalOrigin(TextOrigin.Horizontal.LOGICAL_LEFT);
-        this.button = new Button(rivet, this.text, event -> {
+    public <C extends Component> ComboBox(final String text, final C child, final Consumer<C> initializer) {
+        this.text = new Label(text).horizontalOrigin(TextOrigin.Horizontal.LOGICAL_LEFT);
+        this.button = new Button(this.text, event -> {
             if (event.button().equals(MouseButton.LEFT)) {
                 if (this.isOpen()) {
                     this.close();
@@ -55,29 +53,40 @@ public class ComboBox extends Component {
         });
         this.child = child;
         initializer.accept(child);
-        this.arrowColor = new ThemeOption<>(rivet, Theme.COMBOBOX_ARROW_COLOR);
-        this.arrowSize = new ThemeOption<>(rivet, Theme.COMBOBOX_ARROW_SIZE);
-        this.maxPopupHeight = new ThemeOption<>(rivet, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
+
+        this.arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);
+        this.arrowSize = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_SIZE);
+        this.maxPopupHeight = new ThemeOption<>(this, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
     }
 
     public ComboBox open() {
         if (this.isOpen()) return this;
-        Container container = new Container(this.rivet, AbsoluteLayout.INSTANCE);
+        Container container = new Container(AbsoluteLayout.INSTANCE);
         container.addChild(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
-        this.rivet.addLayer(this.layer);
+        this.rivet().addLayer(this.layer);
         return this;
     }
 
     public ComboBox close() {
         if (!this.isOpen()) return this;
-        this.rivet.removeLayer(this.layer);
+        this.rivet().removeLayer(this.layer);
         this.layer = null;
         return this;
     }
 
     public boolean isOpen() {
         return this.layer != null;
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.button.setRivet(this.rivet());
+    }
+
+    @Override
+    protected void onComponentRemoved() {
+        this.button.setRivet(null);
     }
 
     @Override
@@ -126,7 +135,7 @@ public class ComboBox extends Component {
             );
         }
         if (this.isOpen()) {
-            Size screenSize = this.rivet.scaledSize();
+            Size screenSize = this.rivet().scaledSize();
             Rectangle region = new Rectangle(
                     bounds.x(),
                     bounds.y() + bounds.height(),
@@ -141,7 +150,7 @@ public class ComboBox extends Component {
                     || options.width() == null || options.width() != region.width()
                     || options.height() == null || options.height() != region.height()) {
                 this.child.layoutOptions(new AbsoluteLayoutOptions(region));
-                this.rivet.recalculateNextFrame();
+                this.rivet().recalculateNextFrame();
             }
         }
     }

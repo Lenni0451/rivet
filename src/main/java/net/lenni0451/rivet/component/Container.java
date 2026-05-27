@@ -3,7 +3,6 @@ package net.lenni0451.rivet.component;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -27,8 +26,7 @@ public class Container extends Component {
     @Getter
     private Size contentSize = Size.EMPTY;
 
-    public Container(final Rivet rivet, final Layout layout) {
-        super(rivet);
+    public Container(final Layout layout) {
         this.layout = layout;
     }
 
@@ -40,7 +38,10 @@ public class Container extends Component {
         initializer.accept(component);
         this.removeChild(component);
         this.children.add(new Child(component));
-        this.rivet.recalculateNextFrame();
+        if (this.rivet() != null) {
+            component.setRivet(this.rivet());
+            this.rivet().recalculateNextFrame();
+        }
         return this;
     }
 
@@ -66,11 +67,16 @@ public class Container extends Component {
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
-                if (this.rivet.focusedComponent() == component) {
-                    this.rivet.focusedComponent(null);
+                if (this.rivet() != null) {
+                    if (this.rivet().focusedComponent() == component) {
+                        this.rivet().focusedComponent(null);
+                    }
                 }
                 it.remove();
-                this.rivet.recalculateNextFrame();
+                if (this.rivet() != null) {
+                    component.setRivet(null);
+                    this.rivet().recalculateNextFrame();
+                }
                 return true;
             }
         }
@@ -82,18 +88,37 @@ public class Container extends Component {
             Rectangle componentBounds = this.childBounds(component);
             component.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
         });
-        for (Child child : this.children) {
-            if (this.rivet.focusedComponent() == child.component) {
-                this.rivet.focusedComponent(null);
+        if (this.rivet() != null) {
+            for (Child child : this.children) {
+                if (this.rivet().focusedComponent() == child.component) {
+                    this.rivet().focusedComponent(null);
+                }
+                child.component.setRivet(null);
             }
         }
         this.children.clear();
-        this.rivet.recalculateNextFrame();
+        if (this.rivet() != null) {
+            this.rivet().recalculateNextFrame();
+        }
         return this;
     }
 
     public boolean intercepts(final float x, final float y) {
         return this.findChildAt(x, y) != null;
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        for (Child child : this.children) {
+            child.component.setRivet(this.rivet());
+        }
+    }
+
+    @Override
+    protected void onComponentRemoved() {
+        for (Child child : this.children) {
+            child.component.setRivet(null);
+        }
     }
 
     @Override
@@ -108,7 +133,7 @@ public class Container extends Component {
                 event,
                 child == null ? null : child.component,
                 component -> {
-                    this.rivet.focusedComponent(component);
+                    this.rivet().focusedComponent(component);
                     return component.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
                 },
                 () -> false

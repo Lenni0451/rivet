@@ -31,12 +31,12 @@ public class Test3 extends RivetThinGLApplication {
 
     @Override
     protected void init(final Rivet rivet) {
-        Container container = new Container(rivet, new GridLayout(10, 10));
-        container.addChild(new FormattedLabel(rivet, "<color=red italic bold underlined>Hello this is a really cool test string how are you doing lol\n<color=blue> <color=red>a\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), label -> {
+        Container container = new Container(new GridLayout(10, 10));
+        container.addChild(new FormattedLabel("<color=red italic bold underlined>Hello this is a really cool test string how are you doing lol\n<color=blue> <color=red>a\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), label -> {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
             label.layoutOptions(new GridLayoutOptions(0, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
-        container.addChild(new Button(rivet, new Label(rivet, "Testing Testing Testing Testing Testing Testing Testing"), e -> {
+        container.addChild(new Button(new Label("Testing Testing Testing Testing Testing Testing Testing"), e -> {
             System.out.println("click");
         }), button -> {
             button.clickOn().set(Button.ClickOn.BOTH);

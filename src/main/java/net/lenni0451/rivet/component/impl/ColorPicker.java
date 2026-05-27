@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
@@ -46,17 +45,16 @@ public class ColorPicker extends Component {
     private final ThemeOption<Float> gap;
     private final ThemeOption<Float> selectorSize;
 
-    public ColorPicker(final Rivet rivet, final Color color) {
-        super(rivet);
+    public ColorPicker(final Color color) {
         this.color = color;
         this.updateHSB();
 
-        this.outlineWidth = new ThemeOption<>(rivet, Theme.COLOR_PICKER_OUTLINE_WIDTH);
-        this.outlineColor = new ThemeOption<>(rivet, Theme.COLOR_PICKER_OUTLINE_COLOR);
-        this.pickerSize = new ThemeOption<>(rivet, Theme.COLOR_PICKER_PICKER_SIZE);
-        this.sliderWidth = new ThemeOption<>(rivet, Theme.COLOR_PICKER_SLIDER_WIDTH);
-        this.gap = new ThemeOption<>(rivet, Theme.COLOR_PICKER_GAP);
-        this.selectorSize = new ThemeOption<>(rivet, Theme.COLOR_PICKER_SELECTOR_SIZE);
+        this.outlineWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_WIDTH);
+        this.outlineColor = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_COLOR);
+        this.pickerSize = new ThemeOption<>(this, Theme.COLOR_PICKER_PICKER_SIZE);
+        this.sliderWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_SLIDER_WIDTH);
+        this.gap = new ThemeOption<>(this, Theme.COLOR_PICKER_GAP);
+        this.selectorSize = new ThemeOption<>(this, Theme.COLOR_PICKER_SELECTOR_SIZE);
     }
 
     public ColorPicker color(final Color color) {
@@ -128,11 +126,11 @@ public class ColorPicker extends Component {
 
     @Override
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
-        if (this.rivet.backend().isKeyDown(ModifierKey.SHIFT)) {
+        if (this.rivet().backend().isKeyDown(ModifierKey.SHIFT)) {
             this.alpha = MathUtils.clamp(this.alpha + event.scrollY() / 20, 0, 1);
             this.updateColor();
             return true;
-        } else if (this.rivet.backend().isKeyDown(ModifierKey.CONTROL)) {
+        } else if (this.rivet().backend().isKeyDown(ModifierKey.CONTROL)) {
             this.hue = MathUtils.clamp(this.hue - event.scrollY() / 20, 0, 1);
             this.updateColor();
             return true;

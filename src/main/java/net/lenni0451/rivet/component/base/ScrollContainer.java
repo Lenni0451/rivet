@@ -8,7 +8,6 @@ import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
@@ -83,8 +82,8 @@ public class ScrollContainer extends Component {
     private float scrollY;
     private float targetScrollX;
     private float targetScrollY;
-    private final DynamicAnimation scrollXAnimation;
-    private final DynamicAnimation scrollYAnimation;
+    private DynamicAnimation scrollXAnimation;
+    private DynamicAnimation scrollYAnimation;
 
     private boolean hBarHovered;
     private boolean hBarPressed;
@@ -101,44 +100,52 @@ public class ScrollContainer extends Component {
     private boolean vScrollVisible;
     private boolean hScrollVisible;
 
-    public ScrollContainer(final Rivet rivet, final Component child) {
-        this(rivet, child, false, true);
+    public ScrollContainer(final Component child) {
+        this(child, false, true);
     }
 
-    public <C extends Component> ScrollContainer(final Rivet rivet, final C child, final Consumer<C> initializer) {
-        this(rivet, child, initializer, false, true);
+    public <C extends Component> ScrollContainer(final C child, final Consumer<C> initializer) {
+        this(child, initializer, false, true);
     }
 
-    public ScrollContainer(final Rivet rivet, final Component child, final boolean horizontalScrolling, final boolean verticalScrolling) {
-        this(rivet, child, c -> {}, horizontalScrolling, verticalScrolling);
+    public ScrollContainer(final Component child, final boolean horizontalScrolling, final boolean verticalScrolling) {
+        this(child, c -> {}, horizontalScrolling, verticalScrolling);
     }
 
-    public <C extends Component> ScrollContainer(final Rivet rivet, final C child, final Consumer<C> initializer, final boolean horizontalScrolling, final boolean verticalScrolling) {
-        super(rivet);
+    public <C extends Component> ScrollContainer(final C child, final Consumer<C> initializer, final boolean horizontalScrolling, final boolean verticalScrolling) {
         this.child = child;
         initializer.accept(child);
         this.horizontalScrolling = horizontalScrolling;
         this.verticalScrolling = verticalScrolling;
 
-        this.barColor = new ThemeOption<>(rivet, Theme.SCROLL_BAR_COLOR);
-        this.barHoverColor = new ThemeOption<>(rivet, Theme.SCROLL_BAR_HOVER_COLOR);
-        this.barClickColor = new ThemeOption<>(rivet, Theme.SCROLL_BAR_CLICK_COLOR);
-        this.barWidth = new ThemeOption<>(rivet, Theme.SCROLL_BAR_WIDTH);
-        this.barCornerRadius = new ThemeOption<>(rivet, Theme.SCROLL_BAR_CORNER_RADIUS);
-        this.barOutlineWidth = new ThemeOption<>(rivet, Theme.SCROLL_BAR_OUTLINE_WIDTH);
-        this.barOutlineColor = new ThemeOption<>(rivet, Theme.SCROLL_BAR_OUTLINE_COLOR);
-        this.scrollSpeed = new ThemeOption<>(rivet, Theme.SCROLL_SPEED);
-        this.smoothScrolling = new ThemeOption<>(rivet, Theme.SCROLL_SMOOTH);
-        this.animationDuration = new ThemeOption<>(rivet, Theme.SCROLL_ANIMATION_DURATION);
-        this.nestedScrollTimeout = new ThemeOption<>(rivet, Theme.SCROLL_NESTED_SCROLL_TIMEOUT);
-        this.barType = new ThemeOption<>(rivet, Theme.SCROLL_BAR_TYPE);
-        this.railClickJump = new ThemeOption<>(rivet, Theme.SCROLL_RAIL_CLICK_JUMP);
-        this.railColor = new ThemeOption<>(rivet, Theme.SCROLL_RAIL_COLOR);
-        this.railOutlineColor = new ThemeOption<>(rivet, Theme.SCROLL_RAIL_OUTLINE_COLOR);
-        this.railOutlineWidth = new ThemeOption<>(rivet, Theme.SCROLL_RAIL_OUTLINE_WIDTH);
+        this.barColor = new ThemeOption<>(this, Theme.SCROLL_BAR_COLOR);
+        this.barHoverColor = new ThemeOption<>(this, Theme.SCROLL_BAR_HOVER_COLOR);
+        this.barClickColor = new ThemeOption<>(this, Theme.SCROLL_BAR_CLICK_COLOR);
+        this.barWidth = new ThemeOption<>(this, Theme.SCROLL_BAR_WIDTH);
+        this.barCornerRadius = new ThemeOption<>(this, Theme.SCROLL_BAR_CORNER_RADIUS);
+        this.barOutlineWidth = new ThemeOption<>(this, Theme.SCROLL_BAR_OUTLINE_WIDTH);
+        this.barOutlineColor = new ThemeOption<>(this, Theme.SCROLL_BAR_OUTLINE_COLOR);
+        this.scrollSpeed = new ThemeOption<>(this, Theme.SCROLL_SPEED);
+        this.smoothScrolling = new ThemeOption<>(this, Theme.SCROLL_SMOOTH);
+        this.animationDuration = new ThemeOption<>(this, Theme.SCROLL_ANIMATION_DURATION);
+        this.nestedScrollTimeout = new ThemeOption<>(this, Theme.SCROLL_NESTED_SCROLL_TIMEOUT);
+        this.barType = new ThemeOption<>(this, Theme.SCROLL_BAR_TYPE);
+        this.railClickJump = new ThemeOption<>(this, Theme.SCROLL_RAIL_CLICK_JUMP);
+        this.railColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_COLOR);
+        this.railOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_COLOR);
+        this.railOutlineWidth = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_WIDTH);
+    }
 
+    @Override
+    protected void onComponentAdded() {
+        this.child.setRivet(this.rivet());
         this.scrollXAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
         this.scrollYAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
+    }
+
+    @Override
+    protected void onComponentRemoved() {
+        this.child.setRivet(null);
     }
 
     @Override
@@ -164,7 +171,7 @@ public class ScrollContainer extends Component {
                 event,
                 componentHovered ? this.child : null,
                 component -> {
-                    this.rivet.focusedComponent(component);
+                    this.rivet().focusedComponent(component);
                     return component.onMouseDown(
                             event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
                             new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)

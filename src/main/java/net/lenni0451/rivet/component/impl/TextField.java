@@ -8,7 +8,6 @@ import net.lenni0451.commons.animation.EasingBehavior;
 import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
@@ -34,6 +33,7 @@ public class TextField extends Component {
     private int cursor = 0;
     @Getter
     private int selection = 0;
+    private boolean focused;
 
     private final Animation cursorAnimation = new Animation(AnimationMode.LOOP)
             .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 1, 250, EasingBehavior.KEEP)
@@ -65,19 +65,16 @@ public class TextField extends Component {
     @Getter
     private final ThemeOption<Padding> innerPadding;
 
-    public TextField(final Rivet rivet) {
-        super(rivet);
-        this.backgroundColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_BACKGROUND_COLOR);
-        this.outlineColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_OUTLINE_COLOR);
-        this.focusedOutlineColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
-        this.selectionColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_SELECTION_COLOR);
-        this.cursorColor = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CURSOR_COLOR);
-        this.cursorWidth = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CURSOR_WIDTH);
-        this.outlineWidth = new ThemeOption<>(rivet, Theme.TEXT_FIELD_OUTLINE_WIDTH);
-        this.cornerRadius = new ThemeOption<>(rivet, Theme.TEXT_FIELD_CORNER_RADIUS);
-        this.innerPadding = new ThemeOption<>(rivet, Theme.TEXT_FIELD_INNER_PADDING);
-
-        this.updateShapedText();
+    public TextField() {
+        this.backgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_BACKGROUND_COLOR);
+        this.outlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_COLOR);
+        this.focusedOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
+        this.selectionColor = new ThemeOption<>(this, Theme.TEXT_FIELD_SELECTION_COLOR);
+        this.cursorColor = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_COLOR);
+        this.cursorWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_WIDTH);
+        this.outlineWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_WIDTH);
+        this.cornerRadius = new ThemeOption<>(this, Theme.TEXT_FIELD_CORNER_RADIUS);
+        this.innerPadding = new ThemeOption<>(this, Theme.TEXT_FIELD_INNER_PADDING);
     }
 
     public String text() {
@@ -89,12 +86,29 @@ public class TextField extends Component {
         this.text.append(text);
         this.cursor = Math.min(this.cursor, this.text.length());
         this.selection = Math.min(this.selection, this.text.length());
-        this.updateShapedText();
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
         return this;
     }
 
     private void updateShapedText() {
-        this.shapedText = this.rivet.backend().shapeText(this.text.toString(), this.rivet.theme().get(Theme.TEXT_COLOR));
+        this.shapedText = this.rivet().backend().shapeText(this.text.toString(), this.rivet().theme().get(Theme.TEXT_COLOR));
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.updateShapedText();
+    }
+
+    @Override
+    protected void onComponentFocusGained() {
+        this.focused = true;
+    }
+
+    @Override
+    protected void onComponentFocusLost() {
+        this.focused = false;
     }
 
     @Override
@@ -226,7 +240,7 @@ public class TextField extends Component {
         this.ensureCursorVisible(visibleWidth);
 
         renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
-        renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.rivet.focusedComponent() == this ? this.focusedOutlineColor.value() : this.outlineColor.value());
+        renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.focused ? this.focusedOutlineColor.value() : this.outlineColor.value());
 
         renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
             renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
@@ -239,7 +253,7 @@ public class TextField extends Component {
 
                     renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
-                    if (this.rivet.focusedComponent() == this) {
+                    if (this.focused) {
                         float cursorWidth = this.cursorWidth.value();
                         float cursorX = this.shapedText.cursorPosition(this.cursor).x();
                         renderer.fillRect(cursorX - cursorWidth / 2F, -textHeight / 2F, cursorWidth, textHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
@@ -251,7 +265,7 @@ public class TextField extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        float textHeight = this.rivet.backend().getTextHeight();
+        float textHeight = this.rivet().backend().getTextHeight();
         return new Size(
                 textHeight * 10 + this.innerPadding.value().horizontal(),
                 textHeight + this.innerPadding.value().vertical()
@@ -282,11 +296,11 @@ public class TextField extends Component {
         if (this.cursor == this.selection) return;
         int start = Math.min(this.cursor, this.selection);
         int end = Math.max(this.cursor, this.selection);
-        this.rivet.backend().setClipboard(this.text.substring(start, end));
+        this.rivet().backend().setClipboard(this.text.substring(start, end));
     }
 
     private void paste() {
-        String clipboard = this.rivet.backend().getClipboard();
+        String clipboard = this.rivet().backend().getClipboard();
         if (clipboard == null || clipboard.isEmpty()) return;
         this.deleteSelection();
         this.text.insert(this.cursor, clipboard);
