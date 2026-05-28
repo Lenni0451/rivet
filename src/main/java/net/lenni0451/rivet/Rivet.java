@@ -45,6 +45,8 @@ public final class Rivet {
     @Getter
     private Theme theme;
     private final Queue<Runnable> tasks = new LinkedBlockingQueue<>();
+    private float lastMouseX = -Float.MAX_VALUE;
+    private float lastMouseY = -Float.MAX_VALUE;
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
         this.backend = backend;
@@ -146,7 +148,16 @@ public final class Rivet {
         return this;
     }
 
+    public Rivet updateMouseState() {
+        if (this.lastMouseX != -Float.MAX_VALUE && this.lastMouseY != -Float.MAX_VALUE) {
+            this.onMouseMove(new MouseMoveEvent(this.lastMouseX, this.lastMouseY));
+        }
+        return this;
+    }
+
     public Rivet unfocus() {
+        this.lastMouseX = -Float.MAX_VALUE;
+        this.lastMouseY = -Float.MAX_VALUE;
         this.mouseHandler.clear(l -> l.container().onMouseLeave(), (l, mouseButton) -> {
             l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
         });
@@ -176,6 +187,8 @@ public final class Rivet {
     }
 
     public boolean onMouseDown(final MouseButtonEvent event) {
+        this.lastMouseX = event.x();
+        this.lastMouseY = event.y();
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
@@ -195,6 +208,8 @@ public final class Rivet {
     }
 
     public boolean onMouseUp(final MouseButtonEvent event) {
+        this.lastMouseX = event.x();
+        this.lastMouseY = event.y();
         if (!this.mouseHandler.isMouseHeld()) {
             if (event.x() < 0 || event.x() >= this.size.width()) return false;
             if (event.y() < 0 || event.y() >= this.size.height()) return false;
@@ -209,6 +224,8 @@ public final class Rivet {
     }
 
     public boolean onMouseMove(final MouseMoveEvent event) {
+        this.lastMouseX = event.x();
+        this.lastMouseY = event.y();
         if (!this.mouseHandler.isMouseHeld()) {
             if (event.x() < 0 || event.x() >= this.size.width()) return false;
             if (event.y() < 0 || event.y() >= this.size.height()) return false;
@@ -225,6 +242,8 @@ public final class Rivet {
     }
 
     public boolean onMouseScroll(final MouseScrollEvent event) {
+        this.lastMouseX = event.x();
+        this.lastMouseY = event.y();
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
@@ -243,11 +262,18 @@ public final class Rivet {
         Size scaledSize = this.scaledSize();
         Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
+            boolean recalculated = false;
             for (Layer layer : this.layers.get()) {
                 if (layer.recalculateNextFrame()) {
                     layer.container().computeLayout(scaledSize);
                     layer.recalculateNextFrame(false);
+                    recalculated = true;
                 }
+            }
+            if (recalculated) {
+                this.updateMouseState();
+            }
+            for (Layer layer : this.layers.get()) {
                 layer.container().render(renderer, new Rectangle(scaledSize));
             }
         });

@@ -360,8 +360,13 @@ public class ScrollContainer extends Component implements Parent {
             this.scrollXAnimation.setTarget(this.targetScrollX).finish();
             this.scrollYAnimation.setTarget(this.targetScrollY).finish();
         }
+        float oldScrollX = this.scrollX;
+        float oldScrollY = this.scrollY;
         this.scrollX = Snapping.snap(this.rivet(), this.scrollXAnimation.getValue());
         this.scrollY = Snapping.snap(this.rivet(), this.scrollYAnimation.getValue());
+        if (this.rivet() != null && (oldScrollX != this.scrollX || oldScrollY != this.scrollY)) {
+            this.rivet().updateMouseState();
+        }
     }
 
     private void renderHorizontalScrollbar(final Renderer renderer, final Rectangle bounds) {
