@@ -216,12 +216,17 @@ public class Container extends Component implements Parent {
         for (Child child : this.children) {
             child.bounds = newBounds.get(child.component);
             child.component.computeLayout(child.bounds.size());
-            contentSize = new Size(
-                    Math.max(contentSize.width(), child.bounds.x() + child.bounds.width()),
-                    Math.max(contentSize.height(), child.bounds.y() + child.bounds.height())
+            contentSize = contentSize.max(
+                    child.bounds.x() + child.bounds.width(),
+                    child.bounds.y() + child.bounds.height()
             );
         }
         this.contentSize = contentSize;
+    }
+
+    @Override
+    public void requestLayoutRecalculation() {
+        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
     @Nullable
@@ -233,11 +238,6 @@ public class Container extends Component implements Parent {
             }
         }
         return null;
-    }
-
-    @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
 

@@ -29,10 +29,7 @@ public final class AbsoluteLayout implements Layout {
                 if (options.height() != null) height = options.height();
                 height += options.y();
             }
-            size = new Size(
-                    Math.max(size.width(), width),
-                    Math.max(size.height(), height)
-            );
+            size = size.max(width, height);
         }
         return size;
     }

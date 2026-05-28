@@ -17,17 +17,15 @@ public final class FullSizeLayout implements Layout {
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
-        float width = 0;
-        float height = 0;
+        Size size = Size.EMPTY;
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
-            width = Math.max(width, this.widthOf(component, idealSize));
-            height = Math.max(height, this.heightOf(component, idealSize));
+            size = size.max(
+                    this.widthOf(component, idealSize),
+                    this.heightOf(component, idealSize)
+            );
         }
-        return new Size(
-                Math.min(width, constraints.width()),
-                Math.min(height, constraints.height())
-        );
+        return size;
     }
 
     @Override

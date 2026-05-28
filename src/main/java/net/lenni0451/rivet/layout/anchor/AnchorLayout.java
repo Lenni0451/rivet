@@ -20,9 +20,9 @@ public final class AnchorLayout implements Layout {
         Size size = Size.EMPTY;
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
-            size = new Size(
-                    Math.max(size.width(), this.widthOf(component, idealSize)),
-                    Math.max(size.height(), this.heightOf(component, idealSize))
+            size = size.max(
+                    this.widthOf(component, idealSize),
+                    this.heightOf(component, idealSize)
             );
         }
         return size;
