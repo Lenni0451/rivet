@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 @Accessors(fluent = true, chain = true)
 public class ComboBox extends Component implements Parent {
 
-    private final Label text;
     private final Button button;
     private final Component child;
     private Layer layer;
@@ -41,8 +40,15 @@ public class ComboBox extends Component implements Parent {
     }
 
     public <C extends Component> ComboBox(final String text, final C child, final Consumer<C> initializer) {
-        this.text = new Label(text).horizontalOrigin(TextOrigin.Horizontal.LOGICAL_LEFT);
-        this.button = new Button(this.text, event -> {
+        this(new Label(text).horizontalOrigin(TextOrigin.Horizontal.LOGICAL_LEFT), t -> {}, child, initializer);
+    }
+
+    public <T extends Component, C extends Component> ComboBox(final T text, final C child) {
+        this(text, t -> {}, child, c -> {});
+    }
+
+    public <T extends Component, C extends Component> ComboBox(final T text, final Consumer<T> textInitializer, final C child, final Consumer<C> initializer) {
+        this.button = new Button(text, event -> {
             if (event.button().equals(MouseButton.LEFT)) {
                 if (this.isOpen()) {
                     this.close();
@@ -52,6 +58,7 @@ public class ComboBox extends Component implements Parent {
             }
         });
         this.child = child;
+        textInitializer.accept(text);
         initializer.accept(child);
 
         this.arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);

@@ -3,7 +3,6 @@ import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.impl.FormattedLabel;
-import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
@@ -36,7 +35,7 @@ public class Test3 extends RivetThinGLApplication {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
             label.layoutOptions(new GridLayoutOptions(0, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
-        container.addChild(new Button(new Label("Testing Testing Testing Testing Testing Testing Testing"), e -> {
+        container.addChild(new Button("Testing Testing Testing Testing Testing Testing Testing", e -> {
             System.out.println("click");
         }), button -> {
             button.clickOn().set(Button.ClickOn.BOTH);

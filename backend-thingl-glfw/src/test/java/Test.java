@@ -67,29 +67,29 @@ public class Test extends RivetThinGLApplication {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
             label.layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
-        container.addChild(new Button(new Label("Singleplayer"), _ -> {}), button -> {
+        container.addChild(new Button("Singleplayer", _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(0, 1).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
-        container.addChild(new Button(new Label("Minecraft Realms"), _ -> {}), button -> {
+        container.addChild(new Button("Minecraft Realms", _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(0, 2).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL));
         });
-        container.addChild(new Button(new Label("Multiplayer"), _ -> {}), button -> {
+        container.addChild(new Button("Multiplayer", _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(1, 2).withAnchor(GridAnchor.RIGHT).withWeightX(1).withFill(GridFill.HORIZONTAL));
         });
-        container.addChild(new Button(new Label("DeepClient Menu"), _ -> {}), button -> {
+        container.addChild(new Button("DeepClient Menu", _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(0, 3).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
         });
-        container.addChild(new Button(new Label("Options..."), _ -> {}), button -> {
+        container.addChild(new Button("Options...", _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(0, 4).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
         });
-        container.addChild(new Button(new Label("Quit Game"), _ -> {}), button -> {
+        container.addChild(new Button("Quit Game", _ -> {}), button -> {
             button.layoutOptions(new GridLayoutOptions(1, 4).withAnchor(GridAnchor.RIGHT).withWeightX(1).withFill(GridFill.HORIZONTAL).withPadding(Padding.EMPTY.withTop(20)));
         });
         container.addChild(new ComboBox("Testing since 2k26", new DecoratedContainer(new SolidColor(solidColor -> {
             solidColor.color(Color.GREEN);
         }), new ScrollContainer(new Container(new VerticalListLayout(5, true)), comboBoxContainer -> {
             for (int i = 0; i < 10; i++) {
-                comboBoxContainer.addChild(new Button(new Label("Test " + i), _ -> {}));
+                comboBoxContainer.addChild(new Button("Test " + i, _ -> {}));
             }
         }))), comboBox -> {
             comboBox.layoutOptions(new GridLayoutOptions(0, 5).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2));

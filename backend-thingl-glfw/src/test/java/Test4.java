@@ -2,7 +2,6 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.Container;
-import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.layout.tile.TileLayout;
 import net.lenni0451.rivet.layout.tile.TileLayoutOptions;
 import net.raphimc.thingl.resource.font.Font;
@@ -37,7 +36,7 @@ public class Test4 extends RivetThinGLApplication {
             if (column == 0 && row == 1) continue;
             if (column == 2 && row == 1) continue;
             if (column == 1 && row == 2) continue;
-            container.addChild(new Button(new Label("Testing " + i), event -> {
+            container.addChild(new Button("Testing " + i, event -> {
                 System.out.println("Clicked " + finalI);
             }), button -> button.layoutOptions(new TileLayoutOptions(column, row)));
         }

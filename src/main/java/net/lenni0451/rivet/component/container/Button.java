@@ -12,6 +12,7 @@ import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
+import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Padding;
@@ -56,6 +57,10 @@ public class Button extends Component implements Parent {
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
     private Animation hoverAnimation;
+
+    public Button(final String text, final ClickListener clickListener) {
+        this(new Label(text), clickListener);
+    }
 
     public Button(final Component child, final ClickListener clickListener) {
         this(child, c -> {}, clickListener);

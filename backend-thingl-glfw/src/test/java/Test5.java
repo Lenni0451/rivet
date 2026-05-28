@@ -4,7 +4,6 @@ import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.container.ScrollContainer;
-import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.Separator;
 import net.lenni0451.rivet.component.impl.SolidColor;
 import net.lenni0451.rivet.layout.anchor.AnchorLayout;
@@ -47,7 +46,7 @@ public class Test5 extends RivetThinGLApplication {
                 if (i == 5) {
                     c.addChild(new Separator());
                 }
-                c.addChild(new Button(new Label("Button " + i), e -> {}));
+                c.addChild(new Button("Button " + i, e -> {}));
             }
         }), c -> {
             c.layoutOptions(AnchorLayoutOptions.EMPTY.from(0.7F, 0).to(1, 0.7F));
