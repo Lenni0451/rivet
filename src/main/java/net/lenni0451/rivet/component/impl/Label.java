@@ -35,8 +35,8 @@ public class Label extends Component {
         if (!this.text.equals(text)) {
             this.text = text;
             this.reshape = true;
-            if (this.rivet() != null) {
-                this.rivet().recalculateNextFrame();
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
             }
         }
         return this;
@@ -45,8 +45,8 @@ public class Label extends Component {
     public Label scale(final float scale) {
         if (this.scale != scale) {
             this.scale = scale;
-            if (this.rivet() != null) {
-                this.rivet().recalculateNextFrame();
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
             }
         }
         return this;

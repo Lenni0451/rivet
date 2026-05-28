@@ -11,6 +11,7 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -20,7 +21,6 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.Snapping;
 import net.lenni0451.rivet.theme.Theme;
-
 import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
@@ -29,7 +29,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class ScrollContainer extends Component {
+public class ScrollContainer extends Component implements Parent {
 
     private final Component child;
     @Getter
@@ -533,6 +533,11 @@ public class ScrollContainer extends Component {
             }
             this.scrollY = Snapping.snap(this.rivet(), MathUtils.clamp(this.scrollY, 0, maxScrollY));
         }
+    }
+
+    @Override
+    public void requestLayoutRecalculation() {
+        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
 

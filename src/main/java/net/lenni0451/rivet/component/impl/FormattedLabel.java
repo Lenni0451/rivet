@@ -57,8 +57,8 @@ public class FormattedLabel extends Component {
     public FormattedLabel text(final String text) {
         this.text = text;
         this.line = null;
-        if (this.rivet() != null) {
-            this.rivet().recalculateNextFrame();
+        if (this.parent() != null) {
+            this.parent().requestLayoutRecalculation();
         }
         return this;
     }
@@ -67,8 +67,8 @@ public class FormattedLabel extends Component {
         this.text = text;
         this.format = defaultFormat;
         this.line = null;
-        if (this.rivet() != null) {
-            this.rivet().recalculateNextFrame();
+        if (this.parent() != null) {
+            this.parent().requestLayoutRecalculation();
         }
         return this;
     }
@@ -76,8 +76,8 @@ public class FormattedLabel extends Component {
     public FormattedLabel text(final TextLine line) {
         this.text = null;
         this.line = line;
-        if (this.rivet() != null) {
-            this.rivet().recalculateNextFrame();
+        if (this.parent() != null) {
+            this.parent().requestLayoutRecalculation();
         }
         return this;
     }
@@ -85,8 +85,8 @@ public class FormattedLabel extends Component {
     public FormattedLabel scale(final float scale) {
         if (this.scale != scale) {
             this.scale = scale;
-            if (this.rivet() != null) {
-                this.rivet().recalculateNextFrame();
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
             }
         }
         return this;

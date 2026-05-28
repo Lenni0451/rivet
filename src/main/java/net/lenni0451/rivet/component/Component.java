@@ -26,7 +26,7 @@ public abstract class Component {
     private Rivet rivet;
     @Getter
     @Nullable
-    private Component parent;
+    private Parent parent;
     @Getter
     private Size minSize = Size.EMPTY;
     @Getter
@@ -64,7 +64,7 @@ public abstract class Component {
     @Getter
     private final ListenerList<BiPredicate<MouseScrollEvent, Rectangle>> mouseScrollListener = new ListenerList<>();
 
-    public final void setRivet(@Nullable final Rivet rivet, @Nullable final Component parent) {
+    public final void setRivet(@Nullable final Rivet rivet, @Nullable final Parent parent) {
         if (rivet == null) {
             if (parent != null) {
                 throw new IllegalArgumentException("Parent must be null when detaching from Rivet");
@@ -76,6 +76,9 @@ public abstract class Component {
             this.rivet = null;
             this.parent = null;
         } else {
+            if (parent == null) {
+                throw new IllegalArgumentException("Parent must not be null when attaching to Rivet");
+            }
             if (this.rivet != null) {
                 throw new IllegalStateException("Component is already attached to a Rivet instance");
             }
@@ -88,7 +91,7 @@ public abstract class Component {
     public final Component minSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
             this.minSize = minSize;
-            if (this.rivet != null) this.rivet.recalculateNextFrame();
+            if (this.parent != null) this.parent.requestLayoutRecalculation();
         }
         return this;
     }
@@ -96,7 +99,7 @@ public abstract class Component {
     public final Component maxSize(final Size maxSize) {
         if (!this.maxSize.equals(maxSize)) {
             this.maxSize = maxSize;
-            if (this.rivet != null) this.rivet.recalculateNextFrame();
+            if (this.parent != null) this.parent.requestLayoutRecalculation();
         }
         return this;
     }
@@ -110,7 +113,7 @@ public abstract class Component {
     public final Component layoutOptions(final LayoutOptions layoutOptions) {
         if (this.layoutOptions == null || !this.layoutOptions.equals(layoutOptions)) {
             this.layoutOptions = layoutOptions;
-            if (this.rivet != null) this.rivet.recalculateNextFrame();
+            if (this.parent != null) this.parent.requestLayoutRecalculation();
         }
         return this;
     }

@@ -45,16 +45,13 @@ public final class Rivet {
     @Getter
     private Theme theme;
     private final Queue<Runnable> tasks = new LinkedBlockingQueue<>();
-    private boolean recalculate = false;
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
         this.backend = backend;
-        this.layers = new LayerList(new Container(layout));
+        this.layers = new LayerList(this, new Container(layout));
         this.size = size;
         this.theme = new DefaultDark();
         this.theme.apply(this);
-
-        this.root().setRivet(this, null);
     }
 
     public Container root() {
@@ -71,8 +68,8 @@ public final class Rivet {
 
     public Rivet addLayer(final Layer layer) {
         this.layers.add(layer);
-        layer.container().setRivet(this, null);
-        this.recalculate = true;
+        layer.container().setRivet(this, layer);
+        layer.recalculateNextFrame(true);
         return this;
     }
 
@@ -82,7 +79,6 @@ public final class Rivet {
                 l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
             });
             layer.container().setRivet(null, null);
-            this.recalculate = true;
             return true;
         }
         return false;
@@ -98,7 +94,7 @@ public final class Rivet {
     public Rivet size(final Size size) {
         if (!this.size.equals(size)) {
             this.size = size;
-            this.recalculate = true;
+            this.recalculateNextFrame();
         }
         return this;
     }
@@ -113,7 +109,7 @@ public final class Rivet {
     public Rivet scale(final float scale) {
         if (this.scale != scale) {
             this.scale = scale;
-            this.recalculate = true;
+            this.recalculateNextFrame();
         }
         return this;
     }
@@ -121,7 +117,7 @@ public final class Rivet {
     public Rivet snapToInteger(final boolean snapToInteger) {
         if (this.snapToInteger != snapToInteger) {
             this.snapToInteger = snapToInteger;
-            this.recalculate = true;
+            this.recalculateNextFrame();
         }
         return this;
     }
@@ -144,7 +140,9 @@ public final class Rivet {
     }
 
     public Rivet recalculateNextFrame() {
-        this.recalculate = true;
+        for (Layer layer : this.layers.get()) {
+            layer.recalculateNextFrame(true);
+        }
         return this;
     }
 
@@ -246,11 +244,13 @@ public final class Rivet {
         Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
             for (Layer layer : this.layers.get()) {
-                if (this.recalculate) layer.container().computeLayout(scaledSize);
+                if (layer.recalculateNextFrame()) {
+                    layer.container().computeLayout(scaledSize);
+                    layer.recalculateNextFrame(false);
+                }
                 layer.container().render(renderer, new Rectangle(scaledSize));
             }
         });
-        this.recalculate = false;
         return renderer.complete();
     }
 

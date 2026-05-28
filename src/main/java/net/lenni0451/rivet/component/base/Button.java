@@ -11,6 +11,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Padding;
@@ -24,7 +25,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class Button extends Component {
+public class Button extends Component implements Parent {
 
     @Getter
     private final Component child;
@@ -168,6 +169,11 @@ public class Button extends Component {
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(size.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()));
+    }
+
+    @Override
+    public void requestLayoutRecalculation() {
+        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
 

@@ -1,6 +1,25 @@
 package net.lenni0451.rivet.layer;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.Parent;
 
-public record Layer(Container container, LayerBucket bucket) {
+@Getter
+@Setter
+@RequiredArgsConstructor
+@Accessors(fluent = true, chain = true)
+public final class Layer implements Parent {
+
+    private final Container container;
+    private final LayerBucket bucket;
+    private boolean recalculateNextFrame;
+
+    @Override
+    public void requestLayoutRecalculation() {
+        this.recalculateNextFrame = true;
+    }
+
 }

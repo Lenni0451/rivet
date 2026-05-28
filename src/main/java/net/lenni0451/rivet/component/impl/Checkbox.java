@@ -81,7 +81,7 @@ public class Checkbox extends Component {
             this.text = text;
             if (this.rivet() != null) {
                 this.shapeText();
-                this.rivet().recalculateNextFrame();
+                this.parent().requestLayoutRecalculation();
             }
         }
         return this;

@@ -2,6 +2,7 @@ package net.lenni0451.rivet.layer;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.Container;
 
 import java.util.*;
@@ -14,12 +15,13 @@ public final class LayerList {
     private final Map<LayerBucket, List<Layer>> layers = new EnumMap<>(LayerBucket.class);
     private List<Layer> allLayers = new ArrayList<>();
 
-    public LayerList(final Container baseContainer) {
+    public LayerList(final Rivet rivet, final Container baseContainer) {
         for (LayerBucket bucket : LayerBucket.values()) {
             this.layers.put(bucket, new ArrayList<>());
         }
         this.baseLayer = new Layer(baseContainer, LayerBucket.BASE);
         this.layers.get(LayerBucket.BASE).add(this.baseLayer);
+        baseContainer.setRivet(rivet, this.baseLayer);
         this.updateAllLayers();
     }
 

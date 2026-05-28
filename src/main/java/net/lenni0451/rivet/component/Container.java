@@ -13,13 +13,12 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.Snapping;
 
-
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class Container extends Component {
+public class Container extends Component implements Parent {
 
     @Getter
     private final Layout layout;
@@ -42,7 +41,7 @@ public class Container extends Component {
         this.children.add(new Child(component));
         if (this.rivet() != null) {
             component.setRivet(this.rivet(), this);
-            this.rivet().recalculateNextFrame();
+            this.requestLayoutRecalculation();
         }
         return this;
     }
@@ -77,7 +76,7 @@ public class Container extends Component {
                 it.remove();
                 if (this.rivet() != null) {
                     component.setRivet(null, null);
-                    this.rivet().recalculateNextFrame();
+                    this.requestLayoutRecalculation();
                 }
                 return true;
             }
@@ -100,7 +99,7 @@ public class Container extends Component {
         }
         this.children.clear();
         if (this.rivet() != null) {
-            this.rivet().recalculateNextFrame();
+            this.requestLayoutRecalculation();
         }
         return this;
     }
@@ -232,6 +231,11 @@ public class Container extends Component {
             }
         }
         return null;
+    }
+
+    @Override
+    public void requestLayoutRecalculation() {
+        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
 

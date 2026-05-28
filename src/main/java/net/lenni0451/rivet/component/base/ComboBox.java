@@ -6,6 +6,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -22,7 +23,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class ComboBox extends Component {
+public class ComboBox extends Component implements Parent {
 
     private final Label text;
     private final Button button;
@@ -151,7 +152,6 @@ public class ComboBox extends Component {
                     || options.width() == null || options.width() != region.width()
                     || options.height() == null || options.height() != region.height()) {
                 this.child.layoutOptions(new AbsoluteLayoutOptions(region));
-                this.rivet().recalculateNextFrame();
             }
         }
     }
@@ -159,6 +159,11 @@ public class ComboBox extends Component {
     @Override
     public Size computeIdealSize(final Size constraints) {
         return this.button.computeIdealSize(constraints);
+    }
+
+    @Override
+    public void requestLayoutRecalculation() {
+        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
 }

@@ -82,7 +82,7 @@ public class SliderTooltip extends Component {
         this.layoutOptions(new AbsoluteLayoutOptions(x, y));
         this.position = position;
         this.pointerOffset = pointerOffset;
-        this.rivet().recalculateNextFrame();
+        this.parent().requestLayoutRecalculation();
     }
 
     public void add(final Rivet rivet) {

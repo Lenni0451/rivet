@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -16,7 +17,7 @@ import net.lenni0451.rivet.math.Size;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true)
-public class DecoratedContainer extends Component {
+public class DecoratedContainer extends Component implements Parent {
 
     @Getter
     private final Component background;
@@ -132,6 +133,11 @@ public class DecoratedContainer extends Component {
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(size.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()));
+    }
+
+    @Override
+    public void requestLayoutRecalculation() {
+        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
 }
