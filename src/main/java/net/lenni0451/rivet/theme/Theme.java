@@ -8,10 +8,7 @@ import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Padding;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Theme {
 
@@ -109,11 +106,14 @@ public abstract class Theme {
     public static final ThemeKey<Color> SEPARATOR_COLOR = register("separator.color", Color.class);
     public static final ThemeKey<Float> SEPARATOR_THICKNESS = register("separator.thickness", Float.class);
 
-
     private static <T> ThemeKey<T> register(final String key, final Class<T> type) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type);
         ALL_KEYS.add(themeKey);
         return themeKey;
+    }
+
+    public static List<ThemeKey<?>> allKeys() {
+        return Collections.unmodifiableList(ALL_KEYS);
     }
 
 
@@ -121,7 +121,12 @@ public abstract class Theme {
 
     public final void apply(final Rivet rivet) {
         this.values.clear();
-        this.addValues(rivet, this.values::put);
+        this.addValues(rivet, new Values() {
+            @Override
+            public <T> void put(final ThemeKey<T> key, final T value) {
+                Theme.this.values.put(key, Objects.requireNonNull(value));
+            }
+        });
         this.validate();
     }
 

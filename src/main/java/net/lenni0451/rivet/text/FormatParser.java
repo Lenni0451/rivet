@@ -3,7 +3,6 @@ package net.lenni0451.rivet.text;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 class FormatParser {
 
@@ -22,7 +21,7 @@ class FormatParser {
         this.chars = text.toCharArray();
     }
 
-    public void parse(final Handler handler) {
+    public void parse(final Handler handler) throws ParserException {
         StringBuilder currentSection = new StringBuilder();
         boolean escaped = false;
         while (this.index < this.chars.length) {
@@ -33,8 +32,8 @@ class FormatParser {
                     if (!options.isEmpty()) {
                         try {
                             handler.handle(currentSection.toString(), options);
-                        } catch (HandlerException e) {
-                            throw new IllegalStateException(this.context(e.getMessage()), e);
+                        } catch (ParserException e) {
+                            throw new ParserException(this.context(e.getMessage()), e);
                         }
                         currentSection.setLength(0);
                     }
@@ -145,20 +144,10 @@ class FormatParser {
 
 
     public interface Handler {
-        void handle(String currentText, List<Option> newOptions);
+        void handle(String currentText, List<Option> newOptions) throws ParserException;
     }
 
     public record Option(String name, String value, boolean close) {
-    }
-
-    public static class HandlerException extends RuntimeException {
-        public HandlerException(final String message) {
-            super(Objects.requireNonNull(message));
-        }
-
-        public HandlerException(final String message, final Throwable cause) {
-            super(Objects.requireNonNull(message), cause);
-        }
     }
 
 }
