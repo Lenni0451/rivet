@@ -2,8 +2,8 @@ package net.lenni0451.rivet.theme;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.component.base.Button;
-import net.lenni0451.rivet.component.base.ScrollContainer;
+import net.lenni0451.rivet.component.container.Button;
+import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Padding;
 

@@ -1,12 +1,12 @@
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
-import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.component.base.Button;
-import net.lenni0451.rivet.component.base.ScrollContainer;
+import net.lenni0451.rivet.component.container.Button;
+import net.lenni0451.rivet.component.container.Container;
+import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.Separator;
-import net.lenni0451.rivet.component.impl.graphics.SolidColor;
+import net.lenni0451.rivet.component.impl.SolidColor;
 import net.lenni0451.rivet.layout.anchor.AnchorLayout;
 import net.lenni0451.rivet.layout.anchor.AnchorLayoutOptions;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;

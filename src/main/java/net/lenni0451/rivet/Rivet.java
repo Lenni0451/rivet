@@ -6,7 +6,7 @@ import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;

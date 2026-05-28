@@ -1,7 +1,7 @@
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
-import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.component.base.Button;
+import net.lenni0451.rivet.component.container.Button;
+import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.layout.tile.TileLayout;
 import net.lenni0451.rivet.layout.tile.TileLayoutOptions;

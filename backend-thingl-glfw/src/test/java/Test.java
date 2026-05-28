@@ -1,13 +1,8 @@
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
-import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.component.base.Button;
-import net.lenni0451.rivet.component.base.ComboBox;
-import net.lenni0451.rivet.component.base.DecoratedContainer;
-import net.lenni0451.rivet.component.base.ScrollContainer;
+import net.lenni0451.rivet.component.container.*;
 import net.lenni0451.rivet.component.impl.*;
-import net.lenni0451.rivet.component.impl.graphics.SolidColor;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.layout.grid.GridAnchor;

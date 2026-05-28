@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.component.Container;
 import net.lenni0451.rivet.component.Parent;
+import net.lenni0451.rivet.component.container.Container;
 
 @Getter
 @Setter

@@ -3,7 +3,7 @@ package net.lenni0451.rivet.layer;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.component.Container;
+import net.lenni0451.rivet.component.container.Container;
 
 import java.util.*;
 

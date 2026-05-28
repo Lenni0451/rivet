@@ -1,8 +1,8 @@
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
-import net.lenni0451.rivet.component.Container;
-import net.lenni0451.rivet.component.base.ScrollContainer;
+import net.lenni0451.rivet.component.container.Container;
+import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.text.model.TextOrigin;

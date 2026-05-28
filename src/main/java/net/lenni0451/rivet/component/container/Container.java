@@ -1,9 +1,11 @@
-package net.lenni0451.rivet.component;
+package net.lenni0451.rivet.component.container;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -85,7 +87,7 @@ public class Container extends Component implements Parent {
     }
 
     public Container clearChildren() {
-        this.mouseHandler.clear(Component::onComponentMouseLeave, (component, mouseButton) -> {
+        this.mouseHandler.clear(Component::onMouseLeave, (component, mouseButton) -> {
             Rectangle componentBounds = this.childBounds(component);
             component.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
         });

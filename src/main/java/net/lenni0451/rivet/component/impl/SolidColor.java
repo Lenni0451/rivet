@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.component.impl.graphics;
+package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
 import lombok.Setter;
