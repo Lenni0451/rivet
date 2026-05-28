@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.theme.text;
 
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+@UtilityClass
 public class ThemeLoader {
 
     private static final Map<Class<?>, Parser<?>> parsers = Map.of(
