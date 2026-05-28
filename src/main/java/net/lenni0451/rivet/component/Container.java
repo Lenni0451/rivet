@@ -138,7 +138,10 @@ public class Container extends Component {
                     this.rivet().focusedComponent(component);
                     return component.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
                 },
-                () -> false
+                () -> {
+                    this.rivet().focusedComponent(null);
+                    return false;
+                }
         );
     }
 

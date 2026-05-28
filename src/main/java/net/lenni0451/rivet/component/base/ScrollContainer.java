@@ -188,6 +188,7 @@ public class ScrollContainer extends Component {
                     );
                 },
                 () -> {
+                    this.rivet().focusedComponent(this);
                     if (event.button().equals(MouseButton.LEFT)) {
                         if (hThumb != null && hThumb.contains(event.x(), event.y())) {
                             this.hBarPressed = true;

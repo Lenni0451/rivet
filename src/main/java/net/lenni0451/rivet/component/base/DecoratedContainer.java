@@ -65,9 +65,12 @@ public class DecoratedContainer extends Component {
                 childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
                 component -> {
                     this.rivet().focusedComponent(component);
-                    return component.onMouseDown(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.left()), childBounds);
+                    return component.onMouseDown(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
                 },
-                () -> false
+                () -> {
+                    this.rivet().focusedComponent(this.background);
+                    return false;
+                }
         );
     }
 
@@ -77,7 +80,7 @@ public class DecoratedContainer extends Component {
                 event,
                 component -> {
                     Rectangle childBounds = bounds.offset(this.innerPadding);
-                    return component.onMouseUp(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.left()), childBounds);
+                    return component.onMouseUp(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
                 },
                 () -> false
         );

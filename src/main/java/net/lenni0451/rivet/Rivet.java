@@ -185,8 +185,14 @@ public final class Rivet {
         return this.mouseHandler.onMouseDown(
                 event,
                 this.findLayerAt(x, y),
-                layer -> layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
-                () -> false
+                layer -> {
+                    this.focusedComponent(layer.container());
+                    return layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize()));
+                },
+                () -> {
+                    this.focusedComponent(null);
+                    return false;
+                }
         );
     }
 
