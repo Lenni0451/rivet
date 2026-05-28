@@ -81,7 +81,7 @@ public class Button extends Component {
 
     @Override
     protected void onComponentAdded() {
-        this.child.setRivet(this.rivet());
+        this.child.setRivet(this.rivet(), this);
 
         this.hoverAnimation = new Animation()
                 .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
@@ -90,7 +90,7 @@ public class Button extends Component {
 
     @Override
     protected void onComponentRemoved() {
-        this.child.setRivet(null);
+        this.child.setRivet(null, null);
         this.hovered = false;
         this.pressed.clear();
         if (this.hoverAnimation != null) {

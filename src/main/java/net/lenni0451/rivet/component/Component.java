@@ -25,6 +25,9 @@ public abstract class Component {
     @Getter
     private Rivet rivet;
     @Getter
+    @Nullable
+    private Component parent;
+    @Getter
     private Size minSize = Size.EMPTY;
     @Getter
     private Size maxSize = new Size(Float.MAX_VALUE, Float.MAX_VALUE);
@@ -61,18 +64,23 @@ public abstract class Component {
     @Getter
     private final ListenerList<BiPredicate<MouseScrollEvent, Rectangle>> mouseScrollListener = new ListenerList<>();
 
-    public final void setRivet(@Nullable final Rivet rivet) {
+    public final void setRivet(@Nullable final Rivet rivet, @Nullable final Component parent) {
         if (rivet == null) {
+            if (parent != null) {
+                throw new IllegalArgumentException("Parent must be null when detaching from Rivet");
+            }
             if (this.rivet == null) {
                 throw new IllegalStateException("Component is not attached to any Rivet instance");
             }
             this.removedListener.callVoid(Runnable::run, this::onComponentRemoved);
             this.rivet = null;
+            this.parent = null;
         } else {
             if (this.rivet != null) {
                 throw new IllegalStateException("Component is already attached to a Rivet instance");
             }
             this.rivet = rivet;
+            this.parent = parent;
             this.addedListener.callVoid(Runnable::run, this::onComponentAdded);
         }
     }

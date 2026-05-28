@@ -41,7 +41,7 @@ public class Container extends Component {
         this.removeChild(component);
         this.children.add(new Child(component));
         if (this.rivet() != null) {
-            component.setRivet(this.rivet());
+            component.setRivet(this.rivet(), this);
             this.rivet().recalculateNextFrame();
         }
         return this;
@@ -76,7 +76,7 @@ public class Container extends Component {
                 }
                 it.remove();
                 if (this.rivet() != null) {
-                    component.setRivet(null);
+                    component.setRivet(null, null);
                     this.rivet().recalculateNextFrame();
                 }
                 return true;
@@ -95,7 +95,7 @@ public class Container extends Component {
                 if (this.rivet().focusedComponent() == child.component) {
                     this.rivet().focusedComponent(null);
                 }
-                child.component.setRivet(null);
+                child.component.setRivet(null, null);
             }
         }
         this.children.clear();
@@ -112,14 +112,14 @@ public class Container extends Component {
     @Override
     protected void onComponentAdded() {
         for (Child child : this.children) {
-            child.component.setRivet(this.rivet());
+            child.component.setRivet(this.rivet(), this);
         }
     }
 
     @Override
     protected void onComponentRemoved() {
         for (Child child : this.children) {
-            child.component.setRivet(null);
+            child.component.setRivet(null, null);
         }
     }
 

@@ -54,7 +54,7 @@ public final class Rivet {
         this.theme = new DefaultDark();
         this.theme.apply(this);
 
-        this.root().setRivet(this);
+        this.root().setRivet(this, null);
     }
 
     public Container root() {
@@ -71,7 +71,7 @@ public final class Rivet {
 
     public Rivet addLayer(final Layer layer) {
         this.layers.add(layer);
-        layer.container().setRivet(this);
+        layer.container().setRivet(this, null);
         this.recalculate = true;
         return this;
     }
@@ -81,7 +81,7 @@ public final class Rivet {
             this.mouseHandler.checkAndRemove(layer, l -> l.container().onMouseLeave(), (l, mouseButton) -> {
                 l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
             });
-            layer.container().setRivet(null);
+            layer.container().setRivet(null, null);
             this.recalculate = true;
             return true;
         }

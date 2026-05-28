@@ -42,14 +42,14 @@ public class DecoratedContainer extends Component {
 
     @Override
     protected void onComponentAdded() {
-        this.background.setRivet(this.rivet());
-        this.child.setRivet(this.rivet());
+        this.background.setRivet(this.rivet(), this);
+        this.child.setRivet(this.rivet(), this);
     }
 
     @Override
     protected void onComponentRemoved() {
-        this.background.setRivet(null);
-        this.child.setRivet(null);
+        this.background.setRivet(null, null);
+        this.child.setRivet(null, null);
     }
 
     @Override

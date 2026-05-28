@@ -140,14 +140,14 @@ public class ScrollContainer extends Component {
 
     @Override
     protected void onComponentAdded() {
-        this.child.setRivet(this.rivet());
+        this.child.setRivet(this.rivet(), this);
         this.scrollXAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
         this.scrollYAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
     }
 
     @Override
     protected void onComponentRemoved() {
-        this.child.setRivet(null);
+        this.child.setRivet(null, null);
         this.hBarHovered = false;
         this.hBarPressed = false;
         this.hRailHovered = false;

@@ -81,13 +81,13 @@ public class ComboBox extends Component {
 
     @Override
     protected void onComponentAdded() {
-        this.button.setRivet(this.rivet());
+        this.button.setRivet(this.rivet(), this);
     }
 
     @Override
     protected void onComponentRemoved() {
         this.close();
-        this.button.setRivet(null);
+        this.button.setRivet(null, null);
     }
 
     @Override
