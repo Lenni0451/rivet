@@ -82,7 +82,7 @@ public class ThemeLoader {
 
         @SneakyThrows
         default void tryHandle(final String line, final Throwable cause) {
-            handle(line, cause);
+            this.handle(line, cause);
         }
     }
 
