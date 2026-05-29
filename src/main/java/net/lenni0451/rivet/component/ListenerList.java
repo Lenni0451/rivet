@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 
 public final class ListenerList<L> {
 
-    private final List<L> listeners = new ArrayList<>();
+    private final List<L> listeners = new ArrayList<>(0);
 
     public ListenerList<L> add(final L listener) {
         this.listeners.add(listener);
