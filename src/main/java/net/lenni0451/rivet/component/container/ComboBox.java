@@ -42,7 +42,7 @@ public class ComboBox extends Component implements Parent {
     }
 
     public <C extends Component> ComboBox(final String text, final C child, final Consumer<C> initializer) {
-        this(new Label(text).horizontalOrigin(TextOrigin.Horizontal.LOGICAL_LEFT), t -> {}, child, initializer);
+        this(new Label(text).horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT), t -> {}, child, initializer);
     }
 
     public <T extends Component, C extends Component> ComboBox(final T text, final C child) {
