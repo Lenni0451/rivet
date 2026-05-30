@@ -61,16 +61,17 @@ public class DecoratedContainer extends Component implements Parent {
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
+        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
         return this.mouseHandler.onMouseDown(
                 event,
-                childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
+                mouseOverChild ? this.child : null,
                 component -> {
                     this.rivet().focusedComponent(component);
                     return component.onMouseDown(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
                 },
                 () -> {
                     this.rivet().focusedComponent(this.background);
-                    return false;
+                    return this.background.onMouseDown(event, bounds);
                 }
         );
     }
@@ -83,29 +84,31 @@ public class DecoratedContainer extends Component implements Parent {
                     Rectangle childBounds = bounds.offset(this.innerPadding);
                     return component.onMouseUp(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
                 },
-                () -> false
+                () -> this.background.onMouseUp(event, bounds)
         );
     }
 
     @Override
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
+        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
         return this.mouseHandler.onMouseMove(
-                childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
+                mouseOverChild ? this.child : null,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
                 component -> component.onMouseMove(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
-                () -> false
+                () -> this.background.onMouseMove(event, bounds)
         );
     }
 
     @Override
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
+        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
         return this.mouseHandler.onMouseScroll(
-                childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y()) ? this.child : null,
+                mouseOverChild ? this.child : null,
                 component -> component.onMouseScroll(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
-                () -> false
+                () -> this.background.onMouseScroll(event, bounds)
         );
     }
 

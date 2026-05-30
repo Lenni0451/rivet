@@ -141,6 +141,7 @@ public final class Renderer {
     }
 
     public void renderImage(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
+        this.checkClosed();
         this.currentRenderList.peek().add(new RenderCommand.Image(texture, x, y, width, height, color));
     }
 
