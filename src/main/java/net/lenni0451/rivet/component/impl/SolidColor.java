@@ -41,7 +41,7 @@ public class SolidColor extends Component {
         if (this.color.getAlpha() > 0) {
             renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius, this.color);
         }
-        if (this.outlineColor.getAlpha() > 0) {
+        if (this.outlineColor.getAlpha() > 0 && this.outlineWidth > 0) {
             renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius, this.outlineWidth, this.outlineColor);
         }
     }
