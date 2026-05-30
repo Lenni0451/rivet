@@ -57,11 +57,12 @@ public class ContainerMouseHandler<C> {
         }
     }
 
-    public boolean onMouseDown(final MouseButtonEvent event, @Nullable final C hoveredComponent, final Predicate<C> componentMouseDown, final BooleanSupplier containerMouseDown) {
+    public boolean onMouseDown(final MouseButtonEvent event, @Nullable final C hoveredComponent, final Consumer<C> focusComponent, final Predicate<C> componentMouseDown, final BooleanSupplier containerMouseDown) {
         if (this.nonComponentMouseButtons.isEmpty() && hoveredComponent != null) {
             if (this.clickedComponent == null || this.clickedComponent == hoveredComponent) {
                 this.clickedComponent = hoveredComponent;
                 this.componentMouseButtons.add(event.button());
+                focusComponent.accept(hoveredComponent);
                 return componentMouseDown.test(hoveredComponent);
             }
         } else {

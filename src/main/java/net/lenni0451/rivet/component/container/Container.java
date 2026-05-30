@@ -143,10 +143,11 @@ public class Container extends Component implements Parent {
         return this.mouseHandler.onMouseDown(
                 event,
                 child == null ? null : child.component,
-                component -> {
-                    this.rivet().focusedComponent(component);
-                    return component.onMouseDown(event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()), child.bounds.add(bounds.x(), bounds.y()));
-                },
+                this.rivet()::focusedComponent,
+                component -> component.onMouseDown(
+                        event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
+                        child.bounds.add(bounds.x(), bounds.y())
+                ),
                 () -> {
                     this.rivet().focusedComponent(null);
                     return false;

@@ -65,10 +65,11 @@ public class DecoratedContainer extends Component implements Parent {
         return this.mouseHandler.onMouseDown(
                 event,
                 mouseOverChild ? this.child : null,
-                component -> {
-                    this.rivet().focusedComponent(component);
-                    return component.onMouseDown(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
-                },
+                this.rivet()::focusedComponent,
+                component -> component.onMouseDown(
+                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
+                        childBounds
+                ),
                 () -> {
                     this.rivet().focusedComponent(this.background);
                     return this.background.onMouseDown(event, bounds);

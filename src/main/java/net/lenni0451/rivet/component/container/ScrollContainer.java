@@ -179,13 +179,11 @@ public class ScrollContainer extends Component implements Parent {
         return this.mouseHandler.onMouseDown(
                 event,
                 componentHovered ? this.child : null,
-                component -> {
-                    this.rivet().focusedComponent(component);
-                    return component.onMouseDown(
-                            event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
-                            new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
-                    );
-                },
+                this.rivet()::focusedComponent,
+                component -> component.onMouseDown(
+                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
+                ),
                 () -> {
                     this.rivet().focusedComponent(this);
                     if (event.button().equals(MouseButton.LEFT)) {
