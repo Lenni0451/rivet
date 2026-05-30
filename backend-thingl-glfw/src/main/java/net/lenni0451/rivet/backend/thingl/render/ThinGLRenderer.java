@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.backend.thingl.render;
 
 import lombok.RequiredArgsConstructor;
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderElement;
 import net.lenni0451.rivet.backend.render.RenderList;
@@ -26,17 +27,17 @@ public class ThinGLRenderer {
             }
             case TransformCommand.ComponentBounds bounds -> ThinGL.scissorStack().pushIntersection(
                     matrixStack,
-                    bounds.x(),
-                    bounds.y(),
-                    bounds.x() + bounds.width(),
-                    bounds.y() + bounds.height()
+                    MathUtils.floorInt(bounds.x()),
+                    MathUtils.floorInt(bounds.y()),
+                    MathUtils.ceilInt(bounds.x() + bounds.width()),
+                    MathUtils.ceilInt(bounds.y() + bounds.height())
             );
             case TransformCommand.Scissor scissor -> ThinGL.scissorStack().pushIntersection(
                     matrixStack,
-                    scissor.x(),
-                    scissor.y(),
-                    scissor.x() + scissor.width(),
-                    scissor.y() + scissor.height()
+                    MathUtils.floorInt(scissor.x()),
+                    MathUtils.floorInt(scissor.y()),
+                    MathUtils.ceilInt(scissor.x() + scissor.width()),
+                    MathUtils.ceilInt(scissor.y() + scissor.height())
             );
             case TransformCommand.Translate translate -> {
                 matrixStack.pushMatrix();
