@@ -50,6 +50,12 @@ public class Container extends Component implements Parent {
         return this;
     }
 
+    public Container sortChildren(final Comparator<Component> comparator) {
+        this.children.sort((child1, child2) -> comparator.compare(child1.component, child2.component));
+        if (this.rivet() != null) this.rivet().recalculateNextFrame();
+        return this;
+    }
+
     public List<Component> children() {
         return this.children.stream().map(c -> c.component).toList();
     }
