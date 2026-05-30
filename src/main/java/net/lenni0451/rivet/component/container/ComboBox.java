@@ -24,7 +24,9 @@ import java.util.function.Consumer;
 @Accessors(fluent = true, chain = true)
 public class ComboBox extends Component implements Parent {
 
+    @Getter
     private final Button button;
+    @Getter
     private final Component child;
     private Layer layer;
 
