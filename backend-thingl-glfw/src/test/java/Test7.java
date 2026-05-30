@@ -2,11 +2,15 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
-import net.lenni0451.rivet.component.container.Container;
+import net.lenni0451.rivet.component.container.ReorderableContainer;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
 import net.lenni0451.rivet.input.mouse.MouseButton;
+import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.utils.SelectionModel;
 import net.raphimc.thingl.resource.font.Font;
@@ -36,7 +40,23 @@ public class Test7 extends RivetThinGLApplication {
     protected void init(final Rivet rivet) {
         List<SelectableLabel> labels = new ArrayList<>();
         SelectionModel<SelectableLabel> selectionModel = new SelectionModel<>(labels);
-        Container container = new Container(new VerticalListLayout(5, true));
+
+        ReorderableContainer container = new ReorderableContainer(
+                new VerticalListLayout(5, true),
+                DropMarkerStrategy.vertical(5, 3),
+                dragData -> dragData instanceof SelectableLabel
+        );
+        container.reorderListener().add((dragData, insertIndex) -> {
+            SelectableLabel draggedLabel = (SelectableLabel) dragData;
+            int sourceIndex = labels.indexOf(draggedLabel);
+            if (sourceIndex != -1) {
+                labels.remove(sourceIndex);
+                if (sourceIndex < insertIndex) insertIndex--;
+                labels.add(insertIndex, draggedLabel);
+
+                container.sortChildren(java.util.Comparator.comparingInt(labels::indexOf));
+            }
+        });
         for (int i = 0; i < 10; i++) {
             SelectableLabel label = new SelectableLabel("Test " + i, selectionModel);
             label.mouseDownListener().add((event, bounds) -> {
@@ -58,6 +78,7 @@ public class Test7 extends RivetThinGLApplication {
 
         private final SelectionModel<SelectableLabel> selectionModel;
         private boolean hovered;
+        private boolean mouseDown;
 
         public SelectableLabel(final String text, final SelectionModel<SelectableLabel> selectionModel) {
             super(text);
@@ -73,6 +94,27 @@ public class Test7 extends RivetThinGLApplication {
         @Override
         protected void onComponentMouseLeave() {
             this.hovered = false;
+        }
+
+        @Override
+        protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+            this.mouseDown = true;
+            return super.onComponentMouseDown(event, bounds);
+        }
+
+        @Override
+        protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+            this.mouseDown = false;
+            return super.onComponentMouseUp(event, bounds);
+        }
+
+        @Override
+        protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+            if (this.mouseDown && !this.rivet().dragAndDropManager().isDragging()) {
+                // Note: Payload is "this"
+                this.rivet().dragAndDropManager().startDrag(this, new Label(this.text()), this.computeIdealSize(Size.EMPTY));
+            }
+            return super.onComponentMouseMove(event, bounds);
         }
 
         @Override

@@ -2,6 +2,7 @@ package net.lenni0451.rivet.component.container;
 
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -11,9 +12,10 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class DynamicListView<E> extends Container {
+public class DynamicListView<E> extends ReorderableContainer {
 
     private final Supplier<List<E>> listSupplier;
     private final Function<E, Component> componentFactory;
@@ -24,11 +26,19 @@ public class DynamicListView<E> extends Container {
     private final Comparator<Component> orderComparator = Comparator.comparingInt(c -> this.orderMap.getOrDefault(c, 0));
 
     public DynamicListView(final Layout layout, final List<E> list, final Function<E, Component> componentFactory) {
-        this(layout, () -> list, componentFactory);
+        this(layout, null, obj -> false, () -> list, componentFactory);
     }
 
     public DynamicListView(final Layout layout, final Supplier<List<E>> listSupplier, final Function<E, Component> componentFactory) {
-        super(layout);
+        this(layout, null, obj -> false, listSupplier, componentFactory);
+    }
+
+    public DynamicListView(final Layout layout, final DropMarkerStrategy strategy, final Predicate<Object> dropFilter, final List<E> list, final Function<E, Component> componentFactory) {
+        this(layout, strategy, dropFilter, () -> list, componentFactory);
+    }
+
+    public DynamicListView(final Layout layout, final DropMarkerStrategy strategy, final Predicate<Object> dropFilter, final Supplier<List<E>> listSupplier, final Function<E, Component> componentFactory) {
+        super(layout, strategy, dropFilter);
         this.listSupplier = listSupplier;
         this.componentFactory = componentFactory;
     }
