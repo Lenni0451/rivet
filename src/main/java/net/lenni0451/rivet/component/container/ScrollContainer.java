@@ -11,7 +11,6 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
-import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -21,6 +20,7 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.Snapping;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;

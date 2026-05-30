@@ -8,7 +8,6 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.dragdrop.DragOverEvent;
 import net.lenni0451.rivet.dragdrop.DropEvent;
-import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
@@ -16,6 +15,7 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.Snapping;
+import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;

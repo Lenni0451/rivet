@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.input;
+package net.lenni0451.rivet.utils;
 
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
