@@ -140,6 +140,10 @@ public final class Renderer {
         this.currentRenderList.peek().add(new RenderCommand.Text(shapedText, tx, ty));
     }
 
+    public void renderImage(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
+        this.currentRenderList.peek().add(new RenderCommand.Image(texture, x, y, width, height, color));
+    }
+
     public void line(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
         this.checkClosed();
         this.currentRenderList.peek().add(new RenderCommand.Line(x1, y1, x2, y2, width, color));

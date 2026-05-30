@@ -1,11 +1,13 @@
 package net.lenni0451.rivet.backend.thingl.render;
 
 import lombok.RequiredArgsConstructor;
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderElement;
 import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.backend.render.TransformCommand;
+import net.lenni0451.rivet.backend.thingl.ThinGLTexture;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedText;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
 import net.raphimc.thingl.ThinGL;
@@ -143,6 +145,29 @@ public class ThinGLRenderer {
                             RendererText.HorizontalOrigin.LOGICAL_LEFT
                     );
                     default -> throw new UnsupportedOperationException(text.shapedText().getClass().getName());
+                }
+            }
+            case RenderCommand.Image image -> {
+                ThinGLTexture texture = (ThinGLTexture) image.texture();
+                if (image.color().equals(Color.WHITE)) {
+                    ThinGL.renderer2D().texture(
+                            matrixStack,
+                            texture.texture(),
+                            image.x(), image.y(),
+                            image.width(), image.height(),
+                            texture.view().minX, texture.view().minY,
+                            texture.view().lengthX(), texture.view().lengthY()
+                    );
+                } else {
+                    ThinGL.renderer2D().colorizedTexture(
+                            matrixStack,
+                            texture.texture(),
+                            image.x(), image.y(),
+                            image.width(), image.height(),
+                            texture.view().minX, texture.view().minY,
+                            texture.view().lengthX(), texture.view().lengthY(),
+                            image.color()
+                    );
                 }
             }
             case RenderCommand.FillGradientRect fillGradientRect -> ThinGL.renderer2D().filledRectangle(

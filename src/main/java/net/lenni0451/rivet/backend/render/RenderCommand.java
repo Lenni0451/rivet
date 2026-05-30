@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.backend.render;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 
@@ -9,7 +10,7 @@ import java.util.function.Consumer;
 public sealed interface RenderCommand extends RenderElement permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
         RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Text,
-        RenderCommand.Line, RenderCommand.FillGradientRect, RenderCommand.CustomRenderCommand {
+        RenderCommand.Line, RenderCommand.FillGradientRect, RenderCommand.Image, RenderCommand.CustomRenderCommand {
 
     Rectangle bounds();
 
@@ -86,6 +87,13 @@ public sealed interface RenderCommand extends RenderElement permits
     }
 
     record FillGradientRect(float x, float y, float width, float height, Color ctl, Color cbl, Color cbr, Color ctr) implements RenderCommand {
+        @Override
+        public Rectangle bounds() {
+            return new Rectangle(this.x, this.y, this.width, this.height);
+        }
+    }
+
+    record Image(Texture texture, float x, float y, float width, float height, Color color) implements RenderCommand {
         @Override
         public Rectangle bounds() {
             return new Rectangle(this.x, this.y, this.width, this.height);
