@@ -4,6 +4,7 @@ import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,10 +37,18 @@ public class DynamicListView<E> extends Container {
     public void render(final Renderer renderer, final Rectangle bounds) {
         List<E> currentList = this.listSupplier.get();
         if (!this.isSame(currentList, this.lastSeenList)) {
-            this.syncChildren(currentList);
             this.requestLayoutRecalculation();
         }
         super.render(renderer, bounds);
+    }
+
+    @Override
+    public void computeLayout(final Size size) {
+        List<E> currentList = this.listSupplier.get();
+        if (!this.isSame(currentList, this.lastSeenList)) {
+            this.syncChildren(currentList);
+        }
+        super.computeLayout(size);
     }
 
     private boolean isSame(final List<E> a, final List<E> b) {
