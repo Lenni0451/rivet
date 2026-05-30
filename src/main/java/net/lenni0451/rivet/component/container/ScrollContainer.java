@@ -237,6 +237,7 @@ public class ScrollContainer extends Component implements Parent {
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         return this.mouseHandler.onMouseUp(
+                this.rivet(),
                 event,
                 component -> component.onMouseUp(
                         event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),

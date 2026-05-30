@@ -221,6 +221,7 @@ public final class Rivet {
         MouseButtonEvent translatedEvent = event.withX(x).withY(y);
         boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, () -> this.layers.findLayerAt(x, y));
         boolean mouseHandled = this.mouseHandler.onMouseUp(
+                this,
                 event,
                 layer -> layer.container().onMouseUp(translatedEvent, new Rectangle(this.scaledSize())),
                 () -> false

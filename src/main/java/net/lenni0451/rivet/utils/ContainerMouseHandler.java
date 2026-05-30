@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.utils;
 
+import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 
@@ -69,7 +70,7 @@ public class ContainerMouseHandler<C> {
         return containerMouseDown.getAsBoolean();
     }
 
-    public boolean onMouseUp(final MouseButtonEvent event, final Predicate<C> componentMouseUp, final BooleanSupplier containerMouseUp) {
+    public boolean onMouseUp(final Rivet rivet, final MouseButtonEvent event, final Predicate<C> componentMouseUp, final BooleanSupplier containerMouseUp) {
         this.nonComponentMouseButtons.remove(event.button());
         if (this.componentMouseButtons.remove(event.button())) {
             try {
@@ -77,6 +78,7 @@ public class ContainerMouseHandler<C> {
             } finally {
                 if (this.componentMouseButtons.isEmpty()) {
                     this.clickedComponent = null;
+                    rivet.updateMouseState();
                 }
             }
         }

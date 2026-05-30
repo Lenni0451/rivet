@@ -79,6 +79,7 @@ public class DecoratedContainer extends Component implements Parent {
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         return this.mouseHandler.onMouseUp(
+                this.rivet(),
                 event,
                 component -> {
                     Rectangle childBounds = bounds.offset(this.innerPadding);
