@@ -29,6 +29,16 @@ public final class LayerList {
         return Collections.unmodifiableList(this.allLayers);
     }
 
+    public Layer findLayerAt(final float x, final float y) {
+        for (int i = this.allLayers.size() - 1; i >= 0; i--) {
+            Layer layer = this.allLayers.get(i);
+            if (layer.bucket().interceptable() && layer.container().intercepts(x, y)) {
+                return layer;
+            }
+        }
+        return null;
+    }
+
     public LayerList add(final Layer layer) {
         if (layer.bucket().equals(LayerBucket.BASE)) {
             throw new IllegalArgumentException("Cannot add a layer to the base bucket, base layer is already set");

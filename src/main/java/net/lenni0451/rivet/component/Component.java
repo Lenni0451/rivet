@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -63,6 +65,12 @@ public abstract class Component {
     private final ListenerList<BiPredicate<MouseMoveEvent, Rectangle>> mouseMoveListener = new ListenerList<>();
     @Getter
     private final ListenerList<BiPredicate<MouseScrollEvent, Rectangle>> mouseScrollListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BiPredicate<DropEvent, Rectangle>> dropListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BiPredicate<DragOverEvent, Rectangle>> dragOverListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<BooleanSupplier> dragLeaveListener = new ListenerList<>();
 
     public final void setRivet(@Nullable final Rivet rivet, @Nullable final Parent parent) {
         if (rivet == null) {
@@ -219,6 +227,32 @@ public abstract class Component {
 
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         return false;
+    }
+
+    public final boolean onDrop(final DropEvent event, final Rectangle bounds) {
+        return this.dropListener.call(l -> l.test(event, bounds), () -> this.onComponentDrop(event, bounds));
+    }
+
+    protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
+        return false;
+    }
+
+    public final boolean onDragOver(final DragOverEvent event, final Rectangle bounds) {
+        return this.dragOverListener.call(l -> l.test(event, bounds), () -> this.onComponentDragOver(event, bounds));
+    }
+
+    protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
+        return false;
+    }
+
+    public final void onDragLeave() {
+        this.dragLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
+            this.onComponentDragLeave();
+            return false;
+        });
+    }
+
+    protected void onComponentDragLeave() {
     }
 
     public void render(final Renderer renderer, final Rectangle bounds) {

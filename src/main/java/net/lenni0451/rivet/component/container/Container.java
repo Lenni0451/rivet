@@ -6,6 +6,8 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.ContainerMouseHandler;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -66,7 +68,7 @@ public class Container extends Component implements Parent {
         this.mouseHandler.checkAndRemove(component, Component::onMouseLeave, (comp, mouseButton) -> {
             Rectangle componentBounds = this.childBounds(comp);
             comp.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
-        });
+        }, Component::onDragLeave);
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
@@ -90,7 +92,7 @@ public class Container extends Component implements Parent {
         this.mouseHandler.clear(Component::onMouseLeave, (component, mouseButton) -> {
             Rectangle componentBounds = this.childBounds(component);
             component.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
-        });
+        }, Component::onDragLeave);
         if (this.rivet() != null) {
             for (Child child : this.children) {
                 if (this.rivet().focusedComponent() == child.component) {
@@ -184,6 +186,37 @@ public class Container extends Component implements Parent {
                 ),
                 () -> false
         );
+    }
+
+    @Override
+    protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
+        Child child = this.findChildAt(event.x(), event.y());
+        if (child != null) {
+            return child.component.onDrop(
+                    event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
+                    child.bounds.add(bounds.x(), bounds.y())
+            );
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
+        Child child = this.findChildAt(event.x(), event.y());
+        return this.mouseHandler.onDragOver(
+                child == null ? null : child.component,
+                Component::onDragLeave,
+                component -> {
+                    Rectangle childBounds = this.childBounds(component);
+                    return component.onDragOver(event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()), childBounds.add(bounds.x(), bounds.y()));
+                },
+                () -> false
+        );
+    }
+
+    @Override
+    protected void onComponentDragLeave() {
+        this.mouseHandler.onDragLeave(Component::onDragLeave);
     }
 
     @Override

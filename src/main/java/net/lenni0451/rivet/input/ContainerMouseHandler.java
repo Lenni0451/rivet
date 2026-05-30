@@ -15,6 +15,7 @@ public class ContainerMouseHandler<C> {
 
     private C hoveredComponent;
     private C clickedComponent;
+    private C hoveredDragComponent;
     private final Set<MouseButton> componentMouseButtons = EnumSet.noneOf(MouseButton.class);
     private final Set<MouseButton> nonComponentMouseButtons = EnumSet.noneOf(MouseButton.class);
 
@@ -22,7 +23,7 @@ public class ContainerMouseHandler<C> {
         return !this.componentMouseButtons.isEmpty() || !this.nonComponentMouseButtons.isEmpty();
     }
 
-    public void checkAndRemove(final C component, final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp) {
+    public void checkAndRemove(final C component, final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp, final Consumer<C> componentDragLeave) {
         if (component == null) return;
         if (this.hoveredComponent == component) {
             componentMouseLeave.accept(this.hoveredComponent);
@@ -35,11 +36,16 @@ public class ContainerMouseHandler<C> {
             this.clickedComponent = null;
             this.componentMouseButtons.clear();
         }
+        if (this.hoveredDragComponent == component) {
+            componentDragLeave.accept(this.hoveredDragComponent);
+            this.hoveredDragComponent = null;
+        }
     }
 
-    public void clear(final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp) {
-        this.checkAndRemove(this.hoveredComponent, componentMouseLeave, componentMouseUp);
-        this.checkAndRemove(this.clickedComponent, componentMouseLeave, componentMouseUp);
+    public void clear(final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp, final Consumer<C> componentDragLeave) {
+        this.checkAndRemove(this.hoveredComponent, componentMouseLeave, componentMouseUp, componentDragLeave);
+        this.checkAndRemove(this.clickedComponent, componentMouseLeave, componentMouseUp, componentDragLeave);
+        this.checkAndRemove(this.hoveredDragComponent, componentMouseLeave, componentMouseUp, componentDragLeave);
     }
 
 
@@ -100,6 +106,26 @@ public class ContainerMouseHandler<C> {
             return componentMouseScroll.test(hoveredComponent);
         } else {
             return containerMouseScroll.getAsBoolean();
+        }
+    }
+
+    public boolean onDragOver(@Nullable final C hoveredComponent, final Consumer<C> componentDragLeave, final Predicate<C> componentDragOver, final BooleanSupplier containerDragOver) {
+        if (this.hoveredDragComponent != null && this.hoveredDragComponent != hoveredComponent) {
+            componentDragLeave.accept(this.hoveredDragComponent);
+            this.hoveredDragComponent = null;
+        }
+        if (hoveredComponent != null) {
+            this.hoveredDragComponent = hoveredComponent;
+            return componentDragOver.test(hoveredComponent);
+        } else {
+            return containerDragOver.getAsBoolean();
+        }
+    }
+
+    public void onDragLeave(final Consumer<C> componentDragLeave) {
+        if (this.hoveredDragComponent != null) {
+            componentDragLeave.accept(this.hoveredDragComponent);
+            this.hoveredDragComponent = null;
         }
     }
 
