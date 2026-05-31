@@ -184,4 +184,12 @@ public class DecoratedContainer extends Component implements Parent {
         if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
+    @Override
+    public Size contentSize() {
+        if (this.child instanceof Parent parent) {
+            return parent.contentSize().plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
+        }
+        return Size.EMPTY;
+    }
+
 }

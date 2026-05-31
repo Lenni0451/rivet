@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.container.Container;
+import net.lenni0451.rivet.math.Size;
 
 @Getter
 @Setter
@@ -20,6 +21,11 @@ public final class Layer implements Parent {
     @Override
     public void requestLayoutRecalculation() {
         this.recalculateNextFrame = true;
+    }
+
+    @Override
+    public Size contentSize() {
+        return this.container.contentSize();
     }
 
 }

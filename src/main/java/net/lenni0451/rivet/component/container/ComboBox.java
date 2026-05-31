@@ -174,4 +174,9 @@ public class ComboBox extends Component implements Parent {
         if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
+    @Override
+    public Size contentSize() {
+        return this.button.contentSize();
+    }
+
 }

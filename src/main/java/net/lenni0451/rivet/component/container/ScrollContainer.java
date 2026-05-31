@@ -555,8 +555,11 @@ public class ScrollContainer extends Component implements Parent {
                 MathUtils.clamp(availableHeight, this.child.minSize().height(), this.child.maxSize().height())
         );
         this.child.computeLayout(childSize);
-        if (this.child instanceof Container container) {
-            childSize = container.contentSize();
+        if (this.child instanceof Parent parent) {
+            Size parentContentSize = parent.contentSize();
+            if (!parentContentSize.equals(Size.EMPTY)) {
+                childSize = parentContentSize;
+            }
         }
         this.childSize = childSize;
 
@@ -587,6 +590,11 @@ public class ScrollContainer extends Component implements Parent {
     @Override
     public void requestLayoutRecalculation() {
         if (this.parent() != null) this.parent().requestLayoutRecalculation();
+    }
+
+    @Override
+    public Size contentSize() {
+        return Size.EMPTY;
     }
 
 
