@@ -15,11 +15,10 @@ public interface DropMarkerStrategy {
             for (int i = 0; i < children.size(); i++) {
                 Rectangle bounds = container.childBounds(children.get(i));
                 if (bounds.contains(mouseX, mouseY)) {
-                    float markerOffset = gap / 2F - markerThickness / 2F;
                     if (mouseX < bounds.x() + bounds.width() / 2F) {
-                        return new DropTarget(i, new Rectangle(bounds.x() - markerOffset, bounds.y(), markerThickness, bounds.height()));
+                        return new DropTarget(i, new Rectangle(bounds.x() - gap / 2F - markerThickness / 2F, bounds.y(), markerThickness, bounds.height()));
                     } else {
-                        return new DropTarget(i + 1, new Rectangle(bounds.x() + bounds.width() + markerOffset, bounds.y(), markerThickness, bounds.height()));
+                        return new DropTarget(i + 1, new Rectangle(bounds.x() + bounds.width() + gap / 2F - markerThickness / 2F, bounds.y(), markerThickness, bounds.height()));
                     }
                 }
             }
@@ -33,11 +32,10 @@ public interface DropMarkerStrategy {
             for (int i = 0; i < children.size(); i++) {
                 Rectangle bounds = container.childBounds(children.get(i));
                 if (bounds.contains(mouseX, mouseY)) {
-                    float markerOffset = gap / 2F - markerThickness / 2F;
                     if (mouseY < bounds.y() + bounds.height() / 2F) {
-                        return new DropTarget(i, new Rectangle(bounds.x(), bounds.y() - markerOffset, bounds.height(), markerThickness));
+                        return new DropTarget(i, new Rectangle(bounds.x(), bounds.y() - gap / 2F - markerThickness / 2F, bounds.height(), markerThickness));
                     } else {
-                        return new DropTarget(i + 1, new Rectangle(bounds.x(), bounds.y() + bounds.height() + markerOffset, bounds.height(), markerThickness));
+                        return new DropTarget(i + 1, new Rectangle(bounds.x(), bounds.y() + bounds.height() + gap / 2F - markerThickness / 2F, bounds.height(), markerThickness));
                     }
                 }
             }
