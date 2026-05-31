@@ -158,6 +158,16 @@ public class ThinGLRenderer {
                             texture.view().minX, texture.view().minY,
                             texture.view().lengthX(), texture.view().lengthY()
                     );
+                } else if (image.color().getRed() == 255 && image.color().getGreen() == 255 && image.color().getBlue() == 255) {
+                    ThinGL.renderer2D().coloredTexture(
+                            matrixStack,
+                            texture.texture(),
+                            image.x(), image.y(),
+                            image.width(), image.height(),
+                            texture.view().minX, texture.view().minY,
+                            texture.view().lengthX(), texture.view().lengthY(),
+                            image.color()
+                    );
                 } else {
                     ThinGL.renderer2D().colorizedTexture(
                             matrixStack,
