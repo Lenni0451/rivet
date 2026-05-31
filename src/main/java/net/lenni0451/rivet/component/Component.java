@@ -113,8 +113,21 @@ public abstract class Component {
     }
 
     public final Component fixedSize(final Size size) {
-        this.minSize(size);
-        this.maxSize(size);
+        Size newMinSize = this.minSize;
+        Size newMaxSize = this.maxSize;
+        if (size.width() >= 0) {
+            newMinSize = newMinSize.withWidth(size.width());
+            newMaxSize = newMaxSize.withWidth(size.width());
+        }
+        if (size.height() >= 0) {
+            newMinSize = newMinSize.withHeight(size.height());
+            newMaxSize = newMaxSize.withHeight(size.height());
+        }
+        if (!this.minSize.equals(newMinSize) || !this.maxSize.equals(newMaxSize)) {
+            this.minSize = newMinSize;
+            this.maxSize = newMaxSize;
+            if (this.parent != null) this.parent.requestLayoutRecalculation();
+        }
         return this;
     }
 
