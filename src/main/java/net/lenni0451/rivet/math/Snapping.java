@@ -13,11 +13,13 @@ public final class Snapping {
 
     public static Rectangle snap(final Rivet rivet, final Rectangle rect) {
         if (!rivet.snapToInteger()) return rect;
+        float x = (float) Math.floor(rect.x());
+        float y = (float) Math.floor(rect.y());
         return new Rectangle(
-                Math.round(rect.x()),
-                Math.round(rect.y()),
-                Math.round(rect.width()),
-                Math.round(rect.height())
+                x,
+                y,
+                (float) Math.ceil(rect.maxX()) - x,
+                (float) Math.ceil(rect.maxY()) - y
         );
     }
 

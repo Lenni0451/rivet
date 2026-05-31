@@ -2,6 +2,7 @@ package net.lenni0451.rivet.layout.tile;
 
 import lombok.With;
 import lombok.experimental.WithBy;
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -98,7 +99,7 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
         int columns = this.columns;
         int rows = this.rows;
         if (columns * rows < components.size()) {
-            columns = (int) Math.ceil((float) components.size() / rows);
+            columns = MathUtils.ceilInt((float) components.size() / rows);
         }
         return new Grid(columns, rows);
     }
