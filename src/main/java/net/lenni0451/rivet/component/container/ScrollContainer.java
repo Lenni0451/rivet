@@ -11,6 +11,8 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -334,6 +336,37 @@ public class ScrollContainer extends Component implements Parent {
     }
 
     @Override
+    protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
+        Component hoveredComponent = this.hoveredComponent(event.x(), event.y(), bounds);
+        if (hoveredComponent != null) {
+            return this.child.onDrop(
+                    event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                    new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
+            );
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
+        return this.mouseHandler.onDragOver(
+                this.hoveredComponent(event.x(), event.y(), bounds),
+                Component::onDragLeave,
+                component -> component.onDragOver(
+                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
+                ),
+                () -> false
+        );
+    }
+
+    @Override
+    protected void onComponentDragLeave() {
+        this.mouseHandler.onDragLeave(Component::onDragLeave);
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.updateAnimation();
 
@@ -349,6 +382,19 @@ public class ScrollContainer extends Component implements Parent {
         this.renderHorizontalScrollbar(renderer, bounds);
         this.renderVerticalScrollbar(renderer, bounds);
         this.renderCorner(renderer, bounds);
+    }
+
+    @Nullable
+    private Component hoveredComponent(final float x, final float y, final Rectangle bounds) {
+        Rectangle hThumb = this.getHThumbBounds(bounds);
+        Rectangle hRail = this.getHRailBounds(bounds);
+        Rectangle vThumb = this.getVThumbBounds(bounds);
+        Rectangle vRail = this.getVRailBounds(bounds);
+        boolean componentHovered = (hThumb == null || !hThumb.contains(x, y))
+                && (hRail == null || !hRail.contains(x, y))
+                && (vThumb == null || !vThumb.contains(x, y))
+                && (vRail == null || !vRail.contains(x, y));
+        return componentHovered ? this.child : null;
     }
 
     private void updateAnimation() {

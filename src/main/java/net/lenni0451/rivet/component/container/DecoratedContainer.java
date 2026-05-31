@@ -6,6 +6,8 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
@@ -98,7 +100,10 @@ public class DecoratedContainer extends Component implements Parent {
                 mouseOverChild ? this.child : null,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
-                component -> component.onMouseMove(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
+                component -> component.onMouseMove(
+                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
+                        childBounds
+                ),
                 () -> this.background.onMouseMove(event, bounds)
         );
     }
@@ -109,9 +114,43 @@ public class DecoratedContainer extends Component implements Parent {
         boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
         return this.mouseHandler.onMouseScroll(
                 mouseOverChild ? this.child : null,
-                component -> component.onMouseScroll(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds),
+                component -> component.onMouseScroll(
+                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
+                        childBounds
+                ),
                 () -> this.background.onMouseScroll(event, bounds)
         );
+    }
+
+    @Override
+    protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
+        Rectangle childBounds = bounds.offset(this.innerPadding);
+        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
+        if (mouseOverChild) {
+            return this.child.onDrop(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
+        } else {
+            return this.background.onDrop(event, childBounds);
+        }
+    }
+
+    @Override
+    protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
+        Rectangle childBounds = bounds.offset(this.innerPadding);
+        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
+        return this.mouseHandler.onDragOver(
+                mouseOverChild ? this.child : null,
+                Component::onDragLeave,
+                component -> component.onDragOver(
+                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
+                        childBounds
+                ),
+                () -> this.background.onDragOver(event, bounds)
+        );
+    }
+
+    @Override
+    protected void onComponentDragLeave() {
+        this.mouseHandler.onDragLeave(Component::onMouseLeave);
     }
 
     @Override
