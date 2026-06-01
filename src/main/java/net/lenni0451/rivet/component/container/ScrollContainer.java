@@ -558,7 +558,10 @@ public class ScrollContainer extends Component implements Parent {
         if (this.child instanceof Parent parent) {
             Size parentContentSize = parent.contentSize();
             if (!parentContentSize.equals(Size.EMPTY)) {
-                childSize = parentContentSize;
+                childSize = new Size(
+                        this.horizontalScrolling ? MathUtils.clamp(Math.max(childSize.width(), parentContentSize.width()), this.child.minSize().width(), this.child.maxSize().width()) : childSize.width(),
+                        this.verticalScrolling ? MathUtils.clamp(Math.max(childSize.height(), parentContentSize.height()), this.child.minSize().height(), this.child.maxSize().height()) : childSize.height()
+                );
             }
         }
         this.childSize = childSize;
