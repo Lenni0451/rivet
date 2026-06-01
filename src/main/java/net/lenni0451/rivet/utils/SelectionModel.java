@@ -87,7 +87,7 @@ public final class SelectionModel<E> {
     }
 
     private void fireChange() {
-        this.changeListeners.callVoid(Runnable::run, () -> {});
+        this.changeListeners.callVoid(Runnable::run);
     }
 
 }

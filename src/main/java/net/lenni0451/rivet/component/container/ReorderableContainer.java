@@ -54,10 +54,7 @@ public class ReorderableContainer extends Container {
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
         if (this.currentTarget != null && this.dropFilter.test(event.dragData())) {
-            this.reorderListener.callVoid(
-                    listener -> listener.onReorder(event.dragData(), this.currentTarget.insertIndex()),
-                    () -> {}
-            );
+            this.reorderListener.callVoid(listener -> listener.onReorder(event.dragData(), this.currentTarget.insertIndex()));
             this.currentTarget = null;
             return true;
         }

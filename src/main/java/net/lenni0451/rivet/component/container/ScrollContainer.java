@@ -614,7 +614,7 @@ public class ScrollContainer extends Component implements Parent {
     }
 
     private void onScroll() {
-        this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY), () -> {});
+        this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
     }
 
 

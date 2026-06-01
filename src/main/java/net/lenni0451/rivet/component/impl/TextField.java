@@ -348,7 +348,7 @@ public class TextField extends Component {
     }
 
     private void onTextChange() {
-        this.valueChangeListener.callVoid(c -> c.accept(this.text()), () -> {});
+        this.valueChangeListener.callVoid(c -> c.accept(this.text()));
     }
 
 }

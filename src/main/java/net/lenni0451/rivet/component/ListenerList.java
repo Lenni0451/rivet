@@ -20,12 +20,20 @@ public final class ListenerList<L> {
         return this;
     }
 
+    public boolean call(final Predicate<L> listenerInvoker) {
+        return this.call(listenerInvoker, () -> false);
+    }
+
     public boolean call(final Predicate<L> listenerInvoker, final BooleanSupplier task) {
         for (L listener : this.listeners) {
             boolean value = listenerInvoker.test(listener);
             if (value) return true;
         }
         return task.getAsBoolean();
+    }
+
+    public void callVoid(final Consumer<L> listenerInvoker) {
+        this.callVoid(listenerInvoker, () -> {});
     }
 
     public void callVoid(final Consumer<L> listenerInvoker, final Runnable task) {

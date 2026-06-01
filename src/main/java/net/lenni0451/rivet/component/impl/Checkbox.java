@@ -68,7 +68,7 @@ public class Checkbox extends Component {
     public Checkbox checked(final boolean checked) {
         if (this.checked != checked) {
             this.checked = checked;
-            this.toggleListener.callVoid(c -> c.accept(this.checked), () -> {});
+            this.toggleListener.callVoid(c -> c.accept(this.checked));
         }
         return this;
     }

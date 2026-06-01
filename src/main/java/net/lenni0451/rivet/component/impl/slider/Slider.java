@@ -171,7 +171,7 @@ public class Slider extends Component {
             if (this.tooltip != null) {
                 this.tooltip.text(String.format(this.tooltipFormat.value(), this.value));
             }
-            this.valueChangeListener.callVoid(c -> c.accept(this.value), () -> {});
+            this.valueChangeListener.callVoid(c -> c.accept(this.value));
         }
     }
 

@@ -79,7 +79,7 @@ public class ComboBox extends Component implements Parent {
         container.addChild(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
         this.rivet().addLayer(this.layer);
-        this.openListener.callVoid(Runnable::run, () -> {});
+        this.openListener.callVoid(Runnable::run);
         return this;
     }
 
@@ -87,7 +87,7 @@ public class ComboBox extends Component implements Parent {
         if (!this.isOpen()) return this;
         this.rivet().removeLayer(this.layer);
         this.layer = null;
-        this.closeListener.callVoid(Runnable::run, () -> {});
+        this.closeListener.callVoid(Runnable::run);
         return this;
     }
 

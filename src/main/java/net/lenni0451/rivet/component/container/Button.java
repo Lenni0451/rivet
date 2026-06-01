@@ -120,7 +120,7 @@ public class Button extends Component implements Parent {
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         this.pressed.add(event.button());
         if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
-            this.clickListener.callVoid(listener -> listener.onClick(event), () -> {});
+            this.clickListener.callVoid(listener -> listener.onClick(event));
         }
         return true;
     }
@@ -129,7 +129,7 @@ public class Button extends Component implements Parent {
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         this.pressed.remove(event.button());
         if (this.hovered && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
-            this.clickListener.callVoid(listener -> listener.onClick(event), () -> {});
+            this.clickListener.callVoid(listener -> listener.onClick(event));
         }
         return true;
     }

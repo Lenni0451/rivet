@@ -73,7 +73,7 @@ public class ColorPicker extends Component {
 
     private void updateColor() {
         this.color = Color.fromHSB(this.hue, this.saturation, this.brightness).withAlphaF(this.alpha);
-        this.colorChangeListener.callVoid(c -> c.accept(this.color), () -> {});
+        this.colorChangeListener.callVoid(c -> c.accept(this.color));
     }
 
     @Override
