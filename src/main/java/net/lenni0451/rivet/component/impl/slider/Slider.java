@@ -17,6 +17,7 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.FormatUtils;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -33,7 +34,6 @@ public class Slider extends Component {
     @Getter
     private double max;
     @Getter
-    @Setter
     private double step;
     @Getter
     @Setter
@@ -46,6 +46,7 @@ public class Slider extends Component {
     private boolean dragged;
     private SliderTooltip tooltip;
     private final Map<Double, ShapedText> tickLabels = new HashMap<>();
+    private String cachedFormatString = null;
 
     @Getter
     private final ThemeOption<Color> barColor;
@@ -97,6 +98,7 @@ public class Slider extends Component {
         this.thumbCornerRadius = new ThemeOption<>(this, Theme.SLIDER_THUMB_CORNER_RADIUS);
         this.thumbEncased = new ThemeOption<>(this, Theme.SLIDER_THUMB_ENCASED);
         this.tooltipFormat = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_FORMAT);
+        this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
     }
 
     public Slider min(final double min) {
@@ -108,6 +110,12 @@ public class Slider extends Component {
     public Slider max(final double max) {
         this.max = max;
         this.tickLabels.clear();
+        return this;
+    }
+
+    public Slider step(final double step) {
+        this.step = step;
+        this.cachedFormatString = null;
         return this;
     }
 
@@ -130,7 +138,7 @@ public class Slider extends Component {
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
-            this.tooltip = new SliderTooltip(String.format(this.tooltipFormat.value(), this.value));
+            this.tooltip = new SliderTooltip(this.formatValue(this.value));
             this.tooltip.add(this.rivet());
             this.updateValue(event.x(), bounds);
             return true;
@@ -169,7 +177,7 @@ public class Slider extends Component {
         if (this.value != newValue) {
             this.value = newValue;
             if (this.tooltip != null) {
-                this.tooltip.text(String.format(this.tooltipFormat.value(), this.value));
+                this.tooltip.text(this.formatValue(this.value));
             }
             this.valueChangeListener.callVoid(c -> c.accept(this.value));
         }
@@ -191,6 +199,13 @@ public class Slider extends Component {
         if (this.tooltip != null) {
             this.tooltip.position(bounds.x() + thumbX, bounds.y(), bounds.height());
         }
+    }
+
+    private String formatValue(final double value) {
+        if (this.cachedFormatString == null) {
+            this.cachedFormatString = FormatUtils.formatDecimalString(this.tooltipFormat.value(), this.step);
+        }
+        return String.format(this.cachedFormatString, value);
     }
 
     private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
@@ -275,7 +290,12 @@ public class Slider extends Component {
 
     public record Ticks(double majorTickSpacing, double minorTickSpacing, TickLabelProvider labelProvider) {
         public Ticks(final double majorTickSpacing, final double minorTickSpacing) {
-            this(majorTickSpacing, minorTickSpacing, d -> String.format("%,f", d));
+            this(majorTickSpacing, minorTickSpacing, defaultLabelProvider(majorTickSpacing));
+        }
+
+        private static TickLabelProvider defaultLabelProvider(final double majorTickSpacing) {
+            String format = FormatUtils.formatDecimalString("%,f", majorTickSpacing);
+            return d -> String.format(format, d);
         }
     }
 
