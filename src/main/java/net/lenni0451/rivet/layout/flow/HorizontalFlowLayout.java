@@ -40,6 +40,11 @@ public record HorizontalFlowLayout(int horizontalGap, int verticalGap) implement
             currentWidth += xGap + componentWidth;
             currentHeight = Math.max(currentHeight, componentHeight);
         }
+        if (currentWidth > 0) {
+            totalWidth = Math.max(totalWidth, currentWidth);
+            if (totalHeight > 0) totalHeight += this.verticalGap;
+            totalHeight += currentHeight;
+        }
         return new Size(totalWidth, totalHeight);
     }
 

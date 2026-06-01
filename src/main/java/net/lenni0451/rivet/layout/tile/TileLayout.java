@@ -34,8 +34,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
             );
         }
         return new Size(
-                cellSize.width() * grid.columns + Math.max(this.verticalGap * (grid.columns - 1), 0),
-                cellSize.height() * grid.rows + Math.max(this.horizontalGap * (grid.rows - 1), 0)
+                cellSize.width() * grid.columns + Math.max(this.horizontalGap * (grid.columns - 1), 0),
+                cellSize.height() * grid.rows + Math.max(this.verticalGap * (grid.rows - 1), 0)
         );
     }
 
@@ -43,8 +43,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
     public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         Grid grid = this.calculateGrid(components);
         Size cellSize = new Size(
-                (containerSize.width() - Math.max(this.verticalGap * (grid.columns - 1), 0)) / grid.columns,
-                (containerSize.height() - Math.max(this.horizontalGap * (grid.rows - 1), 0)) / grid.rows
+                (containerSize.width() - Math.max(this.horizontalGap * (grid.columns - 1), 0)) / grid.columns,
+                (containerSize.height() - Math.max(this.verticalGap * (grid.rows - 1), 0)) / grid.rows
         );
         BitSet occupied = new BitSet(grid.count());
         List<Component> notLayouted = new ArrayList<>();
@@ -61,8 +61,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
                     } else {
                         occupied.set(index);
                         setBounds.accept(component, new Rectangle(
-                                column * (cellSize.width() + this.verticalGap),
-                                row * (cellSize.height() + this.horizontalGap),
+                                column * (cellSize.width() + this.horizontalGap),
+                                row * (cellSize.height() + this.verticalGap),
                                 this.widthOf(component, cellSize.width()),
                                 this.heightOf(component, cellSize.height())
                         ));
@@ -87,8 +87,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
             int column = index % grid.columns;
             int row = index / grid.columns;
             setBounds.accept(component, new Rectangle(
-                    column * (cellSize.width() + this.verticalGap),
-                    row * (cellSize.height() + this.horizontalGap),
+                    column * (cellSize.width() + this.horizontalGap),
+                    row * (cellSize.height() + this.verticalGap),
                     this.widthOf(component, cellSize.width()),
                     this.heightOf(component, cellSize.height())
             ));
