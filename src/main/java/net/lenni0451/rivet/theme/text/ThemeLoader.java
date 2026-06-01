@@ -80,6 +80,10 @@ public class ThemeLoader {
 
     @FunctionalInterface
     public interface ExceptionHandler {
+        ExceptionHandler RETHROW = (l, t) -> {
+            throw new IllegalStateException("Unable to parse line: " + l, t);
+        };
+
         void handle(final String line, final Throwable cause) throws Throwable;
 
         @SneakyThrows

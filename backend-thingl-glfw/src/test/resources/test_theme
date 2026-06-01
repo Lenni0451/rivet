@@ -1,0 +1,9 @@
+button.inactive_color=rgba(128, 128, 128, 50)
+button.inactive_outline_color=black
+button.active_color=rgba(128, 128, 128, 150)
+button.active_outline_color=rgb(116, 165, 229)
+button.click_color=rgba(89, 89, 89, 150)
+button.click_outline_color=rgba(81, 115, 160, 255)
+button.corner_radius=0
+button.outline_width=3
+scroll.bar_type=normal

@@ -1,4 +1,3 @@
-import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.Container;
@@ -6,8 +5,6 @@ import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.text.model.TextOrigin;
-import net.lenni0451.rivet.theme.Theme;
-import net.lenni0451.rivet.theme.impl.DefaultDark;
 import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.font.FontSet;
@@ -31,22 +28,7 @@ public class Test2 extends RivetThinGLApplication {
 
     @Override
     protected void init(final Rivet rivet) {
-        rivet.theme(new DefaultDark() {
-            @Override
-            protected void addValues(final Rivet rivet, final Values values) {
-                super.addValues(rivet, values);
-                values.put(Theme.BUTTON_INACTIVE_COLOR, Color.GRAY.withAlpha(50));
-                values.put(Theme.BUTTON_INACTIVE_OUTLINE_COLOR, Color.BLACK);
-                values.put(Theme.BUTTON_ACTIVE_COLOR, Color.GRAY.withAlpha(150));
-                values.put(Theme.BUTTON_ACTIVE_OUTLINE_COLOR, Color.fromRGB(116, 165, 229));
-                values.put(Theme.BUTTON_CLICK_COLOR, Color.GRAY.withAlpha(150).darker());
-                values.put(Theme.BUTTON_CLICK_OUTLINE_COLOR, Color.fromRGB(116, 165, 229).darker());
-                values.put(Theme.BUTTON_CORNER_RADIUS, 0F);
-                values.put(Theme.BUTTON_OUTLINE_WIDTH, 3F);
-                values.put(Theme.SCROLL_BAR_TYPE, ScrollContainer.ScrollBarType.NORMAL);
-            }
-        });
-
+        rivet.theme(new TestTheme());
         Container container = new Container(new VerticalListLayout(10, true));
         rivet.root().addChild(new ScrollContainer(container, true, true).autoScroll(true));
         Thread.ofVirtual().start(() -> {
