@@ -1,10 +1,12 @@
 package net.lenni0451.rivet.backend.thingl.util;
 
+import lombok.experimental.UtilityClass;
 import net.lenni0451.rivet.math.Rectangle;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.primitives.Rectanglef;
 
+@UtilityClass
 public class MathUtil {
 
     public static Rectanglef convert(final Rectangle rectangle) {

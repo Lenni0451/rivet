@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.backend.thingl.util;
 
+import lombok.experimental.UtilityClass;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
@@ -10,6 +11,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.EnumSet;
 import java.util.Set;
 
+@UtilityClass
 public class GLFWMapper {
 
     public static KeyEvent mapKey(final int keyCode, final int modifier) {
