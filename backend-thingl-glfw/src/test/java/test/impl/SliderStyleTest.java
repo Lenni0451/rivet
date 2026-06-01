@@ -6,6 +6,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.*;
 import net.lenni0451.rivet.component.impl.*;
 import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.layout.flow.HorizontalFlowLayout;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
@@ -80,7 +81,7 @@ public class SliderStyleTest extends TestBase {
                 new ScrollContainer(new DecoratedContainer(
                         new SolidColor(),
                         s -> s.color(Color.GRAY.withAlpha(150)),
-                        new Container(new VerticalListLayout(5, true)),
+                        new Container(new HorizontalFlowLayout(5, 5)),
                         container -> {
                             for (Enum val : rivet.theme().get(option.key()).getClass().getEnumConstants()) {
                                 container.addChild(new Button(val.toString(), event -> {
@@ -93,9 +94,12 @@ public class SliderStyleTest extends TestBase {
     }
 
     private Component stringOption(final Rivet rivet, final String name, final ThemeOption<String> option) {
-        TextField textField = new TextField(rivet.theme().get(option.key()));
-        textField.valueChangeListener().add(option::set);
-        return textField;
+        return new Container(new GridLayout(5, 5))
+                .addChild(new Label(name).layoutOptions(new GridLayoutOptions(0, 0)))
+                .addChild(new TextField(rivet.theme().get(option.key())), textField -> {
+                    textField.layoutOptions(new GridLayoutOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
+                    textField.valueChangeListener().add(option::set);
+                });
     }
 
 }
