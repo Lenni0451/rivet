@@ -150,7 +150,7 @@ public class DecoratedContainer extends Component implements Parent {
 
     @Override
     protected void onComponentDragLeave() {
-        this.mouseHandler.onDragLeave(Component::onMouseLeave);
+        this.mouseHandler.onDragLeave(Component::onDragLeave);
     }
 
     @Override
