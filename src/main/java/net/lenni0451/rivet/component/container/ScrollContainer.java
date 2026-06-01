@@ -8,7 +8,7 @@ import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.dragdrop.DragOverEvent;
@@ -453,9 +453,9 @@ public class ScrollContainer extends Component implements Parent {
         if (pressed) color = this.barClickColor.value();
         else if (hovered) color = this.barHoverColor.value();
 
-        renderer.fillOptimizedRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), color);
+        renderer.optimizedFillRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), color);
         if (this.barOutlineWidth.value() > 0) {
-            renderer.outlineOptimizedRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), this.barOutlineWidth.value(), this.barOutlineColor.value());
+            renderer.optimizedOutlineRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), this.barOutlineWidth.value(), this.barOutlineColor.value());
         }
     }
 

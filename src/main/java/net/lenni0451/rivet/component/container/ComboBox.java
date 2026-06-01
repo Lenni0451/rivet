@@ -3,7 +3,7 @@ package net.lenni0451.rivet.component.container;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.impl.Label;

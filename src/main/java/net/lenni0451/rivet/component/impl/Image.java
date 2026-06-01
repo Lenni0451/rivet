@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.backend.Texture;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -23,7 +23,7 @@ public class Image extends Component {
 
     @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
-        renderer.renderImage(this.texture, 0, 0, bounds.width(), bounds.height(), this.color);
+        renderer.image(this.texture, 0, 0, bounds.width(), bounds.height(), this.color);
     }
 
     @Override

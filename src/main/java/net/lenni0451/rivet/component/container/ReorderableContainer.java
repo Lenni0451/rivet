@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.dragdrop.DragOverEvent;
 import net.lenni0451.rivet.dragdrop.DropEvent;

@@ -8,7 +8,7 @@ import net.lenni0451.commons.animation.EasingBehavior;
 import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
@@ -246,8 +246,8 @@ public class TextField extends Component {
         float textHeight = this.shapedText.logicalBounds().height();
         this.ensureCursorVisible(visibleWidth);
 
-        renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
-        renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.focused ? this.focusedOutlineColor.value() : this.outlineColor.value());
+        renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
+        renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.focused ? this.focusedOutlineColor.value() : this.outlineColor.value());
 
         renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
             renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
@@ -258,7 +258,7 @@ public class TextField extends Component {
                         renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, this.selectionColor.value());
                     }
 
-                    renderer.renderText(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+                    renderer.text(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
 
                     if (this.focused) {
                         float cursorWidth = this.cursorWidth.value();

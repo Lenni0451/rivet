@@ -3,7 +3,7 @@ package net.lenni0451.rivet.dragdrop;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;

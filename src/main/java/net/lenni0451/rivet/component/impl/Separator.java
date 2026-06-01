@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -35,12 +35,12 @@ public class Separator extends Component {
         Color color = this.color.value();
         float thickness = this.thickness.value();
         switch (this.orientation) {
-            case HORIZONTAL -> renderer.fillOptimizedRoundedRect(
+            case HORIZONTAL -> renderer.optimizedFillRoundedRect(
                     0, (bounds.height() - thickness) / 2F,
                     bounds.width(), thickness,
                     0, color
             );
-            case VERTICAL -> renderer.fillOptimizedRoundedRect(
+            case VERTICAL -> renderer.optimizedFillRoundedRect(
                     (bounds.width() - thickness) / 2F, 0,
                     thickness, bounds.height(),
                     0, color

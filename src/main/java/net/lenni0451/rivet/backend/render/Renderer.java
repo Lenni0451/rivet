@@ -1,11 +1,8 @@
-package net.lenni0451.rivet.backend;
+package net.lenni0451.rivet.backend.render;
 
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.render.RenderCommand;
-import net.lenni0451.rivet.backend.render.RenderElement;
-import net.lenni0451.rivet.backend.render.RenderList;
-import net.lenni0451.rivet.backend.render.TransformCommand;
+import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -107,7 +104,7 @@ public final class Renderer {
         this.currentRenderList.peek().add(new RenderCommand.OutlineRoundedRect(x, y, width, height, cornerRadius, outlineWidth, color));
     }
 
-    public void fillOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
+    public void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
         this.checkClosed();
         float maxRadius = Math.min(width, height) / 2F;
         float radius = Math.min(cornerRadius, maxRadius);
@@ -120,7 +117,7 @@ public final class Renderer {
         }
     }
 
-    public void outlineOptimizedRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
+    public void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
         this.checkClosed();
         float maxRadius = Math.min(width, height) / 2F;
         float radius = Math.min(cornerRadius, maxRadius);
@@ -133,18 +130,6 @@ public final class Renderer {
         }
     }
 
-    public void renderText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
-        this.checkClosed();
-        float tx = x + shapedText.offset(horizontalOrigin);
-        float ty = y + shapedText.offset(verticalOrigin);
-        this.currentRenderList.peek().add(new RenderCommand.Text(shapedText, tx, ty));
-    }
-
-    public void renderImage(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
-        this.checkClosed();
-        this.currentRenderList.peek().add(new RenderCommand.Image(texture, x, y, width, height, color));
-    }
-
     public void line(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
         this.checkClosed();
         this.currentRenderList.peek().add(new RenderCommand.Line(x1, y1, x2, y2, width, color));
@@ -153,6 +138,18 @@ public final class Renderer {
     public void fillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr) {
         this.checkClosed();
         this.currentRenderList.peek().add(new RenderCommand.FillGradientRect(x, y, width, height, ctl, cbl, cbr, ctr));
+    }
+
+    public void text(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
+        this.checkClosed();
+        float tx = x + shapedText.offset(horizontalOrigin);
+        float ty = y + shapedText.offset(verticalOrigin);
+        this.currentRenderList.peek().add(new RenderCommand.Text(shapedText, tx, ty));
+    }
+
+    public void image(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
+        this.checkClosed();
+        this.currentRenderList.peek().add(new RenderCommand.Image(texture, x, y, width, height, color));
     }
 
     /**

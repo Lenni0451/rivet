@@ -1,6 +1,6 @@
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.ReorderableContainer;
 import net.lenni0451.rivet.component.impl.Label;

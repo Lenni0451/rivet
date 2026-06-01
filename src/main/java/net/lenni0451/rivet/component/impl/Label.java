@@ -3,7 +3,7 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
@@ -69,7 +69,7 @@ public class Label extends Component {
         this.shapeText();
         float x = this.horizontalOrigin.offset(bounds.width() / this.scale);
         float y = this.verticalOrigin.offset(bounds.height() / this.scale);
-        renderer.scale(this.scale, () -> renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin));
+        renderer.scale(this.scale, () -> renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin));
     }
 
     @Override

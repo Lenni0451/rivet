@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -187,11 +187,11 @@ public class Slider extends Component {
 
     private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
         if (this.thumbEncased.value()) {
-            renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, bounds.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
-            renderer.fillOptimizedRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
+            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, bounds.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
         } else {
-            renderer.fillOptimizedRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, bounds.width() - thumbWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
-            renderer.fillOptimizedRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
+            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, bounds.width() - thumbWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
+            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
         }
     }
 
@@ -202,9 +202,9 @@ public class Slider extends Component {
             case CIRCLE -> renderer.fillCircle(thumbX, sliderCenter, Math.min(thumbWidth, thumbHeight) / 2F, color);
             case SQUARE -> {
                 float size = Math.min(thumbWidth, thumbHeight);
-                renderer.fillOptimizedRoundedRect(thumbX - size / 2F, sliderCenter - size / 2F, size, size, cornerRadius, color);
+                renderer.optimizedFillRoundedRect(thumbX - size / 2F, sliderCenter - size / 2F, size, size, cornerRadius, color);
             }
-            case RECTANGLE -> renderer.fillOptimizedRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, color);
+            case RECTANGLE -> renderer.optimizedFillRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, color);
             case PIN -> {
                 renderer.fillRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight / 2F, color);
                 renderer.fillTriangle(thumbX - thumbWidth / 2F, sliderCenter, thumbX, sliderCenter + thumbHeight / 2F, thumbX + thumbWidth / 2F, sliderCenter, color);
@@ -232,7 +232,7 @@ public class Slider extends Component {
                 ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet().backend().shapeText(this.ticks.labelProvider.getLabel(v), this.rivet().theme().get(Theme.TEXT_COLOR)));
                 renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
                     renderer.scale(0.5F, () -> {
-                        renderer.renderText(text, 0, 0, TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_TOP);
+                        renderer.text(text, 0, 0, TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_TOP);
                     });
                 });
                 if (lastTick) break;

@@ -8,7 +8,7 @@ import net.lenni0451.commons.animation.EasingBehavior;
 import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
@@ -148,9 +148,9 @@ public class Button extends Component implements Parent {
             color = this.clickColor.value();
             outlineColor = this.clickOutlineColor.value();
         }
-        renderer.fillOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, color);
+        renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, color);
         if (outlineWidth > 0) {
-            renderer.outlineOptimizedRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, outlineWidth, outlineColor);
+            renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, outlineWidth, outlineColor);
         }
 
         float width = bounds.width() - this.innerPadding.value().horizontal();

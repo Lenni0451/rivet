@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -125,9 +125,9 @@ public class Checkbox extends Component {
         float boxSize = bounds.height() * 0.8F;
         float offset = (bounds.height() - boxSize) / 2F;
 
-        renderer.fillOptimizedRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.backgroundColor.value());
+        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.backgroundColor.value());
         if (this.outlineWidth.value() > 0) {
-            renderer.outlineOptimizedRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColor.value());
+            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColor.value());
         }
 
         if (this.checked) {
@@ -140,7 +140,7 @@ public class Checkbox extends Component {
         }
 
         if (!this.text.isEmpty()) {
-            renderer.renderText(this.shapedText, offset + bounds.height() + this.textGap.value(), bounds.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+            renderer.text(this.shapedText, offset + bounds.height() + this.textGap.value(), bounds.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
         }
     }
 

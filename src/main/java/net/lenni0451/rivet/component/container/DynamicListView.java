@@ -1,6 +1,6 @@
 package net.lenni0451.rivet.component.container;
 
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
 import net.lenni0451.rivet.layout.Layout;

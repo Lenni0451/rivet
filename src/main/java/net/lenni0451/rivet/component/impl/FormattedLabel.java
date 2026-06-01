@@ -3,7 +3,7 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
@@ -104,7 +104,7 @@ public class FormattedLabel extends Component {
         float x = this.horizontalOrigin.offset(bounds.width() / this.scale);
         float y = this.verticalOrigin.offset(bounds.height() / this.scale);
         renderer.scale(this.scale, () -> {
-            renderer.renderText(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
+            renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
         });
     }
 

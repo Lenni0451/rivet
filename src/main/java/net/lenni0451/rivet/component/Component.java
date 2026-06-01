@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.Renderer;
+import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.dragdrop.DragOverEvent;
 import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.keyboard.CharEvent;

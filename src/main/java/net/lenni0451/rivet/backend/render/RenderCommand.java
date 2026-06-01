@@ -9,8 +9,8 @@ import java.util.function.Consumer;
 
 public sealed interface RenderCommand extends RenderElement permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
-        RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Text,
-        RenderCommand.Line, RenderCommand.FillGradientRect, RenderCommand.Image, RenderCommand.CustomRenderCommand {
+        RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Line,
+        RenderCommand.Text, RenderCommand.FillGradientRect, RenderCommand.Image, RenderCommand.CustomRenderCommand {
 
     Rectangle bounds();
 
@@ -68,13 +68,6 @@ public sealed interface RenderCommand extends RenderElement permits
         }
     }
 
-    record Text(ShapedText shapedText, float x, float y) implements RenderCommand {
-        @Override
-        public Rectangle bounds() {
-            return this.shapedText.visualBounds().add(this.x, this.y);
-        }
-    }
-
     record Line(float x1, float y1, float x2, float y2, float width, Color color) implements RenderCommand {
         @Override
         public Rectangle bounds() {
@@ -90,6 +83,13 @@ public sealed interface RenderCommand extends RenderElement permits
         @Override
         public Rectangle bounds() {
             return new Rectangle(this.x, this.y, this.width, this.height);
+        }
+    }
+
+    record Text(ShapedText shapedText, float x, float y) implements RenderCommand {
+        @Override
+        public Rectangle bounds() {
+            return this.shapedText.visualBounds().add(this.x, this.y);
         }
     }
 
