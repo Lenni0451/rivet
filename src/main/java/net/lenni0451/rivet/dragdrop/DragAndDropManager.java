@@ -5,9 +5,13 @@ import lombok.RequiredArgsConstructor;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.layer.Layer;
+import net.lenni0451.rivet.layer.LayerBucket;
+import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
+import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
@@ -31,6 +35,7 @@ public class DragAndDropManager {
     @Getter
     private float ghostOffsetY;
 
+    private Layer dragLayer;
     private Layer hoveredDragLayer;
 
     private float mouseX = -Float.MAX_VALUE;
@@ -49,14 +54,29 @@ public class DragAndDropManager {
         this.ghostOffsetY = ghostOffsetY;
 
         if (this.ghostComponent != null) {
-            this.ghostComponent.setRivet(this.rivet, this.rivet.root());
-            this.ghostComponent.computeLayout(this.ghostSize);
+            this.ghostComponent.layoutOptions(new AbsoluteLayoutOptions(
+                    this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY,
+                    this.ghostSize.width(), this.ghostSize.height()
+            ));
+
+            Container dragContainer = new Container(AbsoluteLayout.INSTANCE) {
+                @Override
+                public void render(final Renderer renderer, final Rectangle bounds) {
+                    if (DragAndDropManager.this.mouseX != -Float.MAX_VALUE) {
+                        super.render(renderer, bounds);
+                    }
+                }
+            };
+            dragContainer.addChild(this.ghostComponent);
+            this.dragLayer = new Layer(dragContainer, LayerBucket.DRAG);
+            this.rivet.addLayer(this.dragLayer);
         }
     }
 
     public void cancelDrag() {
-        if (this.ghostComponent != null) {
-            this.ghostComponent.setRivet(null, null);
+        if (this.dragLayer != null) {
+            this.rivet.removeLayer(this.dragLayer);
+            this.dragLayer = null;
         }
         if (this.hoveredDragLayer != null) {
             this.hoveredDragLayer.container().onDragLeave();
@@ -89,6 +109,14 @@ public class DragAndDropManager {
         this.mouseX = event.x();
         this.mouseY = event.y();
 
+        if (this.dragLayer != null) {
+            this.ghostComponent.layoutOptions(new AbsoluteLayoutOptions(
+                    this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY,
+                    this.ghostSize.width(), this.ghostSize.height()
+            ));
+            this.dragLayer.requestLayoutRecalculation();
+        }
+
         Layer hoveredLayer = hoveredLayerSupplier.get();
         if (this.hoveredDragLayer != null && this.hoveredDragLayer != hoveredLayer) {
             this.hoveredDragLayer.container().onDragLeave();
@@ -99,17 +127,6 @@ public class DragAndDropManager {
             hoveredLayer.container().onDragOver(dragOverEvent, new Rectangle(this.rivet.scaledSize()));
         }
         return false;
-    }
-
-    public void render(final Renderer renderer) {
-        if (this.dragging && this.ghostComponent != null && this.mouseX != -Float.MAX_VALUE) {
-            renderer.translate(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY, () -> {
-                renderer.componentBounds(0, 0, this.ghostSize.width(), this.ghostSize.height(), () -> {
-                    Rectangle renderBounds = new Rectangle(0, 0, this.ghostSize.width(), this.ghostSize.height());
-                    this.ghostComponent.render(renderer, renderBounds);
-                });
-            });
-        }
     }
 
 }

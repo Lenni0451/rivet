@@ -283,7 +283,6 @@ public final class Rivet {
             for (Layer layer : this.layers.get()) {
                 layer.container().render(renderer, new Rectangle(scaledSize));
             }
-            this.dragAndDropManager.render(renderer);
         });
         return renderer.complete();
     }
