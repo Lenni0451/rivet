@@ -1,12 +1,12 @@
 package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Rectangle;
@@ -23,8 +23,7 @@ public class Checkbox extends Component {
     @Getter
     private boolean checked;
     @Getter
-    @Setter
-    private Consumer<Boolean> onToggle;
+    private final ListenerList<Consumer<Boolean>> toggleListener = new ListenerList<>();
     @Getter
     private String text;
     private ShapedText shapedText;
@@ -69,9 +68,7 @@ public class Checkbox extends Component {
     public Checkbox checked(final boolean checked) {
         if (this.checked != checked) {
             this.checked = checked;
-            if (this.onToggle != null) {
-                this.onToggle.accept(this.checked);
-            }
+            this.toggleListener.callVoid(c -> c.accept(this.checked), () -> {});
         }
         return this;
     }

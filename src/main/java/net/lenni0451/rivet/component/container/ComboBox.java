@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -28,6 +29,10 @@ public class ComboBox extends Component implements Parent {
     private final Button button;
     @Getter
     private final Component child;
+    @Getter
+    private final ListenerList<Runnable> openListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Runnable> closeListener = new ListenerList<>();
     private Layer layer;
 
     @Getter
@@ -74,6 +79,7 @@ public class ComboBox extends Component implements Parent {
         container.addChild(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
         this.rivet().addLayer(this.layer);
+        this.openListener.callVoid(Runnable::run, () -> {});
         return this;
     }
 
@@ -81,6 +87,7 @@ public class ComboBox extends Component implements Parent {
         if (!this.isOpen()) return this;
         this.rivet().removeLayer(this.layer);
         this.layer = null;
+        this.closeListener.callVoid(Runnable::run, () -> {});
         return this;
     }
 

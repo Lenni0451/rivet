@@ -11,6 +11,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -25,10 +26,14 @@ import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
+import java.util.function.Consumer;
+
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class TextField extends Component {
 
     private final StringBuffer text = new StringBuffer();
+    @Getter
+    private final ListenerList<Consumer<String>> valueChangeListener = new ListenerList<>();
     @Getter
     private int cursor = 0;
     @Getter
@@ -66,6 +71,12 @@ public class TextField extends Component {
     private final ThemeOption<Padding> innerPadding;
 
     public TextField() {
+        this("");
+    }
+
+    public TextField(final String text) {
+        this.text(text);
+
         this.backgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_BACKGROUND_COLOR);
         this.outlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_COLOR);
         this.focusedOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
@@ -89,6 +100,7 @@ public class TextField extends Component {
         if (this.rivet() != null) {
             this.updateShapedText();
         }
+        this.onTextChange();
         return this;
     }
 
@@ -154,6 +166,7 @@ public class TextField extends Component {
                 this.cursor--;
                 this.selection = this.cursor;
                 this.updateShapedText();
+                this.onTextChange();
             }
         } else if (event.key().isEquivalent(Key.DELETE)) {
             if (this.cursor != this.selection) {
@@ -164,6 +177,7 @@ public class TextField extends Component {
             } else if (this.cursor < this.text.length()) {
                 this.text.deleteCharAt(this.cursor);
                 this.updateShapedText();
+                this.onTextChange();
             }
         } else if (ctrl && event.key().isEquivalent(Key.A)) {
             this.selection = 0;
@@ -189,6 +203,7 @@ public class TextField extends Component {
         this.selection = this.cursor;
         this.cursorAnimation.reset().start();
         this.updateShapedText();
+        this.onTextChange();
         return true;
     }
 
@@ -297,6 +312,7 @@ public class TextField extends Component {
         this.cursor = start;
         this.selection = start;
         this.updateShapedText();
+        this.onTextChange();
     }
 
     private void copy() {
@@ -314,6 +330,7 @@ public class TextField extends Component {
         this.cursor += clipboard.length();
         this.selection = this.cursor;
         this.updateShapedText();
+        this.onTextChange();
     }
 
     private int findWordStart(int from) {
@@ -328,6 +345,10 @@ public class TextField extends Component {
         while (i < this.text.length() && Character.isWhitespace(this.text.charAt(i))) i++;
         while (i < this.text.length() && !Character.isWhitespace(this.text.charAt(i))) i++;
         return i;
+    }
+
+    private void onTextChange() {
+        this.valueChangeListener.callVoid(c -> c.accept(this.text()), () -> {});
     }
 
 }

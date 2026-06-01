@@ -10,6 +10,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.dragdrop.DragOverEvent;
 import net.lenni0451.rivet.dragdrop.DropEvent;
@@ -81,7 +82,11 @@ public class ScrollContainer extends Component implements Parent {
     private final ContainerMouseHandler<Component> mouseHandler = new ContainerMouseHandler<>();
 
     private final NestedScrollCoordinator nestedScrollCoordinator = new NestedScrollCoordinator();
+    @Getter
+    private final ListenerList<ScrollListener> scrollListener = new ListenerList<>();
+    @Getter
     private float scrollX;
+    @Getter
     private float scrollY;
     private float targetScrollX;
     private float targetScrollY;
@@ -409,8 +414,11 @@ public class ScrollContainer extends Component implements Parent {
         float oldScrollY = this.scrollY;
         this.scrollX = Snapping.snap(this.rivet(), this.scrollXAnimation.getValue());
         this.scrollY = Snapping.snap(this.rivet(), this.scrollYAnimation.getValue());
-        if (this.rivet() != null && (oldScrollX != this.scrollX || oldScrollY != this.scrollY)) {
-            this.rivet().updateMouseState();
+        if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
+            if (this.rivet() != null) {
+                this.rivet().updateMouseState();
+            }
+            this.onScroll();
         }
     }
 
@@ -566,6 +574,8 @@ public class ScrollContainer extends Component implements Parent {
         }
         this.childSize = childSize;
 
+        float oldScrollX = this.scrollX;
+        float oldScrollY = this.scrollY;
         { // Horizontal scroll bar
             float contentWidth = childSize.width();
             if (this.barType.value() == ScrollBarType.FLOATING) {
@@ -588,6 +598,9 @@ public class ScrollContainer extends Component implements Parent {
             }
             this.scrollY = Snapping.snap(this.rivet(), MathUtils.clamp(this.scrollY, 0, maxScrollY));
         }
+        if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
+            this.onScroll();
+        }
     }
 
     @Override
@@ -598,6 +611,10 @@ public class ScrollContainer extends Component implements Parent {
     @Override
     public Size contentSize() {
         return Size.EMPTY;
+    }
+
+    private void onScroll() {
+        this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY), () -> {});
     }
 
 
@@ -635,6 +652,12 @@ public class ScrollContainer extends Component implements Parent {
         private enum ScrollTarget {
             PARENT, CHILD
         }
+    }
+
+
+    @FunctionalInterface
+    public interface ScrollListener {
+        void onScroll(final float scrollX, final float scrollY);
     }
 
 }

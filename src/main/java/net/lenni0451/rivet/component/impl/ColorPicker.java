@@ -1,12 +1,12 @@
 package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -26,8 +26,8 @@ public class ColorPicker extends Component {
 
     @Getter
     private Color color;
-    @Setter
-    private Consumer<Color> onColorChange;
+    @Getter
+    private final ListenerList<Consumer<Color>> colorChangeListener = new ListenerList<>();
 
     private float hue;
     private float saturation;
@@ -73,7 +73,7 @@ public class ColorPicker extends Component {
 
     private void updateColor() {
         this.color = Color.fromHSB(this.hue, this.saturation, this.brightness).withAlphaF(this.alpha);
-        if (this.onColorChange != null) this.onColorChange.accept(this.color);
+        this.colorChangeListener.callVoid(c -> c.accept(this.color), () -> {});
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -20,6 +21,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class Slider extends Component {
@@ -36,6 +38,8 @@ public class Slider extends Component {
     @Getter
     @Setter
     private double value;
+    @Getter
+    private final ListenerList<Consumer<Double>> valueChangeListener = new ListenerList<>();
     @Getter
     @Nullable
     private Ticks ticks;
@@ -161,9 +165,13 @@ public class Slider extends Component {
         progress = MathUtils.clamp(progress, 0, 1);
         double newValue = this.min + progress * (this.max - this.min);
         newValue = Math.round(newValue / this.step) * this.step;
-        this.value = MathUtils.clamp(newValue, this.min, this.max);
-        if (this.tooltip != null) {
-            this.tooltip.text(String.format(this.tooltipFormat.value(), this.value));
+        newValue = MathUtils.clamp(newValue, this.min, this.max);
+        if (this.value != newValue) {
+            this.value = newValue;
+            if (this.tooltip != null) {
+                this.tooltip.text(String.format(this.tooltipFormat.value(), this.value));
+            }
+            this.valueChangeListener.callVoid(c -> c.accept(this.value), () -> {});
         }
     }
 
