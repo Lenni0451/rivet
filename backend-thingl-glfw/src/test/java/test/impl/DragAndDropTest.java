@@ -1,30 +1,19 @@
+package test.impl;
+
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.SolidColor;
 import net.lenni0451.rivet.layout.anchor.AnchorLayout;
 import net.lenni0451.rivet.layout.anchor.AnchorLayoutOptions;
 import net.lenni0451.rivet.math.Size;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
-import net.raphimc.thingl.text.font.FontSet;
-import org.lwjgl.glfw.GLFW;
+import test.TestBase;
 
-public class Test6 extends RivetThinGLApplication {
+public class DragAndDropTest extends TestBase {
 
-    public static void main(String[] ignoredArgs) {
-        if (System.getProperty("os.name").contains("Linux")) {
-            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
-        }
-        new Test6().run();
-    }
-
-    @Override
-    protected FontSet createFontSet() throws Exception {
-        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
-        return new FontSet(font);
+    static void main() {
+        new DragAndDropTest().run();
     }
 
     @Override

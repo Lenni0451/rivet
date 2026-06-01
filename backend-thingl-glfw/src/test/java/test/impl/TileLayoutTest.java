@@ -1,28 +1,16 @@
+package test.impl;
+
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.layout.tile.TileLayout;
 import net.lenni0451.rivet.layout.tile.TileLayoutOptions;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
-import net.raphimc.thingl.text.font.FontSet;
-import org.lwjgl.glfw.GLFW;
+import test.TestBase;
 
-public class Test4 extends RivetThinGLApplication {
+public class TileLayoutTest extends TestBase {
 
-    public static void main(String[] ignoredArgs) {
-        if (System.getProperty("os.name").contains("Linux")) {
-            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
-        }
-        new Test4().run();
-    }
-
-
-    @Override
-    protected FontSet createFontSet() throws Exception {
-        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
-        return new FontSet(font);
+    static void main() {
+        new TileLayoutTest().run();
     }
 
     @Override

@@ -1,7 +1,8 @@
+package test.impl;
+
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.render.Renderer;
-import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.ReorderableContainer;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
@@ -13,27 +14,15 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.utils.SelectionModel;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
-import net.raphimc.thingl.text.font.FontSet;
-import org.lwjgl.glfw.GLFW;
+import test.TestBase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Test7 extends RivetThinGLApplication {
+public class SelectionAndOrderingTest extends TestBase {
 
-    public static void main(String[] ignoredArgs) {
-        if (System.getProperty("os.name").contains("Linux")) {
-            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
-        }
-        new Test7().run();
-    }
-
-    @Override
-    protected FontSet createFontSet() throws Exception {
-        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
-        return new FontSet(font);
+    static void main() {
+        new SelectionAndOrderingTest().run();
     }
 
     @Override
@@ -111,7 +100,6 @@ public class Test7 extends RivetThinGLApplication {
         @Override
         protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
             if (this.mouseDown && !this.rivet().dragAndDropManager().isDragging()) {
-                // Note: Payload is "this"
                 this.rivet().dragAndDropManager().startDrag(this, new Label(this.text()), this.computeIdealSize(Size.EMPTY));
             }
             return super.onComponentMouseMove(event, bounds);

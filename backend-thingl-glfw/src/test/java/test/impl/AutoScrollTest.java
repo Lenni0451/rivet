@@ -1,29 +1,18 @@
+package test.impl;
+
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.text.model.TextOrigin;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
-import net.raphimc.thingl.text.font.FontSet;
-import org.lwjgl.glfw.GLFW;
+import test.TestBase;
+import test.TestTheme;
 
-public class Test2 extends RivetThinGLApplication {
+public class AutoScrollTest extends TestBase {
 
-    public static void main(String[] ignoredArgs) {
-        if (System.getProperty("os.name").contains("Linux")) {
-            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
-        }
-        new Test2().run();
-    }
-
-
-    @Override
-    protected FontSet createFontSet() throws Exception {
-        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
-        return new FontSet(font);
+    static void main() {
+        new AutoScrollTest().run();
     }
 
     @Override
