@@ -1,11 +1,13 @@
 package net.lenni0451.rivet.theme.text.parser;
 
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
+@ApiStatus.Internal
 @RequiredArgsConstructor
-public class EnumParser<E extends Enum<E>> implements Parser<E> {
+public final class EnumParser<E extends Enum<E>> implements Parser<E> {
 
     private final E[] values;
 

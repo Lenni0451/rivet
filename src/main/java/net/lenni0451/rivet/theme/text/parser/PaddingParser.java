@@ -1,11 +1,13 @@
 package net.lenni0451.rivet.theme.text.parser;
 
 import net.lenni0451.rivet.math.Padding;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public class PaddingParser implements Parser<Padding> {
+@ApiStatus.Internal
+public final class PaddingParser implements Parser<Padding> {
 
     @Nullable
     @Override

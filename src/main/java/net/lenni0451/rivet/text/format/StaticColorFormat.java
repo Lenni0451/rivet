@@ -6,7 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @RequiredArgsConstructor
-public class StaticColorFormat implements ColorFormat {
+public final class StaticColorFormat implements ColorFormat {
 
     private final String name;
     private final Color color;

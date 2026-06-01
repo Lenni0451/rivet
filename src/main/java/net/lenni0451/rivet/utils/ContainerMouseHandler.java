@@ -12,7 +12,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class ContainerMouseHandler<C> {
+public final class ContainerMouseHandler<C> {
 
     private C hoveredComponent;
     private C clickedComponent;

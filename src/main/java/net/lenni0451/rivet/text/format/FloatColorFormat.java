@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 @ApiStatus.Internal
 @RequiredArgsConstructor
-public class FloatColorFormat implements ColorFormat {
+public final class FloatColorFormat implements ColorFormat {
 
     private final String name;
     private final int channels;

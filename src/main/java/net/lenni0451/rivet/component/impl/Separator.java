@@ -13,7 +13,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 
 @Getter
 @Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class Separator extends Component {
 
     private Orientation orientation;

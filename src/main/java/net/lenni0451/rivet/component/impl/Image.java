@@ -12,7 +12,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 @RequiredArgsConstructor
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class Image extends Component {
 
     @Getter

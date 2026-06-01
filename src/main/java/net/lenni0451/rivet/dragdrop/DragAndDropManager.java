@@ -18,7 +18,7 @@ import net.lenni0451.rivet.math.Size;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class DragAndDropManager {
+public final class DragAndDropManager {
 
     private final Rivet rivet;
 

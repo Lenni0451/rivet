@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class ScrollContainer extends Component implements Parent {
 
     private final Component child;

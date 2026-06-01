@@ -8,7 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import javax.annotation.Nullable;
 
 @ApiStatus.Internal
-public class ColorParser implements Parser<Color> {
+public final class ColorParser implements Parser<Color> {
 
     @Nullable
     @Override

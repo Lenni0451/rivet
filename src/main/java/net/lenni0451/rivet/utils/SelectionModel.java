@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.utils;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
@@ -11,18 +12,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-@Accessors(fluent = true, chain = true)
-public class SelectionModel<E> {
+@RequiredArgsConstructor
+@Accessors(fluent = true, chain = true, makeFinal = true)
+public final class SelectionModel<E> {
 
     private final Supplier<List<E>> dataSupplier;
     private final Set<E> selectedItems = Collections.newSetFromMap(new IdentityHashMap<>());
     @Getter
     private final ListenerList<Runnable> changeListeners = new ListenerList<>();
     private E lastSelected = null;
-
-    public SelectionModel(final Supplier<List<E>> dataSupplier) {
-        this.dataSupplier = dataSupplier;
-    }
 
     public SelectionModel(final List<E> dataList) {
         this(() -> dataList);

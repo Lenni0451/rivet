@@ -21,7 +21,7 @@ import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public abstract class Component {
 
     @Getter

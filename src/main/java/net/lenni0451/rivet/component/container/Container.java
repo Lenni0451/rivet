@@ -21,7 +21,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-@Accessors(fluent = true, chain = true)
+@RequiredArgsConstructor
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class Container extends Component implements Parent {
 
     @Getter
@@ -31,15 +32,11 @@ public class Container extends Component implements Parent {
     @Getter
     private Size contentSize = Size.EMPTY;
 
-    public Container(final Layout layout) {
-        this.layout = layout;
-    }
-
-    public Container addChild(final Component component) {
+    public final Container addChild(final Component component) {
         return this.addChild(component, c -> {});
     }
 
-    public <E extends Component> Container addChild(final E component, final Consumer<E> initializer) {
+    public final <E extends Component> Container addChild(final E component, final Consumer<E> initializer) {
         initializer.accept(component);
         this.removeChild(component);
         this.children.add(new Child(component));
@@ -50,18 +47,18 @@ public class Container extends Component implements Parent {
         return this;
     }
 
-    public Container sortChildren(final Comparator<Component> comparator) {
+    public final Container sortChildren(final Comparator<Component> comparator) {
         this.children.sort((child1, child2) -> comparator.compare(child1.component, child2.component));
         if (this.rivet() != null) this.rivet().recalculateNextFrame();
         return this;
     }
 
-    public List<Component> children() {
+    public final List<Component> children() {
         return this.children.stream().map(c -> c.component).toList();
     }
 
     // Can return Bounds.EMPTY if the component isn't layouted yet or is not a child of this container
-    public Rectangle childBounds(final Component component) {
+    public final Rectangle childBounds(final Component component) {
         for (Child child : this.children) {
             if (child.component == component) {
                 return child.bounds;
@@ -70,7 +67,7 @@ public class Container extends Component implements Parent {
         return Rectangle.EMPTY;
     }
 
-    public boolean removeChild(final Component component) {
+    public final boolean removeChild(final Component component) {
         this.mouseHandler.checkAndRemove(component, Component::onMouseLeave, (comp, mouseButton) -> {
             Rectangle componentBounds = this.childBounds(comp);
             comp.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
@@ -94,7 +91,7 @@ public class Container extends Component implements Parent {
         return false;
     }
 
-    public Container clearChildren() {
+    public final Container clearChildren() {
         this.mouseHandler.clear(Component::onMouseLeave, (component, mouseButton) -> {
             Rectangle componentBounds = this.childBounds(component);
             component.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
@@ -114,7 +111,7 @@ public class Container extends Component implements Parent {
         return this;
     }
 
-    public boolean intercepts(final float x, final float y) {
+    public final boolean intercepts(final float x, final float y) {
         return this.findChildAt(x, y) != null;
     }
 

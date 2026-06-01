@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 @ApiStatus.Internal
 @RequiredArgsConstructor
-public class HexColorFormat implements ColorFormat {
+public final class HexColorFormat implements ColorFormat {
 
     private final int channels;
     private final Function<int[], Color> parser;

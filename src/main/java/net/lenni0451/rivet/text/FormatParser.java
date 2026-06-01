@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class FormatParser {
+final class FormatParser {
 
     private static final int CONTEXT_LENGTH = 20;
     private static final char ESCAPE_CHAR = '\\';

@@ -18,7 +18,7 @@ import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.function.Consumer;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class DecoratedContainer extends Component implements Parent {
 
     @Getter

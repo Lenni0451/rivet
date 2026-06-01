@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class Button extends Component implements Parent {
 
     @Getter

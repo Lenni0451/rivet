@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 @Getter
 @Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class SolidColor extends Component {
 
     private Color color = Color.TRANSPARENT;

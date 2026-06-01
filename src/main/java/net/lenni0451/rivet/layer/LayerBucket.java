@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 
 @Getter
 @RequiredArgsConstructor
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public enum LayerBucket {
 
     BASE(true),

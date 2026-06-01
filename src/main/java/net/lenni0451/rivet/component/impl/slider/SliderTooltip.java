@@ -21,7 +21,7 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
 @Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class SliderTooltip extends Component {
 
     private final ThemeOption<Color> backgroundColor;

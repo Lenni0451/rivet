@@ -11,7 +11,7 @@ import net.lenni0451.rivet.math.Size;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public final class Layer implements Parent {
 
     private final Container container;

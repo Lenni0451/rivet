@@ -21,7 +21,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 
 import java.util.function.Consumer;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class ComboBox extends Component implements Parent {
 
     @Getter

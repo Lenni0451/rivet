@@ -14,7 +14,7 @@ import net.lenni0451.rivet.math.Rectangle;
 
 import java.util.function.Predicate;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class ReorderableContainer extends Container {
 
     @Getter

@@ -19,7 +19,7 @@ import net.lenni0451.rivet.theme.Theme;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class FormattedLabel extends Component {
 
     @Getter

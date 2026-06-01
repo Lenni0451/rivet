@@ -7,7 +7,7 @@ import net.lenni0451.rivet.component.container.Container;
 
 import java.util.*;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public final class LayerList {
 
     @Getter

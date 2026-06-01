@@ -8,7 +8,7 @@ import net.lenni0451.rivet.component.Component;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public final class ThemeOption<T> {
 
     @Getter

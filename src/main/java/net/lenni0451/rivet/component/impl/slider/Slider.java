@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public class Slider extends Component {
 
     private static final int TICK_OFFSET = 2;
