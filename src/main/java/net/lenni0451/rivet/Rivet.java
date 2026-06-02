@@ -83,6 +83,7 @@ public final class Rivet {
                 l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
             }, l -> l.container().onDragLeave());
             layer.container().setRivet(null, null);
+            this.runSync(this::updateMouseState);
             return true;
         }
         return false;
