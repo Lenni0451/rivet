@@ -189,6 +189,8 @@ public class TextField extends Component {
         } else if (ctrl && event.key().isEquivalent(Key.X)) {
             this.copy();
             this.deleteSelection();
+        } else {
+            return false;
         }
         this.cursorAnimation.reset().start();
         return true;
