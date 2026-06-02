@@ -13,8 +13,8 @@ public record TextBlock(List<TextLine> lines) {
         this(List.of(lines));
     }
 
-    public TextBlock(final List<TextLine> lines) {
-        this.lines = List.copyOf(lines);
+    public TextBlock {
+        lines = List.copyOf(lines);
     }
 
 }

@@ -5,9 +5,8 @@ import java.util.List;
 
 public record RenderList(@Nullable TransformCommand transform, List<RenderElement> elements) implements RenderElement {
 
-    public RenderList(@Nullable final TransformCommand transform, final List<RenderElement> elements) {
-        this.transform = transform;
-        this.elements = List.copyOf(elements);
+    public RenderList {
+        elements = List.copyOf(elements);
     }
 
 }

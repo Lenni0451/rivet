@@ -13,8 +13,8 @@ public record TextLine(List<TextSection> sections) {
         this(List.of(sections));
     }
 
-    public TextLine(final List<TextSection> sections) {
-        this.sections = List.copyOf(sections);
+    public TextLine {
+        sections = List.copyOf(sections);
     }
 
 }

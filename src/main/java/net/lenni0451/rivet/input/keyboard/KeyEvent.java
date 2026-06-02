@@ -8,4 +8,9 @@ import java.util.Set;
 @With
 @WithBy
 public record KeyEvent(Key key, Set<ModifierKey> modifiers) {
+
+    public KeyEvent {
+        modifiers = Set.copyOf(modifiers);
+    }
+
 }
