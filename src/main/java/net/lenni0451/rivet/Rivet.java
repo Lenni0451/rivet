@@ -169,21 +169,45 @@ public final class Rivet {
 
     public boolean onKeyDown(final KeyEvent event) {
         if (this.focusedComponent != null) {
-            return this.focusedComponent.onKeyDown(event);
+            Component current = this.focusedComponent;
+            while (true) {
+                if (current.onKeyDown(event)) return true;
+                if (current.parent() instanceof Component parent) {
+                    current = parent;
+                } else {
+                    break;
+                }
+            }
         }
         return false;
     }
 
     public boolean onKeyUp(final KeyEvent event) {
         if (this.focusedComponent != null) {
-            return this.focusedComponent.onKeyUp(event);
+            Component current = this.focusedComponent;
+            while (true) {
+                if (current.onKeyUp(event)) return true;
+                if (current.parent() instanceof Component parent) {
+                    current = parent;
+                } else {
+                    break;
+                }
+            }
         }
         return false;
     }
 
     public boolean onCharTyped(final CharEvent event) {
         if (this.focusedComponent != null) {
-            return this.focusedComponent.onCharTyped(event);
+            Component current = this.focusedComponent;
+            while (true) {
+                if (current.onCharTyped(event)) return true;
+                if (current.parent() instanceof Component parent) {
+                    current = parent;
+                } else {
+                    break;
+                }
+            }
         }
         return false;
     }
