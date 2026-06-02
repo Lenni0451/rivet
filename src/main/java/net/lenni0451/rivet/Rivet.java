@@ -152,7 +152,7 @@ public final class Rivet {
 
     public Rivet updateMouseState() {
         if (this.lastMouseX != -Float.MAX_VALUE && this.lastMouseY != -Float.MAX_VALUE) {
-            this.onMouseMove(new MouseMoveEvent(this.lastMouseX, this.lastMouseY));
+            this.onMouseMove(new MouseMoveEvent(this.lastMouseX, this.lastMouseY, Set.of()));
         }
         return this;
     }
@@ -241,8 +241,8 @@ public final class Rivet {
         boolean mouseHandled = this.mouseHandler.onMouseMove(
                 this.layers.findLayerAt(x, y),
                 layer -> {},
-                layer -> layer.container().onMouseMove(new MouseMoveEvent(-Float.MAX_VALUE, -Float.MAX_VALUE), new Rectangle(this.scaledSize())),
-                layer -> layer.container().onMouseMove(translatedEvent, new Rectangle(this.scaledSize())),
+                layer -> layer.container().onMouseMove(new MouseMoveEvent(-Float.MAX_VALUE, -Float.MAX_VALUE, Set.of()), new Rectangle(this.scaledSize())),
+                (layer, buttons) -> layer.container().onMouseMove(translatedEvent.withButtons(buttons), new Rectangle(this.scaledSize())),
                 () -> false
         );
         return dragHandled || mouseHandled;

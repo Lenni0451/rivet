@@ -7,10 +7,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public final class ContainerMouseHandler<C> {
 
@@ -86,7 +83,7 @@ public final class ContainerMouseHandler<C> {
         return containerMouseUp.getAsBoolean();
     }
 
-    public boolean onMouseMove(@Nullable final C hoveredComponent, final Consumer<C> componentMouseEnter, final Consumer<C> componentMouseLeave, final Predicate<C> componentMouseMove, final BooleanSupplier containerMouseMove) {
+    public boolean onMouseMove(@Nullable final C hoveredComponent, final Consumer<C> componentMouseEnter, final Consumer<C> componentMouseLeave, final BiPredicate<C, Set<MouseButton>> componentMouseMove, final BooleanSupplier containerMouseMove) {
         if (this.hoveredComponent != null && (this.hoveredComponent != hoveredComponent || !this.nonComponentMouseButtons.isEmpty())) {
             componentMouseLeave.accept(this.hoveredComponent);
             this.hoveredComponent = null;
@@ -96,9 +93,9 @@ public final class ContainerMouseHandler<C> {
             componentMouseEnter.accept(this.hoveredComponent);
         }
         if (this.clickedComponent != null) {
-            return componentMouseMove.test(this.clickedComponent);
+            return componentMouseMove.test(this.clickedComponent, this.componentMouseButtons);
         } else if (this.hoveredComponent != null) {
-            return componentMouseMove.test(this.hoveredComponent);
+            return componentMouseMove.test(this.hoveredComponent, this.nonComponentMouseButtons);
         } else {
             return containerMouseMove.getAsBoolean();
         }

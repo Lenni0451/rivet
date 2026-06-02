@@ -9,6 +9,7 @@ import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
+import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
@@ -21,6 +22,9 @@ import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 @Getter
 @Accessors(fluent = true, chain = true)
 public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
@@ -28,6 +32,7 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
     private FontSet fontSet;
     private ThinGLBackend backend;
     private Rivet rivet;
+    private final Set<MouseButton> heldMouseButtons = EnumSet.noneOf(MouseButton.class);
 
     public RivetThinGLApplication() {
         this(new Configuration());
@@ -57,7 +62,7 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
     protected void setupCallbacks() {
         GLFW.glfwSetCursorPosCallback(this.window, (_, xpos, ypos) -> {
             float[] mouseScale = this.getMouseScale();
-            this.rivet.onMouseMove(new MouseMoveEvent((float) xpos * mouseScale[0], (float) ypos * mouseScale[1]));
+            this.rivet.onMouseMove(new MouseMoveEvent((float) xpos * mouseScale[0], (float) ypos * mouseScale[1], this.heldMouseButtons));
         });
         GLFW.glfwSetMouseButtonCallback(this.window, (window, button, action, mods) -> {
             float[] mouseScale = this.getMouseScale();
@@ -68,9 +73,11 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
             MouseButtonEvent event = GLFWMapper.mapMouseButton((float) xpos[0] * mouseScale[0], (float) ypos[0] * mouseScale[1], button, mods);
             if (event != null) {
                 if (action == GLFW.GLFW_PRESS) {
+                    this.heldMouseButtons.add(event.button());
                     this.rivet.onMouseDown(event);
                 } else if (action == GLFW.GLFW_RELEASE) {
                     this.rivet.onMouseUp(event);
+                    this.heldMouseButtons.remove(event.button());
                 }
             }
         });
@@ -108,6 +115,7 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
         });
         GLFW.glfwSetWindowFocusCallback(this.window, (window, focused) -> {
             if (!focused) {
+                this.heldMouseButtons.clear();
                 this.rivet.unfocus();
             }
         });

@@ -278,8 +278,8 @@ public class ScrollContainer extends Component implements Parent {
                 componentHovered ? this.child : null,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
-                component -> component.onMouseMove(
-                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                (component, buttons) -> component.onMouseMove(
+                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY).withButtons(buttons),
                         new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
                 ),
                 () -> {

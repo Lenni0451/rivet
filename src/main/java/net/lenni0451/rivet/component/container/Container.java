@@ -172,9 +172,12 @@ public class Container extends Component implements Parent {
                 topChild == null ? null : topChild.component,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
-                component -> {
+                (component, buttons) -> {
                     Rectangle childBounds = this.childBounds(component);
-                    return component.onMouseMove(event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()), childBounds.add(bounds.x(), bounds.y()));
+                    return component.onMouseMove(
+                            event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()).withButtons(buttons),
+                            childBounds.add(bounds.x(), bounds.y())
+                    );
                 },
                 () -> false
         );

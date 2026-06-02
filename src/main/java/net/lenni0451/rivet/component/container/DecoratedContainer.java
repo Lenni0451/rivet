@@ -100,8 +100,8 @@ public class DecoratedContainer extends Component implements Parent {
                 mouseOverChild ? this.child : null,
                 Component::onMouseEnter,
                 Component::onMouseLeave,
-                component -> component.onMouseMove(
-                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
+                (component, buttons) -> component.onMouseMove(
+                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()).withButtons(buttons),
                         childBounds
                 ),
                 () -> this.background.onMouseMove(event, bounds)
