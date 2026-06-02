@@ -80,6 +80,9 @@ public abstract class Component {
             if (this.rivet == null) {
                 throw new IllegalStateException("Component is not attached to any Rivet instance");
             }
+            if (this.rivet.focusedComponent() == this) {
+                this.rivet.focusedComponent(null);
+            }
             this.removedListener.callVoid(Runnable::run, this::onComponentRemoved);
             this.rivet = null;
             this.parent = null;
