@@ -215,7 +215,7 @@ public abstract class Component {
     }
 
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        return false;
+        return this.interactive;
     }
 
     public final boolean onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
@@ -223,7 +223,7 @@ public abstract class Component {
     }
 
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return false;
+        return this.interactive;
     }
 
     public final boolean onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {

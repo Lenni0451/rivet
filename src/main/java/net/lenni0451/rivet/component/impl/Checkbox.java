@@ -112,9 +112,8 @@ public class Checkbox extends Component {
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (this.hovered && event.button().equals(MouseButton.LEFT)) {
             this.checked(!this.checked);
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override

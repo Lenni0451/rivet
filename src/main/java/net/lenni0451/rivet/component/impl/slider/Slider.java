@@ -141,9 +141,8 @@ public class Slider extends Component {
             this.tooltip = new SliderTooltip(this.formatValue(this.value));
             this.tooltip.add(this.rivet());
             this.updateValue(event.x(), bounds);
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -152,9 +151,8 @@ public class Slider extends Component {
             this.dragged = false;
             this.tooltip.remove();
             this.tooltip = null;
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override

@@ -85,35 +85,31 @@ public class ColorPicker extends Component {
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        if (!event.button().equals(MouseButton.LEFT)) return false;
+        if (event.button().equals(MouseButton.LEFT)) {
+            float pickerSize = this.pickerSize.value();
+            float sliderWidth = this.sliderWidth.value();
+            float gap = this.gap.value();
 
-        float pickerSize = this.pickerSize.value();
-        float sliderWidth = this.sliderWidth.value();
-        float gap = this.gap.value();
-
-        if (event.x() >= 0 && event.x() <= pickerSize && event.y() >= 0 && event.y() <= pickerSize) {
-            this.draggingPicker = true;
-            this.updatePicker(event.x(), event.y());
-            return true;
-        } else if (event.x() >= pickerSize + gap && event.x() <= pickerSize + gap + sliderWidth && event.y() >= 0 && event.y() <= pickerSize) {
-            this.draggingHue = true;
-            this.updateHue(event.y());
-            return true;
-        } else if (event.x() >= 0 && event.x() <= pickerSize && event.y() >= pickerSize + gap && event.y() <= pickerSize + gap + sliderWidth) {
-            this.draggingAlpha = true;
-            this.updateAlpha(event.x());
-            return true;
+            if (event.x() >= 0 && event.x() <= pickerSize && event.y() >= 0 && event.y() <= pickerSize) {
+                this.draggingPicker = true;
+                this.updatePicker(event.x(), event.y());
+            } else if (event.x() >= pickerSize + gap && event.x() <= pickerSize + gap + sliderWidth && event.y() >= 0 && event.y() <= pickerSize) {
+                this.draggingHue = true;
+                this.updateHue(event.y());
+            } else if (event.x() >= 0 && event.x() <= pickerSize && event.y() >= pickerSize + gap && event.y() <= pickerSize + gap + sliderWidth) {
+                this.draggingAlpha = true;
+                this.updateAlpha(event.x());
+            }
         }
-        return false;
+        return true;
     }
 
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        boolean consumed = this.draggingPicker || this.draggingHue || this.draggingAlpha;
         this.draggingPicker = false;
         this.draggingHue = false;
         this.draggingAlpha = false;
-        return consumed;
+        return true;
     }
 
     @Override

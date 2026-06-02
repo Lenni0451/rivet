@@ -209,30 +209,30 @@ public class TextField extends Component {
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        if (!event.button().equals(MouseButton.LEFT)) return false;
+        if (event.button().equals(MouseButton.LEFT)) {
+            long now = System.currentTimeMillis();
+            if (now - this.lastClick < 250) {
+                this.clickCount++;
+            } else {
+                this.clickCount = 1;
+            }
+            this.lastClick = now;
 
-        long now = System.currentTimeMillis();
-        if (now - this.lastClick < 250) {
-            this.clickCount++;
-        } else {
-            this.clickCount = 1;
-        }
-        this.lastClick = now;
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
+            if (!event.modifiers().contains(ModifierKey.SHIFT)) {
+                this.selection = this.cursor;
+            }
+            this.selecting = true;
 
-        this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
-        if (!event.modifiers().contains(ModifierKey.SHIFT)) {
-            this.selection = this.cursor;
-        }
-        this.selecting = true;
-
-        if (this.clickCount == 2) {
-            this.selection = this.findWordStart(this.cursor);
-            this.cursor = this.findWordEnd(this.cursor);
-        } else if (this.clickCount == 3) {
-            this.selection = 0;
-            this.cursor = this.text.length();
-        } else {
-            this.clickCount = 1;
+            if (this.clickCount == 2) {
+                this.selection = this.findWordStart(this.cursor);
+                this.cursor = this.findWordEnd(this.cursor);
+            } else if (this.clickCount == 3) {
+                this.selection = 0;
+                this.cursor = this.text.length();
+            } else {
+                this.clickCount = 1;
+            }
         }
         return true;
     }
@@ -241,9 +241,8 @@ public class TextField extends Component {
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.selecting = false;
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
