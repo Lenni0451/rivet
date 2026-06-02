@@ -48,6 +48,7 @@ public abstract class Theme {
     public static final ThemeKey<Float> SLIDER_TOOLTIP_CORNER_RADIUS = register("slider.tooltip_corner_radius", Float.class);
     public static final ThemeKey<Float> SLIDER_TOOLTIP_TRIANGLE_SIZE = register("slider.tooltip_triangle_size", Float.class);
     public static final ThemeKey<Padding> SLIDER_TOOLTIP_PADDING = register("slider.tooltip_padding", Padding.class);
+    public static final ThemeKey<Boolean> SLIDER_SHOW_TOOLTIP = register("slider.show_tooltip", Boolean.class);
     public static final ThemeKey<String> SLIDER_TOOLTIP_FORMAT = register("slider.tooltip_format", String.class);
 
     // ScrollContainer

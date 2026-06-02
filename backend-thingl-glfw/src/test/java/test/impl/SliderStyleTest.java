@@ -37,6 +37,7 @@ public class SliderStyleTest extends TestBase {
         container.addChild(this.floatOption(rivet, "Thumb Corner Radius", slider.thumbCornerRadius()));
         container.addChild(this.booleanOption(rivet, "Thumb Encased", slider.thumbEncased()));
         container.addChild(this.enumOption(rivet, "Thumb Shape", slider.thumbShape()));
+        container.addChild(this.booleanOption(rivet, "Show Tooltip", slider.showTooltip()));
         container.addChild(this.stringOption(rivet, "Tooltip Format", slider.tooltipFormat()));
         container.addChild(slider);
         container.addChild(new SolidColor().fixedSize(new Size(1, 500)));

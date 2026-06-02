@@ -29,6 +29,7 @@ public abstract class BaseTheme extends Theme {
         values.put(Theme.SLIDER_TOOLTIP_CORNER_RADIUS, round(textHeight / 10F, 0));
         values.put(Theme.SLIDER_TOOLTIP_TRIANGLE_SIZE, round(textHeight / 4F, 1));
         values.put(Theme.SLIDER_TOOLTIP_PADDING, new Padding(round(textHeight / 10F, 0), 0, round(textHeight / 10F, 0), 0));
+        values.put(Theme.SLIDER_SHOW_TOOLTIP, true);
         values.put(Theme.SLIDER_TOOLTIP_FORMAT, "%,f");
 
         values.put(Theme.SCROLL_BAR_WIDTH, round(textHeight / 7F, 1));

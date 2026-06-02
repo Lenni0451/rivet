@@ -73,6 +73,8 @@ public class Slider extends Component {
     @Getter
     private final ThemeOption<ThumbShape> thumbShape;
     @Getter
+    private final ThemeOption<Boolean> showTooltip;
+    @Getter
     private final ThemeOption<String> tooltipFormat;
 
     public Slider(final double min, final double max, final double value) {
@@ -97,6 +99,7 @@ public class Slider extends Component {
         this.thumbShape = new ThemeOption<>(this, Theme.SLIDER_THUMB_SHAPE);
         this.thumbCornerRadius = new ThemeOption<>(this, Theme.SLIDER_THUMB_CORNER_RADIUS);
         this.thumbEncased = new ThemeOption<>(this, Theme.SLIDER_THUMB_ENCASED);
+        this.showTooltip = new ThemeOption<>(this, Theme.SLIDER_SHOW_TOOLTIP);
         this.tooltipFormat = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_FORMAT);
         this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
     }
@@ -138,8 +141,10 @@ public class Slider extends Component {
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
-            this.tooltip = new SliderTooltip(this.formatValue(this.value));
-            this.tooltip.add(this.rivet());
+            if (this.showTooltip.value()) {
+                this.tooltip = new SliderTooltip(this.formatValue(this.value));
+                this.tooltip.add(this.rivet());
+            }
             this.updateValue(event.x(), bounds);
         }
         return true;
@@ -149,8 +154,10 @@ public class Slider extends Component {
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = false;
-            this.tooltip.remove();
-            this.tooltip = null;
+            if (this.tooltip != null) {
+                this.tooltip.remove();
+                this.tooltip = null;
+            }
         }
         return true;
     }
