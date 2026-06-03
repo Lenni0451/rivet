@@ -58,8 +58,10 @@ public class BatchedThinGLRenderer {
         for (TransformCommand transform : renderList.transforms()) {
             switch (transform) {
                 case TransformCommand.Scale scale -> {
-                    matrixPushed = true;
-                    matrixStack.pushMatrix();
+                    if (!matrixPushed) {
+                        matrixPushed = true;
+                        matrixStack.pushMatrix();
+                    }
                     matrixStack.scaleXY(scale.x(), scale.y());
                 }
                 case TransformCommand.ComponentBounds bounds -> {
@@ -69,8 +71,10 @@ public class BatchedThinGLRenderer {
                     // TODO: Implement
                 }
                 case TransformCommand.Translate translate -> {
-                    matrixPushed = true;
-                    matrixStack.pushMatrix();
+                    if (!matrixPushed) {
+                        matrixPushed = true;
+                        matrixStack.pushMatrix();
+                    }
                     matrixStack.translate(translate.x(), translate.y(), 0F);
                 }
                 case null -> {
