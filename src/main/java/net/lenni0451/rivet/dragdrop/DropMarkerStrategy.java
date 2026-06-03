@@ -33,9 +33,9 @@ public interface DropMarkerStrategy {
                 Rectangle bounds = container.childBounds(children.get(i));
                 if (bounds.contains(mouseX, mouseY)) {
                     if (mouseY < bounds.y() + bounds.height() / 2F) {
-                        return new DropTarget(i, new Rectangle(bounds.x(), bounds.y() - gap / 2F - markerThickness / 2F, bounds.height(), markerThickness));
+                        return new DropTarget(i, new Rectangle(bounds.x(), bounds.y() - gap / 2F - markerThickness / 2F, bounds.width(), markerThickness));
                     } else {
-                        return new DropTarget(i + 1, new Rectangle(bounds.x(), bounds.y() + bounds.height() + gap / 2F - markerThickness / 2F, bounds.height(), markerThickness));
+                        return new DropTarget(i + 1, new Rectangle(bounds.x(), bounds.y() + bounds.height() + gap / 2F - markerThickness / 2F, bounds.width(), markerThickness));
                     }
                 }
             }
