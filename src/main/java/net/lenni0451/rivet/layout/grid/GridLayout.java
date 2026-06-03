@@ -219,7 +219,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
                 if (options.weightY() > currentWeight) {
                     final float diff = options.weightY() - currentWeight;
                     for (int i = 0; i < options.rowSpan(); i++) {
-                        rowHeights[options.row() + i] += diff / options.rowSpan();
+                        rowWeights[options.row() + i] += diff / options.rowSpan();
                     }
                 }
             }
@@ -236,14 +236,14 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
 
     // --- Helper Methods ---
 
-    private GridLayoutOptions getSafeOptions(Component component) {
+    private GridLayoutOptions getSafeOptions(final Component component) {
         if (component.layoutOptions() instanceof GridLayoutOptions options) {
             return options;
         }
         return GridLayoutOptions.EMPTY;
     }
 
-    private GridDimensions calculateDimensions(Collection<Component> components) {
+    private GridDimensions calculateDimensions(final Collection<Component> components) {
         int cols = 0;
         int rows = 0;
         for (final Component component : components) {
@@ -254,7 +254,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         return new GridDimensions(cols, rows);
     }
 
-    private void adjustSizes(float[] sizes, float containerSpace, int count, int gap, boolean shrink, float[] weights, float totalWeight) {
+    private void adjustSizes(final float[] sizes, final float containerSpace, final int count, final int gap, final boolean shrink, final float[] weights, final float totalWeight) {
         float totalSize = this.sum(sizes) + this.getGaps(count, gap);
 
         if (shrink && containerSpace < totalSize) {
@@ -277,7 +277,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         }
     }
 
-    private float[] calculateOffsets(float[] sizes, int gap) {
+    private float[] calculateOffsets(final float[] sizes, final int gap) {
         float[] offsets = new float[sizes.length];
         float current = 0;
         for (int i = 0; i < sizes.length; i++) {
@@ -287,25 +287,25 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         return offsets;
     }
 
-    private float sum(float[] array) {
+    private float sum(final float[] array) {
         float sum = 0;
         for (float v : array) sum += v;
         return sum;
     }
 
-    private float sumRange(float[] array, int start, int length) {
+    private float sumRange(final float[] array, final int start, final int length) {
         float sum = 0;
         for (int i = 0; i < length; i++) sum += array[start + i];
         return sum;
     }
 
-    private float max(float[] array) {
+    private float max(final float[] array) {
         float max = 0;
         for (float v : array) max = Math.max(max, v);
         return max;
     }
 
-    private float getGaps(int count, int gap) {
+    private float getGaps(final int count, final int gap) {
         return count > 0 ? (count - 1) * gap : 0;
     }
 
