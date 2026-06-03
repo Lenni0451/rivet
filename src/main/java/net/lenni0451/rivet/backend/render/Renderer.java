@@ -1,13 +1,11 @@
 package net.lenni0451.rivet.backend.render;
 
-import lombok.RequiredArgsConstructor;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.model.TextOrigin;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -62,7 +60,9 @@ public final class Renderer {
 
     private void transform(final TransformCommand command, final Runnable renderer) {
         this.checkClosed();
-        this.currentRenderList.push(new IncompleteRenderList(command));
+        IncompleteRenderList newRenderList = new IncompleteRenderList();
+        newRenderList.add(command);
+        this.currentRenderList.push(newRenderList);
         renderer.run();
         IncompleteRenderList subList = this.currentRenderList.pop();
         this.currentRenderList.peek().add(subList.complete());
@@ -168,15 +168,14 @@ public final class Renderer {
     }
 
 
-    @RequiredArgsConstructor
     private static class IncompleteRenderList {
-        @Nullable
-        private final TransformCommand transform;
+        private final List<TransformCommand> transform = new ArrayList<>();
         private final List<RenderElement> elements = new ArrayList<>();
         private boolean closed;
 
-        public IncompleteRenderList() {
-            this(null);
+        public void add(final TransformCommand command) {
+            this.checkClosed();
+            this.transform.add(command);
         }
 
         public void add(final RenderElement element) {
@@ -187,6 +186,15 @@ public final class Renderer {
         public RenderList complete() {
             this.checkClosed();
             this.closed = true;
+            if (this.elements.size() == 1 && this.elements.get(0) instanceof RenderList subList) {
+                this.elements.clear();
+                if (subList.elements().isEmpty()) {
+                    this.transform.clear();
+                } else {
+                    this.transform.addAll(subList.transforms());
+                    this.elements.addAll(subList.elements());
+                }
+            }
             return new RenderList(this.transform, this.elements);
         }
 

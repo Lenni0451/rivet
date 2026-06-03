@@ -54,22 +54,27 @@ public class BatchedThinGLRenderer {
 
 
     private static void buildLayers(final List<Layer> layers, final Matrix4fStack matrixStack, final RenderList renderList) {
-        switch (renderList.transform()) {
-            case TransformCommand.Scale scale -> {
-                matrixStack.pushMatrix();
-                matrixStack.scaleXY(scale.x(), scale.y());
-            }
-            case TransformCommand.ComponentBounds bounds -> {
-                // TODO: Implement
-            }
-            case TransformCommand.Scissor scissor -> {
-                // TODO: Implement
-            }
-            case TransformCommand.Translate translate -> {
-                matrixStack.pushMatrix();
-                matrixStack.translate(translate.x(), translate.y(), 0F);
-            }
-            case null -> {
+        boolean matrixPushed = false;
+        for (TransformCommand transform : renderList.transforms()) {
+            switch (transform) {
+                case TransformCommand.Scale scale -> {
+                    matrixPushed = true;
+                    matrixStack.pushMatrix();
+                    matrixStack.scaleXY(scale.x(), scale.y());
+                }
+                case TransformCommand.ComponentBounds bounds -> {
+                    // TODO: Implement
+                }
+                case TransformCommand.Scissor scissor -> {
+                    // TODO: Implement
+                }
+                case TransformCommand.Translate translate -> {
+                    matrixPushed = true;
+                    matrixStack.pushMatrix();
+                    matrixStack.translate(translate.x(), translate.y(), 0F);
+                }
+                case null -> {
+                }
             }
         }
         for (RenderElement element : renderList.elements()) {
@@ -92,18 +97,7 @@ public class BatchedThinGLRenderer {
                 case RenderList subRenderList -> buildLayers(layers, matrixStack, subRenderList);
             }
         }
-        switch (renderList.transform()) {
-            case TransformCommand.Scale _ -> matrixStack.popMatrix();
-            case TransformCommand.ComponentBounds _ -> {
-                // TODO: Implement
-            }
-            case TransformCommand.Scissor _ -> {
-                // TODO: Implement
-            }
-            case TransformCommand.Translate _ -> matrixStack.popMatrix();
-            case null -> {
-            }
-        }
+        if (matrixPushed) matrixStack.popMatrix();
     }
 
     public static class Layer {

@@ -1,11 +1,11 @@
 package net.lenni0451.rivet.backend.render;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
-public record RenderList(@Nullable TransformCommand transform, List<RenderElement> elements) implements RenderElement {
+public record RenderList(List<TransformCommand> transforms, List<RenderElement> elements) implements RenderElement {
 
     public RenderList {
+        transforms = List.copyOf(transforms);
         elements = List.copyOf(elements);
     }
 

@@ -19,37 +19,51 @@ import org.joml.Matrix4fStack;
 public class ThinGLRenderer {
 
     public static void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
-        switch (renderList.transform()) {
-            case TransformCommand.Scale scale -> {
-                matrixStack.pushMatrix();
-                matrixStack.scaleXY(
-                        scale.x(),
-                        scale.y()
-                );
-            }
-            case TransformCommand.ComponentBounds bounds -> ThinGL.scissorStack().pushIntersection(
-                    matrixStack,
-                    MathUtils.floorInt(bounds.x()),
-                    MathUtils.floorInt(bounds.y()),
-                    MathUtils.ceilInt(bounds.x() + bounds.width()),
-                    MathUtils.ceilInt(bounds.y() + bounds.height())
-            );
-            case TransformCommand.Scissor scissor -> ThinGL.scissorStack().pushIntersection(
-                    matrixStack,
-                    MathUtils.floorInt(scissor.x()),
-                    MathUtils.floorInt(scissor.y()),
-                    MathUtils.ceilInt(scissor.x() + scissor.width()),
-                    MathUtils.ceilInt(scissor.y() + scissor.height())
-            );
-            case TransformCommand.Translate translate -> {
-                matrixStack.pushMatrix();
-                matrixStack.translate(
-                        translate.x(),
-                        translate.y(),
-                        0
-                );
-            }
-            case null -> {
+        boolean matrixPushed = false;
+        int scissorPushed = 0;
+        for (TransformCommand transform : renderList.transforms()) {
+            switch (transform) {
+                case TransformCommand.Scale scale -> {
+                    if (!matrixPushed) {
+                        matrixPushed = true;
+                        matrixStack.pushMatrix();
+                    }
+                    matrixStack.scaleXY(
+                            scale.x(),
+                            scale.y()
+                    );
+                }
+                case TransformCommand.ComponentBounds bounds -> {
+                    scissorPushed++;
+                    ThinGL.scissorStack().pushIntersection(
+                            matrixStack,
+                            MathUtils.floorInt(bounds.x()),
+                            MathUtils.floorInt(bounds.y()),
+                            MathUtils.ceilInt(bounds.x() + bounds.width()),
+                            MathUtils.ceilInt(bounds.y() + bounds.height())
+                    );
+                }
+                case TransformCommand.Scissor scissor -> {
+                    scissorPushed++;
+                    ThinGL.scissorStack().pushIntersection(
+                            matrixStack,
+                            MathUtils.floorInt(scissor.x()),
+                            MathUtils.floorInt(scissor.y()),
+                            MathUtils.ceilInt(scissor.x() + scissor.width()),
+                            MathUtils.ceilInt(scissor.y() + scissor.height())
+                    );
+                }
+                case TransformCommand.Translate translate -> {
+                    if (!matrixPushed) {
+                        matrixPushed = true;
+                        matrixStack.pushMatrix();
+                    }
+                    matrixStack.translate(
+                            translate.x(),
+                            translate.y(),
+                            0
+                    );
+                }
             }
         }
         for (RenderElement element : renderList.elements()) {
@@ -58,14 +72,8 @@ public class ThinGLRenderer {
                 case RenderList subList -> renderList(matrixStack, subList);
             }
         }
-        switch (renderList.transform()) {
-            case TransformCommand.Scale _ -> matrixStack.popMatrix();
-            case TransformCommand.ComponentBounds _ -> ThinGL.scissorStack().pop();
-            case TransformCommand.Scissor _ -> ThinGL.scissorStack().pop();
-            case TransformCommand.Translate _ -> matrixStack.popMatrix();
-            case null -> {
-            }
-        }
+        while (scissorPushed-- > 0) ThinGL.scissorStack().pop();
+        if (matrixPushed) matrixStack.popMatrix();
     }
 
     public static void renderCommand(final Matrix4fStack matrixStack, final RenderCommand command) {
