@@ -257,6 +257,13 @@ public class TextField extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         float visibleWidth = bounds.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();

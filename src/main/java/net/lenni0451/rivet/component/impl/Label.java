@@ -65,6 +65,11 @@ public class Label extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.reshape = true;
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.shapeText();
         float x = this.horizontalOrigin.offset(bounds.width() / this.scale);

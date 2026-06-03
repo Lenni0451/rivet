@@ -99,6 +99,13 @@ public class SliderTooltip extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.text(this.text);
+        }
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         float triangleSize = this.triangleSize.value();
         Color backgroundColor = this.backgroundColor.value();

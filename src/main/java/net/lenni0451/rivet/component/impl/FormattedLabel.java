@@ -100,6 +100,13 @@ public class FormattedLabel extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.text != null) {
+            this.line = null;
+        }
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         float x = this.horizontalOrigin.offset(bounds.width() / this.scale);
         float y = this.verticalOrigin.offset(bounds.height() / this.scale);

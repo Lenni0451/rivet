@@ -117,6 +117,13 @@ public class Checkbox extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.shapeText();
+        }
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         float boxSize = bounds.height() * 0.8F;
         float offset = (bounds.height() - boxSize) / 2F;

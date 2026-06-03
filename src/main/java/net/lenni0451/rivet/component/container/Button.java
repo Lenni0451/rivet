@@ -135,6 +135,16 @@ public class Button extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.hoverAnimation = new Animation()
+                    .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
+                    .finish(this.hovered ? AnimationDirection.FORWARDS : AnimationDirection.BACKWARDS);
+        }
+        this.child.onThemeChanged();
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(bounds.width(), bounds.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();

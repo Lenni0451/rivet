@@ -127,6 +127,11 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.button.onThemeChanged();
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.button.render(renderer, bounds);
         float triangleSize = this.arrowSize.value();

@@ -271,6 +271,9 @@ public abstract class Component {
     protected void onComponentDragLeave() {
     }
 
+    public void onThemeChanged() {
+    }
+
     public void render(final Renderer renderer, final Rectangle bounds) {
     }
 

@@ -92,6 +92,9 @@ public final class Rivet {
     public Rivet theme(final Theme theme) {
         this.theme = theme;
         this.theme.apply(this);
+        for (Layer layer : this.layers.get()) {
+            layer.container().onThemeChanged();
+        }
         this.recalculateNextFrame();
         return this;
     }

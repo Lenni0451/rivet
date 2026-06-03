@@ -380,6 +380,25 @@ public class ScrollContainer extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.scrollXAnimation = new DynamicAnimation(
+                    EasingFunction.SINE,
+                    EasingMode.EASE_OUT,
+                    (long) this.animationDuration.value(),
+                    this.scrollXAnimation.getValue()
+            );
+            this.scrollYAnimation = new DynamicAnimation(
+                    EasingFunction.SINE,
+                    EasingMode.EASE_OUT,
+                    (long) this.animationDuration.value(),
+                    this.scrollYAnimation.getValue()
+            );
+        }
+        this.child.onThemeChanged();
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.updateAnimation();
 

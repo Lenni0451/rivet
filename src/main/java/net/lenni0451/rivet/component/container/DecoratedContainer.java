@@ -154,6 +154,12 @@ public class DecoratedContainer extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.background.onThemeChanged();
+        this.child.onThemeChanged();
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.background.render(renderer, bounds);
         float width = bounds.width() - this.innerPadding.horizontal();

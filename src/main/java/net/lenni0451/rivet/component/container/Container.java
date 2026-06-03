@@ -228,6 +228,11 @@ public class Container extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.children.forEach(c -> c.component.onThemeChanged());
+    }
+
+    @Override
     public void render(final Renderer renderer, final Rectangle bounds) {
         for (Child child : this.children) {
             renderer.translate(child.bounds.x(), child.bounds.y(), () -> {
