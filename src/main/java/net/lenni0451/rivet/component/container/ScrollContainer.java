@@ -561,6 +561,9 @@ public class ScrollContainer extends Component implements Parent {
             if (this.hScrollVisible && !this.vScrollVisible) {
                 this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > (availableHeight - this.barWidth.value());
             }
+            if (this.vScrollVisible && !this.hScrollVisible) {
+                this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() > (availableWidth - this.barWidth.value());
+            }
 
             if (this.hScrollVisible) availableHeight -= this.barWidth.value();
             if (this.vScrollVisible) availableWidth -= this.barWidth.value();
