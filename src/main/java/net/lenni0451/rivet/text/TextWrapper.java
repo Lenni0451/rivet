@@ -63,9 +63,6 @@ public class TextWrapper {
                     boolean isSpace = word.sections().size() == 1 && word.sections().get(0).text().equals(" ");
                     if (!isSpace) {
                         List<TextLine> splitWord = wrapWord(backend, word, maxWidth);
-                        if (splitWord.size() < 2) {
-                            throw new IllegalStateException("Word is too long but also isn't at the same time. Please report immediately and include information on how to reproduce this!");
-                        }
                         for (int j = 0; j < splitWord.size(); j++) {
                             if (j == splitWord.size() - 1) {
                                 currentLine.addAll(splitWord.get(j).sections());
