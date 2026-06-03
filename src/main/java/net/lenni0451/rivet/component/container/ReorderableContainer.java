@@ -38,8 +38,7 @@ public class ReorderableContainer extends Container {
     @Override
     protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
         if (this.dropFilter.test(event.dragData())) {
-            DropMarkerStrategy.DropTarget target = this.strategy.resolve(this, event.x(), event.y());
-            if (target != null) this.currentTarget = target;
+            this.currentTarget = this.strategy.resolve(this, event.x(), event.y());
             return true;
         }
         return super.onComponentDragOver(event, bounds);
