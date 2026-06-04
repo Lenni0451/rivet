@@ -321,12 +321,13 @@ public class ScrollContainer extends Component implements Parent {
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
         return this.nestedScrollCoordinator.handleScrolling(
                 () -> {
-                    if (this.hScrollVisible && event.scrollX() != 0 && !this.hBarPressed) {
+                    if (this.hScrollVisible && (event.scrollX() != 0 || (!this.vScrollVisible && event.scrollY() != 0)) && !this.hBarPressed) {
                         float contentWidth = this.childSize.width();
                         float visibleWidth = this.visibleWidth(bounds);
                         float maxScroll = Math.max(0, contentWidth - visibleWidth);
                         if (maxScroll > 0) {
-                            this.targetScrollX = MathUtils.clamp(this.targetScrollX - event.scrollX() * this.scrollSpeed.value(), 0, maxScroll);
+                            float scrollAmount = event.scrollX() == 0 ? event.scrollY() : event.scrollX();
+                            this.targetScrollX = MathUtils.clamp(this.targetScrollX - scrollAmount * this.scrollSpeed.value(), 0, maxScroll);
                             return true;
                         }
                     }
