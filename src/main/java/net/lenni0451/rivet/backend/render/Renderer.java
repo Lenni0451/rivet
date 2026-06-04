@@ -119,14 +119,18 @@ public final class Renderer {
 
     public void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
         this.checkClosed();
-        float maxRadius = Math.min(width, height) / 2F;
-        float radius = Math.min(cornerRadius, maxRadius);
-        if (radius <= 0) {
-            this.outlineRect(x, y, width, height, outlineWidth, color);
-        } else if (width == height && radius == maxRadius) {
-            this.outlineCircle(x + radius, y + radius, radius, outlineWidth, color);
+        if (outlineWidth >= width || outlineWidth >= height) {
+            this.optimizedFillRoundedRect(x, y, width, height, cornerRadius, color);
         } else {
-            this.outlineRoundedRect(x, y, width, height, radius, outlineWidth, color);
+            float maxRadius = Math.min(width, height) / 2F;
+            float radius = Math.min(cornerRadius, maxRadius);
+            if (radius <= 0) {
+                this.outlineRect(x, y, width, height, outlineWidth, color);
+            } else if (width == height && radius == maxRadius) {
+                this.outlineCircle(x + radius, y + radius, radius, outlineWidth, color);
+            } else {
+                this.outlineRoundedRect(x, y, width, height, radius, outlineWidth, color);
+            }
         }
     }
 
