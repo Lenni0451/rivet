@@ -57,14 +57,14 @@ public class ThemeLoader {
     }
 
     private static void parse(final Theme.Values values, final String key, final String value) {
-        ThemeKey themeKey = Theme.allKeys().stream().filter(k -> k.name().equals(key)).findFirst().orElse(null);
+        ThemeKey themeKey = Theme.registeredKeys().stream().filter(k -> k.name().equals(key)).findFirst().orElse(null);
         if (themeKey == null) {
             throw new IllegalArgumentException("Unknown key: " + key);
         }
 
         Parser<?> parser = parsers.get(themeKey.type());
         if (parser == null) {
-            throw new UnsupportedOperationException("Unsupported theme type: " + themeKey.type());
+            throw new UnsupportedOperationException("Unsupported theme value type: " + themeKey.type());
         }
 
         Object parsedValue = parser.parse(value);

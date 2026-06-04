@@ -19,7 +19,6 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
-import net.lenni0451.rivet.theme.impl.DefaultDark;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.List;
@@ -54,7 +53,7 @@ public final class Rivet {
         this.backend = backend;
         this.layers = new LayerList(this, new Container(layout));
         this.size = size;
-        this.theme = new DefaultDark();
+        this.theme = new DefaultTheme();
         this.theme.apply(this);
     }
 
@@ -307,6 +306,13 @@ public final class Rivet {
             }
         });
         return renderer.complete();
+    }
+
+
+    private static class DefaultTheme extends Theme {
+        @Override
+        protected void addValues(final Rivet rivet, final Values values) {
+        }
     }
 
 }

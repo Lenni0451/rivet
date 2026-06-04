@@ -15,28 +15,24 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ThemeLoaderTest {
 
     @SneakyThrows
     private static <V> void check(final ThemeKey<V> key, final String s, final V expected) {
-        int[] callCount = {0};
+        Map<ThemeKey<?>, Object> values = new HashMap<>();
         InputStream is = new ByteArrayInputStream((key.name() + "=" + s).getBytes(StandardCharsets.UTF_8));
-        ThemeLoader.load(is, new Theme.Values() {
-            @Override
-            public <T> void put(final ThemeKey<T> key, final T value) {
-                assertEquals(expected, value);
-                callCount[0]++;
-            }
-        }, (line, cause) -> {
+        ThemeLoader.load(is, new Theme.Values(values), (line, cause) -> {
             throw cause;
         });
-        assertEquals(1, callCount[0]);
+        assertEquals(1, values.size());
+        assertTrue(values.containsKey(key));
+        assertEquals(expected, values.get(key));
     }
 
 
@@ -46,17 +42,13 @@ class ThemeLoaderTest {
         parsersField.setAccessible(true);
         Map<Class<?>, Parser<?>> parsers = (Map<Class<?>, Parser<?>>) parsersField.get(null);
 
-        for (ThemeKey<?> key : Theme.allKeys()) {
+        for (ThemeKey<?> key : Theme.registeredKeys()) {
             if (!parsers.containsKey(key.type())) {
                 fail("No parser implemented for theme key type: " + key.type());
             }
         }
     }
 
-    /*
-        Slider.ThumbShape.class, s -> new EnumParser<>(Slider.ThumbShape.values()),
-        ScrollContainer.ScrollBarType.class, s -> new EnumParser<>(ScrollContainer.ScrollBarType.values())
-     */
     @Test
     void parseTypes() {
         // Color
