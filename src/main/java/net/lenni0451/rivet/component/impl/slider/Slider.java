@@ -219,7 +219,11 @@ public class Slider extends Component {
         if (this.cachedFormatString == null) {
             this.cachedFormatString = FormatUtils.formatDecimalString(this.tooltipFormat.value(), this.step);
         }
-        return String.format(this.cachedFormatString, value);
+        try {
+            return String.format(this.cachedFormatString, value);
+        } catch (Throwable t) {
+            return Double.toString(value);
+        }
     }
 
     private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
@@ -330,7 +334,13 @@ public class Slider extends Component {
 
         private static TickLabelProvider defaultLabelProvider(final double majorTickSpacing) {
             String format = FormatUtils.formatDecimalString("%,f", majorTickSpacing);
-            return d -> String.format(format, d);
+            return d -> {
+                try {
+                    return String.format(format, d);
+                } catch (Throwable t) {
+                    return Double.toString(d);
+                }
+            };
         }
     }
 
