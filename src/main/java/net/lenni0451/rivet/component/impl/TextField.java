@@ -151,6 +151,7 @@ public class TextField extends Component {
 
     @Override
     protected void onComponentRemoved() {
+        this.selection = this.cursor;
         this.focused = false;
         this.selecting = false;
         this.clickCount = 0;
@@ -163,6 +164,7 @@ public class TextField extends Component {
 
     @Override
     protected void onComponentFocusLost() {
+        this.selection = this.cursor;
         this.focused = false;
     }
 
