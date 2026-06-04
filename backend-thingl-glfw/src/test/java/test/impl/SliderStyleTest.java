@@ -29,12 +29,15 @@ public class SliderStyleTest extends TestBase {
         container.addChild(this.colorOption(rivet, "Active Bar Color", slider.activeBarColor()));
         container.addChild(this.colorOption(rivet, "Thumb Color", slider.thumbColor()));
         container.addChild(this.colorOption(rivet, "Thumb Click Color", slider.thumbClickColor()));
+        container.addChild(this.colorOption(rivet, "Thumb Outline Color", slider.thumbOutlineColor()));
+        container.addChild(this.colorOption(rivet, "Thumb Click Outline Color", slider.thumbClickOutlineColor()));
         container.addChild(this.colorOption(rivet, "Tick Color", slider.tickColor()));
         container.addChild(this.floatOption(rivet, "Bar Height", slider.barHeight()));
         container.addChild(this.floatOption(rivet, "Thumb Width", slider.thumbWidth()));
         container.addChild(this.floatOption(rivet, "Thumb Height", slider.thumbHeight()));
         container.addChild(this.floatOption(rivet, "Bar Corner Radius", slider.barCornerRadius()));
         container.addChild(this.floatOption(rivet, "Thumb Corner Radius", slider.thumbCornerRadius()));
+        container.addChild(this.floatOption(rivet, "Thumb Outline Width", slider.thumbOutlineWidth()));
         container.addChild(this.booleanOption(rivet, "Thumb Encased", slider.thumbEncased()));
         container.addChild(this.enumOption(rivet, "Thumb Shape", slider.thumbShape()));
         container.addChild(this.booleanOption(rivet, "Show Tooltip", slider.showTooltip()));

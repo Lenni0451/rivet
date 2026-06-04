@@ -49,6 +49,9 @@ public abstract class Theme {
     public static final ThemeKey<Float> SLIDER_THUMB_CORNER_RADIUS = register("slider.thumb_corner_radius", Float.class, r -> Float.MAX_VALUE);
     public static final ThemeKey<Boolean> SLIDER_THUMB_ENCASED = register("slider.thumb_encased", Boolean.class, r -> false);
     public static final ThemeKey<Slider.ThumbShape> SLIDER_THUMB_SHAPE = register("slider.thumb_shape", Slider.ThumbShape.class, r -> Slider.ThumbShape.CIRCLE);
+    public static final ThemeKey<Color> SLIDER_THUMB_OUTLINE_COLOR = register("slider.thumb_outline_color", Color.class, r -> Color.fromRGB(140, 140, 145));
+    public static final ThemeKey<Color> SLIDER_THUMB_CLICK_OUTLINE_COLOR = register("slider.thumb_click_outline_color", Color.class, r -> Color.fromRGB(120, 120, 125));
+    public static final ThemeKey<Float> SLIDER_THUMB_OUTLINE_WIDTH = register("slider.thumb_outline_width", Float.class, r -> 0F);
     public static final ThemeKey<Color> SLIDER_TOOLTIP_BACKGROUND_COLOR = register("slider.tooltip_background_color", Color.class, r -> Color.fromRGB(45, 45, 48));
     public static final ThemeKey<Color> SLIDER_TOOLTIP_TEXT_COLOR = register("slider.tooltip_text_color", Color.class, r -> Color.WHITE);
     public static final ThemeKey<Float> SLIDER_TOOLTIP_CORNER_RADIUS = register("slider.tooltip_corner_radius", Float.class, r -> roundMin(r.backend().getTextHeight() / 10F, 0));

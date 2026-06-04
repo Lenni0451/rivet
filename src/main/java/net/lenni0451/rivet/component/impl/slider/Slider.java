@@ -73,6 +73,12 @@ public class Slider extends Component {
     @Getter
     private final ThemeOption<ThumbShape> thumbShape;
     @Getter
+    private final ThemeOption<Color> thumbOutlineColor;
+    @Getter
+    private final ThemeOption<Color> thumbClickOutlineColor;
+    @Getter
+    private final ThemeOption<Float> thumbOutlineWidth;
+    @Getter
     private final ThemeOption<Boolean> showTooltip;
     @Getter
     private final ThemeOption<String> tooltipFormat;
@@ -99,6 +105,9 @@ public class Slider extends Component {
         this.thumbShape = new ThemeOption<>(this, Theme.SLIDER_THUMB_SHAPE);
         this.thumbCornerRadius = new ThemeOption<>(this, Theme.SLIDER_THUMB_CORNER_RADIUS);
         this.thumbEncased = new ThemeOption<>(this, Theme.SLIDER_THUMB_ENCASED);
+        this.thumbOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_OUTLINE_COLOR);
+        this.thumbClickOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_CLICK_OUTLINE_COLOR);
+        this.thumbOutlineWidth = new ThemeOption<>(this, Theme.SLIDER_THUMB_OUTLINE_WIDTH);
         this.showTooltip = new ThemeOption<>(this, Theme.SLIDER_SHOW_TOOLTIP);
         this.tooltipFormat = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_FORMAT);
         this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
@@ -226,16 +235,37 @@ public class Slider extends Component {
     private void renderThumb(final Renderer renderer, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float thumbX) {
         Color color = this.dragged ? this.thumbClickColor.value() : this.thumbColor.value();
         float cornerRadius = this.thumbCornerRadius.value();
+        float outlineWidth = this.thumbOutlineWidth.value();
+        Color outlineColor = this.dragged ? this.thumbClickOutlineColor.value() : this.thumbOutlineColor.value();
+
         switch (this.thumbShape.value()) {
-            case CIRCLE -> renderer.fillCircle(thumbX, sliderCenter, Math.min(thumbWidth, thumbHeight) / 2F, color);
-            case SQUARE -> {
-                float size = Math.min(thumbWidth, thumbHeight);
-                renderer.optimizedFillRoundedRect(thumbX - size / 2F, sliderCenter - size / 2F, size, size, cornerRadius, color);
+            case CIRCLE -> {
+                renderer.fillCircle(thumbX, sliderCenter, Math.min(thumbWidth, thumbHeight) / 2F, color);
+                if (outlineWidth > 0) {
+                    renderer.outlineCircle(thumbX, sliderCenter, Math.min(thumbWidth, thumbHeight) / 2F, outlineWidth, outlineColor);
+                }
             }
-            case RECTANGLE -> renderer.optimizedFillRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, color);
+            case RECTANGLE -> {
+                renderer.optimizedFillRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, color);
+                if (outlineWidth > 0) {
+                    renderer.optimizedOutlineRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, outlineWidth, outlineColor);
+                }
+            }
             case PIN -> {
-                renderer.fillRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight / 2F, color);
-                renderer.fillTriangle(thumbX - thumbWidth / 2F, sliderCenter, thumbX, sliderCenter + thumbHeight / 2F, thumbX + thumbWidth / 2F, sliderCenter, color);
+                if (outlineWidth > 0) {
+                    renderer.fillRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight / 2F, outlineColor);
+                    renderer.fillTriangle(thumbX - thumbWidth / 2F, sliderCenter, thumbX, sliderCenter + thumbHeight / 2F, thumbX + thumbWidth / 2F, sliderCenter, outlineColor);
+
+                    float innerWidth = thumbWidth - outlineWidth * 2;
+                    float innerHeight = thumbHeight - outlineWidth * 2;
+                    if (innerWidth > 0 && innerHeight > 0) {
+                        renderer.fillRect(thumbX - innerWidth / 2F, sliderCenter - thumbHeight / 2F + outlineWidth, innerWidth, thumbHeight / 2F - outlineWidth, color);
+                        renderer.fillTriangle(thumbX - innerWidth / 2F, sliderCenter, thumbX, sliderCenter + thumbHeight / 2F - outlineWidth, thumbX + innerWidth / 2F, sliderCenter, color);
+                    }
+                } else {
+                    renderer.fillRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight / 2F, color);
+                    renderer.fillTriangle(thumbX - thumbWidth / 2F, sliderCenter, thumbX, sliderCenter + thumbHeight / 2F, thumbX + thumbWidth / 2F, sliderCenter, color);
+                }
             }
         }
     }
@@ -311,7 +341,6 @@ public class Slider extends Component {
 
     public enum ThumbShape {
         CIRCLE,
-        SQUARE,
         RECTANGLE,
         PIN
     }
