@@ -88,7 +88,7 @@ public class SliderStyleTest extends TestBase {
                         new Container(new HorizontalFlowLayout(5, 5)),
                         container -> {
                             for (Enum val : rivet.theme().get(option.key()).getClass().getEnumConstants()) {
-                                container.addChild(new Button(val.toString(), event -> {
+                                container.addChild(new Button(val.toString(), () -> {
                                     option.set((E) val);
                                 }));
                             }

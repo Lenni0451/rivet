@@ -24,7 +24,7 @@ public class TileLayoutTest extends TestBase {
             if (column == 0 && row == 1) continue;
             if (column == 2 && row == 1) continue;
             if (column == 1 && row == 2) continue;
-            container.addChild(new Button("Testing " + i, event -> {
+            container.addChild(new Button("Testing " + i, () -> {
                 System.out.println("Clicked " + finalI);
             }), button -> button.layoutOptions(new TileLayoutOptions(column, row)));
         }

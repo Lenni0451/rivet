@@ -9,7 +9,6 @@ import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.SolidColor;
-import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
@@ -59,12 +58,10 @@ public class ComboBox extends Component implements Parent {
 
     public <T extends Component, C extends Component> ComboBox(final T text, final BiConsumer<ComboBox, T> textInitializer, final C child, final BiConsumer<ComboBox, C> initializer) {
         this.button = new Button(text, event -> {
-            if (event.button().equals(MouseButton.LEFT)) {
-                if (this.isOpen()) {
-                    this.close();
-                } else {
-                    this.open();
-                }
+            if (this.isOpen()) {
+                this.close();
+            } else {
+                this.open();
             }
         });
         this.child = child;

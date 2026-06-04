@@ -23,7 +23,7 @@ public class FormattedLabelWrappingTest extends TestBase {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
             label.layoutOptions(new GridLayoutOptions(0, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
-        container.addChild(new Button("Testing Testing Testing Testing", e -> {
+        container.addChild(new Button("Testing Testing Testing Testing", () -> {
             System.out.println("click");
         }), button -> {
             button.clickOn().set(Button.ClickOn.BOTH);

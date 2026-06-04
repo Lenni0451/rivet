@@ -34,7 +34,7 @@ public class AnchorLayoutTest extends TestBase {
                 if (i == 5) {
                     c.addChild(new Separator());
                 }
-                c.addChild(new Button("Button " + i, e -> {}));
+                c.addChild(new Button("Button " + i, () -> {}));
             }
         }), c -> {
             c.layoutOptions(AnchorLayoutOptions.EMPTY.from(0.7F, 0).to(1, 0.7F));

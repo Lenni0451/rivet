@@ -21,6 +21,7 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -30,6 +31,8 @@ public class Button extends Component implements Parent {
 
     @Getter
     private final Component child;
+    @Getter
+    private final Set<MouseButton> handledButtons = EnumSet.of(MouseButton.LEFT);
     @Getter
     private final ListenerList<ClickListener> clickListener;
     @Getter
@@ -58,12 +61,24 @@ public class Button extends Component implements Parent {
     private final Set<MouseButton> pressed = new HashSet<>();
     private Animation hoverAnimation;
 
+    public Button(final String text, final Runnable clickListener) {
+        this(text, event -> clickListener.run());
+    }
+
     public Button(final String text, final ClickListener clickListener) {
         this(new Label(text), clickListener);
     }
 
+    public Button(final Component child, final Runnable clickListener) {
+        this(child, event -> clickListener.run());
+    }
+
     public Button(final Component child, final ClickListener clickListener) {
         this(child, c -> {}, clickListener);
+    }
+
+    public <C extends Component> Button(final C child, final Consumer<C> initializer, final Runnable clickListener) {
+        this(child, initializer, event -> clickListener.run());
     }
 
     public <C extends Component> Button(final C child, final Consumer<C> initializer, final ClickListener clickListener) {
@@ -118,9 +133,11 @@ public class Button extends Component implements Parent {
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        this.pressed.add(event.button());
-        if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
-            this.clickListener.callVoid(listener -> listener.onClick(event));
+        if (this.handledButtons.contains(event.button())) {
+            this.pressed.add(event.button());
+            if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
+                this.clickListener.callVoid(listener -> listener.onClick(event));
+            }
         }
         return true;
     }
@@ -128,7 +145,7 @@ public class Button extends Component implements Parent {
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
         this.pressed.remove(event.button());
-        if (this.hovered && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
+        if (this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
             this.clickListener.callVoid(listener -> listener.onClick(event));
         }
         return true;
