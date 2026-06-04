@@ -25,6 +25,10 @@ public class SolidColor extends Component {
         this(s -> {});
     }
 
+    public SolidColor(final Color color) {
+        this(s -> s.color = color);
+    }
+
     public SolidColor(final Consumer<SolidColor> initializer) {
         initializer.accept(this);
     }

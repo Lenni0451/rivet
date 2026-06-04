@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ScrollContainer extends Component implements Parent {
 
+    @Getter
     private final Component child;
     @Getter
     private final boolean horizontalScrolling;

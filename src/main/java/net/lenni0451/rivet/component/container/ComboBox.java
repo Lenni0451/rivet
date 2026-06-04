@@ -20,7 +20,7 @@ import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ComboBox extends Component implements Parent {
@@ -43,18 +43,18 @@ public class ComboBox extends Component implements Parent {
     private final ThemeOption<Float> maxPopupHeight;
 
     public ComboBox(final String text, final Component child) {
-        this(text, child, c -> {});
+        this(text, child, (b, c) -> {});
     }
 
-    public <C extends Component> ComboBox(final String text, final C child, final Consumer<C> initializer) {
-        this(new Label(text).horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT), t -> {}, child, initializer);
+    public <C extends Component> ComboBox(final String text, final C child, final BiConsumer<ComboBox, C> initializer) {
+        this(new Label(text).horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT), (b, t) -> {}, child, initializer);
     }
 
     public <T extends Component, C extends Component> ComboBox(final T text, final C child) {
-        this(text, t -> {}, child, c -> {});
+        this(text, (b, t) -> {}, child, (b, c) -> {});
     }
 
-    public <T extends Component, C extends Component> ComboBox(final T text, final Consumer<T> textInitializer, final C child, final Consumer<C> initializer) {
+    public <T extends Component, C extends Component> ComboBox(final T text, final BiConsumer<ComboBox, T> textInitializer, final C child, final BiConsumer<ComboBox, C> initializer) {
         this.button = new Button(text, event -> {
             if (event.button().equals(MouseButton.LEFT)) {
                 if (this.isOpen()) {
@@ -65,8 +65,8 @@ public class ComboBox extends Component implements Parent {
             }
         });
         this.child = child;
-        textInitializer.accept(text);
-        initializer.accept(child);
+        textInitializer.accept(this, text);
+        initializer.accept(this, child);
 
         this.arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);
         this.arrowSize = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_SIZE);
