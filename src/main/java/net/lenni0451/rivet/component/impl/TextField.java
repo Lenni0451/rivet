@@ -26,7 +26,9 @@ import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class TextField extends Component {
@@ -34,18 +36,21 @@ public class TextField extends Component {
     private final StringBuffer text = new StringBuffer();
     @Getter
     private final ListenerList<Consumer<String>> valueChangeListener = new ListenerList<>();
-    @Getter
-    private int cursor = 0;
-    @Getter
-    private int selection = 0;
-    private boolean focused;
-
     private final Animation cursorAnimation = new Animation(AnimationMode.LOOP)
             .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 1, 250, EasingBehavior.KEEP)
             .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 0, 500, EasingBehavior.KEEP)
             .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 0, 1, 500, EasingBehavior.KEEP)
             .start();
+    @Getter
+    @Nullable
+    private Function<Character, Character> charReplacer;
+
     private ShapedText shapedText;
+    @Getter
+    private int cursor = 0;
+    @Getter
+    private int selection = 0;
+    private boolean focused;
     private boolean selecting = false;
     private float scrollX = 0;
     private int clickCount;
@@ -69,6 +74,8 @@ public class TextField extends Component {
     private final ThemeOption<Float> cornerRadius;
     @Getter
     private final ThemeOption<Padding> innerPadding;
+    @Getter
+    private final ThemeOption<Character> passwordChar;
 
     public TextField() {
         this("");
@@ -86,6 +93,7 @@ public class TextField extends Component {
         this.outlineWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_WIDTH);
         this.cornerRadius = new ThemeOption<>(this, Theme.TEXT_FIELD_CORNER_RADIUS);
         this.innerPadding = new ThemeOption<>(this, Theme.TEXT_FIELD_INNER_PADDING);
+        this.passwordChar = new ThemeOption<>(this, Theme.TEXT_FIELD_PASSWORD_CHAR);
     }
 
     public String text() {
@@ -104,8 +112,36 @@ public class TextField extends Component {
         return this;
     }
 
+    public TextField passwordField(final boolean enabled) {
+        if (enabled) {
+            this.charReplacer = c -> this.passwordChar.value();
+        } else {
+            this.charReplacer = null;
+        }
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
+        return this;
+    }
+
+    public TextField charReplacer(final Function<Character, Character> charReplacer) {
+        this.charReplacer = charReplacer;
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
+        return this;
+    }
+
     private void updateShapedText() {
-        this.shapedText = this.rivet().backend().shapeText(this.text.toString(), this.rivet().theme().get(Theme.TEXT_COLOR));
+        String text = this.text.toString();
+        if (this.charReplacer != null) {
+            char[] chars = text.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                chars[i] = this.charReplacer.apply(chars[i]);
+            }
+            text = new String(chars);
+        }
+        this.shapedText = this.rivet().backend().shapeText(text, this.rivet().theme().get(Theme.TEXT_COLOR));
     }
 
     @Override

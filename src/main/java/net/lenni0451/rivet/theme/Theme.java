@@ -94,6 +94,7 @@ public abstract class Theme {
         float textHeight = r.backend().getTextHeight();
         return new Padding(roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0));
     });
+    public static final ThemeKey<Character> TEXT_FIELD_PASSWORD_CHAR = register("text_field.password_char", Character.class, r -> '•');
 
     // Checkbox
     public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = register("checkbox.corner_radius", Float.class, r -> roundMin(r.backend().getTextHeight() / 25F, 1));
