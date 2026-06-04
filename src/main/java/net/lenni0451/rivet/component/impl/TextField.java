@@ -267,6 +267,7 @@ public class TextField extends Component {
     public void render(final Renderer renderer, final Rectangle bounds) {
         float visibleWidth = bounds.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
+        float cursorHeight = textHeight == 0 ? this.rivet().backend().getTextHeight() : textHeight;
         this.ensureCursorVisible(visibleWidth);
 
         renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
@@ -278,7 +279,7 @@ public class TextField extends Component {
                     if (this.cursor != this.selection) {
                         float x1 = this.shapedText.cursorPosition(this.cursor).x();
                         float x2 = this.shapedText.cursorPosition(this.selection).x();
-                        renderer.fillRect(Math.min(x1, x2), -textHeight / 2F, Math.abs(x1 - x2), textHeight, this.selectionColor.value());
+                        renderer.fillRect(Math.min(x1, x2), -cursorHeight / 2F, Math.abs(x1 - x2), cursorHeight, this.selectionColor.value());
                     }
 
                     renderer.text(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
@@ -286,7 +287,7 @@ public class TextField extends Component {
                     if (this.focused) {
                         float cursorWidth = this.cursorWidth.value();
                         float cursorX = this.shapedText.cursorPosition(this.cursor).x();
-                        renderer.fillRect(cursorX - cursorWidth / 2F, -textHeight / 2F, cursorWidth, textHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
+                        renderer.fillRect(cursorX - cursorWidth / 2F, -cursorHeight / 2F, cursorWidth, cursorHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
                     }
                 });
             });
