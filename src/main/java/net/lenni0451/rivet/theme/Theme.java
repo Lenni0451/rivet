@@ -118,6 +118,7 @@ public abstract class Theme {
     public static final ThemeKey<Color> COMBOBOX_ARROW_COLOR = register("combobox.arrow_color", Color.class, r -> Color.WHITE);
     public static final ThemeKey<Float> COMBOBOX_ARROW_SIZE = register("combobox.arrow_size", Float.class, r -> roundMin(r.backend().getTextHeight() / 2F, 1));
     public static final ThemeKey<Float> COMBOBOX_MAX_POPUP_HEIGHT = register("combobox.max_popup_height", Float.class, r -> roundMin(r.backend().getTextHeight() * 10F, 1));
+    public static final ThemeKey<Boolean> COMBOBOX_INTERCEPT_OUTSIDE_CLICKS = register("combobox.intercept_outside_clicks", Boolean.class, r -> true);
 
     // Separator
     public static final ThemeKey<Color> SEPARATOR_COLOR = register("separator.color", Color.class, r -> Color.fromRGB(65, 65, 70));

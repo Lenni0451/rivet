@@ -8,6 +8,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.component.impl.SolidColor;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.layer.Layer;
@@ -41,6 +42,8 @@ public class ComboBox extends Component implements Parent {
     private final ThemeOption<Float> arrowSize;
     @Getter
     private final ThemeOption<Float> maxPopupHeight;
+    @Getter
+    private final ThemeOption<Boolean> interceptOutsideClicks;
 
     public ComboBox(final String text, final Component child) {
         this(text, child, (b, c) -> {});
@@ -71,11 +74,21 @@ public class ComboBox extends Component implements Parent {
         this.arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);
         this.arrowSize = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_SIZE);
         this.maxPopupHeight = new ThemeOption<>(this, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
+        this.interceptOutsideClicks = new ThemeOption<>(this, Theme.COMBOBOX_INTERCEPT_OUTSIDE_CLICKS);
     }
 
     public ComboBox open() {
         if (this.isOpen()) return this;
         Container container = new Container(AbsoluteLayout.INSTANCE);
+        if (this.interceptOutsideClicks.value()) {
+            SolidColor clickInterceptor = new SolidColor();
+            clickInterceptor.mouseDownListener().add((event, bounds) -> {
+                this.close();
+                return true;
+            });
+            clickInterceptor.mouseMoveListener().add((event, bounds) -> true);
+            container.addChild(clickInterceptor.layoutOptions(new AbsoluteLayoutOptions(0, 0, -1F, -1F)));
+        }
         container.addChild(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
         this.rivet().addLayer(this.layer);
