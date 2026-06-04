@@ -59,6 +59,10 @@ class ThemeLoaderTest {
         check(Theme.SLIDER_THUMB_ENCASED, "true", true);
         check(Theme.SLIDER_THUMB_ENCASED, "false", false);
 
+        // Character
+        check(Theme.TEXT_FIELD_PASSWORD_CHAR, "a", 'a');
+        check(Theme.TEXT_FIELD_PASSWORD_CHAR, "*", '*');
+
         // Integer
         check(Theme.BUTTON_ANIMATION_DURATION, "123", 123);
         check(Theme.BUTTON_ANIMATION_DURATION, "-123", -123);

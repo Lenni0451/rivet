@@ -19,23 +19,33 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 
 @UtilityClass
 public class ThemeLoader {
 
-    private static final Map<Class<?>, Parser<?>> parsers = Map.of(
-            Color.class, new ColorParser(),
-            Boolean.class, Boolean::valueOf,
-            Integer.class, Integer::valueOf,
-            Long.class, Long::valueOf,
-            Float.class, Float::valueOf,
-            String.class, s -> s,
-            Padding.class, new PaddingParser(),
-            Button.ClickOn.class, new EnumParser<>(Button.ClickOn.values()),
-            Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()),
-            ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values())
-    );
+    private static final Map<Class<?>, Parser<?>> parsers = new HashMap<>();
+
+    static {
+        parsers.put(Color.class, new ColorParser());
+        parsers.put(Boolean.class, Boolean::valueOf);
+        parsers.put(Character.class, s -> {
+            if (s.length() != 1) {
+                throw new IllegalArgumentException("Expected a single character but got: " + s);
+            } else {
+                return s.charAt(0);
+            }
+        });
+        parsers.put(Integer.class, Integer::valueOf);
+        parsers.put(Long.class, Long::valueOf);
+        parsers.put(Float.class, Float::valueOf);
+        parsers.put(String.class, s -> s);
+        parsers.put(Padding.class, new PaddingParser());
+        parsers.put(Button.ClickOn.class, new EnumParser<>(Button.ClickOn.values()));
+        parsers.put(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
+        parsers.put(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));
+    }
 
     public static void load(@WillClose final InputStream is, final Theme.Values values, final ExceptionHandler lineErrorHandler) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
