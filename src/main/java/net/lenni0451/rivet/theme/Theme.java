@@ -22,8 +22,8 @@ public abstract class Theme {
     public static final ThemeKey<Color> DISABLED_TEXT_COLOR = register("general.disabled_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
 
     // Button
-    public static final ThemeKey<Float> BUTTON_CORNER_RADIUS = register("button.corner_radius", Float.class, r -> roundMin(r.backend().defaultFont().height() / 10F, 0));
-    public static final ThemeKey<Float> BUTTON_OUTLINE_WIDTH = register("button.outline_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 25F, 1));
+    public static final ThemeKey<Float> BUTTON_CORNER_RADIUS = register("button.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 10F, 0));
+    public static final ThemeKey<Float> BUTTON_OUTLINE_WIDTH = register("button.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
     public static final ThemeKey<Color> BUTTON_INACTIVE_COLOR = register("button.inactive_color", Color.class, r -> Color.fromRGB(45, 45, 48));
     public static final ThemeKey<Color> BUTTON_INACTIVE_OUTLINE_COLOR = register("button.inactive_outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
     public static final ThemeKey<Color> BUTTON_ACTIVE_COLOR = register("button.active_color", Color.class, r -> Color.fromRGB(65, 65, 70));
@@ -32,7 +32,7 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_CLICK_OUTLINE_COLOR = register("button.click_outline_color", Color.class, r -> Color.fromRGB(110, 110, 115));
     public static final ThemeKey<Integer> BUTTON_ANIMATION_DURATION = register("button.animation_duration", Integer.class, r -> 150);
     public static final ThemeKey<Padding> BUTTON_INNER_PADDING = register("button.inner_padding", Padding.class, r -> {
-        float textHeight = r.backend().defaultFont().height();
+        float textHeight = r.backend().font().height();
         return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
     });
     public static final ThemeKey<Button.ClickOn> BUTTON_CLICK_ON = register("button.click_on", Button.ClickOn.class, r -> Button.ClickOn.UP);
@@ -45,9 +45,9 @@ public abstract class Theme {
     public static final ThemeKey<Color> SLIDER_THUMB_COLOR = register("slider.thumb_color", Color.class, r -> Color.fromRGB(120, 120, 125));
     public static final ThemeKey<Color> SLIDER_THUMB_CLICK_COLOR = register("slider.thumb_click_color", Color.class, r -> Color.fromRGB(100, 100, 105));
     public static final ThemeKey<Color> SLIDER_TICK_COLOR = register("slider.tick_color", Color.class, r -> Color.fromRGB(160, 160, 165));
-    public static final ThemeKey<Float> SLIDER_BAR_HEIGHT = register("slider.bar_height", Float.class, r -> roundMin(r.backend().defaultFont().height() / 3F, 1));
-    public static final ThemeKey<Float> SLIDER_THUMB_WIDTH = register("slider.thumb_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 3F, 1) * 2F);
-    public static final ThemeKey<Float> SLIDER_THUMB_HEIGHT = register("slider.thumb_height", Float.class, r -> roundMin(r.backend().defaultFont().height() / 3F, 1) * 2F);
+    public static final ThemeKey<Float> SLIDER_BAR_HEIGHT = register("slider.bar_height", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1));
+    public static final ThemeKey<Float> SLIDER_THUMB_WIDTH = register("slider.thumb_width", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1) * 2F);
+    public static final ThemeKey<Float> SLIDER_THUMB_HEIGHT = register("slider.thumb_height", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1) * 2F);
     public static final ThemeKey<Float> SLIDER_BAR_CORNER_RADIUS = register("slider.bar_corner_radius", Float.class, r -> Float.MAX_VALUE);
     public static final ThemeKey<Float> SLIDER_THUMB_CORNER_RADIUS = register("slider.thumb_corner_radius", Float.class, r -> Float.MAX_VALUE);
     public static final ThemeKey<Boolean> SLIDER_THUMB_ENCASED = register("slider.thumb_encased", Boolean.class, r -> false);
@@ -57,10 +57,10 @@ public abstract class Theme {
     public static final ThemeKey<Float> SLIDER_THUMB_OUTLINE_WIDTH = register("slider.thumb_outline_width", Float.class, r -> 0F);
     public static final ThemeKey<Color> SLIDER_TOOLTIP_BACKGROUND_COLOR = register("slider.tooltip_background_color", Color.class, r -> Color.fromRGB(45, 45, 48));
     public static final ThemeKey<Color> SLIDER_TOOLTIP_TEXT_COLOR = register("slider.tooltip_text_color", Color.class, r -> Color.WHITE);
-    public static final ThemeKey<Float> SLIDER_TOOLTIP_CORNER_RADIUS = register("slider.tooltip_corner_radius", Float.class, r -> roundMin(r.backend().defaultFont().height() / 10F, 0));
-    public static final ThemeKey<Float> SLIDER_TOOLTIP_TRIANGLE_SIZE = register("slider.tooltip_triangle_size", Float.class, r -> roundMin(r.backend().defaultFont().height() / 4F, 1));
+    public static final ThemeKey<Float> SLIDER_TOOLTIP_CORNER_RADIUS = register("slider.tooltip_corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 10F, 0));
+    public static final ThemeKey<Float> SLIDER_TOOLTIP_TRIANGLE_SIZE = register("slider.tooltip_triangle_size", Float.class, r -> roundMin(r.backend().font().height() / 4F, 1));
     public static final ThemeKey<Padding> SLIDER_TOOLTIP_PADDING = register("slider.tooltip_padding", Padding.class, r -> {
-        float textHeight = r.backend().defaultFont().height();
+        float textHeight = r.backend().font().height();
         return new Padding(roundMin(textHeight / 10F, 0), 0, roundMin(textHeight / 10F, 0), 0);
     });
     public static final ThemeKey<Boolean> SLIDER_SHOW_TOOLTIP = register("slider.show_tooltip", Boolean.class, r -> true);
@@ -75,11 +75,11 @@ public abstract class Theme {
     public static final ThemeKey<Color> SCROLL_BAR_COLOR = register("scroll.bar_color", Color.class, r -> Color.fromRGBA(120, 120, 125, 100));
     public static final ThemeKey<Color> SCROLL_BAR_HOVER_COLOR = register("scroll.bar_hover_color", Color.class, r -> Color.fromRGBA(140, 140, 145, 150));
     public static final ThemeKey<Color> SCROLL_BAR_CLICK_COLOR = register("scroll.bar_click_color", Color.class, r -> Color.fromRGBA(100, 100, 105, 200));
-    public static final ThemeKey<Float> SCROLL_BAR_WIDTH = register("scroll.bar_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 7F, 1));
+    public static final ThemeKey<Float> SCROLL_BAR_WIDTH = register("scroll.bar_width", Float.class, r -> roundMin(r.backend().font().height() / 7F, 1));
     public static final ThemeKey<Float> SCROLL_BAR_CORNER_RADIUS = register("scroll.bar_corner_radius", Float.class, r -> Float.MAX_VALUE);
     public static final ThemeKey<Float> SCROLL_BAR_OUTLINE_WIDTH = register("scroll.bar_outline_width", Float.class, r -> 0F);
     public static final ThemeKey<Color> SCROLL_BAR_OUTLINE_COLOR = register("scroll.bar_outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
-    public static final ThemeKey<Float> SCROLL_SPEED = register("scroll.speed", Float.class, r -> roundMin(r.backend().defaultFont().height() * 4, 1));
+    public static final ThemeKey<Float> SCROLL_SPEED = register("scroll.speed", Float.class, r -> roundMin(r.backend().font().height() * 4, 1));
     public static final ThemeKey<Boolean> SCROLL_SMOOTH = register("scroll.smooth", Boolean.class, r -> true);
     public static final ThemeKey<Integer> SCROLL_ANIMATION_DURATION = register("scroll.animation_duration", Integer.class, r -> 100);
     public static final ThemeKey<Long> SCROLL_NESTED_SCROLL_TIMEOUT = register("scroll.nested_scroll_timeout", Long.class, r -> 150L);
@@ -103,11 +103,11 @@ public abstract class Theme {
     public static final ThemeKey<Color> TEXT_FIELD_INVALID_OUTLINE_COLOR = register("text_field.invalid_outline_color", Color.class, r -> Color.fromRGB(255, 100, 100));
     public static final ThemeKey<Color> TEXT_FIELD_SELECTION_COLOR = register("text_field.selection_color", Color.class, r -> Color.fromRGBA(100, 100, 255, 100));
     public static final ThemeKey<Color> TEXT_FIELD_CURSOR_COLOR = register("text_field.cursor_color", Color.class, r -> Color.WHITE);
-    public static final ThemeKey<Float> TEXT_FIELD_CURSOR_WIDTH = register("text_field.cursor_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 25F, 1));
-    public static final ThemeKey<Float> TEXT_FIELD_OUTLINE_WIDTH = register("text_field.outline_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 25F, 1));
+    public static final ThemeKey<Float> TEXT_FIELD_CURSOR_WIDTH = register("text_field.cursor_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
+    public static final ThemeKey<Float> TEXT_FIELD_OUTLINE_WIDTH = register("text_field.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
     public static final ThemeKey<Float> TEXT_FIELD_CORNER_RADIUS = register("text_field.corner_radius", Float.class, r -> 0F);
     public static final ThemeKey<Padding> TEXT_FIELD_INNER_PADDING = register("text_field.inner_padding", Padding.class, r -> {
-        float textHeight = r.backend().defaultFont().height();
+        float textHeight = r.backend().font().height();
         return new Padding(roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0));
     });
     public static final ThemeKey<Character> TEXT_FIELD_PASSWORD_CHAR = register("text_field.password_char", Character.class, r -> '•');
@@ -116,35 +116,35 @@ public abstract class Theme {
     public static final ThemeKey<Color> TEXT_FIELD_DISABLED_OUTLINE_COLOR = register("text_field.disabled_outline_color", Color.class, r -> Color.fromRGB(45, 45, 45));
 
     // Checkbox
-    public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = register("checkbox.corner_radius", Float.class, r -> roundMin(r.backend().defaultFont().height() / 25F, 1));
-    public static final ThemeKey<Float> CHECKBOX_OUTLINE_WIDTH = register("checkbox.outline_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 25F, 1));
+    public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = register("checkbox.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
+    public static final ThemeKey<Float> CHECKBOX_OUTLINE_WIDTH = register("checkbox.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
     public static final ThemeKey<Color> CHECKBOX_BACKGROUND_COLOR = register("checkbox.background_color", Color.class, r -> Color.fromRGB(30, 30, 30));
     public static final ThemeKey<Color> CHECKBOX_OUTLINE_COLOR = register("checkbox.outline_color", Color.class, r -> Color.GRAY);
     public static final ThemeKey<Color> CHECKBOX_CHECK_COLOR = register("checkbox.check_color", Color.class, r -> Color.WHITE);
-    public static final ThemeKey<Float> CHECKBOX_CHECK_WIDTH = register("checkbox.check_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 25F, 1));
+    public static final ThemeKey<Float> CHECKBOX_CHECK_WIDTH = register("checkbox.check_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
     public static final ThemeKey<Float> CHECKBOX_TEXT_GAP = register("checkbox.text_gap", Float.class, r -> 0F);
     public static final ThemeKey<Color> CHECKBOX_DISABLED_BACKGROUND_COLOR = register("checkbox.disabled_background_color", Color.class, r -> Color.fromRGB(20, 20, 20));
     public static final ThemeKey<Color> CHECKBOX_DISABLED_OUTLINE_COLOR = register("checkbox.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 50));
     public static final ThemeKey<Color> CHECKBOX_DISABLED_CHECK_COLOR = register("checkbox.disabled_check_color", Color.class, r -> Color.fromRGB(100, 100, 100));
 
     // ColorPicker
-    public static final ThemeKey<Float> COLOR_PICKER_OUTLINE_WIDTH = register("color_picker.outline_width", Float.class, r -> roundMin(r.backend().defaultFont().height() / 25F, 1));
+    public static final ThemeKey<Float> COLOR_PICKER_OUTLINE_WIDTH = register("color_picker.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
     public static final ThemeKey<Color> COLOR_PICKER_OUTLINE_COLOR = register("color_picker.outline_color", Color.class, r -> Color.GRAY);
-    public static final ThemeKey<Float> COLOR_PICKER_PICKER_SIZE = register("color_picker.picker_size", Float.class, r -> roundMin(r.backend().defaultFont().height() * 8F, 1));
-    public static final ThemeKey<Float> COLOR_PICKER_SLIDER_WIDTH = register("color_picker.slider_width", Float.class, r -> roundMin(r.backend().defaultFont().height(), 1));
-    public static final ThemeKey<Float> COLOR_PICKER_GAP = register("color_picker.gap", Float.class, r -> roundMin(r.backend().defaultFont().height() / 3F, 1));
-    public static final ThemeKey<Float> COLOR_PICKER_SELECTOR_SIZE = register("color_picker.selector_size", Float.class, r -> roundMin(r.backend().defaultFont().height() / 8F, 1));
+    public static final ThemeKey<Float> COLOR_PICKER_PICKER_SIZE = register("color_picker.picker_size", Float.class, r -> roundMin(r.backend().font().height() * 8F, 1));
+    public static final ThemeKey<Float> COLOR_PICKER_SLIDER_WIDTH = register("color_picker.slider_width", Float.class, r -> roundMin(r.backend().font().height(), 1));
+    public static final ThemeKey<Float> COLOR_PICKER_GAP = register("color_picker.gap", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1));
+    public static final ThemeKey<Float> COLOR_PICKER_SELECTOR_SIZE = register("color_picker.selector_size", Float.class, r -> roundMin(r.backend().font().height() / 8F, 1));
 
     // ComboBox
     public static final ThemeKey<Color> COMBOBOX_ARROW_COLOR = register("combobox.arrow_color", Color.class, r -> Color.WHITE);
     public static final ThemeKey<Color> COMBOBOX_DISABLED_ARROW_COLOR = register("combobox.disabled_arrow_color", Color.class, r -> Color.fromRGB(150, 150, 150));
-    public static final ThemeKey<Float> COMBOBOX_ARROW_SIZE = register("combobox.arrow_size", Float.class, r -> roundMin(r.backend().defaultFont().height() / 2F, 1));
-    public static final ThemeKey<Float> COMBOBOX_MAX_POPUP_HEIGHT = register("combobox.max_popup_height", Float.class, r -> roundMin(r.backend().defaultFont().height() * 10F, 1));
+    public static final ThemeKey<Float> COMBOBOX_ARROW_SIZE = register("combobox.arrow_size", Float.class, r -> roundMin(r.backend().font().height() / 2F, 1));
+    public static final ThemeKey<Float> COMBOBOX_MAX_POPUP_HEIGHT = register("combobox.max_popup_height", Float.class, r -> roundMin(r.backend().font().height() * 10F, 1));
     public static final ThemeKey<Boolean> COMBOBOX_INTERCEPT_OUTSIDE_CLICKS = register("combobox.intercept_outside_clicks", Boolean.class, r -> true);
 
     // Separator
     public static final ThemeKey<Color> SEPARATOR_COLOR = register("separator.color", Color.class, r -> Color.fromRGB(65, 65, 70));
-    public static final ThemeKey<Float> SEPARATOR_THICKNESS = register("separator.thickness", Float.class, r -> roundMin(r.backend().defaultFont().height() / 20F, 1));
+    public static final ThemeKey<Float> SEPARATOR_THICKNESS = register("separator.thickness", Float.class, r -> roundMin(r.backend().font().height() / 20F, 1));
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);

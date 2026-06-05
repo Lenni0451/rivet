@@ -65,7 +65,7 @@ public class SliderTooltip extends Component {
 
     public void text(final String text) {
         this.text = text;
-        Font font = this.font != null ? this.font : this.rivet().backend().defaultFont();
+        Font font = this.font != null ? this.font : this.rivet().backend().font();
         this.shapedText = font.shapeText(text, this.textColor.value());
     }
 

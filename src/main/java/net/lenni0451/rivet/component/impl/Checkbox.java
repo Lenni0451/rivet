@@ -111,7 +111,7 @@ public class Checkbox extends Component {
 
     private void shapeText() {
         if (this.rivet() != null) {
-            Font font = this.font != null ? this.font : this.rivet().backend().defaultFont();
+            Font font = this.font != null ? this.font : this.rivet().backend().font();
             Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
             this.shapedText = font.shapeText(this.text, textColor);
         }

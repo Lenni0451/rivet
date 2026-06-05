@@ -22,7 +22,7 @@ public class FontTest extends TestBase {
     protected void init(final Rivet rivet) {
         Slider slider = new Slider(1, 200, 40);
         TextField textField = new TextField();
-        Label label = new Label("Hello World").font(rivet.backend().defaultFont());
+        Label label = new Label("Hello World").font(rivet.backend().font());
 
         slider.valueChangeListener().add(value -> label.font(label.font().derive(value.intValue())));
         textField.keyDownListener().add(event -> {

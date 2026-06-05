@@ -23,7 +23,7 @@ public class ThinGLBackend implements Backend {
     private final ThinGLFont font;
 
     @Override
-    public Font defaultFont() {
+    public Font font() {
         return this.font;
     }
 

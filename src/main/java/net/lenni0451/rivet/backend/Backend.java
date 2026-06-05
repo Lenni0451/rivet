@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 public interface Backend {
 
-    Font defaultFont();
+    Font font();
 
     @Nullable
     String getClipboard();
