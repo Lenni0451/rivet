@@ -20,6 +20,11 @@ public class ThinGLFont implements Font {
     private final FontInstanceSet fontInstanceSet;
 
     @Override
+    public int size() {
+        return this.fontInstanceSet.getMainInstance().getSize();
+    }
+
+    @Override
     public float height() {
         return this.fontInstanceSet.getMainInstance().getHeight();
     }

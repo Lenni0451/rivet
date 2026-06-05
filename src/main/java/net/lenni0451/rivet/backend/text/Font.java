@@ -7,6 +7,8 @@ import net.lenni0451.rivet.text.model.TextSection;
 
 public interface Font {
 
+    int size();
+
     float height();
 
     Font derive(final int size);
