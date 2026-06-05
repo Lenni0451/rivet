@@ -20,6 +20,7 @@ import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -37,6 +38,8 @@ public class ComboBox extends Component implements Parent {
 
     @Getter
     private final ThemeOption<Color> arrowColor;
+    @Getter
+    private final ThemeOption<Color> disabledArrowColor;
     @Getter
     private final ThemeOption<Float> arrowSize;
     @Getter
@@ -69,6 +72,7 @@ public class ComboBox extends Component implements Parent {
         initializer.accept(this, child);
 
         this.arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);
+        this.disabledArrowColor = new ThemeOption<>(this, Theme.COMBOBOX_DISABLED_ARROW_COLOR);
         this.arrowSize = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_SIZE);
         this.maxPopupHeight = new ThemeOption<>(this, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
         this.interceptOutsideClicks = new ThemeOption<>(this, Theme.COMBOBOX_INTERCEPT_OUTSIDE_CLICKS);
@@ -117,6 +121,17 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
+    protected void onComponentDisabled() {
+        this.close();
+        this.button.disabled(true);
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        this.button.disabled(false);
+    }
+
+    @Override
     protected void onComponentMouseEnter() {
         this.button.onMouseEnter();
     }
@@ -145,6 +160,7 @@ public class ComboBox extends Component implements Parent {
     public void render(final Renderer renderer, final Rectangle bounds) {
         this.button.render(renderer, bounds);
         float triangleSize = this.arrowSize.value();
+        Color arrowColor = this.disabled() ? this.disabledArrowColor.value() : this.arrowColor.value();
         if (this.isOpen()) {
             renderer.fillTriangle(
                     bounds.width() - this.button.innerPadding().value().right() - triangleSize,
@@ -153,7 +169,7 @@ public class ComboBox extends Component implements Parent {
                     bounds.height() / 2F + triangleSize / 2F,
                     bounds.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
                     bounds.height() / 2F - triangleSize / 2F,
-                    this.arrowColor.value()
+                    arrowColor
             );
         } else {
             renderer.fillTriangle(
@@ -163,7 +179,7 @@ public class ComboBox extends Component implements Parent {
                     bounds.height() / 2F + triangleSize / 2F,
                     bounds.width() - this.button.innerPadding().value().right(),
                     bounds.height() / 2F - triangleSize / 2F,
-                    this.arrowColor.value()
+                    arrowColor
             );
         }
         if (this.isOpen()) {
@@ -199,6 +215,11 @@ public class ComboBox extends Component implements Parent {
     @Override
     public Size contentSize() {
         return this.button.contentSize();
+    }
+
+    @Override
+    public List<Component> children() {
+        return List.of(this.button);
     }
 
 }

@@ -46,6 +46,14 @@ public final class ContainerMouseHandler<C> {
         this.checkAndRemove(this.hoveredDragComponent, componentMouseLeave, componentMouseUp, componentDragLeave);
     }
 
+    public void unsafeClear() {
+        this.hoveredComponent = null;
+        this.clickedComponent = null;
+        this.hoveredDragComponent = null;
+        this.componentMouseButtons.clear();
+        this.nonComponentMouseButtons.clear();
+    }
+
 
     public void onMouseLeave(final Consumer<C> mouseLeaveInvoker) {
         if (this.hoveredComponent != null) {

@@ -19,6 +19,7 @@ public abstract class Theme {
 
     // General
     public static final ThemeKey<Color> TEXT_COLOR = register("general.text_color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Color> DISABLED_TEXT_COLOR = register("general.disabled_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
 
     // Button
     public static final ThemeKey<Float> BUTTON_CORNER_RADIUS = register("button.corner_radius", Float.class, r -> roundMin(r.backend().getTextHeight() / 10F, 0));
@@ -35,6 +36,8 @@ public abstract class Theme {
         return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
     });
     public static final ThemeKey<Button.ClickOn> BUTTON_CLICK_ON = register("button.click_on", Button.ClickOn.class, r -> Button.ClickOn.UP);
+    public static final ThemeKey<Color> BUTTON_DISABLED_COLOR = register("button.disabled_color", Color.class, r -> Color.fromRGB(35, 35, 38));
+    public static final ThemeKey<Color> BUTTON_DISABLED_OUTLINE_COLOR = register("button.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 55));
 
     // Slider
     public static final ThemeKey<Color> SLIDER_BAR_COLOR = register("slider.bar_color", Color.class, r -> Color.fromRGB(65, 65, 70));
@@ -62,6 +65,11 @@ public abstract class Theme {
     });
     public static final ThemeKey<Boolean> SLIDER_SHOW_TOOLTIP = register("slider.show_tooltip", Boolean.class, r -> true);
     public static final ThemeKey<String> SLIDER_TOOLTIP_FORMAT = register("slider.tooltip_format", String.class, r -> "%,f");
+    public static final ThemeKey<Color> SLIDER_DISABLED_BAR_COLOR = register("slider.disabled_bar_color", Color.class, r -> Color.fromRGB(45, 45, 48));
+    public static final ThemeKey<Color> SLIDER_DISABLED_ACTIVE_BAR_COLOR = register("slider.disabled_active_bar_color", Color.class, r -> Color.fromRGB(55, 55, 58));
+    public static final ThemeKey<Color> SLIDER_DISABLED_THUMB_COLOR = register("slider.disabled_thumb_color", Color.class, r -> Color.fromRGB(75, 75, 78));
+    public static final ThemeKey<Color> SLIDER_DISABLED_THUMB_OUTLINE_COLOR = register("slider.disabled_thumb_outline_color", Color.class, r -> Color.fromRGB(95, 95, 98));
+    public static final ThemeKey<Color> SLIDER_DISABLED_TICK_COLOR = register("slider.disabled_tick_color", Color.class, r -> Color.fromRGB(100, 100, 105));
 
     // ScrollContainer
     public static final ThemeKey<Color> SCROLL_BAR_COLOR = register("scroll.bar_color", Color.class, r -> Color.fromRGBA(120, 120, 125, 100));
@@ -80,6 +88,10 @@ public abstract class Theme {
     public static final ThemeKey<Color> SCROLL_RAIL_COLOR = register("scroll.rail_color", Color.class, r -> Color.fromRGB(37, 37, 38));
     public static final ThemeKey<Color> SCROLL_RAIL_OUTLINE_COLOR = register("scroll.rail_outline_color", Color.class, r -> Color.fromRGB(51, 51, 52));
     public static final ThemeKey<Float> SCROLL_RAIL_OUTLINE_WIDTH = register("scroll.rail_outline_width", Float.class, r -> 0F);
+    public static final ThemeKey<Color> SCROLL_BAR_DISABLED_COLOR = register("scroll.bar_disabled_color", Color.class, r -> Color.fromRGBA(100, 100, 105, 50));
+    public static final ThemeKey<Color> SCROLL_BAR_DISABLED_OUTLINE_COLOR = register("scroll.bar_disabled_outline_color", Color.class, r -> Color.fromRGBA(65, 65, 70, 50));
+    public static final ThemeKey<Color> SCROLL_RAIL_DISABLED_COLOR = register("scroll.rail_disabled_color", Color.class, r -> Color.fromRGBA(37, 37, 38, 100));
+    public static final ThemeKey<Color> SCROLL_RAIL_DISABLED_OUTLINE_COLOR = register("scroll.rail_disabled_outline_color", Color.class, r -> Color.fromRGBA(51, 51, 52, 100));
 
     // TextField
     public static final ThemeKey<Color> TEXT_FIELD_TEXT_COLOR = register("text_field.text_color", Color.class, r -> r.theme().get(TEXT_COLOR));
@@ -99,6 +111,9 @@ public abstract class Theme {
         return new Padding(roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0));
     });
     public static final ThemeKey<Character> TEXT_FIELD_PASSWORD_CHAR = register("text_field.password_char", Character.class, r -> '•');
+    public static final ThemeKey<Color> TEXT_FIELD_DISABLED_TEXT_COLOR = register("text_field.disabled_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
+    public static final ThemeKey<Color> TEXT_FIELD_DISABLED_BACKGROUND_COLOR = register("text_field.disabled_background_color", Color.class, r -> Color.fromRGB(20, 20, 20));
+    public static final ThemeKey<Color> TEXT_FIELD_DISABLED_OUTLINE_COLOR = register("text_field.disabled_outline_color", Color.class, r -> Color.fromRGB(45, 45, 45));
 
     // Checkbox
     public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = register("checkbox.corner_radius", Float.class, r -> roundMin(r.backend().getTextHeight() / 25F, 1));
@@ -108,7 +123,9 @@ public abstract class Theme {
     public static final ThemeKey<Color> CHECKBOX_CHECK_COLOR = register("checkbox.check_color", Color.class, r -> Color.WHITE);
     public static final ThemeKey<Float> CHECKBOX_CHECK_WIDTH = register("checkbox.check_width", Float.class, r -> roundMin(r.backend().getTextHeight() / 25F, 1));
     public static final ThemeKey<Float> CHECKBOX_TEXT_GAP = register("checkbox.text_gap", Float.class, r -> 0F);
-    public static final ThemeKey<Integer> CHECKBOX_ANIMATION_DURATION = register("checkbox.animation_duration", Integer.class, r -> 100);
+    public static final ThemeKey<Color> CHECKBOX_DISABLED_BACKGROUND_COLOR = register("checkbox.disabled_background_color", Color.class, r -> Color.fromRGB(20, 20, 20));
+    public static final ThemeKey<Color> CHECKBOX_DISABLED_OUTLINE_COLOR = register("checkbox.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 50));
+    public static final ThemeKey<Color> CHECKBOX_DISABLED_CHECK_COLOR = register("checkbox.disabled_check_color", Color.class, r -> Color.fromRGB(100, 100, 100));
 
     // ColorPicker
     public static final ThemeKey<Float> COLOR_PICKER_OUTLINE_WIDTH = register("color_picker.outline_width", Float.class, r -> roundMin(r.backend().getTextHeight() / 25F, 1));
@@ -120,6 +137,7 @@ public abstract class Theme {
 
     // ComboBox
     public static final ThemeKey<Color> COMBOBOX_ARROW_COLOR = register("combobox.arrow_color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Color> COMBOBOX_DISABLED_ARROW_COLOR = register("combobox.disabled_arrow_color", Color.class, r -> Color.fromRGB(150, 150, 150));
     public static final ThemeKey<Float> COMBOBOX_ARROW_SIZE = register("combobox.arrow_size", Float.class, r -> roundMin(r.backend().getTextHeight() / 2F, 1));
     public static final ThemeKey<Float> COMBOBOX_MAX_POPUP_HEIGHT = register("combobox.max_popup_height", Float.class, r -> roundMin(r.backend().getTextHeight() * 10F, 1));
     public static final ThemeKey<Boolean> COMBOBOX_INTERCEPT_OUTSIDE_CLICKS = register("combobox.intercept_outside_clicks", Boolean.class, r -> true);

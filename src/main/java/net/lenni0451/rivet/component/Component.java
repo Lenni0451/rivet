@@ -38,11 +38,17 @@ public abstract class Component {
     @Getter
     @Setter
     private boolean interactive = true;
+    @Getter
+    private boolean disabled = false;
 
     @Getter
     private final ListenerList<Runnable> addedListener = new ListenerList<>();
     @Getter
     private final ListenerList<Runnable> removedListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Runnable> disabledListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Runnable> enabledListener = new ListenerList<>();
     @Getter
     private final ListenerList<BooleanSupplier> focusGainedListener = new ListenerList<>();
     @Getter
@@ -142,11 +148,31 @@ public abstract class Component {
         return this;
     }
 
+    public final Component disabled(final boolean disabled) {
+        if (this.disabled == disabled) return this;
+        this.disabled = disabled;
+        if (disabled) {
+            if (this.rivet != null && this.rivet.focusedComponent() == this) {
+                this.rivet.focusedComponent(null);
+            }
+            this.disabledListener.callVoid(Runnable::run, this::onComponentDisabled);
+        } else {
+            this.enabledListener.callVoid(Runnable::run, this::onComponentEnabled);
+        }
+        return this;
+    }
+
 
     protected void onComponentAdded() {
     }
 
     protected void onComponentRemoved() {
+    }
+
+    protected void onComponentDisabled() {
+    }
+
+    protected void onComponentEnabled() {
     }
 
     public final void onFocusGained() {
@@ -170,6 +196,7 @@ public abstract class Component {
     }
 
     public final boolean onKeyDown(final KeyEvent event) {
+        if (this.disabled()) return false;
         return this.keyDownListener.call(l -> l.test(event), () -> this.onComponentKeyDown(event));
     }
 
@@ -178,6 +205,7 @@ public abstract class Component {
     }
 
     public final boolean onKeyUp(final KeyEvent event) {
+        if (this.disabled()) return false;
         return this.keyUpListener.call(l -> l.test(event), () -> this.onComponentKeyUp(event));
     }
 
@@ -186,6 +214,7 @@ public abstract class Component {
     }
 
     public final boolean onCharTyped(final CharEvent event) {
+        if (this.disabled()) return false;
         return this.charTypedListener.call(l -> l.test(event), () -> this.onComponentCharTyped(event));
     }
 
@@ -194,6 +223,7 @@ public abstract class Component {
     }
 
     public final void onMouseEnter() {
+        if (this.disabled()) return;
         this.mouseEnterListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentMouseEnter();
             return false;
@@ -204,6 +234,7 @@ public abstract class Component {
     }
 
     public final void onMouseLeave() {
+        if (this.disabled()) return;
         this.mouseLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentMouseLeave();
             return false;
@@ -214,6 +245,7 @@ public abstract class Component {
     }
 
     public final boolean onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        if (this.disabled()) return false;
         return this.mouseDownListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseDown(event, bounds));
     }
 
@@ -222,6 +254,7 @@ public abstract class Component {
     }
 
     public final boolean onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+        if (this.disabled()) return false;
         return this.mouseUpListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseUp(event, bounds));
     }
 
@@ -230,6 +263,7 @@ public abstract class Component {
     }
 
     public final boolean onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+        if (this.disabled()) return false;
         return this.mouseMoveListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseMove(event, bounds));
     }
 
@@ -238,6 +272,7 @@ public abstract class Component {
     }
 
     public final boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+        if (this.disabled()) return false;
         return this.mouseScrollListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseScroll(event, bounds));
     }
 
@@ -246,6 +281,7 @@ public abstract class Component {
     }
 
     public final boolean onDrop(final DropEvent event, final Rectangle bounds) {
+        if (this.disabled()) return false;
         return this.dropListener.call(l -> l.test(event, bounds), () -> this.onComponentDrop(event, bounds));
     }
 
@@ -254,6 +290,7 @@ public abstract class Component {
     }
 
     public final boolean onDragOver(final DragOverEvent event, final Rectangle bounds) {
+        if (this.disabled()) return false;
         return this.dragOverListener.call(l -> l.test(event, bounds), () -> this.onComponentDragOver(event, bounds));
     }
 
@@ -262,6 +299,7 @@ public abstract class Component {
     }
 
     public final void onDragLeave() {
+        if (this.disabled()) return;
         this.dragLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentDragLeave();
             return false;

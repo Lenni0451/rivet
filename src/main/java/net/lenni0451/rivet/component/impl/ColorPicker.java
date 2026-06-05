@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 public class ColorPicker extends Component {
 
     private static final int HUE_STEPS = 12;
+    private static final Color DISABLED_OVERLAY_COLOR = Color.fromRGBA(30, 30, 30, 150);
 
     @Getter
     private Color color;
@@ -81,6 +82,11 @@ public class ColorPicker extends Component {
         this.draggingPicker = false;
         this.draggingHue = false;
         this.draggingAlpha = false;
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.onComponentRemoved();
     }
 
     @Override
@@ -182,6 +188,10 @@ public class ColorPicker extends Component {
         float cursorY = (1 - this.brightness) * pickerSize;
         renderer.outlineRect(0, 0, pickerSize, pickerSize, this.outlineWidth.value(), this.outlineColor.value());
         renderer.outlineCircle(cursorX, cursorY, this.selectorSize.value(), 1, this.brightness > 0.5 ? Color.BLACK : Color.WHITE);
+
+        if (this.disabled()) {
+            renderer.fillRect(0, 0, pickerSize, pickerSize, DISABLED_OVERLAY_COLOR);
+        }
     }
 
     private void renderHueSlider(final Renderer renderer, final float pickerSize, final float sliderWidth, final float gap) {
@@ -199,6 +209,10 @@ public class ColorPicker extends Component {
         float cursorY = this.hue * pickerSize;
         renderer.outlineRect(x - 1, cursorY - 2, sliderWidth + 2, 4, 1, Color.WHITE);
         renderer.outlineRect(x, 0, sliderWidth, pickerSize, this.outlineWidth.value(), this.outlineColor.value());
+
+        if (this.disabled()) {
+            renderer.fillRect(x, 0, sliderWidth, pickerSize, DISABLED_OVERLAY_COLOR);
+        }
     }
 
     private void renderAlphaSlider(final Renderer renderer, final float pickerSize, final float sliderWidth, final float gap) {
@@ -220,15 +234,24 @@ public class ColorPicker extends Component {
         float cursorX = this.alpha * pickerSize;
         renderer.outlineRect(cursorX - 2, y - 1, 4, sliderWidth + 2, 1, Color.WHITE);
         renderer.outlineRect(0, y, pickerSize, sliderWidth, this.outlineWidth.value(), this.outlineColor.value());
+
+        if (this.disabled()) {
+            renderer.fillRect(0, y, pickerSize, sliderWidth, DISABLED_OVERLAY_COLOR);
+        }
     }
 
     private void renderPreview(final Renderer renderer, final float pickerSize, final float sliderWidth, final float gap) {
-        renderer.fillRect(pickerSize + gap, pickerSize + gap, sliderWidth / 2F, sliderWidth / 2F, Color.WHITE);
-        renderer.fillRect(pickerSize + gap + sliderWidth / 2F, pickerSize + gap, sliderWidth / 2F, sliderWidth / 2F, Color.LIGHT_GRAY);
-        renderer.fillRect(pickerSize + gap + sliderWidth / 2F, pickerSize + gap + sliderWidth / 2F, sliderWidth / 2F, sliderWidth / 2F, Color.WHITE);
-        renderer.fillRect(pickerSize + gap, pickerSize + gap + sliderWidth / 2F, sliderWidth / 2F, sliderWidth / 2F, Color.LIGHT_GRAY);
-        renderer.fillRect(pickerSize + gap, pickerSize + gap, sliderWidth, sliderWidth, this.color);
-        renderer.outlineRect(pickerSize + gap, pickerSize + gap, sliderWidth, sliderWidth, this.outlineWidth.value(), this.outlineColor.value());
+        float x = pickerSize + gap;
+        float y = pickerSize + gap;
+        renderer.fillRect(x, y, sliderWidth / 2F, sliderWidth / 2F, Color.WHITE);
+        renderer.fillRect(x + sliderWidth / 2F, y, sliderWidth / 2F, sliderWidth / 2F, Color.LIGHT_GRAY);
+        renderer.fillRect(x + sliderWidth / 2F, y + sliderWidth / 2F, sliderWidth / 2F, sliderWidth / 2F, Color.WHITE);
+        renderer.fillRect(x, y + sliderWidth / 2F, sliderWidth / 2F, sliderWidth / 2F, Color.LIGHT_GRAY);
+        renderer.fillRect(x, y, sliderWidth, sliderWidth, this.color);
+        renderer.outlineRect(x, y, sliderWidth, sliderWidth, this.outlineWidth.value(), this.outlineColor.value());
+        if (this.disabled()) {
+            renderer.fillRect(x, y, sliderWidth, sliderWidth, DISABLED_OVERLAY_COLOR);
+        }
     }
 
     @Override

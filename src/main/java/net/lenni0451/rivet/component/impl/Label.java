@@ -3,6 +3,7 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
@@ -54,13 +55,24 @@ public class Label extends Component {
 
     private void shapeText() {
         if (this.reshape) {
-            this.shapedText = this.rivet().backend().shapeText(this.text, this.rivet().theme().get(Theme.TEXT_COLOR));
+            Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
+            this.shapedText = this.rivet().backend().shapeText(this.text, textColor);
             this.reshape = false;
         }
     }
 
     @Override
     protected void onComponentAdded() {
+        this.reshape = true;
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.reshape = true;
+    }
+
+    @Override
+    protected void onComponentEnabled() {
         this.reshape = true;
     }
 

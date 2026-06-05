@@ -92,6 +92,12 @@ public class TextField extends Component {
     private final ThemeOption<Padding> innerPadding;
     @Getter
     private final ThemeOption<Character> passwordChar;
+    @Getter
+    private final ThemeOption<Color> disabledTextColor;
+    @Getter
+    private final ThemeOption<Color> disabledBackgroundColor;
+    @Getter
+    private final ThemeOption<Color> disabledOutlineColor;
 
     public TextField() {
         this("");
@@ -114,6 +120,9 @@ public class TextField extends Component {
         this.cornerRadius = new ThemeOption<>(this, Theme.TEXT_FIELD_CORNER_RADIUS);
         this.innerPadding = new ThemeOption<>(this, Theme.TEXT_FIELD_INNER_PADDING);
         this.passwordChar = new ThemeOption<>(this, Theme.TEXT_FIELD_PASSWORD_CHAR);
+        this.disabledTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_TEXT_COLOR);
+        this.disabledBackgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_BACKGROUND_COLOR);
+        this.disabledOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_OUTLINE_COLOR);
     }
 
     public String text() {
@@ -179,9 +188,14 @@ public class TextField extends Component {
             }
             text = new String(chars);
         }
-        this.shapedText = this.rivet().backend().shapeText(text, this.valid ? this.textColor.value() : this.invalidTextColor.value());
+        Color textColor;
+        if (this.disabled()) textColor = this.disabledTextColor.value();
+        else if (!this.valid) textColor = this.invalidTextColor.value();
+        else textColor = this.textColor.value();
+        this.shapedText = this.rivet().backend().shapeText(text, textColor);
         if (this.hint != null && !this.hint.isEmpty()) {
-            this.shapedHintText = this.rivet().backend().shapeText(this.hint, this.hintColor.value());
+            Color hintColor = this.disabled() ? this.disabledTextColor.value() : this.hintColor.value();
+            this.shapedHintText = this.rivet().backend().shapeText(this.hint, hintColor);
         } else {
             this.shapedHintText = null;
         }
@@ -198,6 +212,17 @@ public class TextField extends Component {
         this.focused = false;
         this.selecting = false;
         this.clickCount = 0;
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.onComponentRemoved();
+        this.updateShapedText();
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        this.updateShapedText();
     }
 
     @Override
@@ -351,9 +376,11 @@ public class TextField extends Component {
         float cursorHeight = textHeight == 0 ? this.rivet().backend().getTextHeight() : textHeight;
         this.ensureCursorVisible(visibleWidth);
 
-        renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
+        Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
+        renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), backgroundColor);
         Color outlineColor;
-        if (!this.valid) outlineColor = this.invalidOutlineColor.value();
+        if (this.disabled()) outlineColor = this.disabledOutlineColor.value();
+        else if (!this.valid) outlineColor = this.invalidOutlineColor.value();
         else if (this.focused) outlineColor = this.focusedOutlineColor.value();
         else outlineColor = this.outlineColor.value();
         renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), outlineColor);

@@ -53,6 +53,7 @@ public class Container extends Component implements Parent {
         return this;
     }
 
+    @Override
     public final List<Component> children() {
         return this.children.stream().map(c -> c.component).toList();
     }
@@ -126,6 +127,22 @@ public class Container extends Component implements Parent {
     protected void onComponentRemoved() {
         for (Child child : this.children) {
             child.component.setRivet(null, null);
+        }
+        this.mouseHandler.unsafeClear();
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        for (Child child : this.children) {
+            child.component.disabled(true);
+        }
+        this.mouseHandler.unsafeClear();
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        for (Child child : this.children) {
+            child.component.disabled(false);
         }
     }
 

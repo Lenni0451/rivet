@@ -4,9 +4,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.math.Size;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,6 +29,11 @@ public final class Layer implements Parent {
     @Override
     public Size contentSize() {
         return this.container.contentSize();
+    }
+
+    @Override
+    public List<Component> children() {
+        return List.of(this.container);
     }
 
 }

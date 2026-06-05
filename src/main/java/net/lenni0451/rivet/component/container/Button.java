@@ -23,6 +23,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -51,6 +52,10 @@ public class Button extends Component implements Parent {
     private final ThemeOption<Color> clickColor;
     @Getter
     private final ThemeOption<Color> clickOutlineColor;
+    @Getter
+    private final ThemeOption<Color> disabledColor;
+    @Getter
+    private final ThemeOption<Color> disabledOutlineColor;
     @Getter
     private final ThemeOption<Integer> animationDuration;
     @Getter
@@ -95,6 +100,8 @@ public class Button extends Component implements Parent {
         this.activeOutlineColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
         this.clickColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_COLOR);
         this.clickOutlineColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_OUTLINE_COLOR);
+        this.disabledColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_COLOR);
+        this.disabledOutlineColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_OUTLINE_COLOR);
         this.animationDuration = new ThemeOption<>(this, Theme.BUTTON_ANIMATION_DURATION);
         this.innerPadding = new ThemeOption<>(this, Theme.BUTTON_INNER_PADDING);
         this.clickOn = new ThemeOption<>(this, Theme.BUTTON_CLICK_ON);
@@ -117,6 +124,21 @@ public class Button extends Component implements Parent {
         if (this.hoverAnimation != null) {
             this.hoverAnimation.finish(AnimationDirection.BACKWARDS);
         }
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.child.disabled(true);
+        this.hovered = false;
+        this.pressed.clear();
+        if (this.hoverAnimation != null) {
+            this.hoverAnimation.finish(AnimationDirection.BACKWARDS);
+        }
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        this.child.disabled(false);
     }
 
     @Override
@@ -168,7 +190,10 @@ public class Button extends Component implements Parent {
         float animationProgress = this.hoverAnimation.getValue();
         Color color;
         Color outlineColor;
-        if (this.pressed.isEmpty()) {
+        if (this.disabled()) {
+            color = this.disabledColor.value();
+            outlineColor = this.disabledOutlineColor.value();
+        } else if (this.pressed.isEmpty()) {
             color = Color.interpolate(animationProgress, this.inactiveColor.value(), this.activeColor.value());
             outlineColor = Color.interpolate(animationProgress, this.inactiveOutlineColor.value(), this.activeOutlineColor.value());
         } else {
@@ -214,6 +239,11 @@ public class Button extends Component implements Parent {
             return parent.contentSize().plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
         }
         return Size.EMPTY;
+    }
+
+    @Override
+    public List<Component> children() {
+        return List.of(this.child);
     }
 
 

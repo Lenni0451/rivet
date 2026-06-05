@@ -16,6 +16,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -53,6 +54,20 @@ public class DecoratedContainer extends Component implements Parent {
     protected void onComponentRemoved() {
         this.background.setRivet(null, null);
         this.child.setRivet(null, null);
+        this.mouseHandler.unsafeClear();
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.background.disabled(true);
+        this.child.disabled(true);
+        this.mouseHandler.unsafeClear();
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        this.background.disabled(false);
+        this.child.disabled(false);
     }
 
     @Override
@@ -196,6 +211,11 @@ public class DecoratedContainer extends Component implements Parent {
             return parent.contentSize().plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
         }
         return Size.EMPTY;
+    }
+
+    @Override
+    public List<Component> children() {
+        return List.of(this.background, this.child);
     }
 
 }

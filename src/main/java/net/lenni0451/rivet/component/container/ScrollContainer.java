@@ -26,6 +26,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -78,6 +79,14 @@ public class ScrollContainer extends Component implements Parent {
     private final ThemeOption<Color> railOutlineColor;
     @Getter
     private final ThemeOption<Float> railOutlineWidth;
+    @Getter
+    private final ThemeOption<Color> disabledBarColor;
+    @Getter
+    private final ThemeOption<Color> disabledBarOutlineColor;
+    @Getter
+    private final ThemeOption<Color> disabledRailColor;
+    @Getter
+    private final ThemeOption<Color> disabledRailOutlineColor;
 
     private Size childSize = Size.EMPTY;
     private final ContainerMouseHandler<Component> mouseHandler = new ContainerMouseHandler<>();
@@ -143,6 +152,10 @@ public class ScrollContainer extends Component implements Parent {
         this.railColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_COLOR);
         this.railOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_COLOR);
         this.railOutlineWidth = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_WIDTH);
+        this.disabledBarColor = new ThemeOption<>(this, Theme.SCROLL_BAR_DISABLED_COLOR);
+        this.disabledBarOutlineColor = new ThemeOption<>(this, Theme.SCROLL_BAR_DISABLED_OUTLINE_COLOR);
+        this.disabledRailColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_DISABLED_COLOR);
+        this.disabledRailOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_DISABLED_OUTLINE_COLOR);
     }
 
     @Override
@@ -155,6 +168,7 @@ public class ScrollContainer extends Component implements Parent {
     @Override
     protected void onComponentRemoved() {
         this.child.setRivet(null, null);
+        this.mouseHandler.unsafeClear();
         this.hBarHovered = false;
         this.hBarPressed = false;
         this.hRailHovered = false;
@@ -163,6 +177,25 @@ public class ScrollContainer extends Component implements Parent {
         this.vBarPressed = false;
         this.vRailHovered = false;
         this.vRailPressed = false;
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.child.disabled(true);
+        this.mouseHandler.unsafeClear();
+        this.hBarHovered = false;
+        this.hBarPressed = false;
+        this.hRailHovered = false;
+        this.hRailPressed = false;
+        this.vBarHovered = false;
+        this.vBarPressed = false;
+        this.vRailHovered = false;
+        this.vRailPressed = false;
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        this.child.disabled(false);
     }
 
     @Override
@@ -471,28 +504,39 @@ public class ScrollContainer extends Component implements Parent {
 
     private void renderCorner(final Renderer renderer, final Rectangle bounds) {
         if (this.barType.value() == ScrollBarType.NORMAL && this.vScrollVisible && this.hScrollVisible) {
+            Color color = this.disabled() ? this.disabledRailColor.value() : this.railColor.value();
             float barWidth = this.barWidth.value();
-            renderer.fillRect(bounds.width() - barWidth, bounds.height() - barWidth, barWidth, barWidth, this.railColor.value());
+            renderer.fillRect(bounds.width() - barWidth, bounds.height() - barWidth, barWidth, barWidth, color);
         }
     }
 
     private void renderRail(final Renderer renderer, final Rectangle bounds, final boolean hovered, final boolean pressed) {
-        renderer.fillRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.railColor.value());
+        Color color = this.disabled() ? this.disabledRailColor.value() : this.railColor.value();
+        renderer.fillRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), color);
         if (this.railOutlineWidth.value() > 0) {
-            renderer.outlineRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.railOutlineWidth.value(), this.railOutlineColor.value());
+            Color outlineColor = this.disabled() ? this.disabledRailOutlineColor.value() : this.railOutlineColor.value();
+            renderer.outlineRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.railOutlineWidth.value(), outlineColor);
         }
     }
 
     private void renderThumb(final Renderer renderer, final Rectangle bounds, final boolean hovered, final boolean pressed) {
         if (bounds == null) return;
 
-        Color color = this.barColor.value();
-        if (pressed) color = this.barClickColor.value();
-        else if (hovered) color = this.barHoverColor.value();
+        Color color;
+        Color outlineColor;
+        if (this.disabled()) {
+            color = this.disabledBarColor.value();
+            outlineColor = this.disabledBarOutlineColor.value();
+        } else {
+            if (pressed) color = this.barClickColor.value();
+            else if (hovered) color = this.barHoverColor.value();
+            else color = this.barColor.value();
+            outlineColor = this.barOutlineColor.value();
+        }
 
         renderer.optimizedFillRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), color);
         if (this.barOutlineWidth.value() > 0) {
-            renderer.optimizedOutlineRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), this.barOutlineWidth.value(), this.barOutlineColor.value());
+            renderer.optimizedOutlineRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), this.barOutlineWidth.value(), outlineColor);
         }
     }
 
@@ -645,6 +689,11 @@ public class ScrollContainer extends Component implements Parent {
         return Size.EMPTY;
     }
 
+    @Override
+    public List<Component> children() {
+        return List.of(this.child);
+    }
+
     private void onScroll() {
         this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
     }
@@ -685,7 +734,6 @@ public class ScrollContainer extends Component implements Parent {
             PARENT, CHILD
         }
     }
-
 
     @FunctionalInterface
     public interface ScrollListener {

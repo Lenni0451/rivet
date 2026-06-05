@@ -43,6 +43,12 @@ public class Checkbox extends Component {
     private final ThemeOption<Float> checkWidth;
     @Getter
     private final ThemeOption<Float> textGap;
+    @Getter
+    private final ThemeOption<Color> disabledBackgroundColor;
+    @Getter
+    private final ThemeOption<Color> disabledOutlineColor;
+    @Getter
+    private final ThemeOption<Color> disabledCheckColor;
 
     public Checkbox() {
         this(false);
@@ -63,6 +69,9 @@ public class Checkbox extends Component {
         this.checkColor = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_COLOR);
         this.checkWidth = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_WIDTH);
         this.textGap = new ThemeOption<>(this, Theme.CHECKBOX_TEXT_GAP);
+        this.disabledBackgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_BACKGROUND_COLOR);
+        this.disabledOutlineColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_OUTLINE_COLOR);
+        this.disabledCheckColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_CHECK_COLOR);
     }
 
     public Checkbox checked(final boolean checked) {
@@ -85,7 +94,10 @@ public class Checkbox extends Component {
     }
 
     private void shapeText() {
-        this.shapedText = this.rivet().backend().shapeText(this.text, this.rivet().theme().get(Theme.TEXT_COLOR));
+        if (this.rivet() != null) {
+            Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
+            this.shapedText = this.rivet().backend().shapeText(this.text, textColor);
+        }
     }
 
     @Override
@@ -96,6 +108,17 @@ public class Checkbox extends Component {
     @Override
     protected void onComponentRemoved() {
         this.hovered = false;
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.onComponentRemoved();
+        this.shapeText();
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        this.shapeText();
     }
 
     @Override
@@ -128,15 +151,17 @@ public class Checkbox extends Component {
         float boxSize = bounds.height() * 0.8F;
         float offset = (bounds.height() - boxSize) / 2F;
 
-        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.backgroundColor.value());
+        Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
+        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), backgroundColor);
         if (this.outlineWidth.value() > 0) {
-            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColor.value());
+            Color outlineColor = this.disabled() ? this.disabledOutlineColor.value() : this.outlineColor.value();
+            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.outlineWidth.value(), outlineColor);
         }
 
         if (this.checked) {
             float padding = boxSize * 0.2F;
             float checkWidth = this.checkWidth.value();
-            Color checkColor = this.checkColor.value();
+            Color checkColor = this.disabled() ? this.disabledCheckColor.value() : this.checkColor.value();
 
             renderer.line(offset + padding, offset + boxSize / 2F, offset + boxSize / 2.5F, offset + boxSize - padding, checkWidth, checkColor);
             renderer.line(offset + boxSize / 2.5F, offset + boxSize - padding, offset + boxSize - padding, offset + padding, checkWidth, checkColor);

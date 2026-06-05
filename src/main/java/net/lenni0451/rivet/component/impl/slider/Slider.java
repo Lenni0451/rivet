@@ -82,6 +82,16 @@ public class Slider extends Component {
     private final ThemeOption<Boolean> showTooltip;
     @Getter
     private final ThemeOption<String> tooltipFormat;
+    @Getter
+    private final ThemeOption<Color> disabledBarColor;
+    @Getter
+    private final ThemeOption<Color> disabledActiveBarColor;
+    @Getter
+    private final ThemeOption<Color> disabledThumbColor;
+    @Getter
+    private final ThemeOption<Color> disabledThumbOutlineColor;
+    @Getter
+    private final ThemeOption<Color> disabledTickColor;
 
     public Slider(final double min, final double max, final double value) {
         this(min, max, 1, value);
@@ -111,6 +121,11 @@ public class Slider extends Component {
         this.showTooltip = new ThemeOption<>(this, Theme.SLIDER_SHOW_TOOLTIP);
         this.tooltipFormat = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_FORMAT);
         this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
+        this.disabledBarColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_BAR_COLOR);
+        this.disabledActiveBarColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_ACTIVE_BAR_COLOR);
+        this.disabledThumbColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_COLOR);
+        this.disabledThumbOutlineColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_OUTLINE_COLOR);
+        this.disabledTickColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_TICK_COLOR);
     }
 
     public Slider min(final double min) {
@@ -144,6 +159,22 @@ public class Slider extends Component {
             this.tooltip = null;
         }
         this.dragged = false;
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        this.onComponentRemoved();
+        this.tickLabels.clear();
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        this.tickLabels.clear();
+    }
+
+    @Override
+    public void onThemeChanged() {
+        this.tickLabels.clear();
     }
 
     @Override
@@ -227,20 +258,32 @@ public class Slider extends Component {
     }
 
     private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
+        Color barColor = this.disabled() ? this.disabledBarColor.value() : this.barColor.value();
+        Color activeBarColor = this.disabled() ? this.disabledActiveBarColor.value() : this.activeBarColor.value();
         if (this.thumbEncased.value()) {
-            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, bounds.width(), barHeight, this.barCornerRadius.value(), this.barColor.value());
-            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
+            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, bounds.width(), barHeight, this.barCornerRadius.value(), barColor);
+            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), activeBarColor);
         } else {
-            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, bounds.width() - thumbWidth, barHeight, this.barCornerRadius.value(), this.barColor.value());
-            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), this.activeBarColor.value());
+            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, bounds.width() - thumbWidth, barHeight, this.barCornerRadius.value(), barColor);
+            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), activeBarColor);
         }
     }
 
     private void renderThumb(final Renderer renderer, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float thumbX) {
-        Color color = this.dragged ? this.thumbClickColor.value() : this.thumbColor.value();
-        float cornerRadius = this.thumbCornerRadius.value();
+        Color color;
+        Color outlineColor;
+        if (this.disabled()) {
+            color = this.disabledThumbColor.value();
+            outlineColor = this.disabledThumbOutlineColor.value();
+        } else if (this.dragged) {
+            color = this.thumbClickColor.value();
+            outlineColor = this.thumbClickOutlineColor.value();
+        } else {
+            color = this.thumbColor.value();
+            outlineColor = this.thumbOutlineColor.value();
+        }
         float outlineWidth = this.thumbOutlineWidth.value();
-        Color outlineColor = this.dragged ? this.thumbClickOutlineColor.value() : this.thumbOutlineColor.value();
+        float cornerRadius = this.thumbCornerRadius.value();
 
         switch (this.thumbShape.value()) {
             case CIRCLE -> {
@@ -278,7 +321,7 @@ public class Slider extends Component {
         float tickStartY = sliderCenter + thumbHeight / 2F + TICK_OFFSET;
         float majorTickLength = barHeight;
         float minorTickLength = barHeight / 2F;
-        Color color = this.tickColor.value();
+        Color color = this.disabled() ? this.disabledTickColor.value() : this.tickColor.value();
 
         if (this.ticks.majorTickSpacing > 0) {
             for (double tick = 0; ; tick += this.ticks.majorTickSpacing) {
@@ -291,7 +334,10 @@ public class Slider extends Component {
                 renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, color);
 
                 double tickValue = this.min + tick;
-                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> this.rivet().backend().shapeText(this.ticks.labelProvider.getLabel(v), this.rivet().theme().get(Theme.TEXT_COLOR)));
+                ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> {
+                    Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
+                    return this.rivet().backend().shapeText(this.ticks.labelProvider.getLabel(v), textColor);
+                });
                 renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
                     renderer.scale(0.5F, () -> {
                         renderer.text(text, 0, 0, TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_TOP);

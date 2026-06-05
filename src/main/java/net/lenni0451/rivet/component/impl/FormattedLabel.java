@@ -3,6 +3,7 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
@@ -94,8 +95,23 @@ public class FormattedLabel extends Component {
 
     private void parseLine() {
         if (this.line == null) {
-            TextFormat format = TextFormat.DEFAULT.withColor(this.rivet().theme().get(Theme.TEXT_COLOR));
+            Color color = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
+            TextFormat format = TextFormat.DEFAULT.withColor(color);
             this.line = TextParser.parse(this.text, format);
+        }
+    }
+
+    @Override
+    protected void onComponentDisabled() {
+        if (this.text != null) {
+            this.line = null;
+        }
+    }
+
+    @Override
+    protected void onComponentEnabled() {
+        if (this.text != null) {
+            this.line = null;
         }
     }
 

@@ -36,6 +36,12 @@ public class ReorderableContainer extends Container {
     }
 
     @Override
+    protected void onComponentDisabled() {
+        this.currentTarget = null;
+        super.onComponentDisabled();
+    }
+
+    @Override
     protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
         if (this.dropFilter.test(event.dragData())) {
             this.currentTarget = this.strategy.resolve(this, event.x(), event.y());
