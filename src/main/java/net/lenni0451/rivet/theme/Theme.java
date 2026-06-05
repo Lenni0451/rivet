@@ -82,9 +82,12 @@ public abstract class Theme {
     public static final ThemeKey<Float> SCROLL_RAIL_OUTLINE_WIDTH = register("scroll.rail_outline_width", Float.class, r -> 0F);
 
     // TextField
+    public static final ThemeKey<Color> TEXT_FIELD_TEXT_COLOR = register("text_field.text_color", Color.class, r -> r.theme().get(TEXT_COLOR));
+    public static final ThemeKey<Color> TEXT_FIELD_INVALID_TEXT_COLOR = register("text_field.invalid_text_color", Color.class, r -> Color.fromRGB(255, 100, 100));
     public static final ThemeKey<Color> TEXT_FIELD_BACKGROUND_COLOR = register("text_field.background_color", Color.class, r -> Color.fromRGB(30, 30, 30));
     public static final ThemeKey<Color> TEXT_FIELD_OUTLINE_COLOR = register("text_field.outline_color", Color.class, r -> Color.GRAY);
     public static final ThemeKey<Color> TEXT_FIELD_FOCUSED_OUTLINE_COLOR = register("text_field.focused_outline_color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Color> TEXT_FIELD_INVALID_OUTLINE_COLOR = register("text_field.invalid_outline_color", Color.class, r -> Color.fromRGB(255, 100, 100));
     public static final ThemeKey<Color> TEXT_FIELD_SELECTION_COLOR = register("text_field.selection_color", Color.class, r -> Color.fromRGBA(100, 100, 255, 100));
     public static final ThemeKey<Color> TEXT_FIELD_CURSOR_COLOR = register("text_field.cursor_color", Color.class, r -> Color.WHITE);
     public static final ThemeKey<Float> TEXT_FIELD_CURSOR_WIDTH = register("text_field.cursor_width", Float.class, r -> roundMin(r.backend().getTextHeight() / 25F, 1));

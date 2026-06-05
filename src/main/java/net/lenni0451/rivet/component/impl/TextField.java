@@ -29,6 +29,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class TextField extends Component {
@@ -44,8 +45,12 @@ public class TextField extends Component {
     @Getter
     @Nullable
     private Function<Character, Character> charReplacer;
+    @Getter
+    private Predicate<String> validator;
 
     private ShapedText shapedText;
+    @Getter
+    private boolean valid = true;
     @Getter
     private int cursor = 0;
     @Getter
@@ -57,11 +62,17 @@ public class TextField extends Component {
     private long lastClick;
 
     @Getter
+    private final ThemeOption<Color> textColor;
+    @Getter
+    private final ThemeOption<Color> invalidTextColor;
+    @Getter
     private final ThemeOption<Color> backgroundColor;
     @Getter
     private final ThemeOption<Color> outlineColor;
     @Getter
     private final ThemeOption<Color> focusedOutlineColor;
+    @Getter
+    private final ThemeOption<Color> invalidOutlineColor;
     @Getter
     private final ThemeOption<Color> selectionColor;
     @Getter
@@ -84,9 +95,12 @@ public class TextField extends Component {
     public TextField(final String text) {
         this.text(text);
 
+        this.textColor = new ThemeOption<>(this, Theme.TEXT_FIELD_TEXT_COLOR);
+        this.invalidTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_TEXT_COLOR);
         this.backgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_BACKGROUND_COLOR);
         this.outlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_COLOR);
         this.focusedOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
+        this.invalidOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_OUTLINE_COLOR);
         this.selectionColor = new ThemeOption<>(this, Theme.TEXT_FIELD_SELECTION_COLOR);
         this.cursorColor = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_COLOR);
         this.cursorWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_WIDTH);
@@ -132,7 +146,17 @@ public class TextField extends Component {
         return this;
     }
 
+    public TextField validator(final Predicate<String> validator) {
+        this.validator = validator;
+        this.validate();
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
+        return this;
+    }
+
     private void updateShapedText() {
+        this.validate();
         String text = this.text.toString();
         if (this.charReplacer != null) {
             char[] chars = text.toCharArray();
@@ -141,7 +165,7 @@ public class TextField extends Component {
             }
             text = new String(chars);
         }
-        this.shapedText = this.rivet().backend().shapeText(text, this.rivet().theme().get(Theme.TEXT_COLOR));
+        this.shapedText = this.rivet().backend().shapeText(text, this.valid ? this.textColor.value() : this.invalidTextColor.value());
     }
 
     @Override
@@ -309,7 +333,11 @@ public class TextField extends Component {
         this.ensureCursorVisible(visibleWidth);
 
         renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.backgroundColor.value());
-        renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.focused ? this.focusedOutlineColor.value() : this.outlineColor.value());
+        Color outlineColor;
+        if (!this.valid) outlineColor = this.invalidOutlineColor.value();
+        else if (this.focused) outlineColor = this.focusedOutlineColor.value();
+        else outlineColor = this.outlineColor.value();
+        renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), outlineColor);
 
         renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
             renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
@@ -395,7 +423,16 @@ public class TextField extends Component {
     }
 
     private void onTextChange() {
+        this.validate();
         this.valueChangeListener.callVoid(c -> c.accept(this.text()));
+    }
+
+    private void validate() {
+        if (this.validator == null) {
+            this.valid = true;
+        } else {
+            this.valid = this.validator.test(this.text.toString());
+        }
     }
 
 }
