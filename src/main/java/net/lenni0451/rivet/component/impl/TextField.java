@@ -36,6 +36,8 @@ public class TextField extends Component {
 
     private final StringBuffer text = new StringBuffer();
     @Getter
+    private String hint;
+    @Getter
     private final ListenerList<Consumer<String>> valueChangeListener = new ListenerList<>();
     private final Animation cursorAnimation = new Animation(AnimationMode.LOOP)
             .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 1, 250, EasingBehavior.KEEP)
@@ -49,6 +51,7 @@ public class TextField extends Component {
     private Predicate<String> validator;
 
     private ShapedText shapedText;
+    private ShapedText shapedHintText;
     @Getter
     private boolean valid = true;
     @Getter
@@ -65,6 +68,8 @@ public class TextField extends Component {
     private final ThemeOption<Color> textColor;
     @Getter
     private final ThemeOption<Color> invalidTextColor;
+    @Getter
+    private final ThemeOption<Color> hintColor;
     @Getter
     private final ThemeOption<Color> backgroundColor;
     @Getter
@@ -97,6 +102,7 @@ public class TextField extends Component {
 
         this.textColor = new ThemeOption<>(this, Theme.TEXT_FIELD_TEXT_COLOR);
         this.invalidTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_TEXT_COLOR);
+        this.hintColor = new ThemeOption<>(this, Theme.TEXT_FIELD_HINT_COLOR);
         this.backgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_BACKGROUND_COLOR);
         this.outlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_COLOR);
         this.focusedOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
@@ -123,6 +129,14 @@ public class TextField extends Component {
             this.updateShapedText();
         }
         this.onTextChange();
+        return this;
+    }
+
+    public TextField hint(final String hint) {
+        this.hint = hint;
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
         return this;
     }
 
@@ -166,6 +180,11 @@ public class TextField extends Component {
             text = new String(chars);
         }
         this.shapedText = this.rivet().backend().shapeText(text, this.valid ? this.textColor.value() : this.invalidTextColor.value());
+        if (this.hint != null && !this.hint.isEmpty()) {
+            this.shapedHintText = this.rivet().backend().shapeText(this.hint, this.hintColor.value());
+        } else {
+            this.shapedHintText = null;
+        }
     }
 
     @Override
@@ -348,7 +367,11 @@ public class TextField extends Component {
                         renderer.fillRect(Math.min(x1, x2), -cursorHeight / 2F, Math.abs(x1 - x2), cursorHeight, this.selectionColor.value());
                     }
 
-                    renderer.text(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+                    if (this.text.isEmpty() && this.shapedHintText != null) {
+                        renderer.text(this.shapedHintText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+                    } else {
+                        renderer.text(this.shapedText, 0, 0, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+                    }
 
                     if (this.focused) {
                         float cursorWidth = this.cursorWidth.value();

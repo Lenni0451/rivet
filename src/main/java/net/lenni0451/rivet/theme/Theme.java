@@ -84,6 +84,7 @@ public abstract class Theme {
     // TextField
     public static final ThemeKey<Color> TEXT_FIELD_TEXT_COLOR = register("text_field.text_color", Color.class, r -> r.theme().get(TEXT_COLOR));
     public static final ThemeKey<Color> TEXT_FIELD_INVALID_TEXT_COLOR = register("text_field.invalid_text_color", Color.class, r -> Color.fromRGB(255, 100, 100));
+    public static final ThemeKey<Color> TEXT_FIELD_HINT_COLOR = register("text_field.hint_color", Color.class, r -> Color.GRAY);
     public static final ThemeKey<Color> TEXT_FIELD_BACKGROUND_COLOR = register("text_field.background_color", Color.class, r -> Color.fromRGB(30, 30, 30));
     public static final ThemeKey<Color> TEXT_FIELD_OUTLINE_COLOR = register("text_field.outline_color", Color.class, r -> Color.GRAY);
     public static final ThemeKey<Color> TEXT_FIELD_FOCUSED_OUTLINE_COLOR = register("text_field.focused_outline_color", Color.class, r -> Color.WHITE);
