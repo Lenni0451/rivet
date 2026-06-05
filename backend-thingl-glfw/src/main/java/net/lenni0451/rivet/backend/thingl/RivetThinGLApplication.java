@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
+import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -17,7 +18,7 @@ import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.text.font.FontSet;
+import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
@@ -29,7 +30,7 @@ import java.util.Set;
 @Accessors(fluent = true, chain = true)
 public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
 
-    private FontSet fontSet;
+    private FontInstanceSet fontInstanceSet;
     private ThinGLBackend backend;
     private Rivet rivet;
     private final Set<MouseButton> heldMouseButtons = EnumSet.noneOf(MouseButton.class);
@@ -48,14 +49,14 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
         super.init();
         this.setupCallbacks();
 
-        this.fontSet = this.createFontSet();
-        this.backend = new ThinGLBackend(this.window, this.fontSet);
+        this.fontInstanceSet = this.createFont();
+        this.backend = new ThinGLBackend(this.window, new ThinGLFont(this.fontInstanceSet));
         this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
 
         this.init(this.rivet);
     }
 
-    protected abstract FontSet createFontSet() throws Exception;
+    protected abstract FontInstanceSet createFont() throws Exception;
 
     protected abstract void init(final Rivet rivet);
 

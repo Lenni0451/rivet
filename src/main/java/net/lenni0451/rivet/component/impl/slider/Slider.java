@@ -336,7 +336,7 @@ public class Slider extends Component {
                 double tickValue = this.min + tick;
                 ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> {
                     Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
-                    return this.rivet().backend().shapeText(this.ticks.labelProvider.getLabel(v), textColor);
+                    return this.rivet().backend().defaultFont().shapeText(this.ticks.labelProvider.getLabel(v), textColor);
                 });
                 renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
                     renderer.scale(0.5F, () -> {
@@ -363,9 +363,9 @@ public class Slider extends Component {
         if (this.ticks == null) {
             height = this.thumbHeight.value();
         } else {
-            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet().backend().getTextHeight() / 2F;
+            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet().backend().defaultFont().height() / 2F;
         }
-        return new Size(this.rivet().backend().getTextHeight() * 10, height);
+        return new Size(this.rivet().backend().defaultFont().height() * 10, height);
     }
 
     private float barWidth(final Rectangle bounds) {

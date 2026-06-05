@@ -1,9 +1,11 @@
 package test;
 
+import net.lenni0451.commons.collections.Maps;
 import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
-import net.raphimc.thingl.text.font.FontSet;
+import net.raphimc.thingl.resource.font.face.impl.FreeTypeFontFace;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
+import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
+import net.raphimc.thingl.text.util.GlyphPredicate;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.glfw.GLFW;
 
@@ -16,9 +18,9 @@ public abstract class TestBase extends RivetThinGLApplication {
     }
 
     @Override
-    protected FontSet createFontSet() throws Exception {
-        Font font = new FreeTypeFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes(), 40);
-        return new FontSet(font);
+    protected FontInstanceSet createFont() throws Exception {
+        FontInstance font = new FreeTypeFontFace(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes()).getInstance(40);
+        return new FontInstanceSet(Maps.linkedHashMap(font, GlyphPredicate.all()));
     }
 
 }

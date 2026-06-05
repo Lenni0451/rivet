@@ -3,21 +3,11 @@ package net.lenni0451.rivet.backend.thingl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Backend;
-import net.lenni0451.rivet.backend.text.ShapedText;
-import net.lenni0451.rivet.backend.text.ShapedTextBlock;
-import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedText;
-import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
+import net.lenni0451.rivet.backend.text.Font;
+import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.Key;
-import net.lenni0451.rivet.text.model.TextSection;
-import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.text.TextBlock;
-import net.raphimc.thingl.text.TextLine;
-import net.raphimc.thingl.text.TextStyle;
-import net.raphimc.thingl.text.font.FontSet;
-import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryUtil;
 
@@ -30,32 +20,11 @@ import java.nio.ByteBuffer;
 public class ThinGLBackend implements Backend {
 
     private final long window;
-    private final FontSet fontSet;
+    private final ThinGLFont font;
 
     @Override
-    public float getTextHeight() {
-        return this.fontSet.getMainFont().getHeight() * ThinGL.rendererText().getGlobalScale();
-    }
-
-    @Override
-    public ShapedText shapeText(final String text, final Color color) {
-        TextStyle style = new TextStyle(color, 0, Color.TRANSPARENT);
-        ShapedTextLine shapedTextLine = TextLine.fromString(this.fontSet, text, style).shape();
-        return new ThinGLShapedText(shapedTextLine);
-    }
-
-    @Override
-    public ShapedText shapeText(final net.lenni0451.rivet.text.model.TextLine line) {
-        return new ThinGLShapedText(this.toThinGL(line).shape());
-    }
-
-    @Override
-    public ShapedTextBlock shapeText(final net.lenni0451.rivet.text.model.TextBlock block) {
-        TextBlock thinglBlock = new TextBlock();
-        for (net.lenni0451.rivet.text.model.TextLine line : block.lines()) {
-            thinglBlock.add(this.toThinGL(line));
-        }
-        return new ThinGLShapedTextBlock(thinglBlock.shape());
+    public Font defaultFont() {
+        return this.font;
     }
 
     @Override
@@ -80,23 +49,6 @@ public class ThinGLBackend implements Backend {
     @Override
     public boolean isKeyDown(final Key key) {
         return GLFW.glfwGetKey(this.window, GLFWMapper.mapKey(key)) == GLFW.GLFW_PRESS;
-    }
-
-    private TextLine toThinGL(final net.lenni0451.rivet.text.model.TextLine line) {
-        TextLine textLine = new TextLine();
-        for (TextSection section : line.sections()) {
-            int flags = TextStyle.buildFlags(
-                    section.format().shadow(),
-                    section.format().bold(),
-                    section.format().italic(),
-                    section.format().underlined(),
-                    section.format().strikethrough()
-            );
-            TextStyle style = new TextStyle(section.format().color(), flags, section.format().outlineColor());
-            textLine.runs().addAll(TextLine.fromString(this.fontSet, section.text(), style).runs());
-        }
-        textLine.compact();
-        return textLine;
     }
 
 }

@@ -192,10 +192,10 @@ public class TextField extends Component {
         if (this.disabled()) textColor = this.disabledTextColor.value();
         else if (!this.valid) textColor = this.invalidTextColor.value();
         else textColor = this.textColor.value();
-        this.shapedText = this.rivet().backend().shapeText(text, textColor);
+        this.shapedText = this.rivet().backend().defaultFont().shapeText(text, textColor);
         if (this.hint != null && !this.hint.isEmpty()) {
             Color hintColor = this.disabled() ? this.disabledTextColor.value() : this.hintColor.value();
-            this.shapedHintText = this.rivet().backend().shapeText(this.hint, hintColor);
+            this.shapedHintText = this.rivet().backend().defaultFont().shapeText(this.hint, hintColor);
         } else {
             this.shapedHintText = null;
         }
@@ -373,7 +373,7 @@ public class TextField extends Component {
     public void render(final Renderer renderer, final Rectangle bounds) {
         float visibleWidth = bounds.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
-        float cursorHeight = textHeight == 0 ? this.rivet().backend().getTextHeight() : textHeight;
+        float cursorHeight = textHeight == 0 ? this.rivet().backend().defaultFont().height() : textHeight;
         this.ensureCursorVisible(visibleWidth);
 
         Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
@@ -412,7 +412,7 @@ public class TextField extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        float textHeight = this.rivet().backend().getTextHeight();
+        float textHeight = this.rivet().backend().defaultFont().height();
         return new Size(
                 textHeight * 10 + this.innerPadding.value().horizontal(),
                 textHeight + this.innerPadding.value().vertical()

@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.text;
 
 import lombok.experimental.UtilityClass;
-import net.lenni0451.rivet.backend.Backend;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.text.model.TextBlock;
@@ -14,12 +14,12 @@ import java.util.List;
 @UtilityClass
 public class TextWrapper {
 
-    public static ShapedTextBlock wrapLine(final Backend backend, final TextLine line, final float maxWidth) {
+    public static ShapedTextBlock wrapLine(final Font font, final TextLine line, final float maxWidth) {
         List<TextLine> lines = new ArrayList<>();
         for (TextLine explicitLine : splitExplicitLines(line)) {
-            lines.addAll(wrapSingleLine(backend, explicitLine, maxWidth));
+            lines.addAll(wrapSingleLine(font, explicitLine, maxWidth));
         }
-        return backend.shapeText(new TextBlock(lines));
+        return font.shapeText(new TextBlock(lines));
     }
 
     private static List<TextLine> splitExplicitLines(final TextLine line) {
@@ -47,14 +47,14 @@ public class TextWrapper {
         return lines;
     }
 
-    private static List<TextLine> wrapSingleLine(final Backend backend, final TextLine line, final float maxWidth) {
+    private static List<TextLine> wrapSingleLine(final Font font, final TextLine line, final float maxWidth) {
         List<Word> words = splitWords(line.sections());
         List<TextLine> lines = new ArrayList<>();
         List<TextSection> currentLine = new ArrayList<>();
         for (int i = 0; i < words.size(); i++) {
             Word word = words.get(i);
             currentLine.addAll(word.sections);
-            ShapedText shapedLine = backend.shapeText(new TextLine(currentLine));
+            ShapedText shapedLine = font.shapeText(new TextLine(currentLine));
             if (shapedLine.visualBounds().width() > maxWidth) {
                 for (TextSection ignored : word.sections) {
                     currentLine.remove(currentLine.size() - 1);
@@ -62,7 +62,7 @@ public class TextWrapper {
                 if (currentLine.isEmpty()) {
                     boolean isSpace = word.sections().size() == 1 && word.sections().get(0).text().equals(" ");
                     if (!isSpace) {
-                        List<TextLine> splitWord = wrapWord(backend, word, maxWidth);
+                        List<TextLine> splitWord = wrapWord(font, word, maxWidth);
                         for (int j = 0; j < splitWord.size(); j++) {
                             if (j == splitWord.size() - 1) {
                                 currentLine.addAll(splitWord.get(j).sections());
@@ -116,14 +116,14 @@ public class TextWrapper {
         return words;
     }
 
-    private static List<TextLine> wrapWord(final Backend backend, final Word word, final float maxWidth) {
+    private static List<TextLine> wrapWord(final Font font, final Word word, final float maxWidth) {
         List<TextSection> chars = splitWord(word);
         List<TextLine> lines = new ArrayList<>();
         List<TextSection> currentLine = new ArrayList<>();
         for (int i = 0; i < chars.size(); i++) {
             TextSection section = chars.get(i);
             currentLine.add(section);
-            ShapedText shapedLine = backend.shapeText(new TextLine(currentLine));
+            ShapedText shapedLine = font.shapeText(new TextLine(currentLine));
             if (shapedLine.visualBounds().width() > maxWidth) {
                 currentLine.remove(currentLine.size() - 1);
                 if (currentLine.isEmpty()) {

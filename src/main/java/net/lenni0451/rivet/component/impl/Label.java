@@ -56,7 +56,7 @@ public class Label extends Component {
     private void shapeText() {
         if (this.reshape) {
             Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
-            this.shapedText = this.rivet().backend().shapeText(this.text, textColor);
+            this.shapedText = this.rivet().backend().defaultFont().shapeText(this.text, textColor);
             this.reshape = false;
         }
     }

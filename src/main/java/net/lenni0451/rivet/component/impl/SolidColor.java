@@ -36,7 +36,7 @@ public class SolidColor extends Component {
     @Override
     protected void onComponentAdded() {
         if (this.outlineWidth == -1) {
-            this.outlineWidth = this.rivet().backend().getTextHeight() / 8F;
+            this.outlineWidth = this.rivet().backend().defaultFont().height() / 8F;
         }
     }
 
