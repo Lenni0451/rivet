@@ -53,8 +53,9 @@ public final class AnchorLayout implements Layout {
                 width = this.widthOf(component, idealSize.width());
                 x = minX + options.offsetLeft() - options.offsetRight() - (width * options.pivotX());
             } else {
-                width = this.widthOf(component, maxX - minX - options.offsetLeft() - options.offsetRight());
-                x = minX + options.offsetLeft();
+                float availableWidth = maxX - minX - options.offsetLeft() - options.offsetRight();
+                width = this.widthOf(component, availableWidth);
+                x = minX + options.offsetLeft() + (availableWidth - width) * options.pivotX();
             }
 
             float height;
@@ -63,8 +64,9 @@ public final class AnchorLayout implements Layout {
                 height = this.heightOf(component, idealSize.height());
                 y = minY + options.offsetTop() - options.offsetBottom() - (height * options.pivotY());
             } else {
-                height = this.heightOf(component, maxY - minY - options.offsetTop() - options.offsetBottom());
-                y = minY + options.offsetTop();
+                float availableHeight = maxY - minY - options.offsetTop() - options.offsetBottom();
+                height = this.heightOf(component, availableHeight);
+                y = minY + options.offsetTop() + (availableHeight - height) * options.pivotY();
             }
 
             setBounds.accept(component, new Rectangle(x, y, width, height));
