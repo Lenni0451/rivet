@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
@@ -29,6 +30,8 @@ public class Slider extends Component {
 
     private static final int TICK_OFFSET = 2;
 
+    @Getter
+    private Font font;
     @Getter
     private double min;
     @Getter
@@ -128,6 +131,17 @@ public class Slider extends Component {
         this.disabledTickColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_TICK_COLOR);
     }
 
+    public Slider font(final Font font) {
+        if (this.font != font) {
+            this.font = font;
+            this.tickLabels.clear();
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
+            }
+        }
+        return this;
+    }
+
     public Slider min(final double min) {
         this.min = min;
         this.tickLabels.clear();
@@ -150,6 +164,10 @@ public class Slider extends Component {
         this.ticks = ticks;
         this.tickLabels.clear();
         return this;
+    }
+
+    private Font usedFont() {
+        return this.font != null ? this.font : this.rivet().backend().defaultFont();
     }
 
     @Override
@@ -184,6 +202,7 @@ public class Slider extends Component {
             if (this.showTooltip.value()) {
                 this.tooltip = new SliderTooltip(this.formatValue(this.value));
                 this.tooltip.add(this.rivet());
+                this.tooltip.font(this.font);
             }
             this.updateValue(event.x(), bounds);
         }
@@ -336,7 +355,7 @@ public class Slider extends Component {
                 double tickValue = this.min + tick;
                 ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> {
                     Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
-                    return this.rivet().backend().defaultFont().shapeText(this.ticks.labelProvider.getLabel(v), textColor);
+                    return this.usedFont().shapeText(this.ticks.labelProvider.getLabel(v), textColor);
                 });
                 renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
                     renderer.scale(0.5F, () -> {
@@ -363,9 +382,9 @@ public class Slider extends Component {
         if (this.ticks == null) {
             height = this.thumbHeight.value();
         } else {
-            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.rivet().backend().defaultFont().height() / 2F;
+            height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.usedFont().height() / 2F;
         }
-        return new Size(this.rivet().backend().defaultFont().height() * 10, height);
+        return new Size(this.usedFont().height() * 10, height);
     }
 
     private float barWidth(final Rectangle bounds) {

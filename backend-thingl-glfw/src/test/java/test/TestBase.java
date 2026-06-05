@@ -9,6 +9,9 @@ import net.raphimc.thingl.text.util.GlyphPredicate;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public abstract class TestBase extends RivetThinGLApplication {
 
     static {
@@ -17,10 +20,15 @@ public abstract class TestBase extends RivetThinGLApplication {
         }
     }
 
+    public static FontInstanceSet createFont(final InputStream is, final int size) throws IOException {
+        FontInstance font = new FreeTypeFontFace(is.readAllBytes()).getInstance(size);
+        return new FontInstanceSet(Maps.linkedHashMap(font, GlyphPredicate.all()));
+    }
+
+
     @Override
     protected FontInstanceSet createFont() throws Exception {
-        FontInstance font = new FreeTypeFontFace(Test.class.getResourceAsStream("/NotoSans-Regular.ttf").readAllBytes()).getInstance(40);
-        return new FontInstanceSet(Maps.linkedHashMap(font, GlyphPredicate.all()));
+        return createFont(Test.class.getResourceAsStream("/NotoSans-Regular.ttf"), 40);
     }
 
 }

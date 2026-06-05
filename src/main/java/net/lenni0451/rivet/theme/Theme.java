@@ -178,7 +178,11 @@ public abstract class Theme {
         if (this.rivet == null) {
             throw new IllegalStateException("Theme has not been applied yet");
         }
-        return (T) this.values.computeIfAbsent(key, k -> k.defaultValue().apply(this.rivet));
+        T value = (T) this.values.get(key);
+        if (value != null) return value;
+        value = key.defaultValue().apply(this.rivet);
+        this.values.put(key, value);
+        return value;
     }
 
 

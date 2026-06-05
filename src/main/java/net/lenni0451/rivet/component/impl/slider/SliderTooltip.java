@@ -1,11 +1,13 @@
 package net.lenni0451.rivet.component.impl.slider;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.render.Renderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.Container;
@@ -23,6 +25,9 @@ import net.lenni0451.rivet.theme.ThemeOption;
 @Setter
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class SliderTooltip extends Component {
+
+    @Getter
+    private Font font;
 
     private final ThemeOption<Color> backgroundColor;
     private final ThemeOption<Color> textColor;
@@ -49,9 +54,19 @@ public class SliderTooltip extends Component {
         this.layer = new Layer(container, LayerBucket.TOOLTIP);
     }
 
+    public SliderTooltip font(final Font font) {
+        if (this.font != font) {
+            this.font = font;
+            this.text(this.text);
+            this.parent().requestLayoutRecalculation();
+        }
+        return this;
+    }
+
     public void text(final String text) {
         this.text = text;
-        this.shapedText = this.rivet().backend().defaultFont().shapeText(text, this.textColor.value());
+        Font font = this.font != null ? this.font : this.rivet().backend().defaultFont();
+        this.shapedText = font.shapeText(text, this.textColor.value());
     }
 
     public void position(final float x, final float y, final float height) {

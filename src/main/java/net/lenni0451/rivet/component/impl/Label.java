@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Rectangle;
@@ -12,9 +13,14 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 
+import javax.annotation.Nullable;
+
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class Label extends Component {
 
+    @Getter
+    @Nullable
+    private Font font;
     @Getter
     private String text;
     private ShapedText shapedText;
@@ -30,6 +36,17 @@ public class Label extends Component {
 
     public Label(final String text) {
         this.text = text;
+    }
+
+    public Label font(@Nullable final Font font) {
+        if (this.font != font) {
+            this.font = font;
+            this.reshape = true;
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
+            }
+        }
+        return this;
     }
 
     public Label text(final String text) {
@@ -56,9 +73,13 @@ public class Label extends Component {
     private void shapeText() {
         if (this.reshape) {
             Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
-            this.shapedText = this.rivet().backend().defaultFont().shapeText(this.text, textColor);
+            this.shapedText = this.usedFont().shapeText(this.text, textColor);
             this.reshape = false;
         }
+    }
+
+    private Font usedFont() {
+        return this.font != null ? this.font : this.rivet().backend().defaultFont();
     }
 
     @Override

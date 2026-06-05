@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
@@ -23,6 +24,8 @@ import javax.annotation.Nullable;
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class FormattedLabel extends Component {
 
+    @Getter
+    private Font font;
     @Getter
     @Nullable
     private String text;
@@ -53,6 +56,16 @@ public class FormattedLabel extends Component {
 
     public FormattedLabel(@Nonnull final TextLine line) {
         this.line = line;
+    }
+
+    public FormattedLabel font(final Font font) {
+        if (this.font != font) {
+            this.font = font;
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
+            }
+        }
+        return this;
     }
 
     public FormattedLabel text(final String text) {
@@ -101,6 +114,10 @@ public class FormattedLabel extends Component {
         }
     }
 
+    private Font usedFont() {
+        return this.font != null ? this.font : this.rivet().backend().defaultFont();
+    }
+
     @Override
     protected void onComponentDisabled() {
         if (this.text != null) {
@@ -134,7 +151,7 @@ public class FormattedLabel extends Component {
     @Override
     public Size computeIdealSize(final Size constraints) {
         this.parseLine();
-        ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.rivet().backend(), this.line, constraints.width() / this.scale);
+        ShapedTextBlock shapedTextBlock = TextWrapper.wrapLine(this.usedFont(), this.line, constraints.width() / this.scale);
         return new Size(
                 shapedTextBlock.visualBounds().width() * this.scale,
                 shapedTextBlock.logicalBounds().height() * this.scale
@@ -144,7 +161,7 @@ public class FormattedLabel extends Component {
     @Override
     public void computeLayout(final Size size) {
         this.parseLine();
-        this.shapedText = TextWrapper.wrapLine(this.rivet().backend(), this.line, size.width() / this.scale);
+        this.shapedText = TextWrapper.wrapLine(this.usedFont(), this.line, size.width() / this.scale);
     }
 
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
@@ -20,6 +21,8 @@ import java.util.function.Consumer;
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class Checkbox extends Component {
 
+    @Getter
+    private Font font;
     @Getter
     private boolean checked;
     @Getter
@@ -74,6 +77,19 @@ public class Checkbox extends Component {
         this.disabledCheckColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_CHECK_COLOR);
     }
 
+    public Checkbox font(final Font font) {
+        if (this.font != font) {
+            this.font = font;
+            if (this.rivet() != null) {
+                this.shapeText();
+                if (this.parent() != null) {
+                    this.parent().requestLayoutRecalculation();
+                }
+            }
+        }
+        return this;
+    }
+
     public Checkbox checked(final boolean checked) {
         if (this.checked != checked) {
             this.checked = checked;
@@ -95,8 +111,9 @@ public class Checkbox extends Component {
 
     private void shapeText() {
         if (this.rivet() != null) {
+            Font font = this.font != null ? this.font : this.rivet().backend().defaultFont();
             Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
-            this.shapedText = this.rivet().backend().defaultFont().shapeText(this.text, textColor);
+            this.shapedText = font.shapeText(this.text, textColor);
         }
     }
 

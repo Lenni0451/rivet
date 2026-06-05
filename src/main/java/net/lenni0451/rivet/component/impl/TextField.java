@@ -9,6 +9,7 @@ import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
@@ -34,6 +35,8 @@ import java.util.function.Predicate;
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class TextField extends Component {
 
+    @Getter
+    private Font font;
     private final StringBuffer text = new StringBuffer();
     @Getter
     private String hint;
@@ -125,6 +128,19 @@ public class TextField extends Component {
         this.disabledOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_OUTLINE_COLOR);
     }
 
+    public TextField font(final Font font) {
+        if (this.font != font) {
+            this.font = font;
+            if (this.rivet() != null) {
+                this.updateShapedText();
+                if (this.parent() != null) {
+                    this.parent().requestLayoutRecalculation();
+                }
+            }
+        }
+        return this;
+    }
+
     public String text() {
         return this.text.toString();
     }
@@ -192,13 +208,17 @@ public class TextField extends Component {
         if (this.disabled()) textColor = this.disabledTextColor.value();
         else if (!this.valid) textColor = this.invalidTextColor.value();
         else textColor = this.textColor.value();
-        this.shapedText = this.rivet().backend().defaultFont().shapeText(text, textColor);
+        this.shapedText = this.usedFont().shapeText(text, textColor);
         if (this.hint != null && !this.hint.isEmpty()) {
             Color hintColor = this.disabled() ? this.disabledTextColor.value() : this.hintColor.value();
-            this.shapedHintText = this.rivet().backend().defaultFont().shapeText(this.hint, hintColor);
+            this.shapedHintText = this.usedFont().shapeText(this.hint, hintColor);
         } else {
             this.shapedHintText = null;
         }
+    }
+
+    private Font usedFont() {
+        return this.font != null ? this.font : this.rivet().backend().defaultFont();
     }
 
     @Override
@@ -373,7 +393,7 @@ public class TextField extends Component {
     public void render(final Renderer renderer, final Rectangle bounds) {
         float visibleWidth = bounds.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
-        float cursorHeight = textHeight == 0 ? this.rivet().backend().defaultFont().height() : textHeight;
+        float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;
         this.ensureCursorVisible(visibleWidth);
 
         Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
@@ -412,7 +432,7 @@ public class TextField extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        float textHeight = this.rivet().backend().defaultFont().height();
+        float textHeight = this.usedFont().height();
         return new Size(
                 textHeight * 10 + this.innerPadding.value().horizontal(),
                 textHeight + this.innerPadding.value().vertical()
