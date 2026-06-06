@@ -216,13 +216,14 @@ public class Container extends Component implements Parent {
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
         Child child = this.findChildAt(event.x(), event.y());
-        if (child != null) {
-            return child.component.onDrop(
-                    event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
-                    child.bounds.add(bounds.x(), bounds.y())
-            );
-        }
-        return false;
+        return this.mouseHandler.onDrop(
+                child == null ? null : child.component,
+                component -> component.onDrop(
+                        event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
+                        child.bounds.add(bounds.x(), bounds.y())
+                ),
+                () -> false
+        );
     }
 
     @Override

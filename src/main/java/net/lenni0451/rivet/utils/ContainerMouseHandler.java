@@ -98,7 +98,7 @@ public final class ContainerMouseHandler<C> {
         }
         if (this.hoveredComponent == null && hoveredComponent != null && this.nonComponentMouseButtons.isEmpty() && (this.clickedComponent == null || this.clickedComponent == hoveredComponent)) {
             this.hoveredComponent = hoveredComponent;
-            componentMouseEnter.accept(this.hoveredComponent);
+            componentMouseEnter.accept(hoveredComponent);
         }
         if (this.clickedComponent != null) {
             return componentMouseMove.test(this.clickedComponent, this.componentMouseButtons);
@@ -114,6 +114,14 @@ public final class ContainerMouseHandler<C> {
             return componentMouseScroll.test(hoveredComponent);
         } else {
             return containerMouseScroll.getAsBoolean();
+        }
+    }
+
+    public boolean onDrop(@Nullable final C hoveredComponent, final Predicate<C> componentOnDrop, final BooleanSupplier containerOnDrop) {
+        if (hoveredComponent != null) {
+            return componentOnDrop.test(hoveredComponent);
+        } else {
+            return containerOnDrop.getAsBoolean();
         }
     }
 

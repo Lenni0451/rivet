@@ -141,11 +141,14 @@ public class DecoratedContainer extends Component implements Parent {
     protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
         Rectangle childBounds = bounds.offset(this.innerPadding);
         boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
-        if (mouseOverChild) {
-            return this.child.onDrop(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
-        } else {
-            return this.background.onDrop(event, childBounds);
-        }
+        return this.mouseHandler.onDrop(
+                mouseOverChild ? this.child : null,
+                component -> component.onDrop(
+                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
+                        childBounds
+                ),
+                () -> this.background.onDrop(event, bounds)
+        );
     }
 
     @Override

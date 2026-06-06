@@ -385,15 +385,14 @@ public class ScrollContainer extends Component implements Parent {
 
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
-        Component hoveredComponent = this.hoveredComponent(event.x(), event.y(), bounds);
-        if (hoveredComponent != null) {
-            return this.child.onDrop(
-                    event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
-                    new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
-            );
-        } else {
-            return false;
-        }
+        return this.mouseHandler.onDrop(
+                this.hoveredComponent(event.x(), event.y(), bounds),
+                component -> component.onDrop(
+                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
+                ),
+                () -> false
+        );
     }
 
     @Override
