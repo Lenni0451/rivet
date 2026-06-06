@@ -258,10 +258,6 @@ public final class Rivet {
     public boolean onMouseMove(final MouseMoveEvent event) {
         this.lastMouseX = event.x();
         this.lastMouseY = event.y();
-        if (!this.dragAndDropManager.isDragging() && !this.mouseHandler.isMouseHeld()) {
-            if (event.x() < 0 || event.x() >= this.size.width()) return false;
-            if (event.y() < 0 || event.y() >= this.size.height()) return false;
-        }
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         MouseMoveEvent translatedEvent = event.withX(x).withY(y);
