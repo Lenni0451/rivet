@@ -28,7 +28,7 @@ public class Container extends Component implements Parent {
     @Getter
     private final Layout layout;
     private final List<Child> children = new ArrayList<>();
-    private final ContainerMouseHandler<Component> mouseHandler = new ContainerMouseHandler<>();
+    private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
     private Size contentSize = Size.EMPTY;
 
@@ -69,19 +69,14 @@ public class Container extends Component implements Parent {
     }
 
     public final boolean removeChild(final Component component) {
-        this.mouseHandler.checkAndRemove(component, Component::onMouseLeave, (comp, mouseButton) -> {
-            Rectangle componentBounds = this.childBounds(comp);
-            comp.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
-        }, Component::onDragLeave);
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
-                if (this.rivet() != null) {
-                    if (this.rivet().focusedComponent() == component) {
-                        this.rivet().focusedComponent(null);
-                    }
-                }
                 it.remove();
+                this.mouseHandler.checkAndRemove(child);
+                if (this.rivet() != null && this.rivet().focusedComponent() == component) {
+                    this.rivet().focusedComponent(null);
+                }
                 if (this.rivet() != null) {
                     component.setRivet(null, null);
                     this.requestLayoutRecalculation();
@@ -93,10 +88,7 @@ public class Container extends Component implements Parent {
     }
 
     public final Container clearChildren() {
-        this.mouseHandler.clear(Component::onMouseLeave, (component, mouseButton) -> {
-            Rectangle componentBounds = this.childBounds(component);
-            component.onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), componentBounds);
-        }, Component::onDragLeave);
+        this.mouseHandler.clear();
         if (this.rivet() != null) {
             for (Child child : this.children) {
                 if (this.rivet().focusedComponent() == child.component) {
@@ -113,7 +105,7 @@ public class Container extends Component implements Parent {
     }
 
     public final boolean intercepts(final float x, final float y) {
-        return this.findChildAt(x, y) != null;
+        return this.mouseHandler.elementAt(x, y, null) != null; //TODO: Get rid of this
     }
 
     @Override
@@ -148,101 +140,42 @@ public class Container extends Component implements Parent {
 
     @Override
     protected void onComponentMouseLeave() {
-        this.mouseHandler.onMouseLeave(Component::onMouseLeave);
+        this.mouseHandler.onMouseLeave();
     }
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        Child child = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onMouseDown(
-                event,
-                child == null ? null : child.component,
-                this.rivet()::focusedComponent,
-                component -> component.onMouseDown(
-                        event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
-                        child.bounds.add(bounds.x(), bounds.y())
-                ),
-                () -> {
-                    this.rivet().focusedComponent(null);
-                    return false;
-                }
-        );
+        return this.mouseHandler.onMouseDown(this.rivet(), event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onMouseUp(
-                this.rivet(),
-                event,
-                component -> {
-                    Rectangle childBounds = this.childBounds(component);
-                    return component.onMouseUp(event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()), childBounds.add(bounds.x(), bounds.y()));
-                },
-                () -> false
-        );
+        return this.mouseHandler.onMouseUp(this.rivet(), event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
-        Child topChild = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onMouseMove(
-                topChild == null ? null : topChild.component,
-                Component::onMouseEnter,
-                Component::onMouseLeave,
-                (component, buttons) -> {
-                    Rectangle childBounds = this.childBounds(component);
-                    return component.onMouseMove(
-                            event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()).withButtons(buttons),
-                            childBounds.add(bounds.x(), bounds.y())
-                    );
-                },
-                () -> false
-        );
+        return this.mouseHandler.onMouseMove(event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
-        Child child = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onMouseScroll(
-                child == null ? null : child.component,
-                component -> component.onMouseScroll(
-                        event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
-                        child.bounds.add(bounds.x(), bounds.y())
-                ),
-                () -> false
-        );
+        return this.mouseHandler.onMouseScroll(event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
-        Child child = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onDrop(
-                child == null ? null : child.component,
-                component -> component.onDrop(
-                        event.withX(event.x() - child.bounds.x()).withY(event.y() - child.bounds.y()),
-                        child.bounds.add(bounds.x(), bounds.y())
-                ),
-                () -> false
-        );
+        return this.mouseHandler.onDrop(event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
-        Child child = this.findChildAt(event.x(), event.y());
-        return this.mouseHandler.onDragOver(
-                child == null ? null : child.component,
-                Component::onDragLeave,
-                component -> {
-                    Rectangle childBounds = this.childBounds(component);
-                    return component.onDragOver(event.withX(event.x() - childBounds.x()).withY(event.y() - childBounds.y()), childBounds.add(bounds.x(), bounds.y()));
-                },
-                () -> false
-        );
+        return this.mouseHandler.onDragOver(event, bounds).handled();
     }
 
     @Override
     protected void onComponentDragLeave() {
-        this.mouseHandler.onDragLeave(Component::onDragLeave);
+        this.mouseHandler.onDragLeave();
     }
 
     @Override
@@ -293,22 +226,47 @@ public class Container extends Component implements Parent {
         if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
-    @Nullable
-    private Child findChildAt(final float x, final float y) {
-        for (int i = this.children.size() - 1; i >= 0; i--) {
-            Child child = this.children.get(i);
-            if (child.component.interactive() && child.bounds.contains(x, y)) {
-                return child;
-            }
-        }
-        return null;
-    }
-
 
     @RequiredArgsConstructor
     private static final class Child {
         private final Component component;
         private Rectangle bounds = Rectangle.EMPTY;
+    }
+
+    private class MouseHandler extends ContainerMouseHandler<Child> {
+        @Override
+        protected Component map(final Child element) {
+            return element.component;
+        }
+
+        @Override
+        protected Rectangle relativeBounds(final Rectangle containerBounds, final Child element) {
+            return element.bounds;
+        }
+
+        @Override
+        @Nullable
+        protected Child elementAt(final float x, final float y, final Rectangle containerBounds) {
+            for (int i = Container.this.children.size() - 1; i >= 0; i--) {
+                Child child = Container.this.children.get(i);
+                if (child.component.interactive() && child.bounds.contains(x, y)) {
+                    return child;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected List<Child> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
+            List<Child> elements = new ArrayList<>();
+            for (int i = Container.this.children.size() - 1; i >= 0; i--) {
+                Child child = Container.this.children.get(i);
+                if (child.component.interactive() && child.bounds.contains(x, y)) {
+                    elements.add(child);
+                }
+            }
+            return elements;
+        }
     }
 
 }

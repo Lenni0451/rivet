@@ -15,6 +15,7 @@ import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,7 +27,7 @@ public class DecoratedContainer extends Component implements Parent {
     private final Component background;
     @Getter
     private final Component child;
-    private final ContainerMouseHandler<Component> mouseHandler = new ContainerMouseHandler<>();
+    private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
     @Setter
     private Padding innerPadding;
@@ -72,103 +73,42 @@ public class DecoratedContainer extends Component implements Parent {
 
     @Override
     protected void onComponentMouseLeave() {
-        this.mouseHandler.onMouseLeave(Component::onMouseLeave);
+        this.mouseHandler.onMouseLeave();
     }
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        Rectangle childBounds = bounds.offset(this.innerPadding);
-        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
-        return this.mouseHandler.onMouseDown(
-                event,
-                mouseOverChild ? this.child : null,
-                this.rivet()::focusedComponent,
-                component -> component.onMouseDown(
-                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
-                        childBounds
-                ),
-                () -> {
-                    this.rivet().focusedComponent(this.background);
-                    return this.background.onMouseDown(event, bounds);
-                }
-        );
+        return this.mouseHandler.onMouseDown(this.rivet(), event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onMouseUp(
-                this.rivet(),
-                event,
-                component -> {
-                    Rectangle childBounds = bounds.offset(this.innerPadding);
-                    return component.onMouseUp(event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()), childBounds);
-                },
-                () -> this.background.onMouseUp(event, bounds)
-        );
+        return this.mouseHandler.onMouseUp(this.rivet(), event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
-        Rectangle childBounds = bounds.offset(this.innerPadding);
-        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
-        return this.mouseHandler.onMouseMove(
-                mouseOverChild ? this.child : null,
-                Component::onMouseEnter,
-                Component::onMouseLeave,
-                (component, buttons) -> component.onMouseMove(
-                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()).withButtons(buttons),
-                        childBounds
-                ),
-                () -> this.background.onMouseMove(event, bounds)
-        );
+        return this.mouseHandler.onMouseMove(event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
-        Rectangle childBounds = bounds.offset(this.innerPadding);
-        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
-        return this.mouseHandler.onMouseScroll(
-                mouseOverChild ? this.child : null,
-                component -> component.onMouseScroll(
-                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
-                        childBounds
-                ),
-                () -> this.background.onMouseScroll(event, bounds)
-        );
+        return this.mouseHandler.onMouseScroll(event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
-        Rectangle childBounds = bounds.offset(this.innerPadding);
-        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
-        return this.mouseHandler.onDrop(
-                mouseOverChild ? this.child : null,
-                component -> component.onDrop(
-                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
-                        childBounds
-                ),
-                () -> this.background.onDrop(event, bounds)
-        );
+        return this.mouseHandler.onDrop(event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
-        Rectangle childBounds = bounds.offset(this.innerPadding);
-        boolean mouseOverChild = this.child.interactive() && childBounds.withX(this.innerPadding.left()).withY(this.innerPadding.top()).contains(event.x(), event.y());
-        return this.mouseHandler.onDragOver(
-                mouseOverChild ? this.child : null,
-                Component::onDragLeave,
-                component -> component.onDragOver(
-                        event.withX(event.x() - this.innerPadding.left()).withY(event.y() - this.innerPadding.top()),
-                        childBounds
-                ),
-                () -> this.background.onDragOver(event, bounds)
-        );
+        return this.mouseHandler.onDragOver(event, bounds).handled();
     }
 
     @Override
     protected void onComponentDragLeave() {
-        this.mouseHandler.onDragLeave(Component::onDragLeave);
+        this.mouseHandler.onDragLeave();
     }
 
     @Override
@@ -219,6 +159,47 @@ public class DecoratedContainer extends Component implements Parent {
     @Override
     public List<Component> children() {
         return List.of(this.background, this.child);
+    }
+
+
+    private class MouseHandler extends ContainerMouseHandler<Component> {
+        @Override
+        protected Component map(final Component element) {
+            return element;
+        }
+
+        @Override
+        protected Rectangle relativeBounds(final Rectangle containerBounds, final Component element) {
+            if (element == DecoratedContainer.this.child) {
+                Padding padding = DecoratedContainer.this.innerPadding;
+                return new Rectangle(
+                        padding.left(), padding.top(),
+                        containerBounds.width() - padding.horizontal(), containerBounds.height() - padding.vertical()
+                );
+            } else {
+                return new Rectangle(0, 0, containerBounds.width(), containerBounds.height());
+            }
+        }
+
+        @Override
+        protected @Nullable Component elementAt(final float x, final float y, final Rectangle containerBounds) {
+            Padding padding = DecoratedContainer.this.innerPadding;
+            if (x >= padding.left() && x < containerBounds.width() - padding.right() && y >= padding.top() && y < containerBounds.height() - padding.bottom()) {
+                return DecoratedContainer.this.child;
+            } else {
+                return DecoratedContainer.this.background;
+            }
+        }
+
+        @Override
+        protected List<Component> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
+            Padding padding = DecoratedContainer.this.innerPadding;
+            if (x >= padding.left() && x < containerBounds.width() - padding.right() && y >= padding.top() && y < containerBounds.height() - padding.bottom()) {
+                return List.of(DecoratedContainer.this.child, DecoratedContainer.this.background);
+            } else {
+                return List.of(DecoratedContainer.this.background);
+            }
+        }
     }
 
 }

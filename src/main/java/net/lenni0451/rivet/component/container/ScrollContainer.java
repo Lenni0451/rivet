@@ -89,7 +89,7 @@ public class ScrollContainer extends Component implements Parent {
     private final ThemeOption<Color> disabledRailOutlineColor;
 
     private Size childSize = Size.EMPTY;
-    private final ContainerMouseHandler<Component> mouseHandler = new ContainerMouseHandler<>();
+    private final MouseHandler mouseHandler = new MouseHandler();
 
     private final NestedScrollCoordinator nestedScrollCoordinator = new NestedScrollCoordinator();
     @Getter
@@ -200,7 +200,7 @@ public class ScrollContainer extends Component implements Parent {
 
     @Override
     protected void onComponentMouseLeave() {
-        this.mouseHandler.onMouseLeave(Component::onMouseLeave);
+        this.mouseHandler.onMouseLeave();
         this.hBarHovered = false;
         this.hRailHovered = false;
         this.vBarHovered = false;
@@ -209,98 +209,78 @@ public class ScrollContainer extends Component implements Parent {
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        Rectangle hThumb = this.getHThumbBounds(bounds);
-        Rectangle hRail = this.getHRailBounds(bounds);
-        Rectangle vThumb = this.getVThumbBounds(bounds);
-        Rectangle vRail = this.getVRailBounds(bounds);
-        boolean componentHovered = (hThumb == null || !hThumb.contains(event.x(), event.y()))
-                && (hRail == null || !hRail.contains(event.x(), event.y()))
-                && (vThumb == null || !vThumb.contains(event.x(), event.y()))
-                && (vRail == null || !vRail.contains(event.x(), event.y()));
-        return this.mouseHandler.onMouseDown(
-                event,
-                componentHovered ? this.child : null,
-                this.rivet()::focusedComponent,
-                component -> component.onMouseDown(
-                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
-                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
-                ),
-                () -> {
-                    this.rivet().focusedComponent(this);
-                    boolean hThumbHovered = hThumb != null && hThumb.contains(event.x(), event.y());
-                    boolean hRailHovered = hRail != null && hRail.contains(event.x(), event.y());
-                    boolean vThumbHovered = vThumb != null && vThumb.contains(event.x(), event.y());
-                    boolean vRailHovered = vRail != null && vRail.contains(event.x(), event.y());
-                    if (event.button().equals(MouseButton.LEFT)) {
-                        if (hThumbHovered) {
-                            this.hBarPressed = true;
-                            this.dragStartX = event.x();
-                            this.initialScrollX = this.targetScrollX;
-                        } else if (hRailHovered) {
-                            this.hRailPressed = true;
-                            float visibleWidth = this.visibleWidth(bounds);
-                            float maxScroll = Math.max(0, this.childSize.width() - visibleWidth);
-                            if (this.railClickJump.value()) {
-                                float thumbWidth = hThumb.width();
-                                float scrollableWidth = hRail.width() - thumbWidth;
-                                float clickX = event.x() - hRail.x() - thumbWidth / 2F;
-                                this.targetScrollX = MathUtils.clamp((clickX / scrollableWidth) * maxScroll, 0, maxScroll);
-                            } else {
-                                if (event.x() < hThumb.x()) this.targetScrollX = MathUtils.clamp(this.targetScrollX - visibleWidth, 0, maxScroll);
-                                else this.targetScrollX = MathUtils.clamp(this.targetScrollX + visibleWidth, 0, maxScroll);
-                            }
-                        } else if (vThumbHovered) {
-                            this.vBarPressed = true;
-                            this.dragStartY = event.y();
-                            this.initialScrollY = this.targetScrollY;
-                        } else if (vRailHovered) {
-                            this.vRailPressed = true;
-                            float visibleHeight = this.visibleHeight(bounds);
-                            float maxScroll = Math.max(0, this.childSize.height() - visibleHeight);
-                            if (this.railClickJump.value()) {
-                                float thumbHeight = vThumb.height();
-                                float scrollableHeight = vRail.height() - thumbHeight;
-                                float clickY = event.y() - vRail.y() - thumbHeight / 2F;
-                                this.targetScrollY = MathUtils.clamp((clickY / scrollableHeight) * maxScroll, 0, maxScroll);
-                            } else {
-                                if (event.y() < vThumb.y()) this.targetScrollY = MathUtils.clamp(this.targetScrollY - visibleHeight, 0, maxScroll);
-                                else this.targetScrollY = MathUtils.clamp(this.targetScrollY + visibleHeight, 0, maxScroll);
-                            }
-                        }
+        return this.mouseHandler.onMouseDown(this.rivet(), event, bounds).handled(() -> {
+            this.rivet().focusedComponent(this);
+
+            if (event.button().equals(MouseButton.LEFT)) {
+                Rectangle hThumb = this.getHThumbBounds(bounds);
+                Rectangle hRail = this.getHRailBounds(bounds);
+                Rectangle vThumb = this.getVThumbBounds(bounds);
+                Rectangle vRail = this.getVRailBounds(bounds);
+                if (hThumb != null && hThumb.contains(event.x(), event.y())) {
+                    this.hBarPressed = true;
+                    this.dragStartX = event.x();
+                    this.initialScrollX = this.targetScrollX;
+                    return true;
+                } else if (hRail != null && hRail.contains(event.x(), event.y())) {
+                    this.hRailPressed = true;
+                    float visibleWidth = this.visibleWidth(bounds);
+                    float maxScroll = Math.max(0, this.childSize.width() - visibleWidth);
+                    if (this.railClickJump.value()) {
+                        float thumbWidth = hThumb.width();
+                        float scrollableWidth = hRail.width() - thumbWidth;
+                        float clickX = event.x() - hRail.x() - thumbWidth / 2F;
+                        this.targetScrollX = MathUtils.clamp((clickX / scrollableWidth) * maxScroll, 0, maxScroll);
+                    } else {
+                        if (event.x() < hThumb.x()) this.targetScrollX = MathUtils.clamp(this.targetScrollX - visibleWidth, 0, maxScroll);
+                        else this.targetScrollX = MathUtils.clamp(this.targetScrollX + visibleWidth, 0, maxScroll);
                     }
-                    return hThumbHovered || hRailHovered || vThumbHovered || vRailHovered;
+                    return true;
+                } else if (vThumb != null && vThumb.contains(event.x(), event.y())) {
+                    this.vBarPressed = true;
+                    this.dragStartY = event.y();
+                    this.initialScrollY = this.targetScrollY;
+                    return true;
+                } else if (vRail != null && vRail.contains(event.x(), event.y())) {
+                    this.vRailPressed = true;
+                    float visibleHeight = this.visibleHeight(bounds);
+                    float maxScroll = Math.max(0, this.childSize.height() - visibleHeight);
+                    if (this.railClickJump.value()) {
+                        float thumbHeight = vThumb.height();
+                        float scrollableHeight = vRail.height() - thumbHeight;
+                        float clickY = event.y() - vRail.y() - thumbHeight / 2F;
+                        this.targetScrollY = MathUtils.clamp((clickY / scrollableHeight) * maxScroll, 0, maxScroll);
+                    } else {
+                        if (event.y() < vThumb.y()) this.targetScrollY = MathUtils.clamp(this.targetScrollY - visibleHeight, 0, maxScroll);
+                        else this.targetScrollY = MathUtils.clamp(this.targetScrollY + visibleHeight, 0, maxScroll);
+                    }
+                    return true;
                 }
-        );
+            }
+            return false;
+        });
     }
 
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onMouseUp(
-                this.rivet(),
-                event,
-                component -> component.onMouseUp(
-                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
-                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
-                ),
-                () -> {
-                    Rectangle hThumb = this.getHThumbBounds(bounds);
-                    Rectangle hRail = this.getHRailBounds(bounds);
-                    Rectangle vThumb = this.getVThumbBounds(bounds);
-                    Rectangle vRail = this.getVRailBounds(bounds);
-                    boolean hThumbHovered = hThumb != null && hThumb.contains(event.x(), event.y());
-                    boolean hRailHovered = hRail != null && hRail.contains(event.x(), event.y());
-                    boolean vThumbHovered = vThumb != null && vThumb.contains(event.x(), event.y());
-                    boolean vRailHovered = vRail != null && vRail.contains(event.x(), event.y());
-                    boolean wasPressed = this.hBarPressed || this.hRailPressed || this.vBarPressed || this.vRailPressed;
-                    if (event.button().equals(MouseButton.LEFT)) {
-                        this.hBarPressed = false;
-                        this.hRailPressed = false;
-                        this.vBarPressed = false;
-                        this.vRailPressed = false;
-                    }
-                    return hThumbHovered || hRailHovered || vThumbHovered || vRailHovered || wasPressed;
-                }
-        );
+        return this.mouseHandler.onMouseUp(this.rivet(), event, bounds).handled(() -> {
+            Rectangle hThumb = this.getHThumbBounds(bounds);
+            Rectangle hRail = this.getHRailBounds(bounds);
+            Rectangle vThumb = this.getVThumbBounds(bounds);
+            Rectangle vRail = this.getVRailBounds(bounds);
+            boolean hThumbHovered = hThumb != null && hThumb.contains(event.x(), event.y());
+            boolean hRailHovered = hRail != null && hRail.contains(event.x(), event.y());
+            boolean vThumbHovered = vThumb != null && vThumb.contains(event.x(), event.y());
+            boolean vRailHovered = vRail != null && vRail.contains(event.x(), event.y());
+            boolean wasPressed = this.hBarPressed || this.hRailPressed || this.vBarPressed || this.vRailPressed;
+            if (event.button().equals(MouseButton.LEFT)) {
+                this.hBarPressed = false;
+                this.hRailPressed = false;
+                this.vBarPressed = false;
+                this.vRailPressed = false;
+            }
+            return hThumbHovered || hRailHovered || vThumbHovered || vRailHovered || wasPressed;
+        });
     }
 
     @Override
@@ -314,41 +294,31 @@ public class ScrollContainer extends Component implements Parent {
         this.hRailHovered = hRail != null && hRail.contains(event.x(), event.y());
         this.vBarHovered = vThumb != null && vThumb.contains(event.x(), event.y());
         this.vRailHovered = vRail != null && vRail.contains(event.x(), event.y());
-        boolean componentHovered = !this.hBarHovered && !this.hRailHovered && !this.vBarHovered && !this.vRailHovered;
 
-        return this.mouseHandler.onMouseMove(
-                componentHovered ? this.child : null,
-                Component::onMouseEnter,
-                Component::onMouseLeave,
-                (component, buttons) -> component.onMouseMove(
-                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY).withButtons(buttons),
-                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
-                ),
-                () -> {
-                    if (this.hBarPressed && hThumb != null) {
-                        float contentWidth = this.childSize.width();
-                        float visibleWidth = this.visibleWidth(bounds);
-                        float maxScroll = Math.max(0, contentWidth - visibleWidth);
-                        Rectangle rail = this.getHRailBounds(bounds);
-                        float barWidth = hThumb.width();
-                        float scrollableWidth = rail.width() - barWidth;
-                        float dragDelta = event.x() - this.dragStartX;
-                        this.targetScrollX = MathUtils.clamp(this.initialScrollX + (dragDelta / scrollableWidth) * maxScroll, 0, maxScroll);
-                        return true;
-                    } else if (this.vBarPressed && vThumb != null) {
-                        float contentHeight = this.childSize.height();
-                        float visibleHeight = this.visibleHeight(bounds);
-                        float maxScroll = Math.max(0, contentHeight - visibleHeight);
-                        Rectangle rail = this.getVRailBounds(bounds);
-                        float barHeight = vThumb.height();
-                        float scrollableHeight = rail.height() - barHeight;
-                        float dragDelta = event.y() - this.dragStartY;
-                        this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
-                        return true;
-                    }
-                    return false;
-                }
-        );
+        return this.mouseHandler.onMouseMove(event, bounds).handled(() -> {
+            if (this.hBarPressed && hThumb != null) {
+                float contentWidth = this.childSize.width();
+                float visibleWidth = this.visibleWidth(bounds);
+                float maxScroll = Math.max(0, contentWidth - visibleWidth);
+                Rectangle rail = this.getHRailBounds(bounds);
+                float barWidth = hThumb.width();
+                float scrollableWidth = rail.width() - barWidth;
+                float dragDelta = event.x() - this.dragStartX;
+                this.targetScrollX = MathUtils.clamp(this.initialScrollX + (dragDelta / scrollableWidth) * maxScroll, 0, maxScroll);
+                return true;
+            } else if (this.vBarPressed && vThumb != null) {
+                float contentHeight = this.childSize.height();
+                float visibleHeight = this.visibleHeight(bounds);
+                float maxScroll = Math.max(0, contentHeight - visibleHeight);
+                Rectangle rail = this.getVRailBounds(bounds);
+                float barHeight = vThumb.height();
+                float scrollableHeight = rail.height() - barHeight;
+                float dragDelta = event.y() - this.dragStartY;
+                this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -385,32 +355,17 @@ public class ScrollContainer extends Component implements Parent {
 
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onDrop(
-                this.hoveredComponent(event.x(), event.y(), bounds),
-                component -> component.onDrop(
-                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
-                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
-                ),
-                () -> false
-        );
+        return this.mouseHandler.onDrop(event, bounds).handled();
     }
 
     @Override
     protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
-        return this.mouseHandler.onDragOver(
-                this.hoveredComponent(event.x(), event.y(), bounds),
-                Component::onDragLeave,
-                component -> component.onDragOver(
-                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
-                        new Rectangle(bounds.x() - this.scrollX, bounds.y() - this.scrollY, this.childSize)
-                ),
-                () -> false
-        );
+        return this.mouseHandler.onDragOver(event, bounds).handled();
     }
 
     @Override
     protected void onComponentDragLeave() {
-        this.mouseHandler.onDragLeave(Component::onDragLeave);
+        this.mouseHandler.onDragLeave();
     }
 
     @Override
@@ -448,19 +403,6 @@ public class ScrollContainer extends Component implements Parent {
         this.renderHorizontalScrollbar(renderer, bounds);
         this.renderVerticalScrollbar(renderer, bounds);
         this.renderCorner(renderer, bounds);
-    }
-
-    @Nullable
-    private Component hoveredComponent(final float x, final float y, final Rectangle bounds) {
-        Rectangle hThumb = this.getHThumbBounds(bounds);
-        Rectangle hRail = this.getHRailBounds(bounds);
-        Rectangle vThumb = this.getVThumbBounds(bounds);
-        Rectangle vRail = this.getVRailBounds(bounds);
-        boolean componentHovered = (hThumb == null || !hThumb.contains(x, y))
-                && (hRail == null || !hRail.contains(x, y))
-                && (vThumb == null || !vThumb.contains(x, y))
-                && (vRail == null || !vRail.contains(x, y));
-        return componentHovered ? this.child : null;
     }
 
     private void updateAnimation() {
@@ -702,6 +644,11 @@ public class ScrollContainer extends Component implements Parent {
         FLOATING, NORMAL
     }
 
+    @FunctionalInterface
+    public interface ScrollListener {
+        void onScroll(final float scrollX, final float scrollY);
+    }
+
     private class NestedScrollCoordinator {
         @Nullable
         private ScrollTarget lastTarget;
@@ -734,9 +681,41 @@ public class ScrollContainer extends Component implements Parent {
         }
     }
 
-    @FunctionalInterface
-    public interface ScrollListener {
-        void onScroll(final float scrollX, final float scrollY);
+    private class MouseHandler extends ContainerMouseHandler<Component> {
+        @Override
+        protected Component map(final Component element) {
+            return element;
+        }
+
+        @Override
+        protected Rectangle relativeBounds(final Rectangle containerBounds, final Component element) {
+            return new Rectangle(
+                    -ScrollContainer.this.scrollX,
+                    -ScrollContainer.this.scrollY,
+                    ScrollContainer.this.childSize.width(),
+                    ScrollContainer.this.childSize.height()
+            );
+        }
+
+        @Override
+        @Nullable
+        protected Component elementAt(final float x, final float y, final Rectangle containerBounds) {
+            Rectangle hThumb = ScrollContainer.this.getHThumbBounds(containerBounds);
+            Rectangle hRail = ScrollContainer.this.getHRailBounds(containerBounds);
+            Rectangle vThumb = ScrollContainer.this.getVThumbBounds(containerBounds);
+            Rectangle vRail = ScrollContainer.this.getVRailBounds(containerBounds);
+            boolean componentHovered = (hThumb == null || !hThumb.contains(x, y))
+                    && (hRail == null || !hRail.contains(x, y))
+                    && (vThumb == null || !vThumb.contains(x, y))
+                    && (vRail == null || !vRail.contains(x, y));
+            return componentHovered ? ScrollContainer.this.child : null;
+        }
+
+        @Override
+        protected List<Component> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
+            Component component = this.elementAt(x, y, containerBounds);
+            return component == null ? List.of() : List.of(component);
+        }
     }
 
 }

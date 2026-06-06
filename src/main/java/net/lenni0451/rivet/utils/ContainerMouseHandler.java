@@ -1,19 +1,26 @@
 package net.lenni0451.rivet.utils;
 
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
+import net.lenni0451.rivet.math.Rectangle;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
-import java.util.function.*;
+import java.util.function.BooleanSupplier;
 
-public final class ContainerMouseHandler<C> {
+public abstract class ContainerMouseHandler<E> {
 
-    private C hoveredComponent;
-    private C clickedComponent;
-    private C hoveredDragComponent;
+    private E hoveredElement;
+    private E clickedElement;
+    private E hoveredDragElement;
     private final Set<MouseButton> componentMouseButtons = EnumSet.noneOf(MouseButton.class);
     private final Set<MouseButton> nonComponentMouseButtons = EnumSet.noneOf(MouseButton.class);
 
@@ -21,127 +28,205 @@ public final class ContainerMouseHandler<C> {
         return !this.componentMouseButtons.isEmpty() || !this.nonComponentMouseButtons.isEmpty();
     }
 
-    public void checkAndRemove(final C component, final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp, final Consumer<C> componentDragLeave) {
+    public void checkAndRemove(final E component) {
         if (component == null) return;
-        if (this.hoveredComponent == component) {
-            componentMouseLeave.accept(this.hoveredComponent);
-            this.hoveredComponent = null;
+        if (this.hoveredElement == component) {
+            this.map(component).onMouseLeave();
+            this.hoveredElement = null;
         }
-        if (this.clickedComponent == component) {
+        if (this.clickedElement == component) {
             for (MouseButton mouseButton : this.componentMouseButtons) {
-                componentMouseUp.accept(this.clickedComponent, mouseButton);
+                this.map(component).onMouseUp(
+                        new MouseButtonEvent(-1, -1, mouseButton, Set.of()),
+                        this.relativeBounds(Rectangle.EMPTY, component)
+                );
             }
-            this.clickedComponent = null;
+            this.clickedElement = null;
             this.componentMouseButtons.clear();
         }
-        if (this.hoveredDragComponent == component) {
-            componentDragLeave.accept(this.hoveredDragComponent);
-            this.hoveredDragComponent = null;
+        if (this.hoveredDragElement == component) {
+            this.map(component).onDragLeave();
+            this.hoveredDragElement = null;
         }
     }
 
-    public void clear(final Consumer<C> componentMouseLeave, final BiConsumer<C, MouseButton> componentMouseUp, final Consumer<C> componentDragLeave) {
-        this.checkAndRemove(this.hoveredComponent, componentMouseLeave, componentMouseUp, componentDragLeave);
-        this.checkAndRemove(this.clickedComponent, componentMouseLeave, componentMouseUp, componentDragLeave);
-        this.checkAndRemove(this.hoveredDragComponent, componentMouseLeave, componentMouseUp, componentDragLeave);
+    public void clear() {
+        this.checkAndRemove(this.hoveredElement);
+        this.checkAndRemove(this.clickedElement);
+        this.checkAndRemove(this.hoveredDragElement);
     }
 
     public void unsafeClear() {
-        this.hoveredComponent = null;
-        this.clickedComponent = null;
-        this.hoveredDragComponent = null;
+        this.hoveredElement = null;
+        this.clickedElement = null;
+        this.hoveredDragElement = null;
         this.componentMouseButtons.clear();
         this.nonComponentMouseButtons.clear();
     }
 
 
-    public void onMouseLeave(final Consumer<C> mouseLeaveInvoker) {
-        if (this.hoveredComponent != null) {
-            mouseLeaveInvoker.accept(this.hoveredComponent);
-            this.hoveredComponent = null;
+    public EventState onMouseLeave() {
+        if (this.hoveredElement != null) {
+            this.map(this.hoveredElement).onMouseLeave();
+            this.hoveredElement = null;
+            return EventState.HANDLED;
         }
+        return EventState.MISS;
     }
 
-    public boolean onMouseDown(final MouseButtonEvent event, @Nullable final C hoveredComponent, final Consumer<C> focusComponent, final Predicate<C> componentMouseDown, final BooleanSupplier containerMouseDown) {
-        if (this.nonComponentMouseButtons.isEmpty() && hoveredComponent != null) {
-            if (this.clickedComponent == null || this.clickedComponent == hoveredComponent) {
-                this.clickedComponent = hoveredComponent;
+    public EventState onMouseDown(final Rivet rivet, final MouseButtonEvent event, final Rectangle containerBounds) {
+        E hoveredElement = this.elementAt(event.x(), event.y(), containerBounds);
+        if (this.nonComponentMouseButtons.isEmpty() && hoveredElement != null) {
+            if (this.clickedElement == null || this.clickedElement == hoveredElement) {
+                this.clickedElement = hoveredElement;
                 this.componentMouseButtons.add(event.button());
-                focusComponent.accept(hoveredComponent);
-                return componentMouseDown.test(hoveredComponent);
+
+                Component hoveredComponent = this.map(hoveredElement);
+                Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
+                rivet.focusedComponent(hoveredComponent);
+                return EventState.component(hoveredComponent.onMouseDown(
+                        event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
+                        new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+                ));
             }
         } else {
             this.nonComponentMouseButtons.add(event.button());
         }
-        return containerMouseDown.getAsBoolean();
+        return EventState.MISS;
     }
 
-    public boolean onMouseUp(final Rivet rivet, final MouseButtonEvent event, final Predicate<C> componentMouseUp, final BooleanSupplier containerMouseUp) {
+    public EventState onMouseUp(final Rivet rivet, final MouseButtonEvent event, final Rectangle containerBounds) {
         this.nonComponentMouseButtons.remove(event.button());
         if (this.componentMouseButtons.remove(event.button())) {
             try {
-                return componentMouseUp.test(this.clickedComponent);
+                Rectangle relativeBounds = this.relativeBounds(containerBounds, this.clickedElement);
+                return EventState.component(this.map(this.clickedElement).onMouseUp(
+                        event.withX(event.x() - relativeBounds.x()).withY(event.y() - relativeBounds.y()),
+                        new Rectangle(containerBounds.x() + relativeBounds.x(), containerBounds.y() + relativeBounds.y(), relativeBounds.width(), relativeBounds.height())
+                ));
             } finally {
                 if (this.componentMouseButtons.isEmpty()) {
-                    this.clickedComponent = null;
+                    this.clickedElement = null;
                     rivet.updateMouseState();
                 }
             }
         }
-        return containerMouseUp.getAsBoolean();
+        return EventState.MISS;
     }
 
-    public boolean onMouseMove(@Nullable final C hoveredComponent, final Consumer<C> componentMouseEnter, final Consumer<C> componentMouseLeave, final BiPredicate<C, Set<MouseButton>> componentMouseMove, final BooleanSupplier containerMouseMove) {
-        if (this.hoveredComponent != null && (this.hoveredComponent != hoveredComponent || !this.nonComponentMouseButtons.isEmpty())) {
-            componentMouseLeave.accept(this.hoveredComponent);
-            this.hoveredComponent = null;
+    public EventState onMouseMove(final MouseMoveEvent event, final Rectangle containerBounds) {
+        E hoveredElement = this.elementAt(event.x(), event.y(), containerBounds);
+        if (this.hoveredElement != null && (this.hoveredElement != hoveredElement || !this.nonComponentMouseButtons.isEmpty())) {
+            this.map(this.hoveredElement).onMouseLeave();
+            this.hoveredElement = null;
         }
-        if (this.hoveredComponent == null && hoveredComponent != null && this.nonComponentMouseButtons.isEmpty() && (this.clickedComponent == null || this.clickedComponent == hoveredComponent)) {
-            this.hoveredComponent = hoveredComponent;
-            componentMouseEnter.accept(hoveredComponent);
+        if (this.hoveredElement == null && hoveredElement != null && this.nonComponentMouseButtons.isEmpty() && (this.clickedElement == null || this.clickedElement == hoveredElement)) {
+            this.hoveredElement = hoveredElement;
+            this.map(hoveredElement).onMouseEnter();
         }
-        if (this.clickedComponent != null) {
-            return componentMouseMove.test(this.clickedComponent, this.componentMouseButtons);
-        } else if (this.hoveredComponent != null) {
-            return componentMouseMove.test(this.hoveredComponent, this.nonComponentMouseButtons);
+        if (this.clickedElement != null) {
+            Component clickedComponent = this.map(this.clickedElement);
+            Rectangle clickedRelativeBounds = this.relativeBounds(containerBounds, this.clickedElement);
+            return EventState.component(clickedComponent.onMouseMove(
+                    event.withX(event.x() - clickedRelativeBounds.x()).withY(event.y() - clickedRelativeBounds.y()).withButtons(this.componentMouseButtons),
+                    new Rectangle(containerBounds.x() + clickedRelativeBounds.x(), containerBounds.y() + clickedRelativeBounds.y(), clickedRelativeBounds.width(), clickedRelativeBounds.height())
+            ));
+        } else if (this.hoveredElement != null) {
+            Component hoveredComponent = this.map(this.hoveredElement);
+            Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, this.hoveredElement);
+            return EventState.component(hoveredComponent.onMouseMove(
+                    event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()).withButtons(this.componentMouseButtons),
+                    new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+            ));
         } else {
-            return containerMouseMove.getAsBoolean();
+            return EventState.MISS;
         }
     }
 
-    public boolean onMouseScroll(@Nullable final C hoveredComponent, final Predicate<C> componentMouseScroll, final BooleanSupplier containerMouseScroll) {
-        if (hoveredComponent != null) {
-            return componentMouseScroll.test(hoveredComponent);
-        } else {
-            return containerMouseScroll.getAsBoolean();
+    public EventState onMouseScroll(final MouseScrollEvent event, final Rectangle containerBounds) {
+        E hoveredElement = this.elementAt(event.x(), event.y(), containerBounds);
+        if (hoveredElement != null) {
+            Component hoveredComponent = this.map(hoveredElement);
+            Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
+            return EventState.component(hoveredComponent.onMouseScroll(
+                    event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
+                    new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+            ));
         }
+        return EventState.MISS;
     }
 
-    public boolean onDrop(@Nullable final C hoveredComponent, final Predicate<C> componentOnDrop, final BooleanSupplier containerOnDrop) {
-        if (hoveredComponent != null) {
-            return componentOnDrop.test(hoveredComponent);
-        } else {
-            return containerOnDrop.getAsBoolean();
+    public EventState onDrop(final DropEvent event, final Rectangle containerBounds) {
+        E hoveredElement = this.elementAt(event.x(), event.y(), containerBounds);
+        if (hoveredElement != null) {
+            Component hoveredComponent = this.map(hoveredElement);
+            Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
+            return EventState.component(hoveredComponent.onDrop(
+                    event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
+                    new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+            ));
         }
+        return EventState.MISS;
     }
 
-    public boolean onDragOver(@Nullable final C hoveredComponent, final Consumer<C> componentDragLeave, final Predicate<C> componentDragOver, final BooleanSupplier containerDragOver) {
-        if (this.hoveredDragComponent != null && this.hoveredDragComponent != hoveredComponent) {
-            componentDragLeave.accept(this.hoveredDragComponent);
-            this.hoveredDragComponent = null;
+    public EventState onDragOver(final DragOverEvent event, final Rectangle containerBounds) {
+        E hoveredElement = this.elementAt(event.x(), event.y(), containerBounds);
+        if (this.hoveredDragElement != null && this.hoveredDragElement != hoveredElement) {
+            this.map(this.hoveredDragElement).onDragLeave();
+            this.hoveredDragElement = null;
         }
-        if (hoveredComponent != null) {
-            this.hoveredDragComponent = hoveredComponent;
-            return componentDragOver.test(hoveredComponent);
-        } else {
-            return containerDragOver.getAsBoolean();
+        if (hoveredElement != null) {
+            this.hoveredDragElement = hoveredElement;
+
+            Component hoveredComponent = this.map(hoveredElement);
+            Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
+            return EventState.component(hoveredComponent.onDragOver(
+                    event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
+                    new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+            ));
         }
+        return EventState.MISS;
     }
 
-    public void onDragLeave(final Consumer<C> componentDragLeave) {
-        if (this.hoveredDragComponent != null) {
-            componentDragLeave.accept(this.hoveredDragComponent);
-            this.hoveredDragComponent = null;
+    public EventState onDragLeave() {
+        if (this.hoveredDragElement != null) {
+            this.map(this.hoveredDragElement).onDragLeave();
+            this.hoveredDragElement = null;
+            return EventState.HANDLED;
+        }
+        return EventState.MISS;
+    }
+
+
+    protected abstract Component map(final E element);
+
+    protected abstract Rectangle relativeBounds(final Rectangle containerBounds, final E element);
+
+    @Nullable
+    protected abstract E elementAt(final float x, final float y, final Rectangle containerBounds);
+
+    protected abstract List<E> allElementsAt(final float x, final float y, final Rectangle containerBounds);
+
+
+    public enum EventState {
+        HANDLED,
+        NOT_HANDLED,
+        MISS;
+
+        public static EventState component(boolean handled) {
+            return handled ? HANDLED : NOT_HANDLED;
+        }
+
+        public boolean handled() {
+            return this == HANDLED;
+        }
+
+        public boolean handled(final BooleanSupplier onMiss) {
+            return switch (this) {
+                case HANDLED -> true;
+                case NOT_HANDLED -> false;
+                case MISS -> onMiss.getAsBoolean();
+            };
         }
     }
 

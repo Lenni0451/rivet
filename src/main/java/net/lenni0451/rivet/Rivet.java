@@ -20,6 +20,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Queue;
@@ -32,7 +33,7 @@ public final class Rivet {
     @Getter
     private final Backend backend;
     private final LayerList layers;
-    private final ContainerMouseHandler<Layer> mouseHandler = new ContainerMouseHandler<>();
+    private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
     private final DragAndDropManager dragAndDropManager = new DragAndDropManager(this);
     @Getter
@@ -78,9 +79,7 @@ public final class Rivet {
 
     public boolean removeLayer(final Layer layer) {
         if (this.layers.remove(layer)) {
-            this.mouseHandler.checkAndRemove(layer, l -> l.container().onMouseLeave(), (l, mouseButton) -> {
-                l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
-            }, l -> l.container().onDragLeave());
+            this.mouseHandler.checkAndRemove(layer);
             layer.container().setRivet(null, null);
             this.runSync(this::updateMouseState);
             return true;
@@ -164,9 +163,7 @@ public final class Rivet {
     public Rivet unfocus() {
         this.lastMouseX = -Float.MAX_VALUE;
         this.lastMouseY = -Float.MAX_VALUE;
-        this.mouseHandler.clear(l -> l.container().onMouseLeave(), (l, mouseButton) -> {
-            l.container().onMouseUp(new MouseButtonEvent(0, 0, mouseButton, Set.of()), new Rectangle(this.scaledSize()));
-        }, l -> l.container().onDragLeave());
+        this.mouseHandler.clear();
         return this;
     }
 
@@ -223,16 +220,7 @@ public final class Rivet {
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        return this.mouseHandler.onMouseDown(
-                event,
-                this.layers.findLayerAt(x, y),
-                layer -> this.focusedComponent(layer.container()),
-                layer -> layer.container().onMouseDown(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
-                () -> {
-                    this.focusedComponent(null);
-                    return false;
-                }
-        );
+        return this.mouseHandler.onMouseDown(this, event.withX(x).withY(y), new Rectangle(this.scaledSize())).handled();
     }
 
     public boolean onMouseUp(final MouseButtonEvent event) {
@@ -246,12 +234,7 @@ public final class Rivet {
         float y = event.y() / this.scale;
         MouseButtonEvent translatedEvent = event.withX(x).withY(y);
         boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, () -> this.layers.findLayerAt(x, y));
-        boolean mouseHandled = this.mouseHandler.onMouseUp(
-                this,
-                event,
-                layer -> layer.container().onMouseUp(translatedEvent, new Rectangle(this.scaledSize())),
-                () -> false
-        );
+        boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, new Rectangle(this.scaledSize())).handled();
         return dragHandled || mouseHandled;
     }
 
@@ -262,13 +245,7 @@ public final class Rivet {
         float y = event.y() / this.scale;
         MouseMoveEvent translatedEvent = event.withX(x).withY(y);
         boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, () -> this.layers.findLayerAt(x, y));
-        boolean mouseHandled = this.mouseHandler.onMouseMove(
-                this.layers.findLayerAt(x, y),
-                layer -> {},
-                layer -> layer.container().onMouseMove(new MouseMoveEvent(-Float.MAX_VALUE, -Float.MAX_VALUE, Set.of()), new Rectangle(this.scaledSize())),
-                (layer, buttons) -> layer.container().onMouseMove(translatedEvent.withButtons(buttons), new Rectangle(this.scaledSize())),
-                () -> false
-        );
+        boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, new Rectangle(this.scaledSize())).handled();
         return dragHandled || mouseHandled;
     }
 
@@ -279,11 +256,7 @@ public final class Rivet {
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        return this.mouseHandler.onMouseScroll(
-                this.layers.findLayerAt(x, y),
-                layer -> layer.container().onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize())),
-                () -> false
-        );
+        return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize())).handled();
     }
 
     public RenderList render() {
@@ -309,6 +282,28 @@ public final class Rivet {
     private static class DefaultTheme extends Theme {
         @Override
         protected void addValues(final Rivet rivet, final Values values) {
+        }
+    }
+
+    private class MouseHandler extends ContainerMouseHandler<Layer> {
+        @Override
+        protected Component map(final Layer element) {
+            return element.container();
+        }
+
+        @Override
+        protected Rectangle relativeBounds(final Rectangle containerBounds, final Layer element) {
+            return new Rectangle(Rivet.this.scaledSize());
+        }
+
+        @Override
+        protected @Nullable Layer elementAt(final float x, final float y, final Rectangle containerBounds) {
+            return Rivet.this.layers.findLayerAt(x, y);
+        }
+
+        @Override
+        protected List<Layer> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
+            return Rivet.this.layers();
         }
     }
 
