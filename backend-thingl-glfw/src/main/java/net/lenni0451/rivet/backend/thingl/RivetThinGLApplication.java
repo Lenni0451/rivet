@@ -75,9 +75,9 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
             if (event != null) {
                 if (action == GLFW.GLFW_PRESS) {
                     this.heldMouseButtons.add(event.button());
-                    this.rivet.onMouseDown(event);
+                    this.rivet.onMouseDown(event.withHeldButtons(this.heldMouseButtons));
                 } else if (action == GLFW.GLFW_RELEASE) {
-                    this.rivet.onMouseUp(event);
+                    this.rivet.onMouseUp(event.withHeldButtons(this.heldMouseButtons));
                     this.heldMouseButtons.remove(event.button());
                 }
             }

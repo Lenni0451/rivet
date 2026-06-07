@@ -269,7 +269,7 @@ public class GLFWMapper {
             default -> null;
         };
         if (mouseButton == null) return null;
-        return new MouseButtonEvent(x, y, mouseButton, mapModifiers(modifier));
+        return new MouseButtonEvent(x, y, mouseButton, mapModifiers(modifier), Set.of());
     }
 
     private static Set<ModifierKey> mapModifiers(final int modifier) {

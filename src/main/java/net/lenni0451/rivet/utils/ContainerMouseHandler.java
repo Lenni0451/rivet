@@ -22,10 +22,9 @@ public abstract class ContainerMouseHandler<E> {
     private E clickedElement;
     private E hoveredDragElement;
     private final Set<MouseButton> componentMouseButtons = EnumSet.noneOf(MouseButton.class);
-    private final Set<MouseButton> nonComponentMouseButtons = EnumSet.noneOf(MouseButton.class);
 
     public boolean isMouseHeld() {
-        return !this.componentMouseButtons.isEmpty() || !this.nonComponentMouseButtons.isEmpty();
+        return !this.componentMouseButtons.isEmpty();
     }
 
     public void checkAndRemove(final E component) {
@@ -37,7 +36,7 @@ public abstract class ContainerMouseHandler<E> {
         if (this.clickedElement == component) {
             for (MouseButton mouseButton : this.componentMouseButtons) {
                 this.map(component).onMouseUp(
-                        new MouseButtonEvent(-1, -1, mouseButton, Set.of()),
+                        new MouseButtonEvent(-1, -1, mouseButton, Set.of(), Set.of()),
                         this.relativeBounds(Rectangle.EMPTY, component)
                 );
             }
@@ -61,7 +60,6 @@ public abstract class ContainerMouseHandler<E> {
         this.clickedElement = null;
         this.hoveredDragElement = null;
         this.componentMouseButtons.clear();
-        this.nonComponentMouseButtons.clear();
     }
 
 
@@ -76,27 +74,23 @@ public abstract class ContainerMouseHandler<E> {
 
     public EventState onMouseDown(final Rivet rivet, final MouseButtonEvent event, final Rectangle containerBounds) {
         E hoveredElement = this.elementAt(event.x(), event.y(), containerBounds);
-        if (this.nonComponentMouseButtons.isEmpty() && hoveredElement != null) {
-            if (this.clickedElement == null || this.clickedElement == hoveredElement) {
-                this.clickedElement = hoveredElement;
-                this.componentMouseButtons.add(event.button());
+        boolean nonComponentButtonsHeld = event.heldButtons().size() - 1 > this.componentMouseButtons.size();
+        if (hoveredElement != null && (this.clickedElement == hoveredElement || (this.clickedElement == null && !nonComponentButtonsHeld))) {
+            this.clickedElement = hoveredElement;
+            this.componentMouseButtons.add(event.button());
 
-                Component hoveredComponent = this.map(hoveredElement);
-                Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
-                rivet.focusedComponent(hoveredComponent);
-                return EventState.component(hoveredComponent.onMouseDown(
-                        event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
-                        new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
-                ));
-            }
-        } else {
-            this.nonComponentMouseButtons.add(event.button());
+            Component hoveredComponent = this.map(hoveredElement);
+            Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
+            rivet.focusedComponent(hoveredComponent);
+            return EventState.component(hoveredComponent.onMouseDown(
+                    event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
+                    new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+            ));
         }
         return EventState.MISS;
     }
 
     public EventState onMouseUp(final Rivet rivet, final MouseButtonEvent event, final Rectangle containerBounds) {
-        this.nonComponentMouseButtons.remove(event.button());
         if (this.componentMouseButtons.remove(event.button())) {
             try {
                 Rectangle relativeBounds = this.relativeBounds(containerBounds, this.clickedElement);
@@ -116,11 +110,12 @@ public abstract class ContainerMouseHandler<E> {
 
     public EventState onMouseMove(final MouseMoveEvent event, final Rectangle containerBounds) {
         E hoveredElement = this.elementAt(event.x(), event.y(), containerBounds);
-        if (this.hoveredElement != null && (this.hoveredElement != hoveredElement || !this.nonComponentMouseButtons.isEmpty())) {
+        boolean nonComponentButtonsHeld = event.buttons().size() > this.componentMouseButtons.size();
+        if (this.hoveredElement != null && (this.hoveredElement != hoveredElement || nonComponentButtonsHeld)) {
             this.map(this.hoveredElement).onMouseLeave();
             this.hoveredElement = null;
         }
-        if (this.hoveredElement == null && hoveredElement != null && this.nonComponentMouseButtons.isEmpty() && (this.clickedElement == null || this.clickedElement == hoveredElement)) {
+        if (this.hoveredElement == null && hoveredElement != null && !nonComponentButtonsHeld && (this.clickedElement == null || this.clickedElement == hoveredElement)) {
             this.hoveredElement = hoveredElement;
             this.map(hoveredElement).onMouseEnter();
         }
