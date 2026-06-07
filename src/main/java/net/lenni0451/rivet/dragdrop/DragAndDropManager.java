@@ -15,6 +15,7 @@ import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
@@ -92,19 +93,22 @@ public final class DragAndDropManager {
         this.mouseY = -Float.MAX_VALUE;
     }
 
-    public boolean onMouseUp(final MouseButtonEvent event, final Supplier<Layer> hoveredLayerSupplier) {
+    public boolean onMouseUp(final MouseButtonEvent event, final Supplier<List<Layer>> hoveredLayerSupplier) {
         if (!this.dragging) return false;
 
-        Layer hoveredLayer = hoveredLayerSupplier.get();
-        if (hoveredLayer != null) {
+        List<Layer> hoveredLayers = hoveredLayerSupplier.get();
+        if (!hoveredLayers.isEmpty()) {
             DropEvent dropEvent = new DropEvent(event.x(), event.y(), event, this.dragData);
-            hoveredLayer.container().onDrop(dropEvent, new Rectangle(this.rivet.scaledSize()));
+            for (Layer hoveredLayer : hoveredLayers) {
+                boolean handled = hoveredLayer.container().onDrop(dropEvent, new Rectangle(this.rivet.scaledSize()));
+                if (handled) break;
+            }
         }
         this.cancelDrag();
         return true;
     }
 
-    public boolean onMouseMove(final MouseMoveEvent event, final Supplier<Layer> hoveredLayerSupplier) {
+    public boolean onMouseMove(final MouseMoveEvent event, final Supplier<List<Layer>> hoveredLayerSupplier) {
         if (!this.dragging) return false;
         this.mouseX = event.x();
         this.mouseY = event.y();
@@ -117,16 +121,23 @@ public final class DragAndDropManager {
             this.dragLayer.requestLayoutRecalculation();
         }
 
-        Layer hoveredLayer = hoveredLayerSupplier.get();
-        if (this.hoveredDragLayer != null && this.hoveredDragLayer != hoveredLayer) {
+        List<Layer> hoveredLayers = hoveredLayerSupplier.get();
+        Layer handledLayer = null;
+        if (!hoveredLayers.isEmpty()) {
+            for (Layer hoveredLayer : hoveredLayers) {
+                DragOverEvent dragOverEvent = new DragOverEvent(event.x(), event.y(), event, this.dragData);
+                boolean handled = hoveredLayer.container().onDragOver(dragOverEvent, new Rectangle(this.rivet.scaledSize()));
+                if (handled) {
+                    handledLayer = hoveredLayer;
+                    break;
+                }
+            }
+        }
+        if (this.hoveredDragLayer != null && this.hoveredDragLayer != handledLayer) {
             this.hoveredDragLayer.container().onDragLeave();
         }
-        this.hoveredDragLayer = hoveredLayer;
-        if (hoveredLayer != null) {
-            DragOverEvent dragOverEvent = new DragOverEvent(event.x(), event.y(), event, this.dragData);
-            hoveredLayer.container().onDragOver(dragOverEvent, new Rectangle(this.rivet.scaledSize()));
-        }
-        return false;
+        this.hoveredDragLayer = handledLayer;
+        return handledLayer != null;
     }
 
 }

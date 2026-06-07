@@ -20,7 +20,6 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Queue;
@@ -233,7 +232,7 @@ public final class Rivet {
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         MouseButtonEvent translatedEvent = event.withX(x).withY(y);
-        boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, () -> this.layers.findLayerAt(x, y));
+        boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, this.layers::interactableLayers);
         boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, new Rectangle(this.scaledSize())).handled();
         return dragHandled || mouseHandled;
     }
@@ -244,7 +243,7 @@ public final class Rivet {
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
         MouseMoveEvent translatedEvent = event.withX(x).withY(y);
-        boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, () -> this.layers.findLayerAt(x, y));
+        boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, this.layers::interactableLayers);
         boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, new Rectangle(this.scaledSize())).handled();
         return dragHandled || mouseHandled;
     }
@@ -297,13 +296,8 @@ public final class Rivet {
         }
 
         @Override
-        protected @Nullable Layer elementAt(final float x, final float y, final Rectangle containerBounds) {
-            return Rivet.this.layers.findLayerAt(x, y);
-        }
-
-        @Override
-        protected List<Layer> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
-            return Rivet.this.layers();
+        protected List<Layer> elementsAt(final float x, final float y, final Rectangle containerBounds) {
+            return Rivet.this.layers.interactableLayers();
         }
     }
 

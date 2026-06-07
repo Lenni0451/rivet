@@ -698,8 +698,7 @@ public class ScrollContainer extends Component implements Parent {
         }
 
         @Override
-        @Nullable
-        protected Component elementAt(final float x, final float y, final Rectangle containerBounds) {
+        protected List<Component> elementsAt(final float x, final float y, final Rectangle containerBounds) {
             Rectangle hThumb = ScrollContainer.this.getHThumbBounds(containerBounds);
             Rectangle hRail = ScrollContainer.this.getHRailBounds(containerBounds);
             Rectangle vThumb = ScrollContainer.this.getVThumbBounds(containerBounds);
@@ -708,13 +707,7 @@ public class ScrollContainer extends Component implements Parent {
                     && (hRail == null || !hRail.contains(x, y))
                     && (vThumb == null || !vThumb.contains(x, y))
                     && (vRail == null || !vRail.contains(x, y));
-            return componentHovered ? ScrollContainer.this.child : null;
-        }
-
-        @Override
-        protected List<Component> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
-            Component component = this.elementAt(x, y, containerBounds);
-            return component == null ? List.of() : List.of(component);
+            return componentHovered ? List.of(ScrollContainer.this.child) : List.of();
         }
     }
 

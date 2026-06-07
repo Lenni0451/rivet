@@ -29,14 +29,15 @@ public final class LayerList {
         return Collections.unmodifiableList(this.allLayers);
     }
 
-    public Layer findLayerAt(final float x, final float y) {
+    public List<Layer> interactableLayers() {
+        List<Layer> layers = new ArrayList<>();
         for (int i = this.allLayers.size() - 1; i >= 0; i--) {
             Layer layer = this.allLayers.get(i);
-            if (layer.bucket().interceptable() && layer.container().intercepts(x, y)) {
-                return layer;
+            if (layer.bucket().interceptable()) {
+                layers.add(layer);
             }
         }
-        return null;
+        return layers;
     }
 
     public LayerList add(final Layer layer) {

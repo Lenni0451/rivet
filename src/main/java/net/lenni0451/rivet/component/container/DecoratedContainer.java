@@ -15,7 +15,6 @@ import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -182,17 +181,7 @@ public class DecoratedContainer extends Component implements Parent {
         }
 
         @Override
-        protected @Nullable Component elementAt(final float x, final float y, final Rectangle containerBounds) {
-            Padding padding = DecoratedContainer.this.innerPadding;
-            if (x >= padding.left() && x < containerBounds.width() - padding.right() && y >= padding.top() && y < containerBounds.height() - padding.bottom()) {
-                return DecoratedContainer.this.child;
-            } else {
-                return DecoratedContainer.this.background;
-            }
-        }
-
-        @Override
-        protected List<Component> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
+        protected List<Component> elementsAt(final float x, final float y, final Rectangle containerBounds) {
             Padding padding = DecoratedContainer.this.innerPadding;
             if (x >= padding.left() && x < containerBounds.width() - padding.right() && y >= padding.top() && y < containerBounds.height() - padding.bottom()) {
                 return List.of(DecoratedContainer.this.child, DecoratedContainer.this.background);

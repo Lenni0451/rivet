@@ -17,7 +17,6 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.math.Snapping;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -102,10 +101,6 @@ public class Container extends Component implements Parent {
             this.requestLayoutRecalculation();
         }
         return this;
-    }
-
-    public final boolean intercepts(final float x, final float y) {
-        return this.mouseHandler.elementAt(x, y, null) != null; //TODO: Get rid of this
     }
 
     @Override
@@ -245,19 +240,7 @@ public class Container extends Component implements Parent {
         }
 
         @Override
-        @Nullable
-        protected Child elementAt(final float x, final float y, final Rectangle containerBounds) {
-            for (int i = Container.this.children.size() - 1; i >= 0; i--) {
-                Child child = Container.this.children.get(i);
-                if (child.component.interactive() && child.bounds.contains(x, y)) {
-                    return child;
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected List<Child> allElementsAt(final float x, final float y, final Rectangle containerBounds) {
+        protected List<Child> elementsAt(final float x, final float y, final Rectangle containerBounds) {
             List<Child> elements = new ArrayList<>();
             for (int i = Container.this.children.size() - 1; i >= 0; i--) {
                 Child child = Container.this.children.get(i);
