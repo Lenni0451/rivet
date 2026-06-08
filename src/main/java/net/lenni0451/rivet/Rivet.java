@@ -153,6 +153,9 @@ public final class Rivet {
     }
 
     public Rivet updateMouseState() {
+        if (this.layers.get().stream().anyMatch(Layer::recalculateNextFrame)) {
+            return this;
+        }
         if (this.lastMouseX != -Float.MAX_VALUE && this.lastMouseY != -Float.MAX_VALUE) {
             this.onMouseMove(new MouseMoveEvent(this.lastMouseX, this.lastMouseY, Set.of()));
         }
