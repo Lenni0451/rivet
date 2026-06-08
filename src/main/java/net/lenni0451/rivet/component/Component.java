@@ -222,15 +222,13 @@ public abstract class Component {
         return false;
     }
 
-    public final void onMouseEnter() {
-        if (this.disabled()) return;
-        this.mouseEnterListener.call(BooleanSupplier::getAsBoolean, () -> {
-            this.onComponentMouseEnter();
-            return false;
-        });
+    public final boolean onMouseEnter() {
+        if (this.disabled()) return false;
+        return this.mouseEnterListener.call(BooleanSupplier::getAsBoolean, this::onComponentMouseEnter);
     }
 
-    protected void onComponentMouseEnter() {
+    protected boolean onComponentMouseEnter() {
+        return this.interactive;
     }
 
     public final void onMouseLeave() {

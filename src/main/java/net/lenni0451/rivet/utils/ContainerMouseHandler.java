@@ -134,14 +134,39 @@ public abstract class ContainerMouseHandler<E> {
     public EventState onMouseMove(final MouseMoveEvent event, final Rectangle containerBounds) {
         List<E> hoveredElements = this.elementsAt(event.x(), event.y(), containerBounds);
         boolean nonComponentButtonsHeld = event.buttons().size() > this.componentMouseButtons.size();
-        if (this.hoveredElement != null && (!hoveredElements.contains(this.hoveredElement) || nonComponentButtonsHeld)) {
-            this.map(this.hoveredElement).onMouseLeave();
-            this.hoveredElement = null;
+        if (this.clickedElement != null) {
+            if (hoveredElements.contains(this.clickedElement) && this.hoveredElement != this.clickedElement) {
+                if (this.hoveredElement != null) {
+                    this.map(this.hoveredElement).onMouseLeave();
+                }
+                this.map(this.clickedElement).onMouseEnter();
+                this.hoveredElement = this.clickedElement;
+            } else if (!hoveredElements.contains(this.clickedElement) && this.hoveredElement == this.clickedElement) {
+                this.map(this.clickedElement).onMouseLeave();
+                this.hoveredElement = null;
+            }
+        } else {
+            if (this.hoveredElement != null && (!hoveredElements.contains(this.hoveredElement) || nonComponentButtonsHeld)) {
+                this.map(this.hoveredElement).onMouseLeave();
+                this.hoveredElement = null;
+            }
+            if (!nonComponentButtonsHeld) {
+                E newHoveredElement = null;
+                for (E hoveredElement : hoveredElements) {
+                    if (this.hoveredElement == hoveredElement || this.map(hoveredElement).onMouseEnter()) {
+                        newHoveredElement = hoveredElement;
+                        break;
+                    }
+                }
+                if (newHoveredElement != this.hoveredElement) {
+                    if (this.hoveredElement != null) {
+                        this.map(this.hoveredElement).onMouseLeave();
+                    }
+                    this.hoveredElement = newHoveredElement;
+                }
+            }
         }
-        if (this.hoveredElement == null && !hoveredElements.isEmpty() && !nonComponentButtonsHeld && (this.clickedElement == null || hoveredElements.contains(this.clickedElement))) {
-            this.hoveredElement = hoveredElements.get(0);
-            this.map(this.hoveredElement).onMouseEnter();
-        }
+
         if (this.clickedElement != null) {
             Component clickedComponent = this.map(this.clickedElement);
             Rectangle clickedRelativeBounds = this.relativeBounds(containerBounds, this.clickedElement);

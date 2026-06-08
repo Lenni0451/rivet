@@ -76,8 +76,9 @@ public class SelectionAndOrderingTest extends TestBase {
         }
 
         @Override
-        protected void onComponentMouseEnter() {
+        protected boolean onComponentMouseEnter() {
             this.hovered = true;
+            return true;
         }
 
         @Override

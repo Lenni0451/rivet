@@ -139,8 +139,9 @@ public class Checkbox extends Component {
     }
 
     @Override
-    protected void onComponentMouseEnter() {
+    protected boolean onComponentMouseEnter() {
         this.hovered = true;
+        return true;
     }
 
     @Override
