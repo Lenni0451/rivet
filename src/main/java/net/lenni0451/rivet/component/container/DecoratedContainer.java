@@ -182,6 +182,7 @@ public class DecoratedContainer extends Component implements Parent {
 
         @Override
         protected List<Component> elementsAt(final float x, final float y, final Rectangle containerBounds) {
+            if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
             Padding padding = DecoratedContainer.this.innerPadding;
             if (x >= padding.left() && x < containerBounds.width() - padding.right() && y >= padding.top() && y < containerBounds.height() - padding.bottom()) {
                 return List.of(DecoratedContainer.this.child, DecoratedContainer.this.background);

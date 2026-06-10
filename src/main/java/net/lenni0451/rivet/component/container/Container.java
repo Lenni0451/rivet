@@ -241,6 +241,7 @@ public class Container extends Component implements Parent {
 
         @Override
         protected List<Child> elementsAt(final float x, final float y, final Rectangle containerBounds) {
+            if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
             List<Child> elements = new ArrayList<>();
             for (int i = Container.this.children.size() - 1; i >= 0; i--) {
                 Child child = Container.this.children.get(i);

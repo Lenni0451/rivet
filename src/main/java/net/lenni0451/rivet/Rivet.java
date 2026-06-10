@@ -300,6 +300,7 @@ public final class Rivet {
 
         @Override
         protected List<Layer> elementsAt(final float x, final float y, final Rectangle containerBounds) {
+            if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
             return Rivet.this.layers.interactableLayers();
         }
     }

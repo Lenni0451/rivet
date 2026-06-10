@@ -696,6 +696,7 @@ public class ScrollContainer extends Component implements Parent {
 
         @Override
         protected List<Component> elementsAt(final float x, final float y, final Rectangle containerBounds) {
+            if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
             Rectangle hThumb = ScrollContainer.this.getHThumbBounds(containerBounds);
             Rectangle hRail = ScrollContainer.this.getHRailBounds(containerBounds);
             Rectangle vThumb = ScrollContainer.this.getVThumbBounds(containerBounds);
