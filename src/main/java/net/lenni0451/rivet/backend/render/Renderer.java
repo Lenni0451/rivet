@@ -96,12 +96,22 @@ public final class Renderer {
 
     public void fillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
         this.checkClosed();
-        this.currentRenderList.peek().add(new RenderCommand.FillRoundedRect(x, y, width, height, cornerRadius, color));
+        this.currentRenderList.peek().add(new RenderCommand.FillRoundedRect(x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius, color));
+    }
+
+    public void fillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
+        this.checkClosed();
+        this.currentRenderList.peek().add(new RenderCommand.FillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color));
     }
 
     public void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
         this.checkClosed();
-        this.currentRenderList.peek().add(new RenderCommand.OutlineRoundedRect(x, y, width, height, cornerRadius, outlineWidth, color));
+        this.currentRenderList.peek().add(new RenderCommand.OutlineRoundedRect(x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius, outlineWidth, color));
+    }
+
+    public void outlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
+        this.checkClosed();
+        this.currentRenderList.peek().add(new RenderCommand.OutlineRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, outlineWidth, color));
     }
 
     public void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {

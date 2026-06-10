@@ -54,14 +54,14 @@ public sealed interface RenderCommand extends RenderElement permits
         }
     }
 
-    record FillRoundedRect(float x, float y, float width, float height, float cornerRadius, Color color) implements RenderCommand {
+    record FillRoundedRect(float x, float y, float width, float height, float rtl, float rbl, float rbr, float rtr, Color color) implements RenderCommand {
         @Override
         public Rectangle bounds() {
             return new Rectangle(this.x, this.y, this.width, this.height);
         }
     }
 
-    record OutlineRoundedRect(float x, float y, float width, float height, float cornerRadius, float outlineWidth, Color color) implements RenderCommand {
+    record OutlineRoundedRect(float x, float y, float width, float height, float rtl, float rbl, float rbr, float rtr, float outlineWidth, Color color) implements RenderCommand {
         @Override
         public Rectangle bounds() {
             return new Rectangle(this.x, this.y, this.width, this.height);

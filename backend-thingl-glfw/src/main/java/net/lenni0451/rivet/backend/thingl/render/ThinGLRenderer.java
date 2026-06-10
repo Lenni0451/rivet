@@ -94,7 +94,10 @@ public class ThinGLRenderer {
                     matrixStack,
                     fillRoundedRect.x(), fillRoundedRect.y(),
                     fillRoundedRect.x() + fillRoundedRect.width(), fillRoundedRect.y() + fillRoundedRect.height(),
-                    fillRoundedRect.cornerRadius(),
+                    fillRoundedRect.rbl(),
+                    fillRoundedRect.rbr(),
+                    fillRoundedRect.rtr(),
+                    fillRoundedRect.rtl(),
                     fillRoundedRect.color()
             );
             case RenderCommand.FillTriangle fillTriangle -> ThinGL.renderer2D().filledTriangle(
@@ -124,7 +127,10 @@ public class ThinGLRenderer {
                     matrixStack,
                     outlineRoundedRect.x(), outlineRoundedRect.y(),
                     outlineRoundedRect.x() + outlineRoundedRect.width(), outlineRoundedRect.y() + outlineRoundedRect.height(),
-                    outlineRoundedRect.cornerRadius(),
+                    outlineRoundedRect.rbl(),
+                    outlineRoundedRect.rbr(),
+                    outlineRoundedRect.rtr(),
+                    outlineRoundedRect.rtl(),
                     outlineRoundedRect.color(),
                     outlineRoundedRect.outlineWidth(),
                     Renderer2D.OUTLINE_STYLE_INNER_BIT
