@@ -13,7 +13,6 @@ import net.lenni0451.rivet.math.Rectangle;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 
 public abstract class ContainerMouseHandler<E> {
 
@@ -281,14 +280,6 @@ public abstract class ContainerMouseHandler<E> {
 
         public boolean handled() {
             return this == HANDLED;
-        }
-
-        public boolean handled(final BooleanSupplier onMiss) {
-            return switch (this) {
-                case HANDLED -> true;
-                case NOT_HANDLED -> false;
-                case MISS -> onMiss.getAsBoolean();
-            };
         }
     }
 
