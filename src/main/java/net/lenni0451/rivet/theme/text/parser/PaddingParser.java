@@ -13,15 +13,25 @@ public final class PaddingParser implements Parser<Padding> {
     @Override
     public Padding parse(final String s) {
         String[] parts = s.split(" ");
-        Padding padding = this.parseFormat1(parts);
-        if (padding == null) {
-            padding = this.parseFormat2(parts);
-        }
+        Padding padding = this.parseFormat1(s);
+        if (padding == null) padding = this.parseFormat2(parts);
+        if (padding == null) padding = this.parseFormat3(parts);
         return padding;
     }
 
     @Nullable
-    private Padding parseFormat1(final String[] parts) {
+    private Padding parseFormat1(final String s) {
+        if (!s.contains(" ") && !s.contains("=")) {
+            try {
+                return new Padding(Float.parseFloat(s));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private Padding parseFormat2(final String[] parts) {
         if (parts.length != 4) return null;
         float left;
         try {
@@ -50,25 +60,28 @@ public final class PaddingParser implements Parser<Padding> {
         return new Padding(left, top, right, bottom);
     }
 
-    private Padding parseFormat2(final String[] parts) {
-        float left = 0;
-        float top = 0;
-        float right = 0;
-        float bottom = 0;
-        for (String part : parts) {
-            if (part.toLowerCase(Locale.ROOT).startsWith("left=")) {
-                left = Float.parseFloat(part.split("=", 2)[1]);
-            } else if (part.toLowerCase(Locale.ROOT).startsWith("top=")) {
-                top = Float.parseFloat(part.split("=", 2)[1]);
-            } else if (part.toLowerCase(Locale.ROOT).startsWith("right=")) {
-                right = Float.parseFloat(part.split("=", 2)[1]);
-            } else if (part.toLowerCase(Locale.ROOT).startsWith("bottom=")) {
-                bottom = Float.parseFloat(part.split("=", 2)[1]);
-            } else {
-                throw new IllegalArgumentException("Unknown padding option: " + part);
+    private Padding parseFormat3(final String[] parts) {
+        if (parts.length > 0) {
+            float left = 0;
+            float top = 0;
+            float right = 0;
+            float bottom = 0;
+            for (String part : parts) {
+                if (part.toLowerCase(Locale.ROOT).startsWith("left=")) {
+                    left = Float.parseFloat(part.split("=", 2)[1]);
+                } else if (part.toLowerCase(Locale.ROOT).startsWith("top=")) {
+                    top = Float.parseFloat(part.split("=", 2)[1]);
+                } else if (part.toLowerCase(Locale.ROOT).startsWith("right=")) {
+                    right = Float.parseFloat(part.split("=", 2)[1]);
+                } else if (part.toLowerCase(Locale.ROOT).startsWith("bottom=")) {
+                    bottom = Float.parseFloat(part.split("=", 2)[1]);
+                } else {
+                    throw new IllegalArgumentException("Unknown padding option: " + part);
+                }
             }
+            return new Padding(left, top, right, bottom);
         }
-        return new Padding(left, top, right, bottom);
+        return null;
     }
 
 }

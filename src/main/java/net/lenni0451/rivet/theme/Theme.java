@@ -6,6 +6,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 
 import java.util.*;
@@ -145,6 +146,23 @@ public abstract class Theme {
     // Separator
     public static final ThemeKey<Color> SEPARATOR_COLOR = register("separator.color", Color.class, r -> Color.fromRGB(65, 65, 70));
     public static final ThemeKey<Float> SEPARATOR_THICKNESS = register("separator.thickness", Float.class, r -> roundMin(r.backend().font().height() / 20F, 1));
+
+    // Tab
+    public static final ThemeKey<Corners> TAB_CORNER_RADIUS = register("tab.corner_radius", Corners.class, r -> {
+        float cornerRadius = roundMin(r.backend().font().height() / 10F, 0);
+        return new Corners(cornerRadius, 0F, 0F, cornerRadius);
+    });
+    public static final ThemeKey<Float> TAB_OUTLINE_WIDTH = register("tab.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
+    public static final ThemeKey<Color> TAB_INACTIVE_COLOR = register("tab.inactive_color", Color.class, r -> Color.fromRGB(35, 35, 38));
+    public static final ThemeKey<Color> TAB_INACTIVE_OUTLINE_COLOR = register("tab.inactive_outline_color", Color.class, r -> Color.fromRGB(55, 55, 60));
+    public static final ThemeKey<Color> TAB_ACTIVE_COLOR = register("tab.active_color", Color.class, r -> Color.fromRGB(45, 45, 48));
+    public static final ThemeKey<Color> TAB_ACTIVE_OUTLINE_COLOR = register("tab.active_outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
+    public static final ThemeKey<Color> TAB_HOVER_COLOR = register("tab.hover_color", Color.class, r -> Color.fromRGB(50, 50, 55));
+    public static final ThemeKey<Color> TAB_HOVER_OUTLINE_COLOR = register("tab.hover_outline_color", Color.class, r -> Color.fromRGB(80, 80, 85));
+    public static final ThemeKey<Padding> TAB_INNER_PADDING = register("tab.inner_padding", Padding.class, r -> new Padding(5));
+    public static final ThemeKey<Color> TAB_HEADER_BACKGROUND_COLOR = register("tab.header_background_color", Color.class, r -> Color.TRANSPARENT);
+    public static final ThemeKey<Color> TAB_SEPARATOR_COLOR = register("tab.separator_color", Color.class, r -> Color.fromRGB(65, 65, 70));
+    public static final ThemeKey<Float> TAB_SEPARATOR_THICKNESS = register("tab.separator_thickness", Float.class, r -> 0F);
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);

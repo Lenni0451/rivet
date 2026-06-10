@@ -6,13 +6,11 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
-import net.lenni0451.rivet.theme.text.parser.ColorParser;
-import net.lenni0451.rivet.theme.text.parser.EnumParser;
-import net.lenni0451.rivet.theme.text.parser.PaddingParser;
-import net.lenni0451.rivet.theme.text.parser.Parser;
+import net.lenni0451.rivet.theme.text.parser.*;
 
 import javax.annotation.WillClose;
 import java.io.BufferedReader;
@@ -42,6 +40,7 @@ public class ThemeLoader {
         parsers.put(Float.class, Float::valueOf);
         parsers.put(String.class, s -> s);
         parsers.put(Padding.class, new PaddingParser());
+        parsers.put(Corners.class, new CornersParser());
         parsers.put(Button.ClickOn.class, new EnumParser<>(Button.ClickOn.values()));
         parsers.put(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
         parsers.put(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));

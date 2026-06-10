@@ -5,6 +5,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
@@ -80,8 +81,14 @@ class ThemeLoaderTest {
         check(Theme.SLIDER_TOOLTIP_FORMAT, "defg", "defg");
 
         // Padding
+        check(Theme.BUTTON_INNER_PADDING, "5.5", new Padding(5.5F));
         check(Theme.BUTTON_INNER_PADDING, "0 1 2 3", new Padding(0, 1, 2, 3));
         check(Theme.BUTTON_INNER_PADDING, "top=1 bottom=3 left=0 right=2", new Padding(0, 1, 2, 3));
+
+        // Corners
+        check(Theme.TAB_CORNER_RADIUS, "5.5", new Corners(5.5F));
+        check(Theme.TAB_CORNER_RADIUS, "0 1 2 3", new Corners(0, 1, 2, 3));
+        check(Theme.TAB_CORNER_RADIUS, "bottomLeft=1 topRight=3 topLeft=0 bottomRight=2", new Corners(0, 1, 2, 3));
 
         // Button.ClickOn
         for (Button.ClickOn value : Button.ClickOn.values()) {
