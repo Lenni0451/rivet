@@ -16,7 +16,6 @@ import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
 import net.lenni0451.rivet.math.Padding;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -121,7 +120,7 @@ public class SliderTooltip extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
+    public void render(final Renderer renderer, final Size size) {
         float triangleSize = this.triangleSize.value();
         Color backgroundColor = this.backgroundColor.value();
         float cornerRadius = this.cornerRadius.value();
@@ -129,21 +128,21 @@ public class SliderTooltip extends Component {
 
         switch (this.position) {
             case ABOVE -> {
-                renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height() - triangleSize, cornerRadius, backgroundColor);
+                renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height() - triangleSize, cornerRadius, backgroundColor);
                 renderer.fillTriangle(
-                        bounds.width() / 2F - triangleSize - this.pointerOffset, bounds.height() - triangleSize,
-                        bounds.width() / 2F - this.pointerOffset, bounds.height(),
-                        bounds.width() / 2F + triangleSize - this.pointerOffset, bounds.height() - triangleSize,
+                        size.width() / 2F - triangleSize - this.pointerOffset, size.height() - triangleSize,
+                        size.width() / 2F - this.pointerOffset, size.height(),
+                        size.width() / 2F + triangleSize - this.pointerOffset, size.height() - triangleSize,
                         backgroundColor
                 );
                 renderer.text(this.shapedText, padding.left(), padding.top(), TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
             }
             case BELOW -> {
-                renderer.optimizedFillRoundedRect(0, triangleSize, bounds.width(), bounds.height() - triangleSize, cornerRadius, backgroundColor);
+                renderer.optimizedFillRoundedRect(0, triangleSize, size.width(), size.height() - triangleSize, cornerRadius, backgroundColor);
                 renderer.fillTriangle(
-                        bounds.width() / 2F - triangleSize - this.pointerOffset, triangleSize,
-                        bounds.width() / 2F + triangleSize - this.pointerOffset, triangleSize,
-                        bounds.width() / 2F - this.pointerOffset, 0,
+                        size.width() / 2F - triangleSize - this.pointerOffset, triangleSize,
+                        size.width() / 2F + triangleSize - this.pointerOffset, triangleSize,
+                        size.width() / 2F - this.pointerOffset, 0,
                         backgroundColor
                 );
                 renderer.text(this.shapedText, padding.left(), triangleSize + padding.top(), TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);

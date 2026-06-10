@@ -155,7 +155,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         if (this.handledButtons.contains(event.button())) {
             this.pressed.add(event.button());
             if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
@@ -166,7 +166,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         this.pressed.remove(event.button());
         if (this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
             this.clickListener.callVoid(listener -> listener.onClick(event));
@@ -185,8 +185,8 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
-        float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(bounds.width(), bounds.height()) / 2F);
+    public void render(final Renderer renderer, final Size size) {
+        float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
         float animationProgress = this.hoverAnimation.getValue();
         Color color;
@@ -201,19 +201,16 @@ public class Button extends Component implements Parent {
             color = this.clickColor.value();
             outlineColor = this.clickOutlineColor.value();
         }
-        renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, color);
+        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, color);
         if (outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), cornerRadius, outlineWidth, outlineColor);
+            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
         }
 
-        float width = bounds.width() - this.innerPadding.value().horizontal();
-        float height = bounds.height() - this.innerPadding.value().vertical();
+        float width = size.width() - this.innerPadding.value().horizontal();
+        float height = size.height() - this.innerPadding.value().vertical();
         renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
             renderer.componentBounds(0, 0, width, height, () -> {
-                this.child.render(renderer, new Rectangle(
-                        bounds.x() + this.innerPadding.value().left(), bounds.y() + this.innerPadding.value().top(),
-                        width, height
-                ));
+                this.child.render(renderer, new Size(width, height));
             });
         });
     }
@@ -245,6 +242,20 @@ public class Button extends Component implements Parent {
     @Override
     public List<Component> children() {
         return List.of(this.child);
+    }
+
+    @Override
+    public Rectangle childBounds(final Component component) {
+        if (this.child == component) {
+            Rectangle bounds = this.relativeBounds();
+            return new Rectangle(
+                    this.innerPadding.value().left(),
+                    this.innerPadding.value().top(),
+                    bounds.width() - this.innerPadding.value().horizontal(),
+                    bounds.height() - this.innerPadding.value().vertical()
+            );
+        }
+        return Rectangle.EMPTY;
     }
 
 

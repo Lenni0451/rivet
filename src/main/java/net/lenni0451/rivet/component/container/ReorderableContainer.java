@@ -11,6 +11,7 @@ import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
 
 import java.util.function.Predicate;
 
@@ -42,12 +43,12 @@ public class ReorderableContainer extends Container {
     }
 
     @Override
-    protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
+    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
         if (this.dropFilter.test(event.dragData())) {
             this.currentTarget = this.strategy.resolve(this, event.x(), event.y());
             return true;
         }
-        return super.onComponentDragOver(event, bounds);
+        return super.onComponentDragOver(event, size);
     }
 
     @Override
@@ -57,19 +58,19 @@ public class ReorderableContainer extends Container {
     }
 
     @Override
-    protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
+    protected boolean onComponentDrop(final DropEvent event, final Size size) {
         if (this.currentTarget != null && this.dropFilter.test(event.dragData())) {
             this.reorderListener.callVoid(listener -> listener.onReorder(event.dragData(), this.currentTarget.insertIndex()));
             this.currentTarget = null;
             return true;
         }
         this.currentTarget = null;
-        return super.onComponentDrop(event, bounds);
+        return super.onComponentDrop(event, size);
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
-        super.render(renderer, bounds);
+    public void render(final Renderer renderer, final Size size) {
+        super.render(renderer, size);
         if (this.currentTarget != null && this.currentTarget.markerBounds() != null) {
             Rectangle markerBounds = this.currentTarget.markerBounds();
             renderer.fillRect(markerBounds.x(), markerBounds.y(), markerBounds.width(), markerBounds.height(), this.markerColor);

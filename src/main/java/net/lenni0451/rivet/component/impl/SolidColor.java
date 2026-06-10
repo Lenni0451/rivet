@@ -6,7 +6,6 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.function.Consumer;
@@ -41,12 +40,12 @@ public class SolidColor extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
+    public void render(final Renderer renderer, final Size size) {
         if (this.color.getAlpha() > 0) {
-            renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius, this.color);
+            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius, this.color);
         }
         if (this.outlineColor.getAlpha() > 0 && this.outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius, this.outlineWidth, this.outlineColor);
+            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius, this.outlineWidth, this.outlineColor);
         }
     }
 

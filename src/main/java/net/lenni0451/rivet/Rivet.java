@@ -222,7 +222,7 @@ public final class Rivet {
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        return this.mouseHandler.onMouseDown(this, event.withX(x).withY(y), new Rectangle(this.scaledSize())).handled();
+        return this.mouseHandler.onMouseDown(this, event.withX(x).withY(y), this.scaledSize()).handled();
     }
 
     public boolean onMouseUp(final MouseButtonEvent event) {
@@ -236,7 +236,7 @@ public final class Rivet {
         float y = event.y() / this.scale;
         MouseButtonEvent translatedEvent = event.withX(x).withY(y);
         boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, this.layers::interactableLayers);
-        boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, new Rectangle(this.scaledSize())).handled();
+        boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, this.scaledSize()).handled();
         return dragHandled || mouseHandled;
     }
 
@@ -247,7 +247,7 @@ public final class Rivet {
         float y = event.y() / this.scale;
         MouseMoveEvent translatedEvent = event.withX(x).withY(y);
         boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, this.layers::interactableLayers);
-        boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, new Rectangle(this.scaledSize())).handled();
+        boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, this.scaledSize()).handled();
         return dragHandled || mouseHandled;
     }
 
@@ -258,7 +258,7 @@ public final class Rivet {
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         float x = event.x() / this.scale;
         float y = event.y() / this.scale;
-        return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), new Rectangle(this.scaledSize())).handled();
+        return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), this.scaledSize()).handled();
     }
 
     public RenderList render() {
@@ -274,7 +274,7 @@ public final class Rivet {
                     layer.recalculateNextFrame(false);
                     this.updateMouseState();
                 }
-                layer.container().render(renderer, new Rectangle(scaledSize));
+                layer.container().render(renderer, scaledSize);
             }
         });
         return renderer.complete();
@@ -294,12 +294,12 @@ public final class Rivet {
         }
 
         @Override
-        protected Rectangle relativeBounds(final Rectangle containerBounds, final Layer element) {
+        protected Rectangle relativeBounds(final Size containerBounds, final Layer element) {
             return new Rectangle(Rivet.this.scaledSize());
         }
 
         @Override
-        protected List<Layer> elementsAt(final float x, final float y, final Rectangle containerBounds) {
+        protected List<Layer> elementsAt(final float x, final float y, final Size containerBounds) {
             if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
             return Rivet.this.layers.interactableLayers();
         }

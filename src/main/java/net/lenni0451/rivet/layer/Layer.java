@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.container.Container;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.List;
@@ -34,6 +35,20 @@ public final class Layer implements Parent {
     @Override
     public List<Component> children() {
         return List.of(this.container);
+    }
+
+    @Override
+    public Rectangle absoluteBounds() {
+        if (this.container.rivet() == null) return Rectangle.EMPTY;
+        return new Rectangle(this.container.rivet().scaledSize());
+    }
+
+    @Override
+    public Rectangle childBounds(final Component component) {
+        if (component == this.container) {
+            return new Rectangle(this.container.rivet().scaledSize());
+        }
+        return Rectangle.EMPTY;
     }
 
 }

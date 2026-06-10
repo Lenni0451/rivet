@@ -12,7 +12,6 @@ import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.List;
@@ -62,9 +61,9 @@ public final class DragAndDropManager {
 
             Container dragContainer = new Container(AbsoluteLayout.INSTANCE) {
                 @Override
-                public void render(final Renderer renderer, final Rectangle bounds) {
+                public void render(final Renderer renderer, final Size size) {
                     if (DragAndDropManager.this.mouseX != -Float.MAX_VALUE) {
-                        super.render(renderer, bounds);
+                        super.render(renderer, size);
                     }
                 }
             };
@@ -100,7 +99,7 @@ public final class DragAndDropManager {
         if (!hoveredLayers.isEmpty()) {
             DropEvent dropEvent = new DropEvent(event.x(), event.y(), event, this.dragData);
             for (Layer hoveredLayer : hoveredLayers) {
-                boolean handled = hoveredLayer.container().onDrop(dropEvent, new Rectangle(this.rivet.scaledSize()));
+                boolean handled = hoveredLayer.container().onDrop(dropEvent, this.rivet.scaledSize());
                 if (handled) break;
             }
         }
@@ -126,7 +125,7 @@ public final class DragAndDropManager {
         if (!hoveredLayers.isEmpty()) {
             for (Layer hoveredLayer : hoveredLayers) {
                 DragOverEvent dragOverEvent = new DragOverEvent(event.x(), event.y(), event, this.dragData);
-                boolean handled = hoveredLayer.container().onDragOver(dragOverEvent, new Rectangle(this.rivet.scaledSize()));
+                boolean handled = hoveredLayer.container().onDragOver(dragOverEvent, this.rivet.scaledSize());
                 if (handled) {
                     handledLayer = hoveredLayer;
                     break;

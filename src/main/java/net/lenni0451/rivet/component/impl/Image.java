@@ -8,7 +8,6 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 @RequiredArgsConstructor
@@ -22,8 +21,8 @@ public class Image extends Component {
     private Color color = Color.WHITE;
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
-        renderer.image(this.texture, 0, 0, bounds.width(), bounds.height(), this.color);
+    public void render(final Renderer renderer, final Size size) {
+        renderer.image(this.texture, 0, 0, size.width(), size.height(), this.color);
     }
 
     @Override

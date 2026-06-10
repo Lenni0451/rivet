@@ -142,13 +142,13 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.button.onMouseDown(event, bounds);
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+        return this.button.onMouseDown(event, size);
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
-        return this.button.onMouseUp(event, bounds);
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+        return this.button.onMouseUp(event, size);
     }
 
     @Override
@@ -157,33 +157,34 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
-        this.button.render(renderer, bounds);
+    public void render(final Renderer renderer, final Size size) {
+        this.button.render(renderer, size);
         float triangleSize = this.arrowSize.value();
         Color arrowColor = this.disabled() ? this.disabledArrowColor.value() : this.arrowColor.value();
         if (this.isOpen()) {
             renderer.fillTriangle(
-                    bounds.width() - this.button.innerPadding().value().right() - triangleSize,
-                    bounds.height() / 2F + triangleSize / 2F,
-                    bounds.width() - this.button.innerPadding().value().right(),
-                    bounds.height() / 2F + triangleSize / 2F,
-                    bounds.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
-                    bounds.height() / 2F - triangleSize / 2F,
+                    size.width() - this.button.innerPadding().value().right() - triangleSize,
+                    size.height() / 2F + triangleSize / 2F,
+                    size.width() - this.button.innerPadding().value().right(),
+                    size.height() / 2F + triangleSize / 2F,
+                    size.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
+                    size.height() / 2F - triangleSize / 2F,
                     arrowColor
             );
         } else {
             renderer.fillTriangle(
-                    bounds.width() - this.button.innerPadding().value().right() - triangleSize,
-                    bounds.height() / 2F - triangleSize / 2F,
-                    bounds.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
-                    bounds.height() / 2F + triangleSize / 2F,
-                    bounds.width() - this.button.innerPadding().value().right(),
-                    bounds.height() / 2F - triangleSize / 2F,
+                    size.width() - this.button.innerPadding().value().right() - triangleSize,
+                    size.height() / 2F - triangleSize / 2F,
+                    size.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
+                    size.height() / 2F + triangleSize / 2F,
+                    size.width() - this.button.innerPadding().value().right(),
+                    size.height() / 2F - triangleSize / 2F,
                     arrowColor
             );
         }
         if (this.isOpen()) {
             Size screenSize = this.rivet().scaledSize();
+            Rectangle bounds = this.absoluteBounds();
             Rectangle region = new Rectangle(
                     bounds.x(),
                     bounds.y() + bounds.height(),
@@ -220,6 +221,14 @@ public class ComboBox extends Component implements Parent {
     @Override
     public List<Component> children() {
         return List.of(this.button);
+    }
+
+    @Override
+    public Rectangle childBounds(final Component component) {
+        if (component == this.button) {
+            return new Rectangle(this.relativeBounds().size());
+        }
+        return Rectangle.EMPTY;
     }
 
 }

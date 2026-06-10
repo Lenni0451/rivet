@@ -12,7 +12,6 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -90,7 +89,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             float pickerSize = this.pickerSize.value();
             float sliderWidth = this.sliderWidth.value();
@@ -111,7 +110,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         this.draggingPicker = false;
         this.draggingHue = false;
         this.draggingAlpha = false;
@@ -119,7 +118,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         if (this.draggingPicker) {
             this.updatePicker(event.x(), event.y());
             return true;
@@ -134,7 +133,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
         if (this.rivet().backend().isKeyDown(ModifierKey.SHIFT)) {
             this.alpha = MathUtils.clamp(this.alpha + event.scrollY() / 20, 0, 1);
             this.updateColor();
@@ -167,7 +166,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
+    public void render(final Renderer renderer, final Size size) {
         float pickerSize = this.pickerSize.value();
         float sliderWidth = this.sliderWidth.value();
         float gap = this.gap.value();

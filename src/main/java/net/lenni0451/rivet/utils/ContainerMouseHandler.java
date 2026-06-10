@@ -9,6 +9,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class ContainerMouseHandler<E> {
             for (MouseButton mouseButton : this.componentMouseButtons) {
                 this.map(component).onMouseUp(
                         new MouseButtonEvent(-1, -1, mouseButton, Set.of(), Set.of()),
-                        this.relativeBounds(Rectangle.EMPTY, component)
+                        this.relativeBounds(Size.EMPTY, component).size() //TODO: Is this even necessary?
                 );
             }
             this.clickedElement = null;
@@ -70,7 +71,7 @@ public abstract class ContainerMouseHandler<E> {
         return EventState.MISS;
     }
 
-    public EventState onMouseDown(final Rivet rivet, final MouseButtonEvent event, final Rectangle containerBounds) {
+    public EventState onMouseDown(final Rivet rivet, final MouseButtonEvent event, final Size containerBounds) {
         List<E> hoveredElements = this.elementsAt(event.x(), event.y(), containerBounds);
         boolean nonComponentButtonsHeld = event.heldButtons().size() - 1 > this.componentMouseButtons.size();
         if (this.clickedElement != null) {
@@ -81,7 +82,7 @@ public abstract class ContainerMouseHandler<E> {
                 rivet.focusedComponent(hoveredComponent);
                 return EventState.component(hoveredComponent.onMouseDown(
                         event.withX(event.x() - clickedRelativeBounds.x()).withY(event.y() - clickedRelativeBounds.y()),
-                        new Rectangle(containerBounds.x() + clickedRelativeBounds.x(), containerBounds.y() + clickedRelativeBounds.y(), clickedRelativeBounds.width(), clickedRelativeBounds.height())
+                        clickedRelativeBounds.size()
                 ));
             }
             return EventState.NOT_HANDLED;
@@ -95,7 +96,7 @@ public abstract class ContainerMouseHandler<E> {
 
                 if (hoveredComponent.onMouseDown(
                         event.withX(event.x() - clickedRelativeBounds.x()).withY(event.y() - clickedRelativeBounds.y()),
-                        new Rectangle(containerBounds.x() + clickedRelativeBounds.x(), containerBounds.y() + clickedRelativeBounds.y(), clickedRelativeBounds.width(), clickedRelativeBounds.height())
+                        clickedRelativeBounds.size()
                 )) {
                     if (this.clickedElement != null) {
                         // Only set focus if the component didn't remove itself during onMouseDown (like a combobox popup)
@@ -112,13 +113,13 @@ public abstract class ContainerMouseHandler<E> {
         return EventState.MISS;
     }
 
-    public EventState onMouseUp(final Rivet rivet, final MouseButtonEvent event, final Rectangle containerBounds) {
+    public EventState onMouseUp(final Rivet rivet, final MouseButtonEvent event, final Size containerBounds) {
         if (this.componentMouseButtons.remove(event.button())) {
             try {
                 Rectangle relativeBounds = this.relativeBounds(containerBounds, this.clickedElement);
                 return EventState.component(this.map(this.clickedElement).onMouseUp(
                         event.withX(event.x() - relativeBounds.x()).withY(event.y() - relativeBounds.y()),
-                        new Rectangle(containerBounds.x() + relativeBounds.x(), containerBounds.y() + relativeBounds.y(), relativeBounds.width(), relativeBounds.height())
+                        relativeBounds.size()
                 ));
             } finally {
                 if (this.componentMouseButtons.isEmpty()) {
@@ -130,7 +131,7 @@ public abstract class ContainerMouseHandler<E> {
         return EventState.MISS;
     }
 
-    public EventState onMouseMove(final MouseMoveEvent event, final Rectangle containerBounds) {
+    public EventState onMouseMove(final MouseMoveEvent event, final Size containerBounds) {
         List<E> hoveredElements = this.elementsAt(event.x(), event.y(), containerBounds);
         boolean nonComponentButtonsHeld = event.buttons().size() > this.componentMouseButtons.size();
         if (this.clickedElement != null) {
@@ -171,7 +172,7 @@ public abstract class ContainerMouseHandler<E> {
             Rectangle clickedRelativeBounds = this.relativeBounds(containerBounds, this.clickedElement);
             return EventState.component(clickedComponent.onMouseMove(
                     event.withX(event.x() - clickedRelativeBounds.x()).withY(event.y() - clickedRelativeBounds.y()).withButtons(this.componentMouseButtons),
-                    new Rectangle(containerBounds.x() + clickedRelativeBounds.x(), containerBounds.y() + clickedRelativeBounds.y(), clickedRelativeBounds.width(), clickedRelativeBounds.height())
+                    clickedRelativeBounds.size()
             ));
         } else if (!hoveredElements.isEmpty()) {
             for (E hoveredElement : hoveredElements) {
@@ -179,7 +180,7 @@ public abstract class ContainerMouseHandler<E> {
                 Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
                 if (hoveredComponent.onMouseMove(
                         event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()).withButtons(this.componentMouseButtons),
-                        new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+                        hoveredRelativeBounds.size()
                 )) {
                     return EventState.HANDLED;
                 }
@@ -189,7 +190,7 @@ public abstract class ContainerMouseHandler<E> {
         return EventState.MISS;
     }
 
-    public EventState onMouseScroll(final MouseScrollEvent event, final Rectangle containerBounds) {
+    public EventState onMouseScroll(final MouseScrollEvent event, final Size containerBounds) {
         List<E> hoveredElements = this.elementsAt(event.x(), event.y(), containerBounds);
         if (!hoveredElements.isEmpty()) {
             for (E hoveredElement : hoveredElements) {
@@ -197,7 +198,7 @@ public abstract class ContainerMouseHandler<E> {
                 Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
                 if (hoveredComponent.onMouseScroll(
                         event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
-                        new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+                        hoveredRelativeBounds.size()
                 )) {
                     return EventState.HANDLED;
                 }
@@ -207,7 +208,7 @@ public abstract class ContainerMouseHandler<E> {
         return EventState.MISS;
     }
 
-    public EventState onDrop(final DropEvent event, final Rectangle containerBounds) {
+    public EventState onDrop(final DropEvent event, final Size containerBounds) {
         List<E> hoveredElements = this.elementsAt(event.x(), event.y(), containerBounds);
         if (!hoveredElements.isEmpty()) {
             for (E hoveredElement : hoveredElements) {
@@ -215,7 +216,7 @@ public abstract class ContainerMouseHandler<E> {
                 Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
                 if (hoveredComponent.onDrop(
                         event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
-                        new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+                        hoveredRelativeBounds.size()
                 )) {
                     return EventState.HANDLED;
                 }
@@ -225,7 +226,7 @@ public abstract class ContainerMouseHandler<E> {
         return EventState.MISS;
     }
 
-    public EventState onDragOver(final DragOverEvent event, final Rectangle containerBounds) {
+    public EventState onDragOver(final DragOverEvent event, final Size containerBounds) {
         List<E> hoveredElements = this.elementsAt(event.x(), event.y(), containerBounds);
         if (hoveredElements.isEmpty()) return EventState.MISS;
 
@@ -234,7 +235,7 @@ public abstract class ContainerMouseHandler<E> {
             Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
             if (hoveredComponent.onDragOver(
                     event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()),
-                    new Rectangle(containerBounds.x() + hoveredRelativeBounds.x(), containerBounds.y() + hoveredRelativeBounds.y(), hoveredRelativeBounds.width(), hoveredRelativeBounds.height())
+                    hoveredRelativeBounds.size()
             )) {
                 if (this.hoveredDragElement != hoveredElement) {
                     if (this.hoveredDragElement != null) {
@@ -264,9 +265,9 @@ public abstract class ContainerMouseHandler<E> {
 
     protected abstract Component map(final E element);
 
-    protected abstract Rectangle relativeBounds(final Rectangle containerBounds, final E element);
+    protected abstract Rectangle relativeBounds(final Size containerBounds, final E element);
 
-    protected abstract List<E> elementsAt(final float x, final float y, final Rectangle containerBounds);
+    protected abstract List<E> elementsAt(final float x, final float y, final Size containerBounds);
 
 
     public enum EventState {

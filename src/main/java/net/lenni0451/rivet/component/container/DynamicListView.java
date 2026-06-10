@@ -4,7 +4,6 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
 import net.lenni0451.rivet.layout.Layout;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.ArrayList;
@@ -44,12 +43,12 @@ public class DynamicListView<E> extends ReorderableContainer {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
+    public void render(final Renderer renderer, final Size size) {
         List<E> currentList = this.listSupplier.get();
         if (!this.isSame(currentList, this.lastSeenList)) {
             this.requestLayoutRecalculation();
         }
-        super.render(renderer, bounds);
+        super.render(renderer, size);
     }
 
     @Override

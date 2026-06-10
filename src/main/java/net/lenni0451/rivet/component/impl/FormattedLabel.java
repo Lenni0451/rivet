@@ -10,7 +10,6 @@ import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextParser;
 import net.lenni0451.rivet.text.TextWrapper;
@@ -139,7 +138,7 @@ public class FormattedLabel extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         return false;
     }
 
@@ -151,9 +150,9 @@ public class FormattedLabel extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
-        float x = this.horizontalOrigin.offset(bounds.width() / this.scale);
-        float y = this.verticalOrigin.offset(bounds.height() / this.scale);
+    public void render(final Renderer renderer, final Size size) {
+        float x = this.horizontalOrigin.offset(size.width() / this.scale);
+        float y = this.verticalOrigin.offset(size.height() / this.scale);
         renderer.scale(this.scale, () -> {
             renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
         });

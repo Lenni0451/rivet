@@ -10,7 +10,6 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -150,7 +149,7 @@ public class Checkbox extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         if (this.hovered && event.button().equals(MouseButton.LEFT)) {
             this.checked(!this.checked);
         }
@@ -165,9 +164,9 @@ public class Checkbox extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
-        float boxSize = bounds.height() * 0.8F;
-        float offset = (bounds.height() - boxSize) / 2F;
+    public void render(final Renderer renderer, final Size size) {
+        float boxSize = size.height() * 0.8F;
+        float offset = (size.height() - boxSize) / 2F;
 
         Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
         renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), backgroundColor);
@@ -186,7 +185,7 @@ public class Checkbox extends Component {
         }
 
         if (!this.text.isEmpty()) {
-            renderer.text(this.shapedText, offset + bounds.height() + this.textGap.value(), bounds.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+            renderer.text(this.shapedText, offset + size.height() + this.textGap.value(), size.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
         }
     }
 

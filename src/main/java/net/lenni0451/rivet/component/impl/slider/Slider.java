@@ -196,7 +196,7 @@ public class Slider extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
             if (this.showTooltip.value()) {
@@ -204,13 +204,13 @@ public class Slider extends Component {
                 this.tooltip.add(this.rivet());
                 this.tooltip.font(this.font);
             }
-            this.updateValue(event.x(), bounds);
+            this.updateValue(event.x(), size);
         }
         return true;
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = false;
             if (this.tooltip != null) {
@@ -222,17 +222,17 @@ public class Slider extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         if (this.dragged) {
-            this.updateValue(event.x(), bounds);
+            this.updateValue(event.x(), size);
             return true;
         }
         return false;
     }
 
-    private void updateValue(final float mouseX, final Rectangle bounds) {
+    private void updateValue(final float mouseX, final Size size) {
         float thumbWidth = this.thumbWidth.value();
-        float barWidth = this.barWidth(bounds);
+        float barWidth = this.barWidth(size);
         float progress = (mouseX - thumbWidth / 2F) / barWidth;
         progress = MathUtils.clamp(progress, 0, 1);
         double newValue = this.min + progress * (this.max - this.min);
@@ -248,20 +248,21 @@ public class Slider extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
+    public void render(final Renderer renderer, final Size size) {
         float thumbWidth = this.thumbWidth.value();
         float thumbHeight = this.thumbHeight.value();
         float barHeight = this.barHeight.value();
-        float sliderCenter = this.ticks != null ? thumbHeight / 2F : bounds.height() / 2F;
-        float barWidth = this.barWidth(bounds);
+        float sliderCenter = this.ticks != null ? thumbHeight / 2F : size.height() / 2F;
+        float barWidth = this.barWidth(size);
         double progress = (this.value - this.min) / (this.max - this.min);
         float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
 
-        this.renderBar(renderer, bounds, sliderCenter, barHeight, thumbWidth, thumbX);
+        this.renderBar(renderer, size, sliderCenter, barHeight, thumbWidth, thumbX);
         this.renderThumb(renderer, sliderCenter, thumbWidth, thumbHeight, thumbX);
         if (this.ticks != null) this.renderTicks(renderer, sliderCenter, barHeight, thumbWidth, thumbHeight, barWidth);
         if (this.tooltip != null) {
-            this.tooltip.position(bounds.x() + thumbX, bounds.y(), bounds.height());
+            Rectangle bounds = this.absoluteBounds();
+            this.tooltip.position(bounds.x() + thumbX, bounds.y(), size.height());
         }
     }
 
@@ -276,14 +277,14 @@ public class Slider extends Component {
         }
     }
 
-    private void renderBar(final Renderer renderer, final Rectangle bounds, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
+    private void renderBar(final Renderer renderer, final Size size, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
         Color barColor = this.disabled() ? this.disabledBarColor.value() : this.barColor.value();
         Color activeBarColor = this.disabled() ? this.disabledActiveBarColor.value() : this.activeBarColor.value();
         if (this.thumbEncased.value()) {
-            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, bounds.width(), barHeight, this.barCornerRadius.value(), barColor);
+            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), barColor);
             renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), activeBarColor);
         } else {
-            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, bounds.width() - thumbWidth, barHeight, this.barCornerRadius.value(), barColor);
+            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.value(), barColor);
             renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), activeBarColor);
         }
     }
@@ -387,8 +388,8 @@ public class Slider extends Component {
         return new Size(this.usedFont().height() * 10, height);
     }
 
-    private float barWidth(final Rectangle bounds) {
-        return bounds.width() - this.thumbWidth.value();
+    private float barWidth(final Size size) {
+        return size.width() - this.thumbWidth.value();
     }
 
 

@@ -21,7 +21,6 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Padding;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -336,7 +335,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             long now = System.currentTimeMillis();
             if (now - this.lastClick < 250) {
@@ -366,7 +365,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.selecting = false;
         }
@@ -374,7 +373,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         if (this.selecting) {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
             return true;
@@ -390,23 +389,23 @@ public class TextField extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Rectangle bounds) {
-        float visibleWidth = bounds.width() - this.innerPadding.value().horizontal();
+    public void render(final Renderer renderer, final Size size) {
+        float visibleWidth = size.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
         float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;
         this.ensureCursorVisible(visibleWidth);
 
         Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
-        renderer.optimizedFillRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), backgroundColor);
+        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), backgroundColor);
         Color outlineColor;
         if (this.disabled()) outlineColor = this.disabledOutlineColor.value();
         else if (!this.valid) outlineColor = this.invalidOutlineColor.value();
         else if (this.focused) outlineColor = this.focusedOutlineColor.value();
         else outlineColor = this.outlineColor.value();
-        renderer.optimizedOutlineRoundedRect(0, 0, bounds.width(), bounds.height(), this.cornerRadius.value(), this.outlineWidth.value(), outlineColor);
+        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), outlineColor);
 
-        renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
-            renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (bounds.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
+        renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
+            renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
                 renderer.translate(-this.scrollX, 0, () -> {
                     if (this.cursor != this.selection) {
                         float x1 = this.shapedText.cursorPosition(this.cursor).x();

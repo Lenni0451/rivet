@@ -10,7 +10,6 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.utils.SelectionModel;
@@ -87,34 +86,34 @@ public class SelectionAndOrderingTest extends TestBase {
         }
 
         @Override
-        protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+        protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
             this.mouseDown = true;
-            return super.onComponentMouseDown(event, bounds);
+            return super.onComponentMouseDown(event, size);
         }
 
         @Override
-        protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+        protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
             this.mouseDown = false;
-            return super.onComponentMouseUp(event, bounds);
+            return super.onComponentMouseUp(event, size);
         }
 
         @Override
-        protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+        protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
             if (this.mouseDown && !this.rivet().dragAndDropManager().isDragging()) {
                 this.rivet().dragAndDropManager().startDrag(this, new Label(this.text()), this.computeIdealSize(Size.EMPTY));
             }
-            return super.onComponentMouseMove(event, bounds);
+            return super.onComponentMouseMove(event, size);
         }
 
         @Override
-        public void render(final Renderer renderer, final Rectangle bounds) {
+        public void render(final Renderer renderer, final Size size) {
             if (this.selectionModel.isSelected(this)) {
-                renderer.fillRect(0, 0, bounds.width(), bounds.height(), SELECTED_COLOR);
+                renderer.fillRect(0, 0, size.width(), size.height(), SELECTED_COLOR);
             }
             if (this.hovered) {
-                renderer.fillRect(0, 0, bounds.width(), bounds.height(), HOVERED_COLOR);
+                renderer.fillRect(0, 0, size.width(), size.height(), HOVERED_COLOR);
             }
-            super.render(renderer, bounds);
+            super.render(renderer, size);
         }
     }
 

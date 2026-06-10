@@ -64,17 +64,17 @@ public abstract class Component {
     @Getter
     private final ListenerList<BooleanSupplier> mouseLeaveListener = new ListenerList<>();
     @Getter
-    private final ListenerList<BiPredicate<MouseButtonEvent, Rectangle>> mouseDownListener = new ListenerList<>();
+    private final ListenerList<BiPredicate<MouseButtonEvent, Size>> mouseDownListener = new ListenerList<>();
     @Getter
-    private final ListenerList<BiPredicate<MouseButtonEvent, Rectangle>> mouseUpListener = new ListenerList<>();
+    private final ListenerList<BiPredicate<MouseButtonEvent, Size>> mouseUpListener = new ListenerList<>();
     @Getter
-    private final ListenerList<BiPredicate<MouseMoveEvent, Rectangle>> mouseMoveListener = new ListenerList<>();
+    private final ListenerList<BiPredicate<MouseMoveEvent, Size>> mouseMoveListener = new ListenerList<>();
     @Getter
-    private final ListenerList<BiPredicate<MouseScrollEvent, Rectangle>> mouseScrollListener = new ListenerList<>();
+    private final ListenerList<BiPredicate<MouseScrollEvent, Size>> mouseScrollListener = new ListenerList<>();
     @Getter
-    private final ListenerList<BiPredicate<DropEvent, Rectangle>> dropListener = new ListenerList<>();
+    private final ListenerList<BiPredicate<DropEvent, Size>> dropListener = new ListenerList<>();
     @Getter
-    private final ListenerList<BiPredicate<DragOverEvent, Rectangle>> dragOverListener = new ListenerList<>();
+    private final ListenerList<BiPredicate<DragOverEvent, Size>> dragOverListener = new ListenerList<>();
     @Getter
     private final ListenerList<BooleanSupplier> dragLeaveListener = new ListenerList<>();
 
@@ -162,6 +162,18 @@ public abstract class Component {
         return this;
     }
 
+    public final Rectangle relativeBounds() {
+        if (this.parent == null) return Rectangle.EMPTY;
+        return this.parent.childBounds(this);
+    }
+
+    public final Rectangle absoluteBounds() {
+        if (this.parent == null) return Rectangle.EMPTY;
+        Rectangle parentBounds = this.parent.absoluteBounds();
+        Rectangle relative = this.relativeBounds();
+        return new Rectangle(parentBounds.x() + relative.x(), parentBounds.y() + relative.y(), relative.width(), relative.height());
+    }
+
 
     protected void onComponentAdded() {
     }
@@ -242,57 +254,57 @@ public abstract class Component {
     protected void onComponentMouseLeave() {
     }
 
-    public final boolean onMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    public final boolean onMouseDown(final MouseButtonEvent event, final Size size) {
         if (this.disabled()) return false;
-        return this.mouseDownListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseDown(event, bounds));
+        return this.mouseDownListener.call(l -> l.test(event, size), () -> this.onComponentMouseDown(event, size));
     }
 
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         return this.interactive;
     }
 
-    public final boolean onMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    public final boolean onMouseUp(final MouseButtonEvent event, final Size size) {
         if (this.disabled()) return false;
-        return this.mouseUpListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseUp(event, bounds));
+        return this.mouseUpListener.call(l -> l.test(event, size), () -> this.onComponentMouseUp(event, size));
     }
 
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         return this.interactive;
     }
 
-    public final boolean onMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    public final boolean onMouseMove(final MouseMoveEvent event, final Size size) {
         if (this.disabled()) return false;
-        return this.mouseMoveListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseMove(event, bounds));
+        return this.mouseMoveListener.call(l -> l.test(event, size), () -> this.onComponentMouseMove(event, size));
     }
 
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         return false;
     }
 
-    public final boolean onMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    public final boolean onMouseScroll(final MouseScrollEvent event, final Size size) {
         if (this.disabled()) return false;
-        return this.mouseScrollListener.call(l -> l.test(event, bounds), () -> this.onComponentMouseScroll(event, bounds));
+        return this.mouseScrollListener.call(l -> l.test(event, size), () -> this.onComponentMouseScroll(event, size));
     }
 
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Rectangle bounds) {
+    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
         return false;
     }
 
-    public final boolean onDrop(final DropEvent event, final Rectangle bounds) {
+    public final boolean onDrop(final DropEvent event, final Size size) {
         if (this.disabled()) return false;
-        return this.dropListener.call(l -> l.test(event, bounds), () -> this.onComponentDrop(event, bounds));
+        return this.dropListener.call(l -> l.test(event, size), () -> this.onComponentDrop(event, size));
     }
 
-    protected boolean onComponentDrop(final DropEvent event, final Rectangle bounds) {
+    protected boolean onComponentDrop(final DropEvent event, final Size size) {
         return false;
     }
 
-    public final boolean onDragOver(final DragOverEvent event, final Rectangle bounds) {
+    public final boolean onDragOver(final DragOverEvent event, final Size size) {
         if (this.disabled()) return false;
-        return this.dragOverListener.call(l -> l.test(event, bounds), () -> this.onComponentDragOver(event, bounds));
+        return this.dragOverListener.call(l -> l.test(event, size), () -> this.onComponentDragOver(event, size));
     }
 
-    protected boolean onComponentDragOver(final DragOverEvent event, final Rectangle bounds) {
+    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
         return false;
     }
 
@@ -310,7 +322,7 @@ public abstract class Component {
     public void onThemeChanged() {
     }
 
-    public void render(final Renderer renderer, final Rectangle bounds) {
+    public void render(final Renderer renderer, final Size size) {
     }
 
     public abstract Size computeIdealSize(final Size constraints);
