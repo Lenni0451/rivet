@@ -93,21 +93,17 @@ public abstract class ContainerMouseHandler<E> {
 
                 this.clickedElement = hoveredElement;
                 this.componentMouseButtons.add(event.button());
-
+                rivet.focusedComponent(hoveredComponent);
                 if (hoveredComponent.onMouseDown(
                         event.withX(event.x() - clickedRelativeBounds.x()).withY(event.y() - clickedRelativeBounds.y()),
                         clickedRelativeBounds.size()
                 )) {
-                    if (this.clickedElement != null) {
-                        // Only set focus if the component didn't remove itself during onMouseDown (like a combobox popup)
-                        // checkAndRemove would have already cleared clickedElement
-                        rivet.focusedComponent(hoveredComponent);
-                    }
                     return EventState.HANDLED;
                 }
             }
             this.clickedElement = null;
             this.componentMouseButtons.remove(event.button());
+            rivet.focusedComponent(null);
             return EventState.NOT_HANDLED;
         }
         return EventState.MISS;
