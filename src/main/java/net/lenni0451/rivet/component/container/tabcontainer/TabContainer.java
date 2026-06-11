@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.component.container;
+package net.lenni0451.rivet.component.container.tabcontainer;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -6,7 +6,8 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
-import net.lenni0451.rivet.component.impl.tabcontainer.TabBackground;
+import net.lenni0451.rivet.component.container.Container;
+import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.dragdrop.DragOverEvent;
 import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -25,7 +26,6 @@ import net.lenni0451.rivet.utils.ContainerMouseHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class TabContainer extends Component implements Parent {
@@ -34,7 +34,7 @@ public class TabContainer extends Component implements Parent {
     private final MouseHandler mouseHandler = new MouseHandler();
     private final Container tabContainer = new Container(BorderLayout.INSTANCE);
     private final Container leftTabContainer = new Container(new HorizontalListLayout(0, true));
-    private final Container centerTabContainer = new Container(new HorizontalListLayout(0, true));
+    private final Container centerTabContainer = new Container(new TabLayout());
     private final Container rightTabContainer = new Container(new HorizontalListLayout(0, true));
     private final Container contentContainer = new Container(FullSizeLayout.INSTANCE);
     private Size tabSize;
@@ -45,6 +45,14 @@ public class TabContainer extends Component implements Parent {
     private final ThemeOption<Color> separatorColor;
     @Getter
     private final ThemeOption<Float> separatorThickness;
+    @Getter
+    private final ThemeOption<TabAlignment> tabAlignment;
+    @Getter
+    private final ThemeOption<Boolean> tabSameSize;
+    @Getter
+    private final ThemeOption<Float> tabVerticalGap;
+    @Getter
+    private final ThemeOption<Float> tabGap;
 
     public TabContainer() {
         this.tabContainer.addChild(this.leftTabContainer.layoutOptions(BorderPosition.LEFT));
@@ -54,6 +62,27 @@ public class TabContainer extends Component implements Parent {
         this.headerBackgroundColor = new ThemeOption<>(this, Theme.TAB_HEADER_BACKGROUND_COLOR);
         this.separatorColor = new ThemeOption<>(this, Theme.TAB_SEPARATOR_COLOR);
         this.separatorThickness = new ThemeOption<>(this, Theme.TAB_SEPARATOR_THICKNESS);
+        this.tabAlignment = new ThemeOption<>(this, Theme.TAB_ALIGNMENT);
+        this.tabSameSize = new ThemeOption<>(this, Theme.TAB_SAME_SIZE);
+        this.tabVerticalGap = new ThemeOption<>(this, Theme.TAB_VERTICAL_GAP);
+        this.tabGap = new ThemeOption<>(this, Theme.TAB_TAB_GAP);
+
+        this.tabAlignment.changeListener().add(val -> {
+            ((TabLayout) this.centerTabContainer.layout()).alignment = val;
+            this.requestLayoutRecalculation();
+        });
+        this.tabSameSize.changeListener().add(val -> {
+            ((TabLayout) this.centerTabContainer.layout()).sameSize = val;
+            this.requestLayoutRecalculation();
+        });
+        this.tabVerticalGap.changeListener().add(val -> {
+            ((TabLayout) this.centerTabContainer.layout()).verticalGap = val;
+            this.requestLayoutRecalculation();
+        });
+        this.tabGap.changeListener().add(val -> {
+            ((TabLayout) this.centerTabContainer.layout()).tabGap = val;
+            this.requestLayoutRecalculation();
+        });
     }
 
     public List<Tab> tabs() {
@@ -83,7 +112,7 @@ public class TabContainer extends Component implements Parent {
     public Tab addTab(final Component header, final Component content) {
         Tab tab = new Tab(header, this::selectTab, content);
         this.tabs.add(tab);
-        this.centerTabContainer.addChild(tab.button);
+        this.centerTabContainer.addChild(tab.button());
         if (this.centerTabContainer.children().size() == 1) {
             this.selectTab(tab);
         }
@@ -93,7 +122,7 @@ public class TabContainer extends Component implements Parent {
     public TabContainer removeTab(final Tab tab) {
         if (!this.tabs.contains(tab)) throw new IllegalArgumentException("Tab is not part of this TabContainer");
         int tabIndex = this.tabs.indexOf(tab);
-        if (tab.headerBackground.active()) {
+        if (tab.headerBackground().active()) {
             if (this.tabs.size() > 1) {
                 this.selectTab(this.tabs.get(tabIndex >= this.tabs.size() - 1 ? tabIndex - 1 : tabIndex + 1));
             } else {
@@ -101,23 +130,32 @@ public class TabContainer extends Component implements Parent {
             }
         }
         this.tabs.remove(tab);
-        this.centerTabContainer.removeChild(tab.button);
+        this.centerTabContainer.removeChild(tab.button());
         return this;
     }
 
     public TabContainer selectTab(final Tab tab) {
         if (!this.tabs.contains(tab)) throw new IllegalArgumentException("Tab is not part of this TabContainer");
-        this.tabs.forEach(t -> t.headerBackground.deactivate());
-        tab.headerBackground.activate();
+        this.tabs.forEach(t -> t.headerBackground().deactivate());
+        tab.headerBackground().activate();
         this.contentContainer.clearChildren();
-        this.contentContainer.addChild(tab.content);
+        this.contentContainer.addChild(tab.content());
         return this;
+    }
+
+    private void updateLayout() {
+        TabLayout layout = (TabLayout) this.centerTabContainer.layout();
+        layout.alignment = this.tabAlignment.value();
+        layout.sameSize = this.tabSameSize.value();
+        layout.verticalGap = this.tabVerticalGap.value();
+        layout.tabGap = this.tabGap.value();
     }
 
     @Override
     protected void onComponentAdded() {
         this.tabContainer.setRivet(this.rivet(), this);
         this.contentContainer.setRivet(this.rivet(), this);
+        this.updateLayout();
     }
 
     @Override
@@ -170,6 +208,7 @@ public class TabContainer extends Component implements Parent {
     public void onThemeChanged() {
         this.tabContainer.onThemeChanged();
         this.contentContainer.onThemeChanged();
+        this.updateLayout();
     }
 
     @Override
@@ -242,25 +281,6 @@ public class TabContainer extends Component implements Parent {
         return Rectangle.EMPTY;
     }
 
-
-    @Accessors(fluent = true, chain = true, makeFinal = true)
-    public static final class Tab {
-        @Getter
-        private final Component header;
-        @Getter
-        private final TabBackground headerBackground;
-        @Getter
-        private final DecoratedContainer button;
-        @Getter
-        private final Component content;
-
-        Tab(final Component header, final Consumer<Tab> headerBackground, final Component content) {
-            this.header = header;
-            this.headerBackground = new TabBackground(() -> headerBackground.accept(this));
-            this.button = new DecoratedContainer(this.headerBackground, header);
-            this.content = content;
-        }
-    }
 
     private class MouseHandler extends ContainerMouseHandler<Component> {
         @Override

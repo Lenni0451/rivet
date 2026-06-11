@@ -5,6 +5,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
+import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
@@ -163,6 +164,11 @@ public abstract class Theme {
     public static final ThemeKey<Color> TAB_HEADER_BACKGROUND_COLOR = register("tab.header_background_color", Color.class, r -> Color.TRANSPARENT);
     public static final ThemeKey<Color> TAB_SEPARATOR_COLOR = register("tab.separator_color", Color.class, r -> Color.fromRGB(65, 65, 70));
     public static final ThemeKey<Float> TAB_SEPARATOR_THICKNESS = register("tab.separator_thickness", Float.class, r -> 0F);
+    public static final ThemeKey<TabAlignment> TAB_ALIGNMENT = register("tab.alignment", TabAlignment.class, r -> TabAlignment.LEFT);
+    public static final ThemeKey<Boolean> TAB_SAME_SIZE = register("tab.same_size", Boolean.class, r -> false);
+    public static final ThemeKey<Float> TAB_VERTICAL_GAP = register("tab.vertical_gap", Float.class, r -> 0F);
+    public static final ThemeKey<Float> TAB_TAB_GAP = register("tab.tab_gap", Float.class, r -> 0F);
+
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);

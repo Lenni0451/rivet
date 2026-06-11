@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
+import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
@@ -103,6 +104,11 @@ class ThemeLoaderTest {
         // ScrollContainer.ScrollBarType
         for (ScrollContainer.ScrollBarType value : ScrollContainer.ScrollBarType.values()) {
             check(Theme.SCROLL_BAR_TYPE, value.toString().toLowerCase(Locale.ROOT), value);
+        }
+
+        // TabAlignment
+        for (TabAlignment value : TabAlignment.values()) {
+            check(Theme.TAB_ALIGNMENT, value.toString().toLowerCase(Locale.ROOT), value);
         }
     }
 

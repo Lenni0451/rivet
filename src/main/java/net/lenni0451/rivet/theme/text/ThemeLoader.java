@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
+import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
@@ -44,6 +45,7 @@ public class ThemeLoader {
         parsers.put(Button.ClickOn.class, new EnumParser<>(Button.ClickOn.values()));
         parsers.put(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
         parsers.put(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));
+        parsers.put(TabAlignment.class, new EnumParser<>(TabAlignment.values()));
     }
 
     public static void load(@WillClose final InputStream is, final Theme.Values values, final ExceptionHandler lineErrorHandler) throws IOException {
