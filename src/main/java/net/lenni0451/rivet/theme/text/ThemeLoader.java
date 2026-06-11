@@ -13,13 +13,12 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.theme.text.parser.*;
 
-import javax.annotation.WillClose;
-import java.io.BufferedReader;
+import javax.annotation.WillNotClose;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @UtilityClass
 public class ThemeLoader {
@@ -48,23 +47,18 @@ public class ThemeLoader {
         parsers.put(TabAlignment.class, new EnumParser<>(TabAlignment.values()));
     }
 
-    public static void load(@WillClose final InputStream is, final Theme.Values values, final ExceptionHandler lineErrorHandler) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().startsWith("#")) continue;
-                String[] parts = line.split("=", 2);
-                if (parts.length != 2) {
-                    lineErrorHandler.tryHandle(line, new IllegalStateException("Invalid line format, expected 'key=value'"));
-                    continue;
-                }
-                try {
-                    parse(values, parts[0], parts[1]);
-                } catch (Throwable t) {
-                    lineErrorHandler.tryHandle(line, t);
-                }
+    public static void load(@WillNotClose final InputStream is, final Theme.Values values, final ExceptionHandler lineErrorHandler) throws IOException {
+        Properties properties = new Properties();
+        properties.load(is);
+        properties.forEach((k, v) -> {
+            String key = ((String) k).trim();
+            String value = ((String) v).trim();
+            try {
+                parse(values, key, value);
+            } catch (Throwable t) {
+                lineErrorHandler.tryHandle(key + "=" + value, t);
             }
-        }
+        });
     }
 
     private static void parse(final Theme.Values values, final String key, final String value) {

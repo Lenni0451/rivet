@@ -10,7 +10,7 @@ public class TestTheme extends Theme {
     @Override
     @SneakyThrows
     protected void addValues(final Rivet rivet, final Values values) {
-        ThemeLoader.load(TestTheme.class.getClassLoader().getResourceAsStream("test_theme"), values, ThemeLoader.ExceptionHandler.RETHROW);
+        ThemeLoader.load(TestTheme.class.getClassLoader().getResourceAsStream("test_theme.properties"), values, ThemeLoader.ExceptionHandler.RETHROW);
     }
 
 }
