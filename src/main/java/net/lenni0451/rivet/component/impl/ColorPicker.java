@@ -121,15 +121,12 @@ public class ColorPicker extends Component {
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         if (this.draggingPicker) {
             this.updatePicker(event.x(), event.y());
-            return true;
         } else if (this.draggingHue) {
             this.updateHue(event.y());
-            return true;
         } else if (this.draggingAlpha) {
             this.updateAlpha(event.x());
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override

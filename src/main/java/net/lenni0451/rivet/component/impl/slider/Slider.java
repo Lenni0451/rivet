@@ -225,9 +225,8 @@ public class Slider extends Component {
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         if (this.dragged) {
             this.updateValue(event.x(), size);
-            return true;
         }
-        return false;
+        return true;
     }
 
     private void updateValue(final float mouseX, final Size size) {

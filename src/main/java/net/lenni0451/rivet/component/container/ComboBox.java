@@ -132,8 +132,8 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
-    protected boolean onComponentMouseEnter() {
-        return this.button.onMouseEnter();
+    protected void onComponentMouseEnter() {
+        this.button.onMouseEnter();
     }
 
     @Override

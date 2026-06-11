@@ -10,6 +10,7 @@ import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextParser;
 import net.lenni0451.rivet.text.TextWrapper;
@@ -133,12 +134,12 @@ public class FormattedLabel extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseEnter() {
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         return false;
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         return false;
     }
 

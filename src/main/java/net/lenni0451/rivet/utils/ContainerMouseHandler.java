@@ -145,29 +145,7 @@ public abstract class ContainerMouseHandler<E> {
                 this.map(this.clickedElement).onMouseLeave();
                 this.hoveredElement = null;
             }
-        } else {
-            if (this.hoveredElement != null && (!hoveredElements.contains(this.hoveredElement) || nonComponentButtonsHeld)) {
-                this.map(this.hoveredElement).onMouseLeave();
-                this.hoveredElement = null;
-            }
-            if (!nonComponentButtonsHeld) {
-                E newHoveredElement = null;
-                for (E hoveredElement : hoveredElements) {
-                    if (this.hoveredElement == hoveredElement || this.map(hoveredElement).onMouseEnter()) {
-                        newHoveredElement = hoveredElement;
-                        break;
-                    }
-                }
-                if (newHoveredElement != this.hoveredElement) {
-                    if (this.hoveredElement != null) {
-                        this.map(this.hoveredElement).onMouseLeave();
-                    }
-                    this.hoveredElement = newHoveredElement;
-                }
-            }
-        }
 
-        if (this.clickedElement != null) {
             Component clickedComponent = this.map(this.clickedElement);
             Rectangle clickedRelativeBounds = this.relativeBounds(containerBounds, this.clickedElement);
             return EventState.component(clickedComponent.onMouseMove(
@@ -175,6 +153,12 @@ public abstract class ContainerMouseHandler<E> {
                     clickedRelativeBounds.size()
             ));
         } else if (!hoveredElements.isEmpty()) {
+            if (this.hoveredElement != null && (!hoveredElements.contains(this.hoveredElement) || nonComponentButtonsHeld)) {
+                this.map(this.hoveredElement).onMouseLeave();
+                this.hoveredElement = null;
+            }
+
+            E newHoveredElement = null;
             for (E hoveredElement : hoveredElements) {
                 Component hoveredComponent = this.map(hoveredElement);
                 Rectangle hoveredRelativeBounds = this.relativeBounds(containerBounds, hoveredElement);
@@ -182,10 +166,24 @@ public abstract class ContainerMouseHandler<E> {
                         event.withX(event.x() - hoveredRelativeBounds.x()).withY(event.y() - hoveredRelativeBounds.y()).withButtons(this.componentMouseButtons),
                         hoveredRelativeBounds.size()
                 )) {
-                    return EventState.HANDLED;
+                    newHoveredElement = hoveredElement;
+                    break;
                 }
             }
-            return EventState.NOT_HANDLED;
+            if (!nonComponentButtonsHeld && newHoveredElement != this.hoveredElement) {
+                if (this.hoveredElement != null) {
+                    this.map(this.hoveredElement).onMouseLeave();
+                }
+                if (newHoveredElement != null) {
+                    this.map(newHoveredElement).onMouseEnter();
+                }
+                this.hoveredElement = newHoveredElement;
+            }
+            if (newHoveredElement != null) {
+                return EventState.HANDLED;
+            } else {
+                return EventState.NOT_HANDLED;
+            }
         }
         return EventState.MISS;
     }

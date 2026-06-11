@@ -142,10 +142,9 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected boolean onComponentMouseEnter() {
+    protected void onComponentMouseEnter() {
         this.hovered = true;
         this.hoverAnimation.runInDirection(AnimationDirection.FORWARDS);
-        return true;
     }
 
     @Override

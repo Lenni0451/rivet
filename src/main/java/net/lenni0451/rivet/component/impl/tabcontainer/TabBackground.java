@@ -78,9 +78,8 @@ public class TabBackground extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseEnter() {
+    protected void onComponentMouseEnter() {
         this.hovered = true;
-        return true;
     }
 
     @Override

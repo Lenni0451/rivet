@@ -376,9 +376,8 @@ public class TextField extends Component {
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         if (this.selecting) {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
