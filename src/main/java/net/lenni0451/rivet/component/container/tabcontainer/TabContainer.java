@@ -300,6 +300,7 @@ public class TabContainer extends Component implements Parent {
 
         @Override
         protected List<Component> elementsAt(final float x, final float y, final Size containerBounds) {
+            if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
             if (y < TabContainer.this.tabSize.height()) {
                 return List.of(TabContainer.this.tabContainer);
             } else {
