@@ -1,7 +1,14 @@
 package net.lenni0451.rivet.theme.text;
 
 import lombok.SneakyThrows;
+import net.lenni0451.commons.animation.AnimationMode;
+import net.lenni0451.commons.animation.EasingBehavior;
+import net.lenni0451.commons.animation.easing.EasingFunction;
+import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.animation.AnimationConfig;
+import net.lenni0451.rivet.animation.AnimationFrameConfig;
+import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
@@ -65,9 +72,9 @@ class ThemeLoaderTest {
         check(Theme.TEXT_FIELD_PASSWORD_CHAR, "a", 'a');
         check(Theme.TEXT_FIELD_PASSWORD_CHAR, "*", '*');
 
-        // Integer
-        check(Theme.BUTTON_ANIMATION_DURATION, "123", 123);
-        check(Theme.BUTTON_ANIMATION_DURATION, "-123", -123);
+        // Integer // Currently disabled because there is no key using it
+//        check(Theme.BUTTON_ANIMATION_DURATION, "123", 123);
+//        check(Theme.BUTTON_ANIMATION_DURATION, "-123", -123);
 
         // Long
         check(Theme.SCROLL_NESTED_SCROLL_TIMEOUT, "999999999999", 999_999_999_999L);
@@ -90,6 +97,16 @@ class ThemeLoaderTest {
         check(Theme.TAB_CORNER_RADIUS, "5.5", new Corners(5.5F));
         check(Theme.TAB_CORNER_RADIUS, "0 1 2 3", new Corners(0, 1, 2, 3));
         check(Theme.TAB_CORNER_RADIUS, "bottomLeft=1 topRight=3 topLeft=0 bottomRight=2", new Corners(0, 1, 2, 3));
+
+        // AnimationConfig
+        check(Theme.TEXT_FIELD_CURSOR_ANIMATION, "loop; sine ease_out 1 1 250 keep; endValue=0 duration=500", new AnimationConfig(
+                AnimationMode.LOOP,
+                new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 1F, 1F, 250, EasingBehavior.KEEP),
+                AnimationFrameConfig.builder().endValue(0).duration(500).build()
+        ));
+
+        // DynamicAnimationConfig
+        check(Theme.SCROLL_ANIMATION, "back ease_in_out 100", new DynamicAnimationConfig(EasingFunction.BACK, EasingMode.EASE_IN_OUT, 100));
 
         // Button.ClickOn
         for (Button.ClickOn value : Button.ClickOn.values()) {

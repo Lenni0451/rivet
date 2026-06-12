@@ -3,6 +3,8 @@ package net.lenni0451.rivet.theme.text;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.animation.AnimationConfig;
+import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
@@ -41,6 +43,8 @@ public class ThemeLoader {
         parsers.put(String.class, s -> s);
         parsers.put(Padding.class, new PaddingParser());
         parsers.put(Corners.class, new CornersParser());
+        parsers.put(AnimationConfig.class, new AnimationConfigParser());
+        parsers.put(DynamicAnimationConfig.class, new DynamicAnimationConfigParser());
         parsers.put(Button.ClickOn.class, new EnumParser<>(Button.ClickOn.values()));
         parsers.put(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
         parsers.put(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));

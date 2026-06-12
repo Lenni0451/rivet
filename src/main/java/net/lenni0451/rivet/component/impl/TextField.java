@@ -3,11 +3,8 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
-import net.lenni0451.commons.animation.AnimationMode;
-import net.lenni0451.commons.animation.EasingBehavior;
-import net.lenni0451.commons.animation.easing.EasingFunction;
-import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
@@ -41,11 +38,6 @@ public class TextField extends Component {
     private String hint;
     @Getter
     private final ListenerList<Consumer<String>> valueChangeListener = new ListenerList<>();
-    private final Animation cursorAnimation = new Animation(AnimationMode.LOOP)
-            .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 1, 250, EasingBehavior.KEEP)
-            .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 1, 0, 500, EasingBehavior.KEEP)
-            .frame(EasingFunction.SINE, EasingMode.EASE_OUT, 0, 1, 500, EasingBehavior.KEEP)
-            .start();
     @Getter
     @Nullable
     private Function<Character, Character> charReplacer;
@@ -65,6 +57,7 @@ public class TextField extends Component {
     private float scrollX = 0;
     private int clickCount;
     private long lastClick;
+    private Animation cursorAnimation;
 
     @Getter
     private final ThemeOption<Color> textColor;
@@ -100,6 +93,8 @@ public class TextField extends Component {
     private final ThemeOption<Color> disabledBackgroundColor;
     @Getter
     private final ThemeOption<Color> disabledOutlineColor;
+    @Getter
+    private final ThemeOption<AnimationConfig> cursorAnimationConfig;
 
     public TextField() {
         this("");
@@ -125,6 +120,7 @@ public class TextField extends Component {
         this.disabledTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_TEXT_COLOR);
         this.disabledBackgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_BACKGROUND_COLOR);
         this.disabledOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_OUTLINE_COLOR);
+        this.cursorAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_ANIMATION);
     }
 
     public TextField font(final Font font) {
@@ -223,6 +219,7 @@ public class TextField extends Component {
     @Override
     protected void onComponentAdded() {
         this.updateShapedText();
+        this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
     }
 
     @Override
@@ -257,9 +254,8 @@ public class TextField extends Component {
 
     @Override
     public void onThemeChanged() {
-        if (this.rivet() != null) {
-            this.updateShapedText();
-        }
+        this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
+        this.updateShapedText();
     }
 
     @Override
@@ -421,7 +417,8 @@ public class TextField extends Component {
                     if (this.focused) {
                         float cursorWidth = this.cursorWidth.value();
                         float cursorX = this.shapedText.cursorPosition(this.cursor).x();
-                        renderer.fillRect(cursorX - cursorWidth / 2F, -cursorHeight / 2F, cursorWidth, cursorHeight, this.cursorColor.value().withAlphaF(this.cursorAnimation.getValue()));
+                        float cursorAlpha = this.cursorAnimation != null ? this.cursorAnimation.getValue() : 1;
+                        renderer.fillRect(cursorX - cursorWidth / 2F, -cursorHeight / 2F, cursorWidth, cursorHeight, this.cursorColor.value().withAlphaF(cursorAlpha));
                     }
                 });
             });

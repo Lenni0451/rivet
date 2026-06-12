@@ -4,10 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.DynamicAnimation;
-import net.lenni0451.commons.animation.easing.EasingFunction;
-import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
+import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
@@ -66,7 +65,7 @@ public class ScrollContainer extends Component implements Parent {
     @Getter
     private final ThemeOption<Boolean> smoothScrolling;
     @Getter
-    private final ThemeOption<Integer> animationDuration;
+    private final ThemeOption<DynamicAnimationConfig> animationConfig;
     @Getter
     private final ThemeOption<Long> nestedScrollTimeout;
     @Getter
@@ -145,7 +144,7 @@ public class ScrollContainer extends Component implements Parent {
         this.barOutlineColor = new ThemeOption<>(this, Theme.SCROLL_BAR_OUTLINE_COLOR);
         this.scrollSpeed = new ThemeOption<>(this, Theme.SCROLL_SPEED);
         this.smoothScrolling = new ThemeOption<>(this, Theme.SCROLL_SMOOTH);
-        this.animationDuration = new ThemeOption<>(this, Theme.SCROLL_ANIMATION_DURATION);
+        this.animationConfig = new ThemeOption<>(this, Theme.SCROLL_ANIMATION);
         this.nestedScrollTimeout = new ThemeOption<>(this, Theme.SCROLL_NESTED_SCROLL_TIMEOUT);
         this.barType = new ThemeOption<>(this, Theme.SCROLL_BAR_TYPE);
         this.railClickJump = new ThemeOption<>(this, Theme.SCROLL_RAIL_CLICK_JUMP);
@@ -161,8 +160,8 @@ public class ScrollContainer extends Component implements Parent {
     @Override
     protected void onComponentAdded() {
         this.child.setRivet(this.rivet(), this);
-        this.scrollXAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
-        this.scrollYAnimation = new DynamicAnimation(EasingFunction.SINE, EasingMode.EASE_OUT, (long) this.animationDuration.value(), 0);
+        this.scrollXAnimation = this.animationConfig.value().create(0);
+        this.scrollYAnimation = this.animationConfig.value().create(0);
     }
 
     @Override
@@ -201,18 +200,8 @@ public class ScrollContainer extends Component implements Parent {
     @Override
     public void onThemeChanged() {
         if (this.rivet() != null) {
-            this.scrollXAnimation = new DynamicAnimation(
-                    EasingFunction.SINE,
-                    EasingMode.EASE_OUT,
-                    (long) this.animationDuration.value(),
-                    this.scrollXAnimation.getValue()
-            );
-            this.scrollYAnimation = new DynamicAnimation(
-                    EasingFunction.SINE,
-                    EasingMode.EASE_OUT,
-                    (long) this.animationDuration.value(),
-                    this.scrollYAnimation.getValue()
-            );
+            this.scrollXAnimation = this.animationConfig.value().create(this.scrollXAnimation.getValue());
+            this.scrollYAnimation = this.animationConfig.value().create(this.scrollYAnimation.getValue());
         }
         this.child.onThemeChanged();
     }

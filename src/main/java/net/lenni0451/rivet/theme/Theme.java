@@ -1,8 +1,15 @@
 package net.lenni0451.rivet.theme;
 
 import lombok.RequiredArgsConstructor;
+import net.lenni0451.commons.animation.AnimationMode;
+import net.lenni0451.commons.animation.EasingBehavior;
+import net.lenni0451.commons.animation.easing.EasingFunction;
+import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.animation.AnimationConfig;
+import net.lenni0451.rivet.animation.AnimationFrameConfig;
+import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
@@ -32,7 +39,10 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_ACTIVE_OUTLINE_COLOR = register("button.active_outline_color", Color.class, r -> Color.fromRGB(100, 100, 105));
     public static final ThemeKey<Color> BUTTON_CLICK_COLOR = register("button.click_color", Color.class, r -> Color.fromRGB(55, 55, 60));
     public static final ThemeKey<Color> BUTTON_CLICK_OUTLINE_COLOR = register("button.click_outline_color", Color.class, r -> Color.fromRGB(110, 110, 115));
-    public static final ThemeKey<Integer> BUTTON_ANIMATION_DURATION = register("button.animation_duration", Integer.class, r -> 150);
+    public static final ThemeKey<AnimationConfig> BUTTON_HOVER_ANIMATION = register("button.hover_animation", AnimationConfig.class, r -> new AnimationConfig(
+            AnimationMode.DEFAULT,
+            new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0F, 1F, 150, EasingBehavior.KEEP)
+    ));
     public static final ThemeKey<Padding> BUTTON_INNER_PADDING = register("button.inner_padding", Padding.class, r -> {
         float textHeight = r.backend().font().height();
         return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
@@ -83,7 +93,7 @@ public abstract class Theme {
     public static final ThemeKey<Color> SCROLL_BAR_OUTLINE_COLOR = register("scroll.bar_outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
     public static final ThemeKey<Float> SCROLL_SPEED = register("scroll.speed", Float.class, r -> roundMin(r.backend().font().height() * 4, 1));
     public static final ThemeKey<Boolean> SCROLL_SMOOTH = register("scroll.smooth", Boolean.class, r -> true);
-    public static final ThemeKey<Integer> SCROLL_ANIMATION_DURATION = register("scroll.animation_duration", Integer.class, r -> 100);
+    public static final ThemeKey<DynamicAnimationConfig> SCROLL_ANIMATION = register("scroll.animation", DynamicAnimationConfig.class, r -> new DynamicAnimationConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 100));
     public static final ThemeKey<Long> SCROLL_NESTED_SCROLL_TIMEOUT = register("scroll.nested_scroll_timeout", Long.class, r -> 150L);
     public static final ThemeKey<ScrollContainer.ScrollBarType> SCROLL_BAR_TYPE = register("scroll.bar_type", ScrollContainer.ScrollBarType.class, r -> ScrollContainer.ScrollBarType.FLOATING);
     public static final ThemeKey<Boolean> SCROLL_RAIL_CLICK_JUMP = register("scroll.rail_click_jump", Boolean.class, r -> true);
@@ -116,6 +126,14 @@ public abstract class Theme {
     public static final ThemeKey<Color> TEXT_FIELD_DISABLED_TEXT_COLOR = register("text_field.disabled_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
     public static final ThemeKey<Color> TEXT_FIELD_DISABLED_BACKGROUND_COLOR = register("text_field.disabled_background_color", Color.class, r -> Color.fromRGB(20, 20, 20));
     public static final ThemeKey<Color> TEXT_FIELD_DISABLED_OUTLINE_COLOR = register("text_field.disabled_outline_color", Color.class, r -> Color.fromRGB(45, 45, 45));
+    public static final ThemeKey<AnimationConfig> TEXT_FIELD_CURSOR_ANIMATION = register("text_field.cursor_animation", AnimationConfig.class, r -> new AnimationConfig(
+            AnimationMode.LOOP,
+            List.of(
+                    new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 1F, 1F, 250, EasingBehavior.KEEP),
+                    new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 1F, 0F, 500, EasingBehavior.KEEP),
+                    new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 0F, 1F, 500, EasingBehavior.KEEP)
+            )
+    ));
 
     // Checkbox
     public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = register("checkbox.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
