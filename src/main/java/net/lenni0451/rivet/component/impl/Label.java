@@ -99,6 +99,11 @@ public class Label extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.reshape = true;
+    }
+
+    @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         return false;
     }
@@ -106,11 +111,6 @@ public class Label extends Component {
     @Override
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         return false;
-    }
-
-    @Override
-    public void onThemeChanged() {
-        this.reshape = true;
     }
 
     @Override

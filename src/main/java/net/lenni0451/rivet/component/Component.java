@@ -187,6 +187,9 @@ public abstract class Component {
     protected void onComponentEnabled() {
     }
 
+    public void onThemeChanged() {
+    }
+
     public final void onFocusGained() {
         this.focusGainedListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentFocusGained();
@@ -319,9 +322,6 @@ public abstract class Component {
     }
 
     protected void onComponentDragLeave() {
-    }
-
-    public void onThemeChanged() {
     }
 
     public void render(final Renderer renderer, final Size size) {

@@ -71,6 +71,12 @@ public class DecoratedContainer extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.background.onThemeChanged();
+        this.child.onThemeChanged();
+    }
+
+    @Override
     protected void onComponentMouseLeave() {
         this.mouseHandler.onMouseLeave();
     }
@@ -108,12 +114,6 @@ public class DecoratedContainer extends Component implements Parent {
     @Override
     protected void onComponentDragLeave() {
         this.mouseHandler.onDragLeave();
-    }
-
-    @Override
-    public void onThemeChanged() {
-        this.background.onThemeChanged();
-        this.child.onThemeChanged();
     }
 
     @Override

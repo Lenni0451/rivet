@@ -138,6 +138,13 @@ public class Checkbox extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.shapeText();
+        }
+    }
+
+    @Override
     protected void onComponentMouseEnter() {
         this.hovered = true;
     }
@@ -153,13 +160,6 @@ public class Checkbox extends Component {
             this.checked(!this.checked);
         }
         return true;
-    }
-
-    @Override
-    public void onThemeChanged() {
-        if (this.rivet() != null) {
-            this.shapeText();
-        }
     }
 
     @Override

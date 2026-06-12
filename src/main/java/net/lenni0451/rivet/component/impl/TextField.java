@@ -256,6 +256,13 @@ public class TextField extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
+    }
+
+    @Override
     protected boolean onComponentKeyDown(final KeyEvent event) {
         boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
         boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
@@ -378,13 +385,6 @@ public class TextField extends Component {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
         }
         return true;
-    }
-
-    @Override
-    public void onThemeChanged() {
-        if (this.rivet() != null) {
-            this.updateShapedText();
-        }
     }
 
     @Override

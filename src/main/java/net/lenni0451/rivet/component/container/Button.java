@@ -142,6 +142,16 @@ public class Button extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.rivet() != null) {
+            this.hoverAnimation = new Animation()
+                    .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
+                    .finish(this.hovered ? AnimationDirection.FORWARDS : AnimationDirection.BACKWARDS);
+        }
+        this.child.onThemeChanged();
+    }
+
+    @Override
     protected void onComponentMouseEnter() {
         this.hovered = true;
         this.hoverAnimation.runInDirection(AnimationDirection.FORWARDS);
@@ -171,16 +181,6 @@ public class Button extends Component implements Parent {
             this.clickListener.callVoid(listener -> listener.onClick(event));
         }
         return true;
-    }
-
-    @Override
-    public void onThemeChanged() {
-        if (this.rivet() != null) {
-            this.hoverAnimation = new Animation()
-                    .frame(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0, 1, this.animationDuration.value(), EasingBehavior.KEEP)
-                    .finish(this.hovered ? AnimationDirection.FORWARDS : AnimationDirection.BACKWARDS);
-        }
-        this.child.onThemeChanged();
     }
 
     @Override

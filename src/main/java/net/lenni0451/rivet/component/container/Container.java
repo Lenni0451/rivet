@@ -134,6 +134,11 @@ public class Container extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.children.forEach(c -> c.component.onThemeChanged());
+    }
+
+    @Override
     protected void onComponentMouseLeave() {
         this.mouseHandler.onMouseLeave();
     }
@@ -171,11 +176,6 @@ public class Container extends Component implements Parent {
     @Override
     protected void onComponentDragLeave() {
         this.mouseHandler.onDragLeave();
-    }
-
-    @Override
-    public void onThemeChanged() {
-        this.children.forEach(c -> c.component.onThemeChanged());
     }
 
     @Override

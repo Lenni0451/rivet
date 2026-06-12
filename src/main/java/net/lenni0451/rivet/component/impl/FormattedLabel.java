@@ -134,6 +134,13 @@ public class FormattedLabel extends Component {
     }
 
     @Override
+    public void onThemeChanged() {
+        if (this.text != null) {
+            this.line = null;
+        }
+    }
+
+    @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         return false;
     }
@@ -141,13 +148,6 @@ public class FormattedLabel extends Component {
     @Override
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
         return false;
-    }
-
-    @Override
-    public void onThemeChanged() {
-        if (this.text != null) {
-            this.line = null;
-        }
     }
 
     @Override

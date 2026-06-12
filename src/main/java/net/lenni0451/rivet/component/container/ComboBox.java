@@ -132,6 +132,11 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.button.onThemeChanged();
+    }
+
+    @Override
     protected void onComponentMouseEnter() {
         this.button.onMouseEnter();
     }
@@ -149,11 +154,6 @@ public class ComboBox extends Component implements Parent {
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         return this.button.onMouseUp(event, size);
-    }
-
-    @Override
-    public void onThemeChanged() {
-        this.button.onThemeChanged();
     }
 
     @Override

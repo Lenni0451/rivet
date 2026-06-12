@@ -170,6 +170,13 @@ public class TabContainer extends Component implements Parent {
     }
 
     @Override
+    public void onThemeChanged() {
+        this.tabContainer.onThemeChanged();
+        this.contentContainer.onThemeChanged();
+        this.updateLayout();
+    }
+
+    @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         return this.mouseHandler.onMouseDown(this.rivet(), event, size).handled();
     }
@@ -202,13 +209,6 @@ public class TabContainer extends Component implements Parent {
     @Override
     protected void onComponentDragLeave() {
         this.mouseHandler.onDragLeave();
-    }
-
-    @Override
-    public void onThemeChanged() {
-        this.tabContainer.onThemeChanged();
-        this.contentContainer.onThemeChanged();
-        this.updateLayout();
     }
 
     @Override
