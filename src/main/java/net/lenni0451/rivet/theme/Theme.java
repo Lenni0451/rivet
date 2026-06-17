@@ -43,6 +43,10 @@ public abstract class Theme {
             AnimationMode.DEFAULT,
             new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0F, 1F, 150, EasingBehavior.KEEP)
     ));
+    public static final ThemeKey<AnimationConfig> BUTTON_CLICK_ANIMATION = register("button.click_animation", AnimationConfig.class, r -> new AnimationConfig(
+            AnimationMode.DEFAULT,
+            new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0F, 1F, 100, EasingBehavior.KEEP)
+    ));
     public static final ThemeKey<Padding> BUTTON_INNER_PADDING = register("button.inner_padding", Padding.class, r -> {
         float textHeight = r.backend().font().height();
         return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));

@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.Interpolator;
-import net.lenni0451.rivet.animation.Transition;
+import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
@@ -55,15 +55,17 @@ public class Button extends Component implements Parent {
     @Getter
     private final ThemeOption<Color> disabledOutlineColor;
     @Getter
-    private final ThemeOption<AnimationConfig> animationConfig;
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
+    @Getter
+    private final ThemeOption<AnimationConfig> clickAnimationConfig;
     @Getter
     private final ThemeOption<Padding> innerPadding;
     @Getter
     private final ThemeOption<ClickOn> clickOn;
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
-    private Transition<Color> color;
-    private Transition<Color> outlineColor;
+    private StateTransition<Color, State> color;
+    private StateTransition<Color, State> outlineColor;
 
     public Button(final String text, final Runnable clickListener) {
         this(text, event -> clickListener.run());
@@ -101,42 +103,61 @@ public class Button extends Component implements Parent {
         this.clickOutlineColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_OUTLINE_COLOR);
         this.disabledColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_COLOR);
         this.disabledOutlineColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_OUTLINE_COLOR);
-        this.animationConfig = new ThemeOption<>(this, Theme.BUTTON_HOVER_ANIMATION);
+        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_HOVER_ANIMATION);
+        this.clickAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_CLICK_ANIMATION);
         this.innerPadding = new ThemeOption<>(this, Theme.BUTTON_INNER_PADDING);
         this.clickOn = new ThemeOption<>(this, Theme.BUTTON_CLICK_ON);
+    }
+
+    private State state() {
+        if (this.disabled()) {
+            return State.DISABLED;
+        } else if (!this.pressed.isEmpty()) {
+            return State.PRESSED;
+        } else {
+            return this.hovered ? State.HOVERED : State.INACTIVE;
+        }
     }
 
     @Override
     protected void onComponentAdded() {
         this.child.setRivet(this.rivet(), this);
 
-        this.color = new Transition<>(
+        this.color = new StateTransition<>(
                 this,
-                () -> {
-                    if (this.disabled()) {
-                        return this.disabledColor.value();
-                    } else if (this.pressed.isEmpty()) {
-                        return this.hovered ? this.activeColor.value() : this.inactiveColor.value();
-                    } else {
-                        return this.clickColor.value();
-                    }
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.inactiveColor.value();
+                    case HOVERED -> this.activeColor.value();
+                    case PRESSED -> this.clickColor.value();
+                    case DISABLED -> this.disabledColor.value();
                 },
-                this.animationConfig::value,
-                Interpolator.COLOR
+                Interpolator.COLOR,
+                this::state,
+                (start, target) -> {
+                    if (start.equals(State.PRESSED) || target.equals(State.PRESSED)) {
+                        return this.clickAnimationConfig.value();
+                    } else {
+                        return this.hoverAnimationConfig.value();
+                    }
+                }
         );
-        this.outlineColor = new Transition<>(
+        this.outlineColor = new StateTransition<>(
                 this,
-                () -> {
-                    if (this.disabled()) {
-                        return this.disabledOutlineColor.value();
-                    } else if (this.pressed.isEmpty()) {
-                        return this.hovered ? this.activeOutlineColor.value() : this.inactiveOutlineColor.value();
-                    } else {
-                        return this.clickOutlineColor.value();
-                    }
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.inactiveOutlineColor.value();
+                    case HOVERED -> this.activeOutlineColor.value();
+                    case PRESSED -> this.clickOutlineColor.value();
+                    case DISABLED -> this.disabledOutlineColor.value();
                 },
-                this.animationConfig::value,
-                Interpolator.COLOR
+                Interpolator.COLOR,
+                this::state,
+                (start, target) -> {
+                    if (start.equals(State.PRESSED) || target.equals(State.PRESSED)) {
+                        return this.clickAnimationConfig.value();
+                    } else {
+                        return this.hoverAnimationConfig.value();
+                    }
+                }
         );
     }
 
@@ -198,9 +219,9 @@ public class Button extends Component implements Parent {
     public void render(final Renderer renderer, final Size size) {
         float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.color.getValue());
+        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.color.value());
         if (outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColor.getValue());
+            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColor.value());
         }
 
         float width = size.width() - this.innerPadding.value().horizontal();
@@ -263,6 +284,10 @@ public class Button extends Component implements Parent {
 
     public enum ClickOn {
         DOWN, UP, BOTH
+    }
+
+    private enum State {
+        INACTIVE, HOVERED, PRESSED, DISABLED
     }
 
 }

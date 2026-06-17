@@ -27,7 +27,7 @@ public class Transition<T> {
         this.currentValue = this.targetValue;
     }
 
-    public T getValue() {
+    public T value() {
         if (this.component.rivet() == null) return this.currentValue;
 
         T newTarget = this.targetSupplier.get();
