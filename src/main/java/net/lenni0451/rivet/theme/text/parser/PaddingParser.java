@@ -1,12 +1,10 @@
 package net.lenni0451.rivet.theme.text.parser;
 
 import net.lenni0451.rivet.math.Padding;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-@ApiStatus.Internal
 public final class PaddingParser implements Parser<Padding> {
 
     @Nullable
@@ -82,6 +80,11 @@ public final class PaddingParser implements Parser<Padding> {
             return new Padding(left, top, right, bottom);
         }
         return null;
+    }
+
+    @Override
+    public String toString(final Padding value) {
+        return "left=" + value.left() + " top=" + value.top() + " right=" + value.right() + " bottom=" + value.bottom();
     }
 
 }

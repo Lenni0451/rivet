@@ -21,4 +21,11 @@ public class DynamicAnimationConfigParser implements Parser<DynamicAnimationConf
         );
     }
 
+    @Override
+    public String toString(final DynamicAnimationConfig value) {
+        return this.easingFunctionParser.toString(value.easingFunction()) + " "
+                + this.easingModeParser.toString(value.easingMode()) + " "
+                + value.duration();
+    }
+
 }

@@ -6,12 +6,10 @@ import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiStatus.Internal
 public final class AnimationConfigParser implements Parser<AnimationConfig> {
 
     private final EasingFunctionParser easingFunctionParser = new EasingFunctionParser();
@@ -75,6 +73,23 @@ public final class AnimationConfigParser implements Parser<AnimationConfig> {
             }
         }
         return new AnimationFrameConfig(easingFunction, easingMode, startValue, endValue, duration, easingBehavior);
+    }
+
+    @Override
+    public String toString(final AnimationConfig value) {
+        List<String> lines = new ArrayList<>();
+        lines.add(this.modeParser.toString(value.mode()));
+        for (AnimationFrameConfig frame : value.frames()) {
+            List<String> parts = new ArrayList<>(6);
+            if (frame.easingFunction() != null) parts.add("easingFunction=" + this.easingFunctionParser.toString(frame.easingFunction()));
+            if (frame.easingMode() != null) parts.add("easingMode=" + this.easingModeParser.toString(frame.easingMode()));
+            if (frame.startValue() != null) parts.add("startValue=" + frame.startValue());
+            parts.add("endValue=" + frame.endValue());
+            if (frame.duration() != null) parts.add("duration=" + frame.duration());
+            if (frame.easingBehavior() != null) parts.add("easingBehavior=" + this.behaviorParser.toString(frame.easingBehavior()));
+            lines.add(String.join(" ", parts));
+        }
+        return String.join("; ", lines);
     }
 
 }

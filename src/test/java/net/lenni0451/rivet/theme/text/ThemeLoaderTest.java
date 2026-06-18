@@ -36,8 +36,8 @@ class ThemeLoaderTest {
     private static <V> void check(final ThemeKey<V> key, final String s, final V expected) {
         Map<ThemeKey<?>, Object> values = new HashMap<>();
         InputStream is = new ByteArrayInputStream((key.name() + "=" + s).getBytes(StandardCharsets.UTF_8));
-        ThemeLoader.load(is, new Theme.Values(values), (line, cause) -> {
-            throw cause;
+        ThemeLoader.load(is, new Theme.Values(values), (k, v, t) -> {
+            throw t;
         });
         assertEquals(1, values.size());
         assertTrue(values.containsKey(key));

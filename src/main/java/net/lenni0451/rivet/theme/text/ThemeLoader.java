@@ -16,8 +16,8 @@ import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.theme.text.parser.*;
 
 import javax.annotation.WillNotClose;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -28,39 +28,40 @@ public class ThemeLoader {
     private static final Map<Class<?>, Parser<?>> parsers = new HashMap<>();
 
     static {
-        parsers.put(Color.class, new ColorParser());
-        parsers.put(Boolean.class, Boolean::valueOf);
-        parsers.put(Character.class, s -> {
-            if (s.length() != 1) {
-                throw new IllegalArgumentException("Expected a single character but got: " + s);
-            } else {
-                return s.charAt(0);
-            }
-        });
-        parsers.put(Integer.class, Integer::valueOf);
-        parsers.put(Long.class, Long::valueOf);
-        parsers.put(Float.class, Float::valueOf);
-        parsers.put(String.class, s -> s);
-        parsers.put(Padding.class, new PaddingParser());
-        parsers.put(Corners.class, new CornersParser());
-        parsers.put(AnimationConfig.class, new AnimationConfigParser());
-        parsers.put(DynamicAnimationConfig.class, new DynamicAnimationConfigParser());
-        parsers.put(Button.ClickOn.class, new EnumParser<>(Button.ClickOn.values()));
-        parsers.put(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
-        parsers.put(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));
-        parsers.put(TabAlignment.class, new EnumParser<>(TabAlignment.values()));
+        registerParser(Color.class, new ColorParser());
+        registerParser(Boolean.class, new BooleanParser());
+        registerParser(Character.class, new CharacterParser());
+        registerParser(Byte.class, new NumberParser<>(Byte::valueOf));
+        registerParser(Short.class, new NumberParser<>(Short::valueOf));
+        registerParser(Integer.class, new NumberParser<>(Integer::valueOf));
+        registerParser(Long.class, new NumberParser<>(Long::valueOf));
+        registerParser(Float.class, new NumberParser<>(Float::valueOf));
+        registerParser(Double.class, new NumberParser<>(Double::valueOf));
+        registerParser(String.class, new StringParser());
+        registerParser(Padding.class, new PaddingParser());
+        registerParser(Corners.class, new CornersParser());
+        registerParser(AnimationConfig.class, new AnimationConfigParser());
+        registerParser(DynamicAnimationConfig.class, new DynamicAnimationConfigParser());
+        registerParser(Button.ClickOn.class, new EnumParser<>(Button.ClickOn.values()));
+        registerParser(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
+        registerParser(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));
+        registerParser(TabAlignment.class, new EnumParser<>(TabAlignment.values()));
     }
 
-    public static void load(@WillNotClose final InputStream is, final Theme.Values values, final ExceptionHandler lineErrorHandler) throws IOException {
+    public static <T> void registerParser(final Class<T> type, final Parser<T> parser) {
+        parsers.put(type, parser);
+    }
+
+    public static void load(@WillNotClose final InputStream is, final Theme.Values values, final ExceptionHandler errorHandler) throws IOException {
         Properties properties = new Properties();
-        properties.load(is);
+        properties.load(new InputStreamReader(is, StandardCharsets.UTF_8));
         properties.forEach((k, v) -> {
             String key = ((String) k).trim();
             String value = ((String) v).trim();
             try {
                 parse(values, key, value);
             } catch (Throwable t) {
-                lineErrorHandler.tryHandle(key + "=" + value, t);
+                errorHandler.tryHandle(key, value, t);
             }
         });
     }
@@ -86,18 +87,30 @@ public class ThemeLoader {
         values.put(themeKey, parsedValue);
     }
 
+    public static void save(@WillNotClose final OutputStream os, final Theme theme) throws IOException {
+        Properties properties = new Properties();
+        for (ThemeKey<?> key : Theme.registeredKeys()) {
+            Object value = theme.get(key);
+            Parser parser = parsers.get(key.type());
+            if (parser != null) {
+                properties.put(key.name(), parser.toString(value));
+            }
+        }
+        properties.store(new OutputStreamWriter(os, StandardCharsets.UTF_8), "Automatically generated theme file");
+    }
+
 
     @FunctionalInterface
     public interface ExceptionHandler {
-        ExceptionHandler RETHROW = (l, t) -> {
-            throw new IllegalStateException("Unable to parse line: " + l, t);
+        ExceptionHandler RETHROW = (k, v, t) -> {
+            throw new IllegalStateException("Unable to parse option '" + k + "' with value '" + v + "'", t);
         };
 
-        void handle(final String line, final Throwable cause) throws Throwable;
+        void handle(final String key, final String value, final Throwable cause) throws Throwable;
 
         @SneakyThrows
-        default void tryHandle(final String line, final Throwable cause) {
-            this.handle(line, cause);
+        default void tryHandle(final String key, final String value, final Throwable cause) {
+            this.handle(key, value, cause);
         }
     }
 

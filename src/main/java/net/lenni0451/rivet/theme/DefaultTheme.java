@@ -15,7 +15,7 @@ public class DefaultTheme {
             AnimationMode.DEFAULT,
             new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0F, 1F, 150, EasingBehavior.KEEP)
     );
-    final AnimationConfig CLICK_ANIMATION = new AnimationConfig(
+    public static final AnimationConfig CLICK_ANIMATION = new AnimationConfig(
             AnimationMode.DEFAULT,
             new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0F, 1F, 100, EasingBehavior.KEEP)
     );

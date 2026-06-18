@@ -1,12 +1,10 @@
 package net.lenni0451.rivet.theme.text.parser;
 
 import net.lenni0451.rivet.math.Corners;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-@ApiStatus.Internal
 public final class CornersParser implements Parser<Corners> {
 
     @Nullable
@@ -82,6 +80,14 @@ public final class CornersParser implements Parser<Corners> {
             return new Corners(topLeft, bottomLeft, bottomRight, topRight);
         }
         return null;
+    }
+
+    @Override
+    public String toString(final Corners value) {
+        return "topLeft=" + value.topLeft()
+                + " bottomLeft=" + value.bottomLeft()
+                + " bottomRight=" + value.bottomRight()
+                + " topRight=" + value.topRight();
     }
 
 }

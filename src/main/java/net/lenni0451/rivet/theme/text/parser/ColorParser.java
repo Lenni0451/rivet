@@ -3,11 +3,9 @@ package net.lenni0451.rivet.theme.text.parser;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.text.ParserException;
 import net.lenni0451.rivet.text.format.ColorFormat;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
-@ApiStatus.Internal
 public final class ColorParser implements Parser<Color> {
 
     @Nullable
@@ -23,6 +21,11 @@ public final class ColorParser implements Parser<Color> {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString(final Color value) {
+        return "rgba(" + value.getRed() + ", " + value.getGreen() + ", " + value.getBlue() + ", " + value.getAlpha() + ")";
     }
 
 }

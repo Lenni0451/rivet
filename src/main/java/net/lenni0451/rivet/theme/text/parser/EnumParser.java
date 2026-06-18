@@ -1,11 +1,9 @@
 package net.lenni0451.rivet.theme.text.parser;
 
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
-@ApiStatus.Internal
 @RequiredArgsConstructor
 public final class EnumParser<E extends Enum<E>> implements Parser<E> {
 
@@ -20,6 +18,11 @@ public final class EnumParser<E extends Enum<E>> implements Parser<E> {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString(final E value) {
+        return value.name();
     }
 
 }

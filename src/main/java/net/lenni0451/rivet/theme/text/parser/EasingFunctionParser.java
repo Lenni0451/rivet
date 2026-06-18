@@ -1,12 +1,10 @@
 package net.lenni0451.rivet.theme.text.parser;
 
 import net.lenni0451.commons.animation.easing.EasingFunction;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-@ApiStatus.Internal
 public final class EasingFunctionParser implements Parser<EasingFunction> {
 
     @Nullable
@@ -26,6 +24,23 @@ public final class EasingFunctionParser implements Parser<EasingFunction> {
             case "bounce" -> EasingFunction.BOUNCE;
             default -> null;
         };
+    }
+
+    @Nullable
+    @Override
+    public String toString(final EasingFunction value) {
+        if (value == EasingFunction.LINEAR) return "linear";
+        if (value == EasingFunction.SINE) return "sine";
+        if (value == EasingFunction.QUAD) return "quad";
+        if (value == EasingFunction.CUBIC) return "cubic";
+        if (value == EasingFunction.QUART) return "quart";
+        if (value == EasingFunction.QUINT) return "quint";
+        if (value == EasingFunction.EXPO) return "expo";
+        if (value == EasingFunction.CIRC) return "circ";
+        if (value == EasingFunction.BACK) return "back";
+        if (value == EasingFunction.ELASTIC) return "elastic";
+        if (value == EasingFunction.BOUNCE) return "bounce";
+        return null;
     }
 
 }
