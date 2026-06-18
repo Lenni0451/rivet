@@ -65,16 +65,17 @@ public final class PaddingParser implements Parser<Padding> {
             float right = 0;
             float bottom = 0;
             for (String part : parts) {
-                if (part.toLowerCase(Locale.ROOT).startsWith("left=")) {
-                    left = Float.parseFloat(part.split("=", 2)[1]);
-                } else if (part.toLowerCase(Locale.ROOT).startsWith("top=")) {
-                    top = Float.parseFloat(part.split("=", 2)[1]);
-                } else if (part.toLowerCase(Locale.ROOT).startsWith("right=")) {
-                    right = Float.parseFloat(part.split("=", 2)[1]);
-                } else if (part.toLowerCase(Locale.ROOT).startsWith("bottom=")) {
-                    bottom = Float.parseFloat(part.split("=", 2)[1]);
-                } else {
-                    throw new IllegalArgumentException("Unknown padding option: " + part);
+                String[] keyValue = part.split("=", 2);
+                if (keyValue.length != 2) throw new IllegalArgumentException("Invalid option: " + part);
+
+                String key = keyValue[0].trim();
+                String value = keyValue[1].trim();
+                switch (key.toLowerCase(Locale.ROOT)) {
+                    case "left", "l" -> left = Float.parseFloat(value);
+                    case "top", "t" -> top = Float.parseFloat(value);
+                    case "right", "r" -> right = Float.parseFloat(value);
+                    case "bottom", "b" -> bottom = Float.parseFloat(value);
+                    default -> throw new IllegalArgumentException("Unknown option: " + key);
                 }
             }
             return new Padding(left, top, right, bottom);

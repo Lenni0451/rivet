@@ -9,6 +9,7 @@ import net.lenni0451.rivet.animation.AnimationFrameConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public final class AnimationConfigParser implements Parser<AnimationConfig> {
 
@@ -56,18 +57,17 @@ public final class AnimationConfigParser implements Parser<AnimationConfig> {
         } else {
             for (String option : options) {
                 String[] keyValue = option.split("=", 2);
-                if (keyValue.length != 2) {
-                    throw new IllegalArgumentException("Invalid option: " + option);
-                }
+                if (keyValue.length != 2) throw new IllegalArgumentException("Invalid option: " + option);
+
                 String key = keyValue[0].trim();
                 String value = keyValue[1].trim();
-                switch (key) {
-                    case "easingFunction" -> easingFunction = this.easingFunctionParser.parse(value);
-                    case "easingMode" -> easingMode = this.easingModeParser.parse(value);
-                    case "startValue" -> startValue = Float.parseFloat(value);
-                    case "endValue" -> endValue = Float.parseFloat(value);
-                    case "duration" -> duration = Integer.parseInt(value);
-                    case "easingBehavior" -> easingBehavior = this.behaviorParser.parse(value);
+                switch (key.toLowerCase(Locale.ROOT)) {
+                    case "easingfunction", "easing_function", "function", "ef" -> easingFunction = this.easingFunctionParser.parse(value);
+                    case "easingmode", "easing_mode", "mode", "em" -> easingMode = this.easingModeParser.parse(value);
+                    case "startvalue", "start_value", "start", "s" -> startValue = Float.parseFloat(value);
+                    case "endvalue", "end_value", "end", "e" -> endValue = Float.parseFloat(value);
+                    case "duration", "d" -> duration = Integer.parseInt(value);
+                    case "easingbehavior", "easing_behavior", "behavior", "eb" -> easingBehavior = this.behaviorParser.parse(value);
                     default -> throw new IllegalArgumentException("Unknown option: " + key);
                 }
             }
@@ -81,12 +81,12 @@ public final class AnimationConfigParser implements Parser<AnimationConfig> {
         lines.add(this.modeParser.toString(value.mode()));
         for (AnimationFrameConfig frame : value.frames()) {
             List<String> parts = new ArrayList<>(6);
-            if (frame.easingFunction() != null) parts.add("easingFunction=" + this.easingFunctionParser.toString(frame.easingFunction()));
-            if (frame.easingMode() != null) parts.add("easingMode=" + this.easingModeParser.toString(frame.easingMode()));
-            if (frame.startValue() != null) parts.add("startValue=" + frame.startValue());
-            parts.add("endValue=" + frame.endValue());
+            if (frame.easingFunction() != null) parts.add("easing_function=" + this.easingFunctionParser.toString(frame.easingFunction()));
+            if (frame.easingMode() != null) parts.add("easing_mode=" + this.easingModeParser.toString(frame.easingMode()));
+            if (frame.startValue() != null) parts.add("start=" + frame.startValue());
+            parts.add("end=" + frame.endValue());
             if (frame.duration() != null) parts.add("duration=" + frame.duration());
-            if (frame.easingBehavior() != null) parts.add("easingBehavior=" + this.behaviorParser.toString(frame.easingBehavior()));
+            if (frame.easingBehavior() != null) parts.add("easing_behavior=" + this.behaviorParser.toString(frame.easingBehavior()));
             lines.add(String.join(" ", parts));
         }
         return String.join("; ", lines);

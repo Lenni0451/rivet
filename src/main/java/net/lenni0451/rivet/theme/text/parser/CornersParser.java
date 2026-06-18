@@ -64,17 +64,17 @@ public final class CornersParser implements Parser<Corners> {
             float bottomRight = 0;
             float topRight = 0;
             for (String part : parts) {
-                String lowerPart = part.toLowerCase(Locale.ROOT);
-                if (lowerPart.startsWith("topleft=") || lowerPart.startsWith("tl=")) {
-                    topLeft = Float.parseFloat(part.split("=", 2)[1]);
-                } else if (lowerPart.startsWith("bottomleft=") || lowerPart.startsWith("bl=")) {
-                    bottomLeft = Float.parseFloat(part.split("=", 2)[1]);
-                } else if (lowerPart.startsWith("bottomright=") || lowerPart.startsWith("br=")) {
-                    bottomRight = Float.parseFloat(part.split("=", 2)[1]);
-                } else if (lowerPart.startsWith("topright=") || lowerPart.startsWith("tr=")) {
-                    topRight = Float.parseFloat(part.split("=", 2)[1]);
-                } else {
-                    throw new IllegalArgumentException("Unknown corners option: " + part);
+                String[] keyValue = part.split("=", 2);
+                if (keyValue.length != 2) throw new IllegalArgumentException("Invalid option: " + part);
+
+                String key = keyValue[0].trim();
+                String value = keyValue[1].trim();
+                switch (key.toLowerCase(Locale.ROOT)) {
+                    case "topleft", "top_left", "tl" -> topLeft = Float.parseFloat(value);
+                    case "bottomleft", "bottom_left", "bl" -> bottomLeft = Float.parseFloat(value);
+                    case "bottomright", "bottom_right", "br" -> bottomRight = Float.parseFloat(value);
+                    case "topright", "top_right", "tr" -> topRight = Float.parseFloat(value);
+                    default -> throw new IllegalArgumentException("Unknown option: " + part);
                 }
             }
             return new Corners(topLeft, bottomLeft, bottomRight, topRight);
@@ -84,10 +84,10 @@ public final class CornersParser implements Parser<Corners> {
 
     @Override
     public String toString(final Corners value) {
-        return "topLeft=" + value.topLeft()
-                + " bottomLeft=" + value.bottomLeft()
-                + " bottomRight=" + value.bottomRight()
-                + " topRight=" + value.topRight();
+        return "top_left=" + value.topLeft()
+                + " bottom_left=" + value.bottomLeft()
+                + " bottom_right=" + value.bottomRight()
+                + " top_right=" + value.topRight();
     }
 
 }
