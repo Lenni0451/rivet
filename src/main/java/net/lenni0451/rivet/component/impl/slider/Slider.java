@@ -5,6 +5,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
+import net.lenni0451.rivet.animation.AnimationConfig;
+import net.lenni0451.rivet.animation.Interpolator;
+import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
@@ -46,7 +49,9 @@ public class Slider extends Component {
     @Getter
     @Nullable
     private Ticks ticks;
-    private boolean dragged;
+    private boolean dragged = false;
+    private boolean hovered = false;
+    @Nullable
     private SliderTooltip tooltip;
     private final Map<Double, ShapedText> tickLabels = new HashMap<>();
     private String cachedFormatString = null;
@@ -95,6 +100,17 @@ public class Slider extends Component {
     private final ThemeOption<Color> disabledThumbOutlineColor;
     @Getter
     private final ThemeOption<Color> disabledTickColor;
+    @Getter
+    private final ThemeOption<Color> thumbHoverColor;
+    @Getter
+    private final ThemeOption<Color> thumbHoverOutlineColor;
+    @Getter
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
+    @Getter
+    private final ThemeOption<AnimationConfig> clickAnimationConfig;
+
+    private StateTransition<Color, State> thumbColorTransition;
+    private StateTransition<Color, State> thumbOutlineColorTransition;
 
     public Slider(final double min, final double max, final double value) {
         this(min, max, 1, value);
@@ -129,6 +145,10 @@ public class Slider extends Component {
         this.disabledThumbColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_COLOR);
         this.disabledThumbOutlineColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_OUTLINE_COLOR);
         this.disabledTickColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_TICK_COLOR);
+        this.thumbHoverColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_HOVER_COLOR);
+        this.thumbHoverOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_HOVER_OUTLINE_COLOR);
+        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.SLIDER_HOVER_ANIMATION);
+        this.clickAnimationConfig = new ThemeOption<>(this, Theme.SLIDER_CLICK_ANIMATION);
     }
 
     public Slider font(final Font font) {
@@ -170,6 +190,56 @@ public class Slider extends Component {
         return this.font != null ? this.font : this.rivet().backend().font();
     }
 
+    private State state() {
+        if (this.disabled()) {
+            return State.DISABLED;
+        } else if (this.dragged) {
+            return State.DRAGGED;
+        } else {
+            return this.hovered ? State.HOVERED : State.INACTIVE;
+        }
+    }
+
+    @Override
+    protected void onComponentAdded() {
+        this.thumbColorTransition = new StateTransition<>(
+                this,
+                this::state,
+                (start, target) -> {
+                    if (start.equals(State.DRAGGED) || target.equals(State.DRAGGED)) {
+                        return this.clickAnimationConfig.value();
+                    } else {
+                        return this.hoverAnimationConfig.value();
+                    }
+                },
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.thumbColor.value();
+                    case HOVERED -> this.thumbHoverColor.value();
+                    case DRAGGED -> this.thumbClickColor.value();
+                    case DISABLED -> this.disabledThumbColor.value();
+                },
+                Interpolator.COLOR
+        );
+        this.thumbOutlineColorTransition = new StateTransition<>(
+                this,
+                this::state,
+                (start, target) -> {
+                    if (start.equals(State.DRAGGED) || target.equals(State.DRAGGED)) {
+                        return this.clickAnimationConfig.value();
+                    } else {
+                        return this.hoverAnimationConfig.value();
+                    }
+                },
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.thumbOutlineColor.value();
+                    case HOVERED -> this.thumbHoverOutlineColor.value();
+                    case DRAGGED -> this.thumbClickOutlineColor.value();
+                    case DISABLED -> this.disabledThumbOutlineColor.value();
+                },
+                Interpolator.COLOR
+        );
+    }
+
     @Override
     protected void onComponentRemoved() {
         if (this.tooltip != null) {
@@ -177,6 +247,7 @@ public class Slider extends Component {
             this.tooltip = null;
         }
         this.dragged = false;
+        this.hovered = false;
     }
 
     @Override
@@ -193,6 +264,16 @@ public class Slider extends Component {
     @Override
     public void onThemeChanged() {
         this.tickLabels.clear();
+    }
+
+    @Override
+    protected void onComponentMouseEnter() {
+        this.hovered = true;
+    }
+
+    @Override
+    protected void onComponentMouseLeave() {
+        this.hovered = false;
     }
 
     @Override
@@ -289,18 +370,8 @@ public class Slider extends Component {
     }
 
     private void renderThumb(final Renderer renderer, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float thumbX) {
-        Color color;
-        Color outlineColor;
-        if (this.disabled()) {
-            color = this.disabledThumbColor.value();
-            outlineColor = this.disabledThumbOutlineColor.value();
-        } else if (this.dragged) {
-            color = this.thumbClickColor.value();
-            outlineColor = this.thumbClickOutlineColor.value();
-        } else {
-            color = this.thumbColor.value();
-            outlineColor = this.thumbOutlineColor.value();
-        }
+        Color color = this.thumbColorTransition.value();
+        Color outlineColor = this.thumbOutlineColorTransition.value();
         float outlineWidth = this.thumbOutlineWidth.value();
         float cornerRadius = this.thumbCornerRadius.value();
 
@@ -418,6 +489,10 @@ public class Slider extends Component {
         CIRCLE,
         RECTANGLE,
         PIN
+    }
+
+    private enum State {
+        INACTIVE, HOVERED, DRAGGED, DISABLED
     }
 
 }

@@ -3,6 +3,9 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.animation.AnimationConfig;
+import net.lenni0451.rivet.animation.Interpolator;
+import net.lenni0451.rivet.animation.Transition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
@@ -46,11 +49,23 @@ public class Checkbox extends Component {
     @Getter
     private final ThemeOption<Float> textGap;
     @Getter
+    private final ThemeOption<Color> hoverBackgroundColor;
+    @Getter
+    private final ThemeOption<Color> hoverOutlineColor;
+    @Getter
     private final ThemeOption<Color> disabledBackgroundColor;
     @Getter
     private final ThemeOption<Color> disabledOutlineColor;
     @Getter
     private final ThemeOption<Color> disabledCheckColor;
+    @Getter
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
+    @Getter
+    private final ThemeOption<AnimationConfig> checkAnimationConfig;
+
+    private Transition<Color> backgroundColorTransition;
+    private Transition<Color> outlineColorTransition;
+    private Transition<Float> checkProgress;
 
     public Checkbox() {
         this(false);
@@ -71,9 +86,13 @@ public class Checkbox extends Component {
         this.checkColor = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_COLOR);
         this.checkWidth = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_WIDTH);
         this.textGap = new ThemeOption<>(this, Theme.CHECKBOX_TEXT_GAP);
+        this.hoverBackgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_BACKGROUND_COLOR);
+        this.hoverOutlineColor = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_OUTLINE_COLOR);
         this.disabledBackgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_BACKGROUND_COLOR);
         this.disabledOutlineColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_OUTLINE_COLOR);
         this.disabledCheckColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_CHECK_COLOR);
+        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_ANIMATION);
+        this.checkAnimationConfig = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_ANIMATION);
     }
 
     public Checkbox font(final Font font) {
@@ -116,9 +135,45 @@ public class Checkbox extends Component {
         }
     }
 
+    private State state() {
+        if (this.disabled()) {
+            return State.DISABLED;
+        } else if (this.hovered) {
+            return State.HOVERED;
+        } else {
+            return State.INACTIVE;
+        }
+    }
+
     @Override
     protected void onComponentAdded() {
         this.shapeText();
+        this.backgroundColorTransition = new Transition<>(
+                this,
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.backgroundColor.value();
+                    case HOVERED -> this.hoverBackgroundColor.value();
+                    case DISABLED -> this.disabledBackgroundColor.value();
+                },
+                this.hoverAnimationConfig::value,
+                Interpolator.COLOR
+        );
+        this.outlineColorTransition = new Transition<>(
+                this,
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.outlineColor.value();
+                    case HOVERED -> this.hoverOutlineColor.value();
+                    case DISABLED -> this.disabledOutlineColor.value();
+                },
+                this.hoverAnimationConfig::value,
+                Interpolator.COLOR
+        );
+        this.checkProgress = new Transition<>(
+                this,
+                () -> this.checked ? 1F : 0F,
+                this.checkAnimationConfig::value,
+                Interpolator.FLOAT
+        );
     }
 
     @Override
@@ -167,17 +222,17 @@ public class Checkbox extends Component {
         float boxSize = size.height() * 0.8F;
         float offset = (size.height() - boxSize) / 2F;
 
-        Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
-        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), backgroundColor);
+        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.backgroundColorTransition.value());
         if (this.outlineWidth.value() > 0) {
-            Color outlineColor = this.disabled() ? this.disabledOutlineColor.value() : this.outlineColor.value();
-            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.outlineWidth.value(), outlineColor);
+            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColorTransition.value());
         }
 
-        if (this.checked) {
+        float progress = this.checkProgress.value();
+        if (progress > 0) {
             float padding = boxSize * 0.2F;
             float checkWidth = this.checkWidth.value();
             Color checkColor = this.disabled() ? this.disabledCheckColor.value() : this.checkColor.value();
+            checkColor = checkColor.withAlphaF(checkColor.getAlpha() / 255F * progress);
 
             renderer.line(offset + padding, offset + boxSize / 2F, offset + boxSize / 2.5F, offset + boxSize - padding, checkWidth, checkColor);
             renderer.line(offset + boxSize / 2.5F, offset + boxSize - padding, offset + boxSize - padding, offset + padding, checkWidth, checkColor);
@@ -196,6 +251,11 @@ public class Checkbox extends Component {
             width += this.textGap.value() + this.shapedText.visualBounds().width();
         }
         return new Size(width, height);
+    }
+
+
+    private enum State {
+        INACTIVE, HOVERED, DISABLED
     }
 
 }

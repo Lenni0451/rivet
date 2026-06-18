@@ -5,6 +5,8 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.animation.AnimationConfig;
+import net.lenni0451.rivet.animation.Interpolator;
+import net.lenni0451.rivet.animation.Transition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
@@ -95,6 +97,10 @@ public class TextField extends Component {
     private final ThemeOption<Color> disabledOutlineColor;
     @Getter
     private final ThemeOption<AnimationConfig> cursorAnimationConfig;
+    @Getter
+    private final ThemeOption<AnimationConfig> focusAnimationConfig;
+
+    private Transition<Color> outlineColorTransition;
 
     public TextField() {
         this("");
@@ -121,6 +127,7 @@ public class TextField extends Component {
         this.disabledBackgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_BACKGROUND_COLOR);
         this.disabledOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_OUTLINE_COLOR);
         this.cursorAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_ANIMATION);
+        this.focusAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUS_ANIMATION);
     }
 
     public TextField font(final Font font) {
@@ -216,10 +223,33 @@ public class TextField extends Component {
         return this.font != null ? this.font : this.rivet().backend().font();
     }
 
+    private State state() {
+        if (this.disabled()) {
+            return State.DISABLED;
+        } else if (!this.valid) {
+            return State.INVALID;
+        } else if (this.focused) {
+            return State.FOCUSED;
+        } else {
+            return State.IDLE;
+        }
+    }
+
     @Override
     protected void onComponentAdded() {
         this.updateShapedText();
         this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
+        this.outlineColorTransition = new Transition<>(
+                this,
+                () -> switch (this.state()) {
+                    case IDLE -> this.outlineColor.value();
+                    case FOCUSED -> this.focusedOutlineColor.value();
+                    case INVALID -> this.invalidOutlineColor.value();
+                    case DISABLED -> this.disabledOutlineColor.value();
+                },
+                this.focusAnimationConfig::value,
+                Interpolator.COLOR
+        );
     }
 
     @Override
@@ -392,12 +422,7 @@ public class TextField extends Component {
 
         Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), backgroundColor);
-        Color outlineColor;
-        if (this.disabled()) outlineColor = this.disabledOutlineColor.value();
-        else if (!this.valid) outlineColor = this.invalidOutlineColor.value();
-        else if (this.focused) outlineColor = this.focusedOutlineColor.value();
-        else outlineColor = this.outlineColor.value();
-        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), outlineColor);
+        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColorTransition.value());
 
         renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
             renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
@@ -498,6 +523,11 @@ public class TextField extends Component {
         } else {
             this.valid = this.validator.test(this.text.toString());
         }
+    }
+
+
+    private enum State {
+        IDLE, FOCUSED, INVALID, DISABLED
     }
 
 }

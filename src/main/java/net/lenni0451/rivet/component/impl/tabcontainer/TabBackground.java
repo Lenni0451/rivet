@@ -3,6 +3,9 @@ package net.lenni0451.rivet.component.impl.tabcontainer;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.rivet.animation.AnimationConfig;
+import net.lenni0451.rivet.animation.Interpolator;
+import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.DecoratedContainer;
@@ -29,8 +32,13 @@ public class TabBackground extends Component {
     private final ThemeOption<Color> hoverColor;
     private final ThemeOption<Color> hoverOutlineColor;
     private final ThemeOption<Padding> innerPadding;
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
+    private final ThemeOption<AnimationConfig> activeAnimationConfig;
     private boolean hovered = false;
     private boolean active = false;
+
+    private StateTransition<Color, State> backgroundColor;
+    private StateTransition<Color, State> outlineColor;
 
     public TabBackground(final Runnable clickListener) {
         this.clickListener = clickListener;
@@ -43,6 +51,8 @@ public class TabBackground extends Component {
         this.hoverColor = new ThemeOption<>(this, Theme.TAB_HOVER_COLOR);
         this.hoverOutlineColor = new ThemeOption<>(this, Theme.TAB_HOVER_OUTLINE_COLOR);
         this.innerPadding = new ThemeOption<>(this, Theme.TAB_INNER_PADDING);
+        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.TAB_HOVER_ANIMATION);
+        this.activeAnimationConfig = new ThemeOption<>(this, Theme.TAB_ACTIVE_ANIMATION);
 
         this.innerPadding.changeListener().add(padding -> {
             if (this.parent() instanceof DecoratedContainer decoratedContainer) {
@@ -62,11 +72,53 @@ public class TabBackground extends Component {
         this.active = false;
     }
 
+    private State state() {
+        if (this.active) {
+            return State.ACTIVE;
+        } else {
+            return this.hovered ? State.HOVERED : State.INACTIVE;
+        }
+    }
+
     @Override
     protected void onComponentAdded() {
         if (this.parent() instanceof DecoratedContainer decoratedContainer) {
             decoratedContainer.innerPadding(this.innerPadding.value());
         }
+        this.backgroundColor = new StateTransition<>(
+                this,
+                this::state,
+                (start, target) -> {
+                    if (start.equals(State.ACTIVE) || target.equals(State.ACTIVE)) {
+                        return this.activeAnimationConfig.value();
+                    } else {
+                        return this.hoverAnimationConfig.value();
+                    }
+                },
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.inactiveColor.value();
+                    case HOVERED -> this.hoverColor.value();
+                    case ACTIVE -> this.activeColor.value();
+                },
+                Interpolator.COLOR
+        );
+        this.outlineColor = new StateTransition<>(
+                this,
+                this::state,
+                (start, target) -> {
+                    if (start.equals(State.ACTIVE) || target.equals(State.ACTIVE)) {
+                        return this.activeAnimationConfig.value();
+                    } else {
+                        return this.hoverAnimationConfig.value();
+                    }
+                },
+                () -> switch (this.state()) {
+                    case INACTIVE -> this.inactiveOutlineColor.value();
+                    case HOVERED -> this.hoverOutlineColor.value();
+                    case ACTIVE -> this.activeOutlineColor.value();
+                },
+                Interpolator.COLOR
+        );
     }
 
     @Override
@@ -98,29 +150,31 @@ public class TabBackground extends Component {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        Color color;
-        Color outlineColor;
-        if (this.active) {
-            color = this.activeColor.value();
-            outlineColor = this.activeOutlineColor.value();
-        } else if (this.hovered) {
-            color = this.hoverColor.value();
-            outlineColor = this.hoverOutlineColor.value();
-        } else {
-            color = this.inactiveColor.value();
-            outlineColor = this.inactiveOutlineColor.value();
-        }
         Corners corners = this.cornerRadius.value();
-        renderer.fillRoundedRect(0, 0, size.width(), size.height(), corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
+        renderer.fillRoundedRect(
+                0, 0, size.width(), size.height(),
+                corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(),
+                this.backgroundColor.value()
+        );
         float outlineWidth = this.outlineWidth.value();
         if (outlineWidth > 0) {
-            renderer.outlineRoundedRect(0, 0, size.width(), size.height(), corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), outlineWidth, outlineColor);
+            renderer.outlineRoundedRect(
+                    0, 0, size.width(), size.height(),
+                    corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(),
+                    outlineWidth,
+                    this.outlineColor.value()
+            );
         }
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
         return Size.EMPTY;
+    }
+
+
+    private enum State {
+        INACTIVE, HOVERED, ACTIVE
     }
 
 }

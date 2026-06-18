@@ -39,14 +39,8 @@ public abstract class Theme {
     public static final ThemeKey<Color> BUTTON_ACTIVE_OUTLINE_COLOR = register("button.active_outline_color", Color.class, r -> Color.fromRGB(100, 100, 105));
     public static final ThemeKey<Color> BUTTON_CLICK_COLOR = register("button.click_color", Color.class, r -> Color.fromRGB(55, 55, 60));
     public static final ThemeKey<Color> BUTTON_CLICK_OUTLINE_COLOR = register("button.click_outline_color", Color.class, r -> Color.fromRGB(110, 110, 115));
-    public static final ThemeKey<AnimationConfig> BUTTON_HOVER_ANIMATION = register("button.hover_animation", AnimationConfig.class, r -> new AnimationConfig(
-            AnimationMode.DEFAULT,
-            new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0F, 1F, 150, EasingBehavior.KEEP)
-    ));
-    public static final ThemeKey<AnimationConfig> BUTTON_CLICK_ANIMATION = register("button.click_animation", AnimationConfig.class, r -> new AnimationConfig(
-            AnimationMode.DEFAULT,
-            new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_IN_OUT, 0F, 1F, 100, EasingBehavior.KEEP)
-    ));
+    public static final ThemeKey<AnimationConfig> BUTTON_HOVER_ANIMATION = register("button.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
+    public static final ThemeKey<AnimationConfig> BUTTON_CLICK_ANIMATION = register("button.click_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
     public static final ThemeKey<Padding> BUTTON_INNER_PADDING = register("button.inner_padding", Padding.class, r -> {
         float textHeight = r.backend().font().height();
         return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
@@ -86,6 +80,10 @@ public abstract class Theme {
     public static final ThemeKey<Color> SLIDER_DISABLED_THUMB_COLOR = register("slider.disabled_thumb_color", Color.class, r -> Color.fromRGB(75, 75, 78));
     public static final ThemeKey<Color> SLIDER_DISABLED_THUMB_OUTLINE_COLOR = register("slider.disabled_thumb_outline_color", Color.class, r -> Color.fromRGB(95, 95, 98));
     public static final ThemeKey<Color> SLIDER_DISABLED_TICK_COLOR = register("slider.disabled_tick_color", Color.class, r -> Color.fromRGB(100, 100, 105));
+    public static final ThemeKey<Color> SLIDER_THUMB_HOVER_COLOR = register("slider.thumb_hover_color", Color.class, r -> Color.fromRGB(140, 140, 145));
+    public static final ThemeKey<Color> SLIDER_THUMB_HOVER_OUTLINE_COLOR = register("slider.thumb_hover_outline_color", Color.class, r -> Color.fromRGB(160, 160, 165));
+    public static final ThemeKey<AnimationConfig> SLIDER_HOVER_ANIMATION = register("slider.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
+    public static final ThemeKey<AnimationConfig> SLIDER_CLICK_ANIMATION = register("slider.click_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
 
     // ScrollContainer
     public static final ThemeKey<Color> SCROLL_BAR_COLOR = register("scroll.bar_color", Color.class, r -> Color.fromRGBA(120, 120, 125, 100));
@@ -138,6 +136,7 @@ public abstract class Theme {
                     new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 0F, 1F, 500, EasingBehavior.KEEP)
             )
     ));
+    public static final ThemeKey<AnimationConfig> TEXT_FIELD_FOCUS_ANIMATION = register("text_field.focus_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
 
     // Checkbox
     public static final ThemeKey<Float> CHECKBOX_CORNER_RADIUS = register("checkbox.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
@@ -147,9 +146,13 @@ public abstract class Theme {
     public static final ThemeKey<Color> CHECKBOX_CHECK_COLOR = register("checkbox.check_color", Color.class, r -> Color.WHITE);
     public static final ThemeKey<Float> CHECKBOX_CHECK_WIDTH = register("checkbox.check_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
     public static final ThemeKey<Float> CHECKBOX_TEXT_GAP = register("checkbox.text_gap", Float.class, r -> 0F);
+    public static final ThemeKey<Color> CHECKBOX_HOVER_BACKGROUND_COLOR = register("checkbox.hover_background_color", Color.class, r -> Color.fromRGB(45, 45, 48));
+    public static final ThemeKey<Color> CHECKBOX_HOVER_OUTLINE_COLOR = register("checkbox.hover_outline_color", Color.class, r -> Color.fromRGB(120, 120, 125));
     public static final ThemeKey<Color> CHECKBOX_DISABLED_BACKGROUND_COLOR = register("checkbox.disabled_background_color", Color.class, r -> Color.fromRGB(20, 20, 20));
     public static final ThemeKey<Color> CHECKBOX_DISABLED_OUTLINE_COLOR = register("checkbox.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 50));
     public static final ThemeKey<Color> CHECKBOX_DISABLED_CHECK_COLOR = register("checkbox.disabled_check_color", Color.class, r -> Color.fromRGB(100, 100, 100));
+    public static final ThemeKey<AnimationConfig> CHECKBOX_HOVER_ANIMATION = register("checkbox.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
+    public static final ThemeKey<AnimationConfig> CHECKBOX_CHECK_ANIMATION = register("checkbox.check_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
 
     // ColorPicker
     public static final ThemeKey<Float> COLOR_PICKER_OUTLINE_WIDTH = register("color_picker.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
@@ -190,6 +193,8 @@ public abstract class Theme {
     public static final ThemeKey<Boolean> TAB_SAME_SIZE = register("tab.same_size", Boolean.class, r -> false);
     public static final ThemeKey<Float> TAB_VERTICAL_GAP = register("tab.vertical_gap", Float.class, r -> 0F);
     public static final ThemeKey<Float> TAB_TAB_GAP = register("tab.tab_gap", Float.class, r -> 0F);
+    public static final ThemeKey<AnimationConfig> TAB_HOVER_ANIMATION = register("tab.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
+    public static final ThemeKey<AnimationConfig> TAB_ACTIVE_ANIMATION = register("tab.active_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
 
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {

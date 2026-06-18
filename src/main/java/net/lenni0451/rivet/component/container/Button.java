@@ -125,13 +125,24 @@ public class Button extends Component implements Parent {
 
         this.color = new StateTransition<>(
                 this,
+                this::state,
+                (start, target) -> {
+                    if (start.equals(State.PRESSED) || target.equals(State.PRESSED)) {
+                        return this.clickAnimationConfig.value();
+                    } else {
+                        return this.hoverAnimationConfig.value();
+                    }
+                },
                 () -> switch (this.state()) {
                     case INACTIVE -> this.inactiveColor.value();
                     case HOVERED -> this.activeColor.value();
                     case PRESSED -> this.clickColor.value();
                     case DISABLED -> this.disabledColor.value();
                 },
-                Interpolator.COLOR,
+                Interpolator.COLOR
+        );
+        this.outlineColor = new StateTransition<>(
+                this,
                 this::state,
                 (start, target) -> {
                     if (start.equals(State.PRESSED) || target.equals(State.PRESSED)) {
@@ -139,25 +150,14 @@ public class Button extends Component implements Parent {
                     } else {
                         return this.hoverAnimationConfig.value();
                     }
-                }
-        );
-        this.outlineColor = new StateTransition<>(
-                this,
+                },
                 () -> switch (this.state()) {
                     case INACTIVE -> this.inactiveOutlineColor.value();
                     case HOVERED -> this.activeOutlineColor.value();
                     case PRESSED -> this.clickOutlineColor.value();
                     case DISABLED -> this.disabledOutlineColor.value();
                 },
-                Interpolator.COLOR,
-                this::state,
-                (start, target) -> {
-                    if (start.equals(State.PRESSED) || target.equals(State.PRESSED)) {
-                        return this.clickAnimationConfig.value();
-                    } else {
-                        return this.hoverAnimationConfig.value();
-                    }
-                }
+                Interpolator.COLOR
         );
     }
 

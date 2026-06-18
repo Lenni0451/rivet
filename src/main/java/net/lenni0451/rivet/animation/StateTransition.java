@@ -8,10 +8,10 @@ import java.util.function.Supplier;
 public class StateTransition<T, S> {
 
     private final Component component;
-    private final Supplier<T> targetSupplier;
-    private final Interpolator<T> interpolator;
     private final Supplier<S> stateSupplier;
     private final StateConfigProvider<S> stateConfigProvider;
+    private final Supplier<T> targetSupplier;
+    private final Interpolator<T> interpolator;
 
     private T currentValue;
     private T startValue;
@@ -19,12 +19,12 @@ public class StateTransition<T, S> {
     private S currentState;
     private Animation animation;
 
-    public StateTransition(final Component component, final Supplier<T> targetSupplier, final Interpolator<T> interpolator, final Supplier<S> stateSupplier, final StateConfigProvider<S> stateConfigProvider) {
+    public StateTransition(final Component component, final Supplier<S> stateSupplier, final StateConfigProvider<S> stateConfigProvider, final Supplier<T> targetSupplier, final Interpolator<T> interpolator) {
         this.component = component;
-        this.targetSupplier = targetSupplier;
-        this.interpolator = interpolator;
         this.stateSupplier = stateSupplier;
         this.stateConfigProvider = stateConfigProvider;
+        this.targetSupplier = targetSupplier;
+        this.interpolator = interpolator;
 
         this.targetValue = targetSupplier.get();
         this.currentValue = this.targetValue;
