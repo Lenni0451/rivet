@@ -239,7 +239,7 @@ public class Checkbox extends Component {
         }
 
         if (!this.text.isEmpty()) {
-            renderer.text(this.shapedText, offset + size.height() + this.textGap.value(), size.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+            renderer.text(this.shapedText, size.height() + this.textGap.value(), size.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
         }
     }
 
