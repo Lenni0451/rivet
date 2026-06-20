@@ -246,6 +246,7 @@ public class Checkbox extends Component {
     @Override
     public Size computeIdealSize(final Size constraints) {
         float height = this.shapedText.logicalBounds().height();
+        if (height <= 0) height = this.rivet().backend().font().height();
         float width = height;
         if (!this.text.isEmpty()) {
             width += this.textGap.value() + this.shapedText.visualBounds().width();
