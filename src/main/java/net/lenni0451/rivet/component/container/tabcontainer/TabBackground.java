@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.component.impl.tabcontainer;
+package net.lenni0451.rivet.component.container.tabcontainer;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;

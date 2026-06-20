@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.DecoratedContainer;
-import net.lenni0451.rivet.component.impl.tabcontainer.TabBackground;
 
 import java.util.function.Consumer;
 
