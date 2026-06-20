@@ -11,6 +11,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Padding;
@@ -280,10 +281,6 @@ public class Button extends Component implements Parent {
     @FunctionalInterface
     public interface ClickListener {
         void onClick(final MouseButtonEvent event);
-    }
-
-    public enum ClickOn {
-        DOWN, UP, BOTH
     }
 
     private enum State {

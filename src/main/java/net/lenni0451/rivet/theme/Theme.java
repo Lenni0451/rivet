@@ -10,10 +10,10 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
-import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 
@@ -45,7 +45,7 @@ public abstract class Theme {
         float textHeight = r.backend().font().height();
         return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
     });
-    public static final ThemeKey<Button.ClickOn> BUTTON_CLICK_ON = register("button.click_on", Button.ClickOn.class, r -> Button.ClickOn.UP);
+    public static final ThemeKey<ClickOn> BUTTON_CLICK_ON = register("button.click_on", ClickOn.class, r -> ClickOn.UP);
     public static final ThemeKey<Color> BUTTON_DISABLED_COLOR = register("button.disabled_color", Color.class, r -> Color.fromRGB(35, 35, 38));
     public static final ThemeKey<Color> BUTTON_DISABLED_OUTLINE_COLOR = register("button.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 55));
 
@@ -195,6 +195,7 @@ public abstract class Theme {
     public static final ThemeKey<Float> TAB_TAB_GAP = register("tab.tab_gap", Float.class, r -> 0F);
     public static final ThemeKey<AnimationConfig> TAB_HOVER_ANIMATION = register("tab.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
     public static final ThemeKey<AnimationConfig> TAB_ACTIVE_ANIMATION = register("tab.active_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
+    public static final ThemeKey<ClickOn> TAB_CLICK_ON = register("tab.click_on", ClickOn.class, r -> ClickOn.UP);
 
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {

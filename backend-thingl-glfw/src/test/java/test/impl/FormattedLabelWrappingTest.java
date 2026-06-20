@@ -4,6 +4,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.impl.FormattedLabel;
+import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
@@ -26,7 +27,7 @@ public class FormattedLabelWrappingTest extends TestBase {
         container.addChild(new Button("Testing Testing Testing Testing", () -> {
             System.out.println("click");
         }), button -> {
-            button.clickOn().set(Button.ClickOn.BOTH);
+            button.clickOn().set(ClickOn.BOTH);
             button.layoutOptions(new GridLayoutOptions(0, 1).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
         rivet.root().addChild(container);

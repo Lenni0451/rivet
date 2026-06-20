@@ -9,6 +9,7 @@ import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.DecoratedContainer;
+import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Corners;
@@ -34,6 +35,7 @@ public class TabBackground extends Component {
     private final ThemeOption<Padding> innerPadding;
     private final ThemeOption<AnimationConfig> hoverAnimationConfig;
     private final ThemeOption<AnimationConfig> activeAnimationConfig;
+    private final ThemeOption<ClickOn> clickOn;
     private boolean hovered = false;
     private boolean active = false;
 
@@ -53,6 +55,7 @@ public class TabBackground extends Component {
         this.innerPadding = new ThemeOption<>(this, Theme.TAB_INNER_PADDING);
         this.hoverAnimationConfig = new ThemeOption<>(this, Theme.TAB_HOVER_ANIMATION);
         this.activeAnimationConfig = new ThemeOption<>(this, Theme.TAB_ACTIVE_ANIMATION);
+        this.clickOn = new ThemeOption<>(this, Theme.TAB_CLICK_ON);
 
         this.innerPadding.changeListener().add(padding -> {
             if (this.parent() instanceof DecoratedContainer decoratedContainer) {
@@ -140,10 +143,23 @@ public class TabBackground extends Component {
     }
 
     @Override
+    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+        if (!this.active && event.button().equals(MouseButton.LEFT)) {
+            if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
+                this.clickListener.run();
+                this.active = true;
+            }
+        }
+        return true;
+    }
+
+    @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         if (!this.active && this.hovered && event.button().equals(MouseButton.LEFT)) {
-            this.clickListener.run();
-            this.active = true;
+            if (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH)) {
+                this.clickListener.run();
+                this.active = true;
+            }
         }
         return true;
     }

@@ -9,10 +9,10 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
-import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.slider.Slider;
+import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
@@ -108,8 +108,8 @@ class ThemeLoaderTest {
         // DynamicAnimationConfig
         check(Theme.SCROLL_ANIMATION, "back ease_in_out 100", new DynamicAnimationConfig(EasingFunction.BACK, EasingMode.EASE_IN_OUT, 100));
 
-        // Button.ClickOn
-        for (Button.ClickOn value : Button.ClickOn.values()) {
+        // ClickOn
+        for (ClickOn value : ClickOn.values()) {
             check(Theme.BUTTON_CLICK_ON, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
