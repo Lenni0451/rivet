@@ -87,13 +87,13 @@ public class SelectionAndOrderingTest extends TestBase {
         @Override
         protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
             this.mouseDown = true;
-            return super.onComponentMouseDown(event, size);
+            return true;
         }
 
         @Override
         protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
             this.mouseDown = false;
-            return super.onComponentMouseUp(event, size);
+            return true;
         }
 
         @Override
@@ -101,7 +101,7 @@ public class SelectionAndOrderingTest extends TestBase {
             if (this.mouseDown && !this.rivet().dragAndDropManager().isDragging()) {
                 this.rivet().dragAndDropManager().startDrag(this, new Label(this.text()), this.computeIdealSize(Size.EMPTY));
             }
-            return super.onComponentMouseMove(event, size);
+            return true;
         }
 
         @Override
