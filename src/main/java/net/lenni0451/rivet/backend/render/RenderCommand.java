@@ -5,12 +5,10 @@ import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Rectangle;
 
-import java.util.function.Consumer;
-
 public sealed interface RenderCommand extends RenderElement permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
         RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Line,
-        RenderCommand.Text, RenderCommand.FillGradientRect, RenderCommand.Image, RenderCommand.CustomRenderCommand {
+        RenderCommand.Text, RenderCommand.FillGradientRect, RenderCommand.Image, RenderCommand.Custom {
 
     Rectangle bounds();
 
@@ -100,7 +98,7 @@ public sealed interface RenderCommand extends RenderElement permits
         }
     }
 
-    record CustomRenderCommand<T>(Consumer<T> action, Rectangle bounds) implements RenderCommand {
+    non-sealed interface Custom extends RenderCommand {
     }
 
 }

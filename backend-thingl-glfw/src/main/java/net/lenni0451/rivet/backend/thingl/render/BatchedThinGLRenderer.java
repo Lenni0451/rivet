@@ -1,9 +1,9 @@
 package net.lenni0451.rivet.backend.thingl.render;
 
+import net.lenni0451.rivet.backend.render.ModifierCommand;
 import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderElement;
 import net.lenni0451.rivet.backend.render.RenderList;
-import net.lenni0451.rivet.backend.render.TransformCommand;
 import net.lenni0451.rivet.backend.thingl.util.MathUtil;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHolder;
@@ -17,20 +17,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BatchedThinGLRenderer {
+public class BatchedThinGLRenderer extends ThinGLRenderer {
 
-    public static void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
-        renderLayers(matrixStack, buildLayers(renderList));
+    public void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
+        this.renderLayers(matrixStack, this.buildLayers(renderList));
     }
 
-    public static List<Layer> buildLayers(final RenderList renderList) {
+    public List<Layer> buildLayers(final RenderList renderList) {
         final List<Layer> layers = new ArrayList<>();
         final Matrix4fStack matrixStack = new Matrix4fStack(32);
-        buildLayers(layers, matrixStack, renderList);
+        this.buildLayers(layers, matrixStack, renderList);
         return layers;
     }
 
-    public static void renderLayers(final Matrix4fStack matrixStack, final List<Layer> layers) {
+    public void renderLayers(final Matrix4fStack matrixStack, final List<Layer> layers) {
         final MultiDrawBatchDataHolder multiDrawBatchDataHolder = new ImmediateMultiDrawBatchDataHolder();
         ThinGL.renderer2D().beginBuffering(multiDrawBatchDataHolder);
         ThinGL.rendererText().beginBuffering(multiDrawBatchDataHolder);
@@ -40,7 +40,7 @@ public class BatchedThinGLRenderer {
             for (Layer.CommandState commandState : layer.commandStates()) {
                 matrixStack.pushMatrix();
                 matrixStack.mul(commandState.matrix());
-                ThinGLRenderer.renderCommand(matrixStack, commandState.command());
+                this.renderCommand(matrixStack, commandState.command());
                 matrixStack.popMatrix();
             }
             GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Layer " + i);
@@ -53,31 +53,32 @@ public class BatchedThinGLRenderer {
     }
 
 
-    private static void buildLayers(final List<Layer> layers, final Matrix4fStack matrixStack, final RenderList renderList) {
+    private void buildLayers(final List<Layer> layers, final Matrix4fStack matrixStack, final RenderList renderList) {
         boolean matrixPushed = false;
-        for (TransformCommand transform : renderList.transforms()) {
+        for (ModifierCommand transform : renderList.modifiers()) {
             switch (transform) {
-                case TransformCommand.Scale scale -> {
+                case ModifierCommand.Scale scale -> {
                     if (!matrixPushed) {
                         matrixPushed = true;
                         matrixStack.pushMatrix();
                     }
                     matrixStack.scaleXY(scale.x(), scale.y());
                 }
-                case TransformCommand.ComponentBounds bounds -> {
+                case ModifierCommand.ComponentBounds bounds -> {
                     // TODO: Implement
                 }
-                case TransformCommand.Scissor scissor -> {
+                case ModifierCommand.Scissor scissor -> {
                     // TODO: Implement
                 }
-                case TransformCommand.Translate translate -> {
+                case ModifierCommand.Translate translate -> {
                     if (!matrixPushed) {
                         matrixPushed = true;
                         matrixStack.pushMatrix();
                     }
                     matrixStack.translate(translate.x(), translate.y(), 0F);
                 }
-                case null -> {
+                case ModifierCommand.Custom custom -> {
+                    // TODO: Implement
                 }
             }
         }
@@ -98,7 +99,7 @@ public class BatchedThinGLRenderer {
                     }
                     layers.get(insertionIndex).commandStates.add(new Layer.CommandState(bounds, new Matrix4f(matrixStack), command));
                 }
-                case RenderList subRenderList -> buildLayers(layers, matrixStack, subRenderList);
+                case RenderList subRenderList -> this.buildLayers(layers, matrixStack, subRenderList);
             }
         }
         if (matrixPushed) matrixStack.popMatrix();

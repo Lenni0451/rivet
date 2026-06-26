@@ -3,13 +3,11 @@ package net.lenni0451.rivet.backend.render;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.model.TextOrigin;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Consumer;
 
 public final class Renderer {
 
@@ -35,15 +33,15 @@ public final class Renderer {
 
 
     public void translate(final float x, final float y, final Runnable renderer) {
-        this.transform(new TransformCommand.Translate(x, y), renderer);
+        this.transform(new ModifierCommand.Translate(x, y), renderer);
     }
 
     public void componentBounds(final float x, final float y, final float width, final float height, final Runnable renderer) {
-        this.transform(new TransformCommand.ComponentBounds(x, y, width, height), renderer);
+        this.transform(new ModifierCommand.ComponentBounds(x, y, width, height), renderer);
     }
 
     public void scissor(final float x, final float y, final float width, final float height, final Runnable renderer) {
-        this.transform(new TransformCommand.Scissor(x, y, width, height), renderer);
+        this.transform(new ModifierCommand.Scissor(x, y, width, height), renderer);
     }
 
     public void scale(final float xy, final Runnable renderer) {
@@ -54,11 +52,11 @@ public final class Renderer {
         if (x == 1 && y == 1) {
             renderer.run();
         } else {
-            this.transform(new TransformCommand.Scale(x, y), renderer);
+            this.transform(new ModifierCommand.Scale(x, y), renderer);
         }
     }
 
-    private void transform(final TransformCommand command, final Runnable renderer) {
+    private void transform(final ModifierCommand command, final Runnable renderer) {
         this.checkClosed();
         IncompleteRenderList newRenderList = new IncompleteRenderList();
         newRenderList.add(command);
@@ -172,22 +170,20 @@ public final class Renderer {
      * The backend may choose to execute the renderer in a separate thread, make sure all data passed is immutable.<br>
      * <b>The type {@code T} is not checked. Make sure it matches the backend type!</b>
      *
-     * @param renderer The custom renderer
-     * @param bounds   The bounds of the renderer
-     * @param <T>      The backend specific type
+     * @param renderCommand The custom render command
      */
-    public <T> void custom(final Consumer<T> renderer, final Rectangle bounds) {
+    public void custom(final RenderCommand.Custom renderCommand) {
         this.checkClosed();
-        this.currentRenderList.peek().add(new RenderCommand.CustomRenderCommand<>(renderer, bounds));
+        this.currentRenderList.peek().add(renderCommand);
     }
 
 
     private static class IncompleteRenderList {
-        private final List<TransformCommand> transform = new ArrayList<>();
+        private final List<ModifierCommand> transform = new ArrayList<>();
         private final List<RenderElement> elements = new ArrayList<>();
         private boolean closed;
 
-        public void add(final TransformCommand command) {
+        public void add(final ModifierCommand command) {
             this.checkClosed();
             this.transform.add(command);
         }
@@ -205,7 +201,7 @@ public final class Renderer {
                 if (subList.elements().isEmpty()) {
                     this.transform.clear();
                 } else {
-                    this.transform.addAll(subList.transforms());
+                    this.transform.addAll(subList.modifiers());
                     this.elements.addAll(subList.elements());
                 }
             }

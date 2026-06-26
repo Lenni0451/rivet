@@ -30,6 +30,7 @@ import java.util.Set;
 @Accessors(fluent = true, chain = true)
 public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
 
+    private final ThinGLRenderer renderer = new ThinGLRenderer();
     private FontInstanceSet fontInstanceSet;
     private ThinGLBackend backend;
     private Rivet rivet;
@@ -126,7 +127,7 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
     protected void render(final Matrix4fStack matrix4fStack) {
         ThinGL.programs().getMsaa().bindInput();
         this.renderBackground(matrix4fStack);
-        ThinGLRenderer.renderList(matrix4fStack, this.rivet.render());
+        this.renderer.renderList(matrix4fStack, this.rivet.render());
         ThinGL.programs().getMsaa().unbindInput();
         ThinGL.programs().getMsaa().renderFullscreen();
         ThinGL.programs().getMsaa().clearInput();

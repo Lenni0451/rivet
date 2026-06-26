@@ -2,10 +2,10 @@ package net.lenni0451.rivet.backend.render;
 
 import java.util.List;
 
-public record RenderList(List<TransformCommand> transforms, List<RenderElement> elements) implements RenderElement {
+public record RenderList(List<ModifierCommand> modifiers, List<RenderElement> elements) implements RenderElement {
 
     public RenderList {
-        transforms = List.copyOf(transforms);
+        modifiers = List.copyOf(modifiers);
         elements = List.copyOf(elements);
     }
 

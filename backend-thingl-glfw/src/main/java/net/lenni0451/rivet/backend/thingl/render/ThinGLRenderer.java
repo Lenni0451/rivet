@@ -3,10 +3,10 @@ package net.lenni0451.rivet.backend.thingl.render;
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
+import net.lenni0451.rivet.backend.render.ModifierCommand;
 import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderElement;
 import net.lenni0451.rivet.backend.render.RenderList;
-import net.lenni0451.rivet.backend.render.TransformCommand;
 import net.lenni0451.rivet.backend.thingl.ThinGLTexture;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedText;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
@@ -18,12 +18,11 @@ import org.joml.Matrix4fStack;
 @RequiredArgsConstructor
 public class ThinGLRenderer {
 
-    public static void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
+    public void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
         boolean matrixPushed = false;
-        int scissorPushed = 0;
-        for (TransformCommand transform : renderList.transforms()) {
-            switch (transform) {
-                case TransformCommand.Scale scale -> {
+        for (ModifierCommand modifier : renderList.modifiers()) {
+            switch (modifier) {
+                case ModifierCommand.Scale scale -> {
                     if (!matrixPushed) {
                         matrixPushed = true;
                         matrixStack.pushMatrix();
@@ -33,27 +32,21 @@ public class ThinGLRenderer {
                             scale.y()
                     );
                 }
-                case TransformCommand.ComponentBounds bounds -> {
-                    scissorPushed++;
-                    ThinGL.scissorStack().pushIntersection(
-                            matrixStack,
-                            MathUtils.floorInt(bounds.x()),
-                            MathUtils.floorInt(bounds.y()),
-                            MathUtils.ceilInt(bounds.x() + bounds.width()),
-                            MathUtils.ceilInt(bounds.y() + bounds.height())
-                    );
-                }
-                case TransformCommand.Scissor scissor -> {
-                    scissorPushed++;
-                    ThinGL.scissorStack().pushIntersection(
-                            matrixStack,
-                            MathUtils.floorInt(scissor.x()),
-                            MathUtils.floorInt(scissor.y()),
-                            MathUtils.ceilInt(scissor.x() + scissor.width()),
-                            MathUtils.ceilInt(scissor.y() + scissor.height())
-                    );
-                }
-                case TransformCommand.Translate translate -> {
+                case ModifierCommand.ComponentBounds bounds -> ThinGL.scissorStack().pushIntersection(
+                        matrixStack,
+                        MathUtils.floorInt(bounds.x()),
+                        MathUtils.floorInt(bounds.y()),
+                        MathUtils.ceilInt(bounds.x() + bounds.width()),
+                        MathUtils.ceilInt(bounds.y() + bounds.height())
+                );
+                case ModifierCommand.Scissor scissor -> ThinGL.scissorStack().pushIntersection(
+                        matrixStack,
+                        MathUtils.floorInt(scissor.x()),
+                        MathUtils.floorInt(scissor.y()),
+                        MathUtils.ceilInt(scissor.x() + scissor.width()),
+                        MathUtils.ceilInt(scissor.y() + scissor.height())
+                );
+                case ModifierCommand.Translate translate -> {
                     if (!matrixPushed) {
                         matrixPushed = true;
                         matrixStack.pushMatrix();
@@ -64,19 +57,29 @@ public class ThinGLRenderer {
                             0
                     );
                 }
+                case ModifierCommand.Custom custom -> this.pushCustomModifier(matrixStack, custom);
             }
         }
         for (RenderElement element : renderList.elements()) {
             switch (element) {
-                case RenderCommand command -> renderCommand(matrixStack, command);
-                case RenderList subList -> renderList(matrixStack, subList);
+                case RenderCommand command -> this.renderCommand(matrixStack, command);
+                case RenderList subList -> this.renderList(matrixStack, subList);
             }
         }
-        while (scissorPushed-- > 0) ThinGL.scissorStack().pop();
-        if (matrixPushed) matrixStack.popMatrix();
+        for (ModifierCommand modifier : renderList.modifiers()) {
+            switch (modifier) {
+                case ModifierCommand.Scale _, ModifierCommand.Translate _ -> {
+                    if (matrixPushed) {
+                        matrixStack.popMatrix();
+                    }
+                }
+                case ModifierCommand.ComponentBounds _, ModifierCommand.Scissor _ -> ThinGL.scissorStack().pop();
+                case ModifierCommand.Custom custom -> this.popCustomModifier(matrixStack, custom);
+            }
+        }
     }
 
-    public static void renderCommand(final Matrix4fStack matrixStack, final RenderCommand command) {
+    public void renderCommand(final Matrix4fStack matrixStack, final RenderCommand command) {
         switch (command) {
             case RenderCommand.FillCircle fillCircle -> ThinGL.renderer2D().filledCircle(
                     matrixStack,
@@ -200,10 +203,17 @@ public class ThinGLRenderer {
                     fillGradientRect.x() + fillGradientRect.width(), fillGradientRect.y() + fillGradientRect.height(),
                     fillGradientRect.cbl(), fillGradientRect.cbr(), fillGradientRect.ctr(), fillGradientRect.ctl()
             );
-            case RenderCommand.CustomRenderCommand customRenderCommand -> {
-                customRenderCommand.action().accept(matrixStack);
-            }
+            case RenderCommand.Custom custom -> this.renderCustomCommand(matrixStack, custom);
         }
+    }
+
+    public void pushCustomModifier(final Matrix4fStack matrixStack, final ModifierCommand.Custom custom) {
+    }
+
+    public void popCustomModifier(final Matrix4fStack matrixStack, final ModifierCommand.Custom custom) {
+    }
+
+    public void renderCustomCommand(final Matrix4fStack matrixStack, final RenderCommand.Custom custom) {
     }
 
 }
