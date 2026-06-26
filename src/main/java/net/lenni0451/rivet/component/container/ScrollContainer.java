@@ -376,7 +376,7 @@ public class ScrollContainer extends Component implements Parent {
     @Override
     public void render(final Renderer renderer, final Size size) {
         this.updateAnimation();
-        renderer.componentBounds(0, 0, this.visibleWidth(size), this.visibleHeight(size), () -> {
+        renderer.scissor(0, 0, this.visibleWidth(size), this.visibleHeight(size), () -> {
             renderer.translate(-this.scrollX, -this.scrollY, () -> {
                 this.child.render(renderer, this.childSize);
             });
