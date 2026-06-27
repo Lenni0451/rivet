@@ -16,7 +16,6 @@ import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
-import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -341,8 +340,7 @@ public class Slider extends Component {
         this.renderThumb(renderer, sliderCenter, thumbWidth, thumbHeight, thumbX);
         if (this.ticks != null) this.renderTicks(renderer, sliderCenter, barHeight, thumbWidth, thumbHeight, barWidth);
         if (this.tooltip != null) {
-            Rectangle bounds = this.absoluteBounds();
-            this.tooltip.position(bounds.x() + thumbX, bounds.y(), size.height());
+            this.tooltip.position(renderer.xOffset() + thumbX, renderer.yOffset(), size.height());
         }
     }
 

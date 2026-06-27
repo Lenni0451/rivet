@@ -184,7 +184,7 @@ public class ComboBox extends Component implements Parent {
         }
         if (this.isOpen()) {
             Size screenSize = this.rivet().scaledSize();
-            Rectangle bounds = this.absoluteBounds();
+            Rectangle bounds = new Rectangle(renderer.xOffset(), renderer.yOffset(), size);
             Rectangle region = new Rectangle(
                     bounds.x(),
                     bounds.y() + bounds.height(),

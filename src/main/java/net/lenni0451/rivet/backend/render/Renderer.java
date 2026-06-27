@@ -1,5 +1,7 @@
 package net.lenni0451.rivet.backend.render;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
@@ -9,9 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public final class Renderer {
 
     private final Stack<IncompleteRenderList> currentRenderList = new Stack<>();
+    @Getter
+    private float xOffset = 0;
+    @Getter
+    private float yOffset = 0;
 
     public Renderer() {
         this.currentRenderList.push(new IncompleteRenderList());
@@ -33,7 +40,13 @@ public final class Renderer {
 
 
     public void translate(final float x, final float y, final Runnable renderer) {
+        float previousXOffset = this.xOffset;
+        float previousYOffset = this.yOffset;
+        this.xOffset += x;
+        this.yOffset += y;
         this.transform(new ModifierCommand.Translate(x, y), renderer);
+        this.xOffset = previousXOffset;
+        this.yOffset = previousYOffset;
     }
 
     public void componentBounds(final float x, final float y, final float width, final float height, final Runnable renderer) {

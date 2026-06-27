@@ -58,6 +58,7 @@ public class Container extends Component implements Parent {
     }
 
     // Can return Bounds.EMPTY if the component isn't layouted yet or is not a child of this container
+    @Override
     public final Rectangle childBounds(final Component component) {
         for (Child child : this.children) {
             if (child.component == component) {
