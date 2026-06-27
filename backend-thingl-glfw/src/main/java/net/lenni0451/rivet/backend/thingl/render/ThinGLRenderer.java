@@ -19,19 +19,10 @@ import org.joml.Matrix4fStack;
 public class ThinGLRenderer {
 
     public void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
-        boolean matrixPushed = false;
+        matrixStack.pushMatrix();
         for (ModifierCommand modifier : renderList.modifiers()) {
             switch (modifier) {
-                case ModifierCommand.Scale scale -> {
-                    if (!matrixPushed) {
-                        matrixPushed = true;
-                        matrixStack.pushMatrix();
-                    }
-                    matrixStack.scaleXY(
-                            scale.x(),
-                            scale.y()
-                    );
-                }
+                case ModifierCommand.Scale scale -> matrixStack.scaleXY(scale.x(), scale.y());
                 case ModifierCommand.ComponentBounds bounds -> ThinGL.scissorStack().pushIntersection(
                         matrixStack,
                         MathUtils.floorInt(bounds.x()),
@@ -46,17 +37,7 @@ public class ThinGLRenderer {
                         MathUtils.ceilInt(scissor.x() + scissor.width()),
                         MathUtils.ceilInt(scissor.y() + scissor.height())
                 );
-                case ModifierCommand.Translate translate -> {
-                    if (!matrixPushed) {
-                        matrixPushed = true;
-                        matrixStack.pushMatrix();
-                    }
-                    matrixStack.translate(
-                            translate.x(),
-                            translate.y(),
-                            0
-                    );
-                }
+                case ModifierCommand.Translate translate -> matrixStack.translate(translate.x(), translate.y(), 0F);
                 case ModifierCommand.Custom custom -> this.pushCustomModifier(matrixStack, custom);
             }
         }
@@ -66,12 +47,10 @@ public class ThinGLRenderer {
                 case RenderList subList -> this.renderList(matrixStack, subList);
             }
         }
+        matrixStack.popMatrix();
         for (ModifierCommand modifier : renderList.modifiers()) {
             switch (modifier) {
                 case ModifierCommand.Scale _, ModifierCommand.Translate _ -> {
-                    if (matrixPushed) {
-                        matrixStack.popMatrix();
-                    }
                 }
                 case ModifierCommand.ComponentBounds _, ModifierCommand.Scissor _ -> ThinGL.scissorStack().pop();
                 case ModifierCommand.Custom custom -> this.popCustomModifier(matrixStack, custom);

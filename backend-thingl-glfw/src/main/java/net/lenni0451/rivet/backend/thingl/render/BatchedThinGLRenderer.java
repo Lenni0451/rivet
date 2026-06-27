@@ -2,6 +2,7 @@ package net.lenni0451.rivet.backend.thingl.render;
 
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.ModifierCommand;
 import net.lenni0451.rivet.backend.render.RenderCommand;
 import net.lenni0451.rivet.backend.render.RenderElement;
@@ -12,7 +13,6 @@ import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHol
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.joml.Vector3f;
 import org.joml.primitives.Rectanglef;
 import org.lwjgl.opengl.GL43C;
 
@@ -23,6 +23,8 @@ import java.util.Objects;
 
 public class BatchedThinGLRenderer extends ThinGLRenderer {
 
+    private static final Rectanglef FULL_SIZE_RECT = new Rectanglef(-Float.MAX_VALUE, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+
     @Override
     public void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
         this.renderLayers(matrixStack, this.buildLayers(renderList));
@@ -30,7 +32,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
 
     public List<Layer> buildLayers(final RenderList renderList) {
         final List<Layer> layers = new ArrayList<>();
-        this.buildLayers(layers, new Matrix4fStack(32), new ObjectArrayList<>(), renderList);
+        this.buildLayers(layers, new Matrix4fStack(32), new ObjectArrayList<>(List.of(FULL_SIZE_RECT)), renderList);
         return layers;
     }
 
@@ -48,11 +50,11 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 matrixStack.popMatrix();
             }
             GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Layer " + i);
-            if (layer.scissor != null) {
-                ThinGL.scissorStack().pushOverwrite(layer.scissor.minX, layer.scissor.minY, layer.scissor.maxX, layer.scissor.maxY);
+            if (!layer.scissor.equals(FULL_SIZE_RECT)) {
+                ThinGL.scissorStack().pushOverwrite(MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
             }
             multiDrawBatchDataHolder.draw();
-            if (layer.scissor != null) {
+            if (!layer.scissor.equals(FULL_SIZE_RECT)) {
                 ThinGL.scissorStack().pop();
             }
             GL43C.glPopDebugGroup();
@@ -64,44 +66,25 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
 
 
     private void buildLayers(final List<Layer> layers, final Matrix4fStack matrixStack, final Stack<Rectanglef> scissorStack, final RenderList renderList) {
-        boolean matrixPushed = false;
-        boolean scissorPushed = false;
+        matrixStack.pushMatrix();
+        scissorStack.push(new Rectanglef(scissorStack.top()));
         for (ModifierCommand transform : renderList.modifiers()) {
             switch (transform) {
-                case ModifierCommand.Scale scale -> {
-                    if (!matrixPushed) {
-                        matrixPushed = true;
-                        matrixStack.pushMatrix();
-                    }
-                    matrixStack.scaleXY(scale.x(), scale.y());
-                }
+                case ModifierCommand.Translate translate -> matrixStack.translate(translate.x(), translate.y(), 0F);
                 case ModifierCommand.ComponentBounds _ -> {
                 }
                 case ModifierCommand.Scissor scissor -> {
-                    final Vector3f topLeft = matrixStack.transformPosition(new Vector3f(scissor.x(), scissor.y(), 0F));
-                    final Vector3f bottomRight = matrixStack.transformPosition(new Vector3f(scissor.x() + scissor.width(), scissor.y() + scissor.height(), 0F));
-                    final Rectanglef scissorRect = new Rectanglef(topLeft.x(), topLeft.y(), bottomRight.x(), bottomRight.y());
-                    if (!scissorPushed) {
-                        scissorPushed = true;
-                        scissorStack.push(scissorRect);
-                    } else {
-                        scissorStack.push(scissorStack.top().intersection(scissorRect, new Rectanglef()));
-                    }
+                    final Rectanglef scissorRect = new Rectanglef(scissor.x(), scissor.y(), scissor.x() + scissor.width(), scissor.y() + scissor.height());
+                    scissorStack.top().intersection(MathUtil.transform(scissorRect, matrixStack));
                 }
-                case ModifierCommand.Translate translate -> {
-                    if (!matrixPushed) {
-                        matrixPushed = true;
-                        matrixStack.pushMatrix();
-                    }
-                    matrixStack.translate(translate.x(), translate.y(), 0F);
-                }
+                case ModifierCommand.Scale scale -> matrixStack.scaleXY(scale.x(), scale.y());
                 case ModifierCommand.Custom custom -> {
                     // TODO: Implement
                 }
             }
         }
         final Matrix4f currentMatrix = new Matrix4f(matrixStack);
-        final Rectanglef currentScissor = !scissorStack.isEmpty() ? scissorStack.top() : null;
+        final Rectanglef currentScissor = scissorStack.top();
         for (RenderElement element : renderList.elements()) {
             switch (element) {
                 case RenderCommand command -> {
@@ -117,8 +100,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                         }
                     } else {
                         insertionIndex = layers.size();
-                        bounds.setMin(-Float.MAX_VALUE, -Float.MAX_VALUE);
-                        bounds.setMax(Float.MAX_VALUE, Float.MAX_VALUE);
+                        bounds.set(FULL_SIZE_RECT);
                     }
                     if (insertionIndex >= layers.size()) {
                         layers.add(new Layer(currentScissor));
@@ -128,12 +110,8 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 case RenderList subRenderList -> this.buildLayers(layers, matrixStack, scissorStack, subRenderList);
             }
         }
-        if (matrixPushed) {
-            matrixStack.popMatrix();
-        }
-        if (scissorPushed) {
-            scissorStack.pop();
-        }
+        matrixStack.popMatrix();
+        scissorStack.pop();
     }
 
     public static class Layer {
