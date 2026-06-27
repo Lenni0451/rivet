@@ -38,6 +38,11 @@ public class ThinGLRenderer {
                         MathUtils.ceilInt(scissor.y() + scissor.height())
                 );
                 case ModifierCommand.Translate translate -> matrixStack.translate(translate.x(), translate.y(), 0F);
+                case ThinGLModifierCommand thinGlModifier -> {
+                    switch (thinGlModifier) {
+                        case ThinGLModifierCommand.Blur _ -> ThinGL.programs().getGaussianBlur().bindInput();
+                    }
+                }
                 case ModifierCommand.Custom custom -> this.pushCustomModifier(matrixStack, custom);
             }
         }
@@ -53,6 +58,16 @@ public class ThinGLRenderer {
                 case ModifierCommand.Scale _, ModifierCommand.Translate _ -> {
                 }
                 case ModifierCommand.ComponentBounds _, ModifierCommand.Scissor _ -> ThinGL.scissorStack().pop();
+                case ThinGLModifierCommand thinGlModifier -> {
+                    switch (thinGlModifier) {
+                        case ThinGLModifierCommand.Blur blur -> {
+                            ThinGL.programs().getGaussianBlur().unbindInput();
+                            ThinGL.programs().getGaussianBlur().configureParameters(blur.strength());
+                            ThinGL.programs().getGaussianBlur().renderFullscreen();
+                            ThinGL.programs().getGaussianBlur().clearInput();
+                        }
+                    }
+                }
                 case ModifierCommand.Custom custom -> this.popCustomModifier(matrixStack, custom);
             }
         }
@@ -187,12 +202,15 @@ public class ThinGLRenderer {
     }
 
     public void pushCustomModifier(final Matrix4fStack matrixStack, final ModifierCommand.Custom custom) {
+        throw new UnsupportedOperationException(custom.getClass().getName());
     }
 
     public void popCustomModifier(final Matrix4fStack matrixStack, final ModifierCommand.Custom custom) {
+        throw new UnsupportedOperationException(custom.getClass().getName());
     }
 
     public void renderCustomCommand(final Matrix4fStack matrixStack, final RenderCommand.Custom custom) {
+        throw new UnsupportedOperationException(custom.getClass().getName());
     }
 
 }

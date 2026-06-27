@@ -50,12 +50,21 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 matrixStack.popMatrix();
             }
             GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Layer " + i);
+            if (layer.blurStrength > 0) {
+                ThinGL.programs().getGaussianBlur().bindInput();
+            }
             if (!layer.scissor.equals(FULL_SIZE_RECT)) {
                 ThinGL.scissorStack().pushOverwrite(MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
             }
             multiDrawBatchDataHolder.draw();
             if (!layer.scissor.equals(FULL_SIZE_RECT)) {
                 ThinGL.scissorStack().pop();
+            }
+            if (layer.blurStrength > 0) {
+                ThinGL.programs().getGaussianBlur().unbindInput();
+                ThinGL.programs().getGaussianBlur().configureParameters(layer.blurStrength);
+                ThinGL.programs().getGaussianBlur().render(layer.bounds.minX, layer.bounds.minY, layer.bounds.maxX, layer.bounds.maxY);
+                ThinGL.programs().getGaussianBlur().clearInput();
             }
             GL43C.glPopDebugGroup();
         }
@@ -68,6 +77,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
     private void buildLayers(final List<Layer> layers, final Matrix4fStack matrixStack, final Stack<Rectanglef> scissorStack, final RenderList renderList) {
         matrixStack.pushMatrix();
         scissorStack.push(new Rectanglef(scissorStack.top()));
+        int blurStrength = 0;
         for (ModifierCommand transform : renderList.modifiers()) {
             switch (transform) {
                 case ModifierCommand.Translate translate -> matrixStack.translate(translate.x(), translate.y(), 0F);
@@ -78,9 +88,12 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                     scissorStack.top().intersection(MathUtil.transform(scissorRect, matrixStack));
                 }
                 case ModifierCommand.Scale scale -> matrixStack.scaleXY(scale.x(), scale.y());
-                case ModifierCommand.Custom custom -> {
-                    // TODO: Implement
+                case ThinGLModifierCommand thinGlModifier -> {
+                    switch (thinGlModifier) {
+                        case ThinGLModifierCommand.Blur blur -> blurStrength += blur.strength();
+                    }
                 }
+                case ModifierCommand.Custom _ -> throw new UnsupportedOperationException("Custom modifier commands are not supported in BatchedThinGLRenderer");
             }
         }
         final Matrix4f currentMatrix = new Matrix4f(matrixStack);
@@ -93,7 +106,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                     if (!(command instanceof RenderCommand.Custom)) {
                         for (int i = layers.size() - 1; i >= 0; i--) {
                             final Layer layer = layers.get(i);
-                            if (layer.intersectsRectangle(bounds) || !Objects.equals(layer.scissor, currentScissor)) {
+                            if (layer.intersectsRectangle(bounds) || !Objects.equals(layer.scissor, currentScissor) || layer.blurStrength != blurStrength) {
                                 insertionIndex = i + 1;
                                 break;
                             }
@@ -103,9 +116,9 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                         bounds.set(FULL_SIZE_RECT);
                     }
                     if (insertionIndex >= layers.size()) {
-                        layers.add(new Layer(currentScissor));
+                        layers.add(new Layer(currentScissor, blurStrength));
                     }
-                    layers.get(insertionIndex).commandStates.add(new Layer.CommandState(bounds, currentMatrix, command));
+                    layers.get(insertionIndex).addCommandState(new Layer.CommandState(bounds, currentMatrix, command));
                 }
                 case RenderList subRenderList -> this.buildLayers(layers, matrixStack, scissorStack, subRenderList);
             }
@@ -117,10 +130,13 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
     public static class Layer {
 
         private final List<CommandState> commandStates = new ArrayList<>();
+        private final Rectanglef bounds = new Rectanglef();
         private final Rectanglef scissor;
+        private final int blurStrength;
 
-        private Layer(final Rectanglef scissor) {
+        private Layer(final Rectanglef scissor, final int blurStrength) {
             this.scissor = scissor;
+            this.blurStrength = blurStrength;
         }
 
         private boolean intersectsRectangle(final Rectanglef bounds) {
@@ -130,6 +146,11 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 }
             }
             return false;
+        }
+
+        private void addCommandState(final CommandState commandState) {
+            this.commandStates.add(commandState);
+            this.bounds.union(commandState.bounds);
         }
 
         public List<CommandState> commandStates() {

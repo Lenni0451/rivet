@@ -56,6 +56,10 @@ public final class Renderer {
         }
     }
 
+    public void custom(final ModifierCommand.Custom command, final Runnable renderer) {
+        this.transform(command, renderer);
+    }
+
     private void transform(final ModifierCommand command, final Runnable renderer) {
         this.checkClosed();
         IncompleteRenderList newRenderList = new IncompleteRenderList();
