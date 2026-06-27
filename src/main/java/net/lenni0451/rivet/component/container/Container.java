@@ -181,7 +181,18 @@ public class Container extends Component implements Parent {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
+        Size screenSize = this.rivet().scaledSize();
         for (Child child : this.children) {
+            float childX = child.bounds.x() + renderer.xOffset();
+            float childY = child.bounds.y() + renderer.yOffset();
+            child.component.updatePosition(new Rectangle(childX, childY, child.bounds.size()));
+            if ((childX < 0 && childX + child.bounds.width() < 0) || childX > screenSize.width()) {
+                continue;
+            }
+            if ((childY < 0 && childY + child.bounds.height() < 0) || childY > screenSize.height()) {
+                continue;
+            }
+
             renderer.translate(child.bounds.x(), child.bounds.y(), () -> {
                 renderer.componentBounds(0, 0, child.bounds.width(), child.bounds.height(), () -> {
                     child.component.render(renderer, child.bounds.size());

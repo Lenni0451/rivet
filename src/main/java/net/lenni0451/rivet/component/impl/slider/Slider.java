@@ -16,6 +16,7 @@ import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -327,6 +328,18 @@ public class Slider extends Component {
     }
 
     @Override
+    public void updatePosition(final Rectangle absoluteBounds) {
+        if (this.tooltip != null) {
+            float thumbWidth = this.thumbWidth.value();
+            float barWidth = this.barWidth(absoluteBounds.size());
+            double progress = (this.value - this.min) / (this.max - this.min);
+            float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
+
+            this.tooltip.position(absoluteBounds.x() + thumbX, absoluteBounds.y(), absoluteBounds.height());
+        }
+    }
+
+    @Override
     public void render(final Renderer renderer, final Size size) {
         float thumbWidth = this.thumbWidth.value();
         float thumbHeight = this.thumbHeight.value();
@@ -339,9 +352,6 @@ public class Slider extends Component {
         this.renderBar(renderer, size, sliderCenter, barHeight, thumbWidth, thumbX);
         this.renderThumb(renderer, sliderCenter, thumbWidth, thumbHeight, thumbX);
         if (this.ticks != null) this.renderTicks(renderer, sliderCenter, barHeight, thumbWidth, thumbHeight, barWidth);
-        if (this.tooltip != null) {
-            this.tooltip.position(renderer.xOffset() + thumbX, renderer.yOffset(), size.height());
-        }
     }
 
     private String formatValue(final double value) {

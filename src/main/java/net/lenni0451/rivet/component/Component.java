@@ -324,6 +324,9 @@ public abstract class Component {
     protected void onComponentDragLeave() {
     }
 
+    public void updatePosition(final Rectangle absoluteBounds) {
+    }
+
     public void render(final Renderer renderer, final Size size) {
     }
 

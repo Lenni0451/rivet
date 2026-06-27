@@ -157,6 +157,28 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
+    public void updatePosition(final Rectangle absoluteBounds) {
+        if (this.isOpen()) {
+            Size screenSize = this.rivet().scaledSize();
+            Rectangle region = new Rectangle(
+                    absoluteBounds.x(),
+                    absoluteBounds.y() + absoluteBounds.height(),
+                    Math.min(screenSize.width() - absoluteBounds.x(), absoluteBounds.width()),
+                    screenSize.height() - absoluteBounds.y() - absoluteBounds.height()
+            );
+            Size idealSize = this.child.computeIdealSize(region.size());
+            float maxHeight = Math.min(region.height(), this.maxPopupHeight.value());
+            region = region.withHeight(Math.min(idealSize.height(), maxHeight));
+            if (!(this.child.layoutOptions() instanceof AbsoluteLayoutOptions options)
+                    || options.x() != region.x() || options.y() != region.y()
+                    || options.width() == null || options.width() != region.width()
+                    || options.height() == null || options.height() != region.height()) {
+                this.child.layoutOptions(new AbsoluteLayoutOptions(region));
+            }
+        }
+    }
+
+    @Override
     public void render(final Renderer renderer, final Size size) {
         this.button.render(renderer, size);
         float triangleSize = this.arrowSize.value();
@@ -181,25 +203,6 @@ public class ComboBox extends Component implements Parent {
                     size.height() / 2F - triangleSize / 2F,
                     arrowColor
             );
-        }
-        if (this.isOpen()) {
-            Size screenSize = this.rivet().scaledSize();
-            Rectangle bounds = new Rectangle(renderer.xOffset(), renderer.yOffset(), size);
-            Rectangle region = new Rectangle(
-                    bounds.x(),
-                    bounds.y() + bounds.height(),
-                    Math.min(screenSize.width() - bounds.x(), bounds.width()),
-                    screenSize.height() - bounds.y() - bounds.height()
-            );
-            Size idealSize = this.child.computeIdealSize(region.size());
-            float maxHeight = Math.min(region.height(), this.maxPopupHeight.value());
-            region = region.withHeight(Math.min(idealSize.height(), maxHeight));
-            if (!(this.child.layoutOptions() instanceof AbsoluteLayoutOptions options)
-                    || options.x() != region.x() || options.y() != region.y()
-                    || options.width() == null || options.width() != region.width()
-                    || options.height() == null || options.height() != region.height()) {
-                this.child.layoutOptions(new AbsoluteLayoutOptions(region));
-            }
         }
     }
 
