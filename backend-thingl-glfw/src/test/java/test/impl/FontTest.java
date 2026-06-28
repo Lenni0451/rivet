@@ -28,7 +28,7 @@ public class FontTest extends TestBase {
         textField.keyDownListener().add(event -> {
             if (event.key().isEquivalent(Key.ENTER)) {
                 try (FileInputStream fis = new FileInputStream(textField.text())) {
-                    ThinGLFont font = new ThinGLFont(createFont(fis, (int) slider.value()));
+                    ThinGLFont font = new ThinGLFont(createFont((int) slider.value(), fis));
                     slider.font(font.derive(40));
                     textField.font(font.derive(40));
                     label.font(font);
