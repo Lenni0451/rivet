@@ -26,14 +26,16 @@ public record ThinGLShapedTextBlock(ShapedTextBlock shapedTextBlock) implements 
         int currentIndex = 0;
         float currentY = 0F;
         for (ShapedTextLine line : this.shapedTextBlock.lines()) {
+            float runX = 0F;
             for (int i = 0; i < line.runs().size(); i++) {
                 ShapedTextRun run = line.runs().get(i);
                 for (ShapedTextSegment segment : run.segments()) {
                     for (TextShaper.Glyph glyph : segment.glyphs()) {
-                        if (currentIndex == index) return new Point(glyph.x(), currentY);
+                        if (currentIndex == index) return new Point(runX + glyph.x(), currentY);
                         currentIndex++;
                     }
                 }
+                runX += run.logicalBounds().lengthX();
             }
             currentY += line.logicalBounds().lengthY();
         }
@@ -54,17 +56,19 @@ public record ThinGLShapedTextBlock(ShapedTextBlock shapedTextBlock) implements 
             boolean isLastLine = line == this.shapedTextBlock.lines().getLast();
             if (y <= lineBottomY || isLastLine) {
                 if (x <= 0) return currentIndex;
+                float runX = 0F;
                 for (int i = 0; i < line.runs().size(); i++) {
                     ShapedTextRun run = line.runs().get(i);
                     FontInstance font = run.font();
                     for (ShapedTextSegment segment : run.segments()) {
                         for (TextShaper.Glyph glyph : segment.glyphs()) {
-                            float glyphX = glyph.x();
+                            float glyphX = runX + glyph.x();
                             float glyphWidth = font.getGlyphMetrics(glyph.index()).xAdvance();
                             if (x < glyphX + glyphWidth / 2F) return currentIndex;
                             currentIndex++;
                         }
                     }
+                    runX += run.logicalBounds().lengthX();
                 }
                 return currentIndex;
             } else {
