@@ -197,6 +197,10 @@ public abstract class Theme {
     public static final ThemeKey<AnimationConfig> TAB_ACTIVE_ANIMATION = register("tab.active_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
     public static final ThemeKey<ClickOn> TAB_CLICK_ON = register("tab.click_on", ClickOn.class, r -> ClickOn.UP);
 
+    // Tooltip
+    public static final ThemeKey<Long> TOOLTIP_DELAY = register("tooltip.delay", Long.class, r -> 500L);
+    public static final ThemeKey<Boolean> TOOLTIP_REMOVE_ON_MOUSE_MOVE = register("tooltip.remove_on_mouse_move", Boolean.class, r -> true);
+    public static final ThemeKey<Integer> TOOLTIP_MOUSE_OFFSET = register("tooltip.mouse_offset", Integer.class, r -> 20);
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);
