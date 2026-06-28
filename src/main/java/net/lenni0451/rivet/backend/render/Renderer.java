@@ -87,7 +87,10 @@ public final class Renderer {
         this.currentRenderList.push(newRenderList);
         renderer.run();
         IncompleteRenderList subList = this.currentRenderList.pop();
-        this.currentRenderList.peek().add(subList.complete());
+        RenderList completedSubList = subList.complete();
+        if (!completedSubList.elements().isEmpty()) {
+            this.currentRenderList.peek().add(completedSubList);
+        }
     }
 
 
