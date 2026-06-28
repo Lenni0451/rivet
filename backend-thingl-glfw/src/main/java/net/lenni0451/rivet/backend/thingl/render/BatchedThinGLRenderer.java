@@ -93,6 +93,9 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                         case ThinGLModifierCommand.Blur blur -> blurStrength += blur.strength();
                     }
                 }
+                case ModifierCommand.Stencil stencil -> {
+                    // TODO: Implement this
+                }
                 case ModifierCommand.Custom _ -> throw new UnsupportedOperationException("Custom modifier commands are not supported in BatchedThinGLRenderer");
             }
         }

@@ -10,6 +10,7 @@ import net.lenni0451.rivet.text.model.TextOrigin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public final class Renderer {
@@ -67,6 +68,12 @@ public final class Renderer {
         } else {
             this.transform(new ModifierCommand.Scale(x, y), renderer);
         }
+    }
+
+    public void stencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
+        Renderer mask = new Renderer();
+        maskRenderer.accept(mask);
+        this.transform(new ModifierCommand.Stencil(mask.complete()), renderer);
     }
 
     public void custom(final ModifierCommand.Custom command, final Runnable renderer) {
@@ -181,14 +188,6 @@ public final class Renderer {
         this.currentRenderList.peek().add(new RenderCommand.Image(texture, x, y, width, height, color));
     }
 
-    /**
-     * Push a custom render command to the backend.<br>
-     * The code in the renderer is highly backend specific and is not portable.<br>
-     * The backend may choose to execute the renderer in a separate thread, make sure all data passed is immutable.<br>
-     * <b>The type {@code T} is not checked. Make sure it matches the backend type!</b>
-     *
-     * @param renderCommand The custom render command
-     */
     public void custom(final RenderCommand.Custom renderCommand) {
         this.checkClosed();
         this.currentRenderList.peek().add(renderCommand);

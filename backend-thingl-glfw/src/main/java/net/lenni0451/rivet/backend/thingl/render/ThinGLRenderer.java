@@ -13,6 +13,7 @@ import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.gl.renderer.impl.RendererText;
+import net.raphimc.thingl.gl.wrapper.StencilStack;
 import org.joml.Matrix4fStack;
 
 @RequiredArgsConstructor
@@ -38,6 +39,11 @@ public class ThinGLRenderer {
                         MathUtils.ceilInt(scissor.y() + scissor.height())
                 );
                 case ModifierCommand.Translate translate -> matrixStack.translate(translate.x(), translate.y(), 0F);
+                case ModifierCommand.Stencil stencil -> {
+                    ThinGL.stencilStack().push(StencilStack.Mode.EQUAL_INTERSECTION);
+                    this.renderList(matrixStack, stencil.mask());
+                    ThinGL.stencilStack().set();
+                }
                 case ThinGLModifierCommand thinGlModifier -> {
                     switch (thinGlModifier) {
                         case ThinGLModifierCommand.Blur _ -> ThinGL.programs().getGaussianBlur().bindInput();
@@ -58,6 +64,7 @@ public class ThinGLRenderer {
                 case ModifierCommand.Scale _, ModifierCommand.Translate _ -> {
                 }
                 case ModifierCommand.ComponentBounds _, ModifierCommand.Scissor _ -> ThinGL.scissorStack().pop();
+                case ModifierCommand.Stencil _ -> ThinGL.stencilStack().pop();
                 case ThinGLModifierCommand thinGlModifier -> {
                     switch (thinGlModifier) {
                         case ThinGLModifierCommand.Blur blur -> {
