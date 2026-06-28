@@ -14,6 +14,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.layer.Layer;
+import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layer.LayerList;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -167,6 +168,17 @@ public final class Rivet {
         this.lastMouseY = -Float.MAX_VALUE;
         this.mouseHandler.clear();
         return this;
+    }
+
+    public void dispose() {
+        this.unfocus();
+        for (Layer layer : this.layers.get()) {
+            if (layer.bucket().equals(LayerBucket.BASE)) {
+                layer.container().clearChildren();
+            } else {
+                this.removeLayer(layer);
+            }
+        }
     }
 
 
