@@ -328,7 +328,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public void updatePosition(final Rectangle absoluteBounds) {
+    protected void updateComponentPosition(final Rectangle absoluteBounds) {
         if (this.tooltip != null) {
             float thumbWidth = this.thumbWidth.value();
             float barWidth = this.barWidth(absoluteBounds.size());

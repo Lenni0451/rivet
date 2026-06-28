@@ -19,6 +19,7 @@ import net.lenni0451.rivet.math.Size;
 import javax.annotation.Nullable;
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -77,6 +78,8 @@ public abstract class Component {
     private final ListenerList<BiPredicate<DragOverEvent, Size>> dragOverListener = new ListenerList<>();
     @Getter
     private final ListenerList<BooleanSupplier> dragLeaveListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Consumer<Rectangle>> positionUpdateListener = new ListenerList<>();
 
     public final void setRivet(@Nullable final Rivet rivet, @Nullable final Parent parent) {
         if (rivet == null) {
@@ -324,7 +327,11 @@ public abstract class Component {
     protected void onComponentDragLeave() {
     }
 
-    public void updatePosition(final Rectangle absoluteBounds) {
+    public final void updatePosition(final Rectangle absoluteBounds) {
+        this.positionUpdateListener.callVoid(l -> l.accept(absoluteBounds), () -> this.updateComponentPosition(absoluteBounds));
+    }
+
+    protected void updateComponentPosition(final Rectangle absoluteBounds) {
     }
 
     public void render(final Renderer renderer, final Size size) {

@@ -157,7 +157,7 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
-    public void updatePosition(final Rectangle absoluteBounds) {
+    protected void updateComponentPosition(final Rectangle absoluteBounds) {
         if (this.isOpen()) {
             Size screenSize = this.rivet().scaledSize();
             Rectangle region = new Rectangle(
