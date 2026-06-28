@@ -54,7 +54,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 ThinGL.programs().getGaussianBlur().bindInput();
             }
             if (!layer.scissor.equals(FULL_SIZE_RECT)) {
-                ThinGL.scissorStack().pushOverwrite(MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
+                ThinGL.scissorStack().pushOverwrite(matrixStack, MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
             }
             multiDrawBatchDataHolder.draw();
             if (!layer.scissor.equals(FULL_SIZE_RECT)) {
@@ -63,7 +63,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
             if (layer.blurStrength > 0) {
                 ThinGL.programs().getGaussianBlur().unbindInput();
                 ThinGL.programs().getGaussianBlur().configureParameters(layer.blurStrength);
-                ThinGL.programs().getGaussianBlur().render(layer.bounds.minX, layer.bounds.minY, layer.bounds.maxX, layer.bounds.maxY);
+                ThinGL.programs().getGaussianBlur().render(matrixStack, layer.bounds.minX, layer.bounds.minY, layer.bounds.maxX, layer.bounds.maxY);
                 ThinGL.programs().getGaussianBlur().clearInput();
             }
             GL43C.glPopDebugGroup();
