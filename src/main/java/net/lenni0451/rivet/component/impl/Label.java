@@ -13,6 +13,7 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
 
@@ -26,6 +27,8 @@ public class Label extends Component {
     private String text;
     private ShapedText shapedText;
     private boolean reshape;
+    @Getter
+    private final ThemeOption<OverflowBehavior> overflowBehavior = new ThemeOption<>(this, Theme.LABEL_OVERFLOW_BEHAVIOR);
     @Getter
     @Setter
     private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;
@@ -116,9 +119,20 @@ public class Label extends Component {
     @Override
     public void render(final Renderer renderer, final Size size) {
         this.shapeText();
-        float x = this.horizontalOrigin.offset(size.width() / this.scale);
-        float y = this.verticalOrigin.offset(size.height() / this.scale);
-        renderer.scale(this.scale, () -> renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin));
+
+        float scale;
+        if (this.overflowBehavior.value().equals(OverflowBehavior.SCALE)) {
+            float widthRatio = size.width() / (this.shapedText.visualBounds().width() * this.scale);
+            float heightRatio = size.height() / (this.shapedText.logicalBounds().height() * this.scale);
+            float ratio = Math.min(widthRatio, heightRatio);
+            scale = ratio > 1 ? this.scale : ratio;
+        } else {
+            scale = this.scale;
+        }
+
+        float x = this.horizontalOrigin.offset(size.width() / scale);
+        float y = this.verticalOrigin.offset(size.height() / scale);
+        renderer.scale(scale, () -> renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin));
     }
 
     @Override
@@ -128,6 +142,11 @@ public class Label extends Component {
                 this.shapedText.visualBounds().width() * this.scale,
                 this.shapedText.logicalBounds().height() * this.scale
         );
+    }
+
+
+    public enum OverflowBehavior {
+        CLIP, SCALE
     }
 
 }

@@ -7,6 +7,7 @@ import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
+import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
@@ -46,6 +47,7 @@ public class ThemeLoader {
         registerParser(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
         registerParser(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));
         registerParser(TabAlignment.class, new EnumParser<>(TabAlignment.values()));
+        registerParser(Label.OverflowBehavior.class, new EnumParser<>(Label.OverflowBehavior.values()));
     }
 
     public static <T> void registerParser(final Class<T> type, final Parser<T> parser) {

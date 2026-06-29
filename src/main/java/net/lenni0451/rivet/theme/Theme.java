@@ -12,6 +12,7 @@ import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
+import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
@@ -29,6 +30,9 @@ public abstract class Theme {
     // General
     public static final ThemeKey<Color> TEXT_COLOR = register("general.text_color", Color.class, r -> Color.WHITE);
     public static final ThemeKey<Color> DISABLED_TEXT_COLOR = register("general.disabled_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
+
+    // Label
+    public static final ThemeKey<Label.OverflowBehavior> LABEL_OVERFLOW_BEHAVIOR = register("label.overflow_behavior", Label.OverflowBehavior.class, r -> Label.OverflowBehavior.CLIP);
 
     // Button
     public static final ThemeKey<Float> BUTTON_CORNER_RADIUS = register("button.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 10F, 0));

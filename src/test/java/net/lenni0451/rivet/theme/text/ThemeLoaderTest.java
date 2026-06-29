@@ -11,6 +11,7 @@ import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
+import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
@@ -126,6 +127,11 @@ class ThemeLoaderTest {
         // TabAlignment
         for (TabAlignment value : TabAlignment.values()) {
             check(Theme.TAB_ALIGNMENT, value.toString().toLowerCase(Locale.ROOT), value);
+        }
+
+        // Label.OverflowBehavior
+        for (Label.OverflowBehavior value : Label.OverflowBehavior.values()) {
+            check(Theme.LABEL_OVERFLOW_BEHAVIOR, value.toString().toLowerCase(Locale.ROOT), value);
         }
     }
 
