@@ -124,14 +124,14 @@ public class Tooltip {
         if (this.mouseOver) {
             if (System.currentTimeMillis() - this.lastMoveTime > this.delay.value()) {
                 this.add();
-                if (this.currentTooltip != null) {
-                    this.currentTooltip.layoutOptions(new AbsoluteLayoutOptions(
-                            absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset().value(),
-                            absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset().value()
-                    ));
-                }
             } else if (this.removeOnMouseMove.value()) {
                 this.component.rivet().runSync(this::remove);
+            }
+            if (this.currentTooltip != null) {
+                this.currentTooltip.layoutOptions(new AbsoluteLayoutOptions(
+                        absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset().value(),
+                        absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset().value()
+                ));
             }
         }
     }
