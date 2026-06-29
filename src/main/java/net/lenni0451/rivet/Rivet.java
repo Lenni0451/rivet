@@ -281,11 +281,13 @@ public final class Rivet {
         Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
             for (Layer layer : this.layers.get()) {
+                if (layer.container().rivet() == null) continue;
                 if (layer.recalculateNextFrame()) {
                     layer.container().computeLayout(scaledSize);
                     layer.recalculateNextFrame(false);
                     this.updateMouseState();
                 }
+                if (layer.container().rivet() == null) continue;
                 layer.container().render(renderer, scaledSize);
             }
         });
