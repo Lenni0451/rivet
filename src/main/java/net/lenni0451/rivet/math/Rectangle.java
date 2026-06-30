@@ -17,6 +17,12 @@ public record Rectangle(float x, float y, float width, float height) {
         this(x, y, size.width(), size.height());
     }
 
+    public Rectangle {
+        if (width < 0 || height < 0) {
+            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
+        }
+    }
+
     public float maxX() {
         return this.x + this.width;
     }
