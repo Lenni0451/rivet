@@ -120,6 +120,13 @@ public class FormattedLabel extends Component {
     }
 
     @Override
+    protected void onComponentAdded() {
+        if (this.text != null) {
+            this.line = null;
+        }
+    }
+
+    @Override
     protected void onComponentDisabled() {
         if (this.text != null) {
             this.line = null;

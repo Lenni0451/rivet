@@ -246,6 +246,7 @@ public class Slider extends Component {
             this.tooltip.remove();
             this.tooltip = null;
         }
+        this.tickLabels.clear();
         this.dragged = false;
         this.hovered = false;
     }
