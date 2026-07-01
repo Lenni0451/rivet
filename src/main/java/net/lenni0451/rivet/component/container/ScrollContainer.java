@@ -378,6 +378,7 @@ public class ScrollContainer extends Component implements Parent {
         this.updateAnimation();
         renderer.scissor(0, 0, this.visibleWidth(size), this.visibleHeight(size), () -> {
             renderer.translate(-this.scrollX, -this.scrollY, () -> {
+                this.child.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), this.childSize));
                 this.child.render(renderer, this.childSize);
             });
         });

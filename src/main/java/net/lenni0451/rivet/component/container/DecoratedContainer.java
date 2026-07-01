@@ -118,10 +118,13 @@ public class DecoratedContainer extends Component implements Parent {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
+        this.background.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), size));
         this.background.render(renderer, size);
+
         float width = size.width() - this.innerPadding.horizontal();
         float height = size.height() - this.innerPadding.vertical();
         renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
+            this.child.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), width, height));
             renderer.componentBounds(0, 0, width, height, () -> {
                 this.child.render(renderer, new Size(width, height));
             });

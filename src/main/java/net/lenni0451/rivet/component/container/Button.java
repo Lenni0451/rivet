@@ -228,6 +228,7 @@ public class Button extends Component implements Parent {
         float width = size.width() - this.innerPadding.value().horizontal();
         float height = size.height() - this.innerPadding.value().vertical();
         renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
+            this.child.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), width, height));
             renderer.componentBounds(0, 0, width, height, () -> {
                 this.child.render(renderer, new Size(width, height));
             });
