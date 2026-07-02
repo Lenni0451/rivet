@@ -157,11 +157,69 @@ public class ScrollContainer extends Component implements Parent {
         this.disabledRailOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_DISABLED_OUTLINE_COLOR);
     }
 
+    public float maxScrollX() {
+        return Math.max(0, this.childSize.width() - this.visibleWidth(this.relativeBounds().size()));
+    }
+
+    public float maxScrollY() {
+        return Math.max(0, this.childSize.height() - this.visibleHeight(this.relativeBounds().size()));
+    }
+
+    public ScrollContainer scrollX(final float scrollX) {
+        return this.scrollX(scrollX, false);
+    }
+
+    public ScrollContainer scrollX(final float scrollX, final boolean immediate) {
+        this.targetScrollX = MathUtils.clamp(scrollX, 0, this.maxScrollX());
+        if (this.scrollXAnimation != null) {
+            this.scrollXAnimation.setTarget(this.targetScrollX);
+            if (immediate) {
+                this.scrollXAnimation.finish();
+            }
+        }
+        if (immediate) {
+            float oldScrollX = this.scrollX;
+            this.scrollX = Snapping.snap(this.rivet(), this.targetScrollX);
+            if (oldScrollX != this.scrollX) {
+                if (this.rivet() != null) {
+                    this.rivet().updateMouseState();
+                }
+                this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
+            }
+        }
+        return this;
+    }
+
+    public ScrollContainer scrollY(final float scrollY) {
+        return this.scrollY(scrollY, false);
+    }
+
+    public ScrollContainer scrollY(final float scrollY, final boolean immediate) {
+        this.targetScrollY = MathUtils.clamp(scrollY, 0, this.maxScrollY());
+        if (this.scrollYAnimation != null) {
+            this.scrollYAnimation.setTarget(this.targetScrollY);
+            if (immediate) {
+                this.scrollYAnimation.finish();
+            }
+        }
+        if (immediate) {
+            float oldScrollY = this.scrollY;
+            this.scrollY = Snapping.snap(this.rivet(), this.targetScrollY);
+            if (oldScrollY != this.scrollY) {
+                if (this.rivet() != null) {
+                    this.rivet().updateMouseState();
+                }
+                this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
+            }
+        }
+        return this;
+    }
+
     @Override
     protected void onComponentAdded() {
         this.child.setRivet(this.rivet(), this);
-        this.scrollXAnimation = this.animationConfig.value().create(0);
-        this.scrollYAnimation = this.animationConfig.value().create(0);
+        this.scrollXAnimation = this.animationConfig.value().create(this.scrollX);
+        this.scrollYAnimation = this.animationConfig.value().create(this.scrollY);
     }
 
     @Override
