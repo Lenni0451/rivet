@@ -12,8 +12,8 @@ import test.TestBase;
 
 public class DragAndDropTest extends TestBase {
 
-    static void main() {
-        new DragAndDropTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

@@ -24,8 +24,8 @@ public class TabsTest extends TestBase {
 
     private int nextTabId = 1;
 
-    static void main() {
-        new TabsTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

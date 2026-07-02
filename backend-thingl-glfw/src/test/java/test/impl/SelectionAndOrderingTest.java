@@ -20,8 +20,8 @@ import java.util.List;
 
 public class SelectionAndOrderingTest extends TestBase {
 
-    static void main() {
-        new SelectionAndOrderingTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

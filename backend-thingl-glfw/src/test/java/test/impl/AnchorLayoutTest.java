@@ -14,8 +14,8 @@ import test.TestBase;
 
 public class AnchorLayoutTest extends TestBase {
 
-    static void main() {
-        new AnchorLayoutTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

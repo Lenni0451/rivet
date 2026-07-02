@@ -14,8 +14,8 @@ import java.io.FileInputStream;
 
 public class FontTest extends TestBase {
 
-    static void main() {
-        new FontTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

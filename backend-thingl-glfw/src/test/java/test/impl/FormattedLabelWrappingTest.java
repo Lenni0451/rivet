@@ -13,8 +13,8 @@ import test.TestBase;
 
 public class FormattedLabelWrappingTest extends TestBase {
 
-    static void main() {
-        new FormattedLabelWrappingTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

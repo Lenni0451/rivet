@@ -24,8 +24,8 @@ import java.util.List;
 
 public class DragBetweenTest extends TestBase {
 
-    static void main() {
-        new DragBetweenTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

@@ -10,8 +10,8 @@ import test.TestBase;
 
 public class StencilTest extends TestBase {
 
-    static void main() {
-        new StencilTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

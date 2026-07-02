@@ -9,8 +9,8 @@ import test.TestBase;
 
 public class TileLayoutTest extends TestBase {
 
-    static void main() {
-        new TileLayoutTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

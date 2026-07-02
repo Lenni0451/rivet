@@ -11,8 +11,8 @@ import test.TestTheme;
 
 public class AutoScrollTest extends TestBase {
 
-    static void main() {
-        new AutoScrollTest().run();
+    void main() {
+        this.run();
     }
 
     @Override

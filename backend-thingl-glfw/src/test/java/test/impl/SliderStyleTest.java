@@ -17,8 +17,8 @@ import test.TestBase;
 
 public class SliderStyleTest extends TestBase {
 
-    static void main() {
-        new SliderStyleTest().run();
+    void main() {
+        this.run();
     }
 
     @Override
