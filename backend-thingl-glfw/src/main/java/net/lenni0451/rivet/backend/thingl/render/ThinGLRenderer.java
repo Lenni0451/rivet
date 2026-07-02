@@ -40,7 +40,7 @@ public class ThinGLRenderer {
                 );
                 case ModifierCommand.Translate translate -> matrixStack.translate(translate.x(), translate.y(), 0F);
                 case ModifierCommand.Stencil stencil -> {
-                    ThinGL.stencilStack().push(StencilStack.Mode.EQUAL_INTERSECTION);
+                    ThinGL.stencilStack().push(stencil.inverse() ? StencilStack.Mode.NOT_EQUAL : StencilStack.Mode.EQUAL_INTERSECTION);
                     this.renderList(matrixStack, stencil.mask());
                     ThinGL.stencilStack().set();
                 }

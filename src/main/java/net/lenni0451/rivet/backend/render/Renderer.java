@@ -85,7 +85,13 @@ public final class Renderer {
     public void stencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         Renderer mask = new Renderer();
         maskRenderer.accept(mask);
-        this.transform(new ModifierCommand.Stencil(mask.complete()), renderer);
+        this.transform(new ModifierCommand.Stencil(mask.complete(), false), renderer);
+    }
+
+    public void inverseStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
+        Renderer mask = new Renderer();
+        maskRenderer.accept(mask);
+        this.transform(new ModifierCommand.Stencil(mask.complete(), true), renderer);
     }
 
     public void custom(final ModifierCommand.Custom command, final Runnable renderer) {

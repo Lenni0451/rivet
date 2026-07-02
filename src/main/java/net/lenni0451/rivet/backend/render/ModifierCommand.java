@@ -16,7 +16,7 @@ public sealed interface ModifierCommand permits
     record Scale(float x, float y) implements ModifierCommand {
     }
 
-    record Stencil(RenderList mask) implements ModifierCommand {
+    record Stencil(RenderList mask, boolean inverse) implements ModifierCommand {
     }
 
     non-sealed interface Custom extends ModifierCommand {

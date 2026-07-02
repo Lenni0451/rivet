@@ -59,7 +59,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                     ThinGL.programs().getGaussianBlur().bindInput();
                 }
                 if (!layer.stencilMaskLayers.isEmpty()) {
-                    ThinGL.stencilStack().push(StencilStack.Mode.EQUAL_INTERSECTION);
+                    ThinGL.stencilStack().push(layer.stencilMaskMode);
                     this.renderLayers(matrixStack, layer.stencilMaskLayers);
                     ThinGL.stencilStack().set();
                 }
@@ -94,6 +94,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
             matrix = new Matrix4f(matrix);
             scissor = new Rectanglef(scissor);
             final Layers stencilMaskLayers = new Layers();
+            StencilStack.Mode stencilMaskMode = null;
             int blurStrength = 0;
             for (ModifierCommand modifierCommand : renderList.modifiers()) {
                 switch (modifierCommand) {
@@ -110,25 +111,28 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                             case ThinGLModifierCommand.Blur blur -> blurStrength += blur.strength();
                         }
                     }
-                    case ModifierCommand.Stencil stencil -> stencilMaskLayers.addRenderList(stencil.mask(), matrix, scissor);
+                    case ModifierCommand.Stencil stencil -> {
+                        stencilMaskLayers.addRenderList(stencil.mask(), matrix, scissor);
+                        stencilMaskMode = stencil.inverse() ? StencilStack.Mode.NOT_EQUAL : StencilStack.Mode.EQUAL_INTERSECTION;
+                    }
                     case ModifierCommand.Custom _ -> throw new UnsupportedOperationException("Custom modifier commands are not supported in BatchedThinGLRenderer");
                 }
             }
             for (RenderElement renderElement : renderList.elements()) {
                 switch (renderElement) {
-                    case RenderCommand renderCommand -> this.addRenderCommand(renderCommand, matrix, scissor, stencilMaskLayers, blurStrength);
+                    case RenderCommand renderCommand -> this.addRenderCommand(renderCommand, matrix, scissor, stencilMaskLayers, stencilMaskMode, blurStrength);
                     case RenderList subRenderList -> this.addRenderList(subRenderList, matrix, scissor);
                 }
             }
         }
 
-        public void addRenderCommand(final RenderCommand renderCommand, final Matrix4f matrix, final Rectanglef scissor, final Layers stencilMaskLayers, final int blurStrength) {
+        public void addRenderCommand(final RenderCommand renderCommand, final Matrix4f matrix, final Rectanglef scissor, final Layers stencilMaskLayers, final StencilStack.Mode stencilMaskMode, final int blurStrength) {
             final Rectanglef bounds = MathUtil.transform(MathUtil.convert(renderCommand.bounds()), matrix);
             int insertionIndex = this.size();
             if (!(renderCommand instanceof RenderCommand.Custom)) {
                 for (int i = this.size() - 1; i >= 0; i--) {
                     final Layer layer = this.get(i);
-                    if (layer.isCompatible(bounds, scissor, stencilMaskLayers, blurStrength)) {
+                    if (layer.isCompatible(bounds, scissor, stencilMaskLayers, stencilMaskMode, blurStrength)) {
                         insertionIndex = i;
                     } else if (layer.intersectsRectangle(bounds)) {
                         if (insertionIndex <= i) {
@@ -141,7 +145,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 bounds.set(FULL_SIZE_RECT);
             }
             if (insertionIndex >= this.size()) {
-                this.add(new Layer(scissor, blurStrength));
+                this.add(new Layer(scissor, stencilMaskMode, blurStrength));
             }
             final Layer layer = this.get(insertionIndex);
             layer.addCommandState(new Layer.CommandState(bounds, matrix, renderCommand));
@@ -176,14 +180,16 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
         private final Rectanglef scissor;
         private final Layers stencilMaskLayers = new Layers();
         private final ReferenceSet<Layers> addedStencilMaskLayers = new ReferenceOpenHashSet<>();
+        private final StencilStack.Mode stencilMaskMode;
         private final int blurStrength;
 
-        private Layer(final Rectanglef scissor, final int blurStrength) {
+        private Layer(final Rectanglef scissor, final StencilStack.Mode stencilMaskMode, final int blurStrength) {
             this.scissor = scissor;
+            this.stencilMaskMode = stencilMaskMode;
             this.blurStrength = blurStrength;
         }
 
-        private boolean isCompatible(final Rectanglef renderBounds, final Rectanglef scissor, final Layers stencilMaskLayers, final int blurStrength) {
+        private boolean isCompatible(final Rectanglef renderBounds, final Rectanglef scissor, final Layers stencilMaskLayers, final StencilStack.Mode stencilMaskMode, final int blurStrength) {
             if (this.intersectsRectangle(renderBounds)) {
                 return false;
             }
@@ -191,6 +197,9 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 return false;
             }
             if (this.blurStrength != blurStrength) {
+                return false;
+            }
+            if (this.stencilMaskMode != stencilMaskMode) {
                 return false;
             }
             if (this.stencilMaskLayers.isEmpty() != stencilMaskLayers.isEmpty()) {
@@ -235,7 +244,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
             if (!layers.isEmpty() && this.addedStencilMaskLayers.add(layers)) {
                 for (Layer layer : layers) {
                     for (CommandState commandState : layer.commandStates()) {
-                        this.stencilMaskLayers.addRenderCommand(commandState.renderCommand(), commandState.matrix(), layer.scissor, layer.stencilMaskLayers, 0);
+                        this.stencilMaskLayers.addRenderCommand(commandState.renderCommand(), commandState.matrix(), layer.scissor, layer.stencilMaskLayers, layer.stencilMaskMode, 0);
                     }
                 }
             }
