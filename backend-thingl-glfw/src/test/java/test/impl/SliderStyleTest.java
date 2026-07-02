@@ -11,7 +11,6 @@ import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
-import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.ThemeOption;
 import test.TestBase;
 
@@ -43,7 +42,7 @@ public class SliderStyleTest extends TestBase {
         container.addChild(this.booleanOption(rivet, "Show Tooltip", slider.showTooltip()));
         container.addChild(this.stringOption(rivet, "Tooltip Format", slider.tooltipFormat()));
         container.addChild(slider);
-        container.addChild(new SolidColor().fixedSize(new Size(1, 500)));
+        container.addChild(new SolidColor().fixedSize(1, 500));
         rivet.root().addChild(new ScrollContainer(container));
     }
 

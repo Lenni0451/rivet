@@ -108,12 +108,20 @@ public abstract class Component {
         }
     }
 
+    public final Component minSize(final float width, final float height) {
+        return this.minSize(new Size(width, height));
+    }
+
     public final Component minSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
             this.minSize = minSize;
             if (this.parent != null) this.parent.requestLayoutRecalculation();
         }
         return this;
+    }
+
+    public final Component maxSize(final float width, final float height) {
+        return this.maxSize(new Size(width, height));
     }
 
     public final Component maxSize(final Size maxSize) {
@@ -124,16 +132,16 @@ public abstract class Component {
         return this;
     }
 
-    public final Component fixedSize(final Size size) {
+    public final Component fixedSize(final float width, final float height) {
         Size newMinSize = this.minSize;
         Size newMaxSize = this.maxSize;
-        if (size.width() >= 0) {
-            newMinSize = newMinSize.withWidth(size.width());
-            newMaxSize = newMaxSize.withWidth(size.width());
+        if (width >= 0) {
+            newMinSize = newMinSize.withWidth(width);
+            newMaxSize = newMaxSize.withWidth(width);
         }
-        if (size.height() >= 0) {
-            newMinSize = newMinSize.withHeight(size.height());
-            newMaxSize = newMaxSize.withHeight(size.height());
+        if (height >= 0) {
+            newMinSize = newMinSize.withHeight(height);
+            newMaxSize = newMaxSize.withHeight(height);
         }
         if (!this.minSize.equals(newMinSize) || !this.maxSize.equals(newMaxSize)) {
             this.minSize = newMinSize;

@@ -16,7 +16,6 @@ import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
 import net.lenni0451.rivet.math.Padding;
-import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import test.TestBase;
 
@@ -59,7 +58,7 @@ public class TabsTest extends TestBase {
                 }
             }
         }), button -> {
-            button.fixedSize(new Size(40, 40));
+            button.fixedSize(40, 40);
             button.layoutOptions(new GridLayoutOptions(1, 0).withAnchor(GridAnchor.RIGHT));
             button.innerPadding().set(Padding.EMPTY);
             button.cornerRadius().set(Float.MAX_VALUE);
