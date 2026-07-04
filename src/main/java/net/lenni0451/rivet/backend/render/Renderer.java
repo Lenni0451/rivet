@@ -218,16 +218,20 @@ public final class Renderer {
         } else if (rtl < 0 || rbl < 0 || rbr < 0 || rtr < 0) {
             throw new IllegalArgumentException("Corner radius (" + rtl + ", " + rbl + ", " + rbr + ", " + rtr + ") must be non-negative");
         } else if (width > 0 && height > 0 && color.getAlpha() > 0) {
-            float tl = Math.min(rtl, Math.min(width, height));
-            float tr = Math.min(rtr, Math.min(width - tl, height));
-            float bl = Math.min(rbl, Math.min(width, height - tl));
-            float br = Math.min(rbr, Math.min(width - bl, height - tr));
-            if (tl <= 0 && bl <= 0 && br <= 0 && tr <= 0) {
-                this.fillRect(x, y, width, height, color);
-            } else if (width == height && tl == width / 2 && bl == width / 2 && br == width / 2 && tr == width / 2) {
-                this.fillCircle(x + tl, y + tl, tl, color);
+            if (rtl == rbl && rtl == rbr && rtl == rtr) {
+                this.optimizedFillRoundedRect(x, y, width, height, rtl, color);
             } else {
-                this.fillRoundedRect(x, y, width, height, tl, bl, br, tr, color);
+                float tl = Math.min(rtl, Math.min(width, height));
+                float tr = Math.min(rtr, Math.min(width - tl, height));
+                float bl = Math.min(rbl, Math.min(width, height - tl));
+                float br = Math.min(rbr, Math.min(width - bl, height - tr));
+                if (tl <= 0 && bl <= 0 && br <= 0 && tr <= 0) {
+                    this.fillRect(x, y, width, height, color);
+                } else if (width == height && tl == width / 2 && bl == width / 2 && br == width / 2 && tr == width / 2) {
+                    this.fillCircle(x + tl, y + tl, tl, color);
+                } else {
+                    this.fillRoundedRect(x, y, width, height, tl, bl, br, tr, color);
+                }
             }
         }
     }
@@ -266,14 +270,16 @@ public final class Renderer {
         } else if (outlineWidth < 0) {
             throw new IllegalArgumentException("Outline width (" + outlineWidth + ") must be non-negative");
         } else if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            if (outlineWidth >= width || outlineWidth >= height) {
-                this.optimizedFillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color);
+            if (rtl == rbl && rtl == rbr && rtl == rtr) {
+                this.optimizedOutlineRoundedRect(x, y, width, height, rtl, outlineWidth, color);
             } else {
                 float tl = Math.min(rtl, Math.min(width, height));
                 float tr = Math.min(rtr, Math.min(width - tl, height));
                 float bl = Math.min(rbl, Math.min(width, height - tl));
                 float br = Math.min(rbr, Math.min(width - bl, height - tr));
-                if (tl <= 0 && bl <= 0 && br <= 0 && tr <= 0) {
+                if (outlineWidth >= width || outlineWidth >= height) {
+                    this.optimizedFillRoundedRect(x, y, width, height, tl, bl, br, tr, color);
+                } else if (tl <= 0 && bl <= 0 && br <= 0 && tr <= 0) {
                     this.outlineRect(x, y, width, height, outlineWidth, color);
                 } else if (width == height && tl == width / 2 && bl == width / 2 && br == width / 2 && tr == width / 2) {
                     this.outlineCircle(x + width / 2, y + width / 2, width / 2, outlineWidth, color);
