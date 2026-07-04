@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.function.Consumer;
@@ -18,7 +19,7 @@ public class SolidColor extends Component {
     private Color color = Color.TRANSPARENT;
     private Color outlineColor = Color.TRANSPARENT;
     private float outlineWidth = -1;
-    private float cornerRadius = 0;
+    private Corners cornerRadius = new Corners(0);
 
     public SolidColor() {
         this(s -> {});
@@ -32,6 +33,16 @@ public class SolidColor extends Component {
         initializer.accept(this);
     }
 
+    public final SolidColor cornerRadius(final float radius) {
+        this.cornerRadius = new Corners(radius);
+        return this;
+    }
+
+    public final SolidColor cornerRadius(final Corners radius) {
+        this.cornerRadius = radius;
+        return this;
+    }
+
     @Override
     protected void onComponentAdded() {
         if (this.outlineWidth == -1) {
@@ -42,10 +53,10 @@ public class SolidColor extends Component {
     @Override
     public void render(final Renderer renderer, final Size size) {
         if (this.color.getAlpha() > 0) {
-            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius, this.color);
+            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.topLeft(), this.cornerRadius.bottomLeft(), this.cornerRadius.bottomRight(), this.cornerRadius.topRight(), this.color);
         }
         if (this.outlineColor.getAlpha() > 0 && this.outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius, this.outlineWidth, this.outlineColor);
+            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.topLeft(), this.cornerRadius.bottomLeft(), this.cornerRadius.bottomRight(), this.cornerRadius.topRight(), this.outlineWidth, this.outlineColor);
         }
     }
 
