@@ -7,10 +7,7 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -30,37 +27,37 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
-        final GridDimensions dims = this.calculateDimensions(components);
-        if (dims.isEmpty()) {
+        final CompressedGrid compressed = this.compressGrid(components);
+        if (compressed.isEmpty()) {
             return Size.EMPTY;
         }
 
-        final ColumnsInfo columnsInfo = this.calculateColumns(constraints, components, dims.columns());
-        final RowsInfo rowsInfo = this.calculateRows(constraints, components, dims.rows(), columnsInfo.widths());
+        final ColumnsInfo columnsInfo = this.calculateColumns(constraints, components, compressed, compressed.columns());
+        final RowsInfo rowsInfo = this.calculateRows(constraints, components, compressed, compressed.rows(), columnsInfo.widths());
 
-        float width = this.sum(columnsInfo.widths()) + this.getGaps(dims.columns(), this.horizontalGap);
-        float height = this.sum(rowsInfo.heights()) + this.getGaps(dims.rows(), this.verticalGap);
+        float width = this.sum(columnsInfo.widths()) + this.getGaps(compressed.columns(), this.horizontalGap);
+        float height = this.sum(rowsInfo.heights()) + this.getGaps(compressed.rows(), this.verticalGap);
 
         return new Size(width, height);
     }
 
     @Override
     public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
-        final GridDimensions dims = this.calculateDimensions(components);
-        if (dims.isEmpty()) return;
+        final CompressedGrid compressed = this.compressGrid(components);
+        if (compressed.isEmpty()) return;
 
-        final ColumnsInfo columnsInfo = this.calculateColumns(containerSize, components, dims.columns());
+        final ColumnsInfo columnsInfo = this.calculateColumns(containerSize, components, compressed, compressed.columns());
         final float[] colWidths = columnsInfo.widths().clone();
 
         // Adjust column widths for shrinking or weighting (growing)
-        this.adjustSizes(colWidths, containerSize.width(), dims.columns(), this.horizontalGap,
+        this.adjustSizes(colWidths, containerSize.width(), compressed.columns(), this.horizontalGap,
                 this.shrinkColumns, columnsInfo.weights(), columnsInfo.totalWeight());
 
-        final RowsInfo rowsInfo = this.calculateRows(containerSize, components, dims.rows(), colWidths);
+        final RowsInfo rowsInfo = this.calculateRows(containerSize, components, compressed, compressed.rows(), colWidths);
         final float[] rowHeights = rowsInfo.heights().clone();
 
         // Adjust row heights for shrinking or weighting (growing)
-        this.adjustSizes(rowHeights, containerSize.height(), dims.rows(), this.verticalGap,
+        this.adjustSizes(rowHeights, containerSize.height(), compressed.rows(), this.verticalGap,
                 this.shrinkRows, rowsInfo.weights(), rowsInfo.totalWeight());
 
         // Pre-calculate offsets
@@ -68,7 +65,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         final float[] rowOffsets = this.calculateOffsets(rowHeights, this.verticalGap);
 
         for (final Component component : components) {
-            GridLayoutOptions options = this.getSafeOptions(component);
+            final GridLayoutOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
 
             final float cellX = colOffsets[options.column()];
             final float cellY = rowOffsets[options.row()];
@@ -128,13 +125,13 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         }
     }
 
-    private ColumnsInfo calculateColumns(final Size constraints, final Collection<Component> components, final int columns) {
+    private ColumnsInfo calculateColumns(final Size constraints, final Collection<Component> components, final CompressedGrid compressed, final int columns) {
         final float[] columnWidths = new float[columns];
         final float[] columnWeights = new float[columns];
 
         // 1st pass: non-spanning columns
         for (final Component component : components) {
-            GridLayoutOptions options = this.getSafeOptions(component);
+            final GridLayoutOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
             if (options.columnSpan() == 1) {
                 final Size idealSize = component.computeIdealSize(constraints);
                 float width = (options.width() != null ? options.width() : this.widthOf(component, idealSize)) + options.padding().horizontal();
@@ -145,7 +142,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
 
         // 2nd pass: spanning columns
         for (final Component component : components) {
-            GridLayoutOptions options = this.getSafeOptions(component);
+            final GridLayoutOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
             if (options.columnSpan() > 1) {
                 final Size idealSize = component.computeIdealSize(constraints);
                 float width = (options.width() != null ? options.width() : this.widthOf(component, idealSize)) + options.padding().horizontal();
@@ -177,14 +174,14 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         return new ColumnsInfo(columnWidths, columnWeights, this.sum(columnWeights));
     }
 
-    private RowsInfo calculateRows(final Size constraints, final Collection<Component> components, final int rows, final float[] colWidths) {
+    private RowsInfo calculateRows(final Size constraints, final Collection<Component> components, final CompressedGrid compressed, final int rows, final float[] colWidths) {
         final float[] rowHeights = new float[rows];
         final float[] rowWeights = new float[rows];
         final Map<Component, Float> componentHeights = new IdentityHashMap<>();
 
         // 1st pass: non-spanning rows
         for (final Component component : components) {
-            GridLayoutOptions options = this.getSafeOptions(component);
+            final GridLayoutOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
 
             float cellWidth = this.sumRange(colWidths, options.column(), options.columnSpan()) + this.getGaps(options.columnSpan(), this.horizontalGap);
             final float availableWidth = Math.max(0, cellWidth - options.padding().horizontal());
@@ -203,7 +200,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
 
         // 2nd pass: spanning rows
         for (final Component component : components) {
-            GridLayoutOptions options = this.getSafeOptions(component);
+            final GridLayoutOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
             if (options.rowSpan() > 1) {
                 final float height = componentHeights.get(component);
 
@@ -243,15 +240,32 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         return GridLayoutOptions.EMPTY;
     }
 
-    private GridDimensions calculateDimensions(final Collection<Component> components) {
-        int cols = 0;
-        int rows = 0;
+    private CompressedGrid compressGrid(final Collection<Component> components) {
+        final Set<Integer> occupiedCols = new TreeSet<>();
+        final Set<Integer> occupiedRows = new TreeSet<>();
         for (final Component component : components) {
-            GridLayoutOptions options = this.getSafeOptions(component);
-            cols = Math.max(cols, options.column() + options.columnSpan());
-            rows = Math.max(rows, options.row() + options.rowSpan());
+            final GridLayoutOptions options = this.getSafeOptions(component);
+            for (int i = 0; i < options.columnSpan(); i++) {
+                occupiedCols.add(options.column() + i);
+            }
+            for (int i = 0; i < options.rowSpan(); i++) {
+                occupiedRows.add(options.row() + i);
+            }
         }
-        return new GridDimensions(cols, rows);
+
+        final Map<Integer, Integer> colMap = new HashMap<>();
+        int colIndex = 0;
+        for (final int col : occupiedCols) {
+            colMap.put(col, colIndex++);
+        }
+
+        final Map<Integer, Integer> rowMap = new HashMap<>();
+        int rowIndex = 0;
+        for (final int row : occupiedRows) {
+            rowMap.put(row, rowIndex++);
+        }
+
+        return new CompressedGrid(colMap, rowMap, occupiedCols.size(), occupiedRows.size());
     }
 
     private void adjustSizes(final float[] sizes, final float containerSpace, final int count, final int gap, final boolean shrink, final float[] weights, final float totalWeight) {
@@ -272,6 +286,12 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             if (extraSpace > 0 && totalWeight > 0) {
                 for (int i = 0; i < count; i++) {
                     sizes[i] += extraSpace * (weights[i] / totalWeight);
+                }
+            } else if (extraSpace < 0 && totalWeight > 0) {
+                for (int i = 0; i < count; i++) {
+                    if (weights[i] > 0) {
+                        sizes[i] = Math.max(0, sizes[i] + extraSpace * (weights[i] / totalWeight));
+                    }
                 }
             }
         }
@@ -311,9 +331,15 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
 
     // --- Records ---
 
-    private record GridDimensions(int columns, int rows) {
+    private record CompressedGrid(Map<Integer, Integer> colMap, Map<Integer, Integer> rowMap, int columns, int rows) {
         public boolean isEmpty() {
             return this.columns == 0 || this.rows == 0;
+        }
+
+        public GridLayoutOptions getVirtualOptions(final GridLayoutOptions options) {
+            final int virtualCol = this.colMap.getOrDefault(options.column(), 0);
+            final int virtualRow = this.rowMap.getOrDefault(options.row(), 0);
+            return options.withColumn(virtualCol).withRow(virtualRow);
         }
     }
 

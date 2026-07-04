@@ -231,6 +231,48 @@ class GridLayoutTest {
         assertRectangleEquals(new Rectangle(40, 40, 40, 30), bounds.get(c), 1e-4f);
     }
 
+    @Test
+    void testEmptyRowsAndColumnsCompression() {
+        final GridLayout layout = new GridLayout(10, 20);
+
+        final Component c1 = new TestComponent(new Size(100, 50));
+        c1.layoutOptions(new GridLayoutOptions(1, 1));
+
+        final Component c2 = new TestComponent(new Size(150, 80));
+        c2.layoutOptions(new GridLayoutOptions(2, 2));
+
+        final List<Component> components = List.of(c1, c2);
+        final Size ideal = layout.computeIdealSize(new Size(800, 600), components);
+
+        assertEquals(new Size(260, 150), ideal);
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(ideal, components, bounds::put);
+
+        assertRectangleEquals(new Rectangle(0, 0, 100, 50), bounds.get(c1), 1e-4f);
+        assertRectangleEquals(new Rectangle(110, 70, 150, 80), bounds.get(c2), 1e-4f);
+    }
+
+    @Test
+    void testWeightedRowsShrinkOnShortage() {
+        final GridLayout layout = new GridLayout(0, 0);
+
+        final Component c1 = new TestComponent(new Size(100, 100));
+        c1.layoutOptions(new GridLayoutOptions(0, 0, 1, 1, 0.0f, 0.0f, GridAnchor.CENTER, GridFill.BOTH, Padding.EMPTY, null, null));
+
+        final Component c2 = new TestComponent(new Size(100, 300));
+        c2.layoutOptions(new GridLayoutOptions(0, 1, 1, 1, 0.0f, 1.0f, GridAnchor.CENTER, GridFill.BOTH, Padding.EMPTY, null, null));
+
+        final List<Component> components = List.of(c1, c2);
+
+        final Size containerSize = new Size(100, 200);
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(containerSize, components, bounds::put);
+
+        assertRectangleEquals(new Rectangle(0, 0, 100, 100), bounds.get(c1), 1e-4f);
+        assertRectangleEquals(new Rectangle(0, 100, 100, 100), bounds.get(c2), 1e-4f);
+    }
+
     private static class TestComponent extends Component {
         private final Size idealSize;
 
