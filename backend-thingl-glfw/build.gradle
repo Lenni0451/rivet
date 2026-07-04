@@ -14,7 +14,6 @@ dependencies {
     api (libs.thingl) {
         exclude group: "org.jetbrains.kotlin"
     }
-    api libs.earcut4j
     api libs.lwjgl
     api libs.lwjgl.glfw
     api libs.lwjgl.opengl
