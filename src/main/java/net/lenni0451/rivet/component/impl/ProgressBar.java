@@ -7,6 +7,7 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -37,6 +38,20 @@ public class ProgressBar extends Component {
     private final ThemeOption<Float> borderWidth;
     @Getter
     private final ThemeOption<Color> textColor;
+    @Getter
+    private final ThemeOption<Boolean> stripes;
+    @Getter
+    private final ThemeOption<Color> stripeColor;
+    @Getter
+    private final ThemeOption<Float> stripeWidth;
+    @Getter
+    private final ThemeOption<Float> stripeGap;
+    @Getter
+    private final ThemeOption<Float> stripeSpeed;
+    @Getter
+    private final ThemeOption<Float> stripeAngle;
+    @Getter
+    private final ThemeOption<Boolean> stripeAnimated;
 
     private String currentText = null;
     private ShapedText currentShapedText = null;
@@ -58,6 +73,13 @@ public class ProgressBar extends Component {
         this.borderColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_COLOR);
         this.borderWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_WIDTH);
         this.textColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_COLOR);
+        this.stripes = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPES);
+        this.stripeColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_COLOR);
+        this.stripeWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_WIDTH);
+        this.stripeGap = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_GAP);
+        this.stripeSpeed = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_SPEED);
+        this.stripeAngle = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANGLE);
+        this.stripeAnimated = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANIMATED);
 
         this.textFormat.changeListener().add(f -> this.currentText = null);
         this.textColor.changeListener().add(c -> this.currentText = null);
@@ -70,18 +92,68 @@ public class ProgressBar extends Component {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.value(), this.trackColor.value());
+        this.renderTrack(renderer, size);
+        Runnable drawIndicatorAndStripes = () -> {
+            this.renderIndicator(renderer, size, this.indicatorColor.value());
+            if (this.stripes.value()) {
+                renderer.stencil(
+                        maskRenderer -> this.renderIndicator(maskRenderer, size, Color.RED),
+                        () -> this.renderStripes(renderer, size)
+                );
+            }
+        };
         if (this.trackCornerRadius.value() < this.indicatorCornerRadius.value()) {
-            renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress, size.height(), this.indicatorCornerRadius.value(), this.indicatorColor.value());
+            drawIndicatorAndStripes.run();
         } else {
             renderer.stencil(maskRenderer -> {
                 maskRenderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.value(), Color.RED);
-            }, () -> {
-                renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress, size.height(), this.indicatorCornerRadius.value(), this.indicatorColor.value());
-            });
+            }, drawIndicatorAndStripes);
         }
         renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.value(), this.borderWidth.value(), this.borderColor.value());
 
+        this.renderText(renderer, size);
+    }
+
+    protected void renderTrack(final Renderer renderer, final Size size) {
+        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.value(), this.trackColor.value());
+    }
+
+    protected void renderIndicator(final Renderer renderer, final Size size, final Color color) {
+        renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress, size.height(), this.indicatorCornerRadius.value(), color);
+    }
+
+    protected void renderStripes(final Renderer renderer, final Size size) {
+        float width = size.width();
+        float height = size.height();
+        float progressWidth = width * this.progress;
+        float stripeWidth = this.stripeWidth.value();
+        float stripeGap = this.stripeGap.value();
+        float period = stripeWidth + stripeGap;
+
+        double timeSec = this.stripeAnimated.value() ? System.currentTimeMillis() / 1000D : 0;
+        float speed = this.stripeSpeed.value();
+        float offset = (float) ((timeSec * speed) % period);
+        if (offset < 0) {
+            offset += period;
+        }
+
+        float angle = MathUtils.clamp(this.stripeAngle.value(), -89.9F, 89.9F);
+        float slant = height * (float) Math.tan(Math.toRadians(angle));
+        float minX = -stripeWidth - Math.max(0, slant);
+        float maxX = progressWidth - Math.min(0, slant);
+        float startX = minX - period + offset;
+        for (float x = startX; x < maxX; x += period) {
+            Point[] points = new Point[]{
+                    new Point(x, 0),
+                    new Point(x + stripeWidth, 0),
+                    new Point(x + stripeWidth + slant, height),
+                    new Point(x + slant, height)
+            };
+            renderer.fillPolygon(points, this.stripeColor.value());
+        }
+    }
+
+    protected void renderText(final Renderer renderer, final Size size) {
         if (!this.textPosition.value().equals(TextPosition.NONE)) {
             String text = String.format(this.textFormat.value(), this.progress * 100);
             if (!text.equals(this.currentText)) {

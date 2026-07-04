@@ -218,6 +218,14 @@ public abstract class Theme {
     public static final ThemeKey<Color> PROGRESS_BAR_BORDER_COLOR = register("progress_bar.border_color", Color.class, r -> Color.TRANSPARENT);
     public static final ThemeKey<Float> PROGRESS_BAR_BORDER_WIDTH = register("progress_bar.border_width", Float.class, r -> 0F);
     public static final ThemeKey<Color> PROGRESS_BAR_TEXT_COLOR = register("progress_bar.text_color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Boolean> PROGRESS_BAR_STRIPES = register("progress_bar.stripes", Boolean.class, r -> false);
+    public static final ThemeKey<Color> PROGRESS_BAR_STRIPE_COLOR = register("progress_bar.stripe_color", Color.class, r -> Color.fromRGBA(255, 255, 255, 60));
+    public static final ThemeKey<Float> PROGRESS_BAR_STRIPE_WIDTH = register("progress_bar.stripe_width", Float.class, r -> roundMin(r.backend().font().height() * 0.75F, 1));
+    public static final ThemeKey<Float> PROGRESS_BAR_STRIPE_GAP = register("progress_bar.stripe_gap", Float.class, r -> roundMin(r.backend().font().height() * 0.75F, 1));
+    public static final ThemeKey<Float> PROGRESS_BAR_STRIPE_SPEED = register("progress_bar.stripe_speed", Float.class, r -> roundMin(r.backend().font().height() * 1.5F, 1));
+    public static final ThemeKey<Float> PROGRESS_BAR_STRIPE_ANGLE = register("progress_bar.stripe_angle", Float.class, r -> 45F);
+    public static final ThemeKey<Boolean> PROGRESS_BAR_STRIPE_ANIMATED = register("progress_bar.stripe_animated", Boolean.class, r -> true);
+
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);
