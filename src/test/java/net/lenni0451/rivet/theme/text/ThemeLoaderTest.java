@@ -12,6 +12,7 @@ import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.component.impl.ProgressBar;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
@@ -132,6 +133,11 @@ class ThemeLoaderTest {
         // Label.OverflowBehavior
         for (Label.OverflowBehavior value : Label.OverflowBehavior.values()) {
             check(Theme.LABEL_OVERFLOW_BEHAVIOR, value.toString().toLowerCase(Locale.ROOT), value);
+        }
+
+        // ProgressBar.TextPosition
+        for (ProgressBar.TextPosition value : ProgressBar.TextPosition.values()) {
+            check(Theme.PROGRESS_BAR_TEXT_POSITION, value.toString().toLowerCase(Locale.ROOT), value);
         }
     }
 

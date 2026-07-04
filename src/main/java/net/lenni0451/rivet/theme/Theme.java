@@ -13,6 +13,7 @@ import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.component.impl.ProgressBar;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
@@ -205,6 +206,18 @@ public abstract class Theme {
     public static final ThemeKey<Long> TOOLTIP_DELAY = register("tooltip.delay", Long.class, r -> 500L);
     public static final ThemeKey<Boolean> TOOLTIP_REMOVE_ON_MOUSE_MOVE = register("tooltip.remove_on_mouse_move", Boolean.class, r -> true);
     public static final ThemeKey<Integer> TOOLTIP_MOUSE_OFFSET = register("tooltip.mouse_offset", Integer.class, r -> 20);
+
+    // ProgressBar
+    public static final ThemeKey<String> PROGRESS_BAR_TEXT_FORMAT = register("progress_bar.text_format", String.class, r -> "%,.0f%%");
+    public static final ThemeKey<ProgressBar.TextPosition> PROGRESS_BAR_TEXT_POSITION = register("progress_bar.text_position", ProgressBar.TextPosition.class, r -> ProgressBar.TextPosition.FOLLOW_CENTER);
+    public static final ThemeKey<Float> PROGRESS_BAR_TEXT_PADDING = register("progress_bar.text_padding", Float.class, r -> 5F);
+    public static final ThemeKey<Float> PROGRESS_BAR_TRACK_CORNER_RADIUS = register("progress_bar.track_corner_radius", Float.class, r -> 0F);
+    public static final ThemeKey<Float> PROGRESS_BAR_INDICATOR_CORNER_RADIUS = register("progress_bar.indicator_corner_radius", Float.class, r -> 0F);
+    public static final ThemeKey<Color> PROGRESS_BAR_TRACK_COLOR = register("progress_bar.track_color", Color.class, r -> Color.fromRGB(45, 45, 48));
+    public static final ThemeKey<Color> PROGRESS_BAR_INDICATOR_COLOR = register("progress_bar.indicator_color", Color.class, r -> Color.fromRGB(0, 122, 204));
+    public static final ThemeKey<Color> PROGRESS_BAR_BORDER_COLOR = register("progress_bar.border_color", Color.class, r -> Color.TRANSPARENT);
+    public static final ThemeKey<Float> PROGRESS_BAR_BORDER_WIDTH = register("progress_bar.border_width", Float.class, r -> 0F);
+    public static final ThemeKey<Color> PROGRESS_BAR_TEXT_COLOR = register("progress_bar.text_color", Color.class, r -> Color.WHITE);
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);
