@@ -356,9 +356,13 @@ public class TextField extends Component {
 
     @Override
     protected boolean onComponentCharTyped(final CharEvent event) {
-        if (event.character() < 32 || event.character() == 127) return false;
+        if (event.codePoint() < 32 || event.codePoint() == 127) return false;
         this.deleteSelection();
-        this.text.insert(this.cursor, event.character());
+        if (Character.isBmpCodePoint(event.codePoint())) {
+            this.text.insert(this.cursor, (char) event.codePoint());
+        } else {
+            this.text.insert(this.cursor, Character.toChars(event.codePoint()));
+        }
         this.cursor++;
         this.selection = this.cursor;
         this.cursorAnimation.reset().start();

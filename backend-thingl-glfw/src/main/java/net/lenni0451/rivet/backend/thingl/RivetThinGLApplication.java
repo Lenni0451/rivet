@@ -103,12 +103,7 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
             }
         });
         GLFW.glfwSetCharCallback(this.window, (_, codepoint) -> {
-            if (Character.isBmpCodePoint(codepoint)) {
-                this.rivet.onCharTyped(new CharEvent((char) codepoint));
-            } else if (Character.isValidCodePoint(codepoint)) {
-                this.rivet.onCharTyped(new CharEvent(Character.highSurrogate(codepoint)));
-                this.rivet.onCharTyped(new CharEvent(Character.lowSurrogate(codepoint)));
-            }
+            this.rivet.onCharTyped(new CharEvent(codepoint));
         });
         GLFWFramebufferSizeCallback[] oldCallback = new GLFWFramebufferSizeCallback[1];
         oldCallback[0] = GLFW.glfwSetFramebufferSizeCallback(this.window, (window, width, height) -> {

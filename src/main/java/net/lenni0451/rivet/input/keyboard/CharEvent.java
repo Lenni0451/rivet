@@ -5,5 +5,5 @@ import lombok.experimental.WithBy;
 
 @With
 @WithBy
-public record CharEvent(char character) {
+public record CharEvent(int codePoint) {
 }
