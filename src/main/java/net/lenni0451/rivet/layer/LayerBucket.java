@@ -11,8 +11,8 @@ public enum LayerBucket {
 
     BASE(true),
     OVERLAY(true),
-    TOOLTIP(false),
-    DRAG(false);
+    DRAG(false),
+    TOOLTIP(false);
 
     private final boolean interceptable;
 
