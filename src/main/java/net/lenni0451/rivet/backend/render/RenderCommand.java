@@ -3,12 +3,14 @@ package net.lenni0451.rivet.backend.render;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 
 public sealed interface RenderCommand extends RenderElement permits
         RenderCommand.FillCircle, RenderCommand.OutlineCircle, RenderCommand.FillTriangle, RenderCommand.FillRect,
-        RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.Line,
-        RenderCommand.Text, RenderCommand.FillGradientRect, RenderCommand.Image, RenderCommand.Custom {
+        RenderCommand.OutlineRect, RenderCommand.FillRoundedRect, RenderCommand.OutlineRoundedRect, RenderCommand.FillPolygon,
+        RenderCommand.Line, RenderCommand.PolyLine, RenderCommand.Text, RenderCommand.FillGradientRect, RenderCommand.Image,
+        RenderCommand.Custom {
 
     Rectangle bounds();
 
@@ -66,6 +68,20 @@ public sealed interface RenderCommand extends RenderElement permits
         }
     }
 
+    record FillPolygon(Point[] points, Color color) implements RenderCommand {
+        @Override
+        public Rectangle bounds() {
+            if (this.points.length == 0) return Rectangle.EMPTY;
+            Point min = this.points[0];
+            Point max = this.points[0];
+            for (Point point : this.points) {
+                min = min.min(point);
+                max = max.max(point);
+            }
+            return new Rectangle(min, max);
+        }
+    }
+
     record Line(float x1, float y1, float x2, float y2, float width, Color color) implements RenderCommand {
         @Override
         public Rectangle bounds() {
@@ -74,6 +90,20 @@ public sealed interface RenderCommand extends RenderElement permits
             float maxX = Math.max(this.x1, this.x2) + this.width / 2F;
             float maxY = Math.max(this.y1, this.y2) + this.width / 2F;
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+        }
+    }
+
+    record PolyLine(Point[] points, float width, Color color) implements RenderCommand {
+        @Override
+        public Rectangle bounds() {
+            if (this.points.length == 0) return Rectangle.EMPTY;
+            Point min = this.points[0];
+            Point max = this.points[0];
+            for (Point point : this.points) {
+                min = min.min(point);
+                max = max.max(point);
+            }
+            return new Rectangle(min, max);
         }
     }
 

@@ -10,6 +10,7 @@ import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.backend.thingl.ThinGLTexture;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedText;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
+import net.lenni0451.rivet.backend.thingl.util.MathUtil;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.gl.renderer.impl.RendererText;
@@ -139,12 +140,23 @@ public class ThinGLRenderer {
                     outlineRoundedRect.outlineWidth(),
                     Renderer2D.OUTLINE_STYLE_INNER_BIT
             );
+            case RenderCommand.FillPolygon fillPolygon -> ThinGL.renderer2D().filledPolygon(
+                    matrixStack,
+                    MathUtil.convert(fillPolygon.points()),
+                    fillPolygon.color()
+            );
             case RenderCommand.Line line -> ThinGL.renderer2D().line(
                     matrixStack,
                     line.x1(), line.y1(),
                     line.x2(), line.y2(),
                     line.width(),
                     line.color()
+            );
+            case RenderCommand.PolyLine polyLine -> ThinGL.renderer2D().polyLine(
+                    matrixStack,
+                    MathUtil.convert(polyLine.points()),
+                    polyLine.width(),
+                    polyLine.color()
             );
             case RenderCommand.Text text -> {
                 switch (text.shapedText()) {

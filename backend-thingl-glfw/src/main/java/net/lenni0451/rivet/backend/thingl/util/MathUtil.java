@@ -1,10 +1,15 @@
 package net.lenni0451.rivet.backend.thingl.util;
 
 import lombok.experimental.UtilityClass;
+import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.primitives.Rectanglef;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @UtilityClass
 public class MathUtil {
@@ -27,6 +32,14 @@ public class MathUtil {
         rectangle.maxX = Math.max(Math.max(p1.x, p2.x), Math.max(p3.x, p4.x));
         rectangle.maxY = Math.max(Math.max(p1.y, p2.y), Math.max(p3.y, p4.y));
         return rectangle;
+    }
+
+    public static List<Vector2f> convert(final Point[] points) {
+        List<Vector2f> vectors = new ArrayList<>(points.length);
+        for (Point point : points) {
+            vectors.add(new Vector2f(point.x(), point.y()));
+        }
+        return vectors;
     }
 
 }

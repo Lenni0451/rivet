@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
 
 import java.util.ArrayList;
@@ -235,12 +236,32 @@ public final class Renderer {
         }
     }
 
+    public void fillPolygon(final Point[] points, final Color color) {
+        this.checkClosed();
+        if (points.length > 0 && points.length < 3) {
+            throw new IllegalArgumentException("Polygon must have at least 3 points");
+        } else if (points.length >= 3 && color.getAlpha() != 0) {
+            this.currentRenderList.peek().add(new RenderCommand.FillPolygon(points, color));
+        }
+    }
+
     public void line(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
         this.checkClosed();
         if (width < 0) {
             throw new IllegalArgumentException("Line width (" + width + ") must be non-negative");
         } else if (width != 0 && color.getAlpha() != 0 && (x1 != x2 || y1 != y2)) {
             this.currentRenderList.peek().add(new RenderCommand.Line(x1, y1, x2, y2, width, color));
+        }
+    }
+
+    public void polyLine(final Point[] points, final float width, final Color color) {
+        this.checkClosed();
+        if (points.length == 1) {
+            throw new IllegalArgumentException("Polyline must have at least 2 points");
+        } else if (width < 0) {
+            throw new IllegalArgumentException("Line width (" + width + ") must be non-negative");
+        } else if (points.length >= 2 && color.getAlpha() != 0) {
+            this.currentRenderList.peek().add(new RenderCommand.PolyLine(points, width, color));
         }
     }
 

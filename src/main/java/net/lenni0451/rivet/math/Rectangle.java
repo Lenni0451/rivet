@@ -17,6 +17,10 @@ public record Rectangle(float x, float y, float width, float height) {
         this(x, y, size.width(), size.height());
     }
 
+    public Rectangle(final Point from, final Point to) {
+        this(from.x(), from.y(), to.x() - from.x(), to.y() - from.y());
+    }
+
     public Rectangle {
         if (width < 0 || height < 0) {
             throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
