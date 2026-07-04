@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.backend.render;
+package net.lenni0451.rivet.backend.render.deferred;
 
 import java.util.List;
 

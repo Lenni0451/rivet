@@ -3,7 +3,6 @@ package net.lenni0451.rivet;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Backend;
-import net.lenni0451.rivet.backend.render.RenderList;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
@@ -301,12 +300,11 @@ public final class Rivet {
         });
     }
 
-    public RenderList render() {
+    public <R extends Renderer> R render(final R renderer) {
         Runnable task;
         while ((task = this.tasks.poll()) != null) task.run();
 
         Size scaledSize = this.scaledSize();
-        Renderer renderer = new Renderer();
         renderer.scale(this.scale, () -> {
             for (Layer layer : this.layers.get()) {
                 if (layer.container().rivet() == null) continue;
@@ -319,7 +317,7 @@ public final class Rivet {
                 layer.container().render(renderer, scaledSize);
             }
         });
-        return renderer.complete();
+        return renderer;
     }
 
 

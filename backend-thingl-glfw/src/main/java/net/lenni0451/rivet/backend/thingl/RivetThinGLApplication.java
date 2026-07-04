@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.render.deferred.DeferredRenderer;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
@@ -122,7 +123,7 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
     protected void render(final Matrix4fStack matrix4fStack) {
         ThinGL.programs().getMsaa().bindInput();
         this.renderBackground(matrix4fStack);
-        this.renderer.renderList(matrix4fStack, this.rivet.render());
+        this.renderer.renderList(matrix4fStack, this.rivet.render(new DeferredRenderer()).complete());
         ThinGL.programs().getMsaa().unbindInput();
         ThinGL.programs().getMsaa().renderFullscreen();
         ThinGL.programs().getMsaa().clearInput();

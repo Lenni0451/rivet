@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.backend.render;
+package net.lenni0451.rivet.backend.render.deferred;
 
 public sealed interface ModifierCommand permits
         ModifierCommand.Translate, ModifierCommand.ComponentBounds, ModifierCommand.Scissor, ModifierCommand.Scale, ModifierCommand.Custom,
