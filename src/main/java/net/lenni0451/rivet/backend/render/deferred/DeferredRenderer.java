@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
+import net.lenni0451.rivet.backend.render.CheckedRenderer;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Point;
@@ -15,7 +16,7 @@ import java.util.Stack;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
-public final class DeferredRenderer implements Renderer {
+public final class DeferredRenderer extends CheckedRenderer {
 
     private final Stack<IncompleteRenderList> currentRenderList = new Stack<>();
     @Getter
@@ -43,56 +44,40 @@ public final class DeferredRenderer implements Renderer {
 
 
     @Override
-    public void translate(final float x, final float y, final Runnable renderer) {
-        if (x == 0 && y == 0) {
-            renderer.run();
-        } else {
-            float previousXOffset = this.xOffset;
-            float previousYOffset = this.yOffset;
-            this.xOffset += x;
-            this.yOffset += y;
-            this.transform(new ModifierCommand.Translate(x, y), renderer);
-            this.xOffset = previousXOffset;
-            this.yOffset = previousYOffset;
-        }
+    public void doTranslate(final float x, final float y, final Runnable renderer) {
+        float previousXOffset = this.xOffset;
+        float previousYOffset = this.yOffset;
+        this.xOffset += x;
+        this.yOffset += y;
+        this.transform(new ModifierCommand.Translate(x, y), renderer);
+        this.xOffset = previousXOffset;
+        this.yOffset = previousYOffset;
     }
 
     @Override
-    public void componentBounds(final float x, final float y, final float width, final float height, final Runnable renderer) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width > 0 && height > 0) {
-            this.transform(new ModifierCommand.ComponentBounds(x, y, width, height), renderer);
-        }
+    public void doComponentBounds(final float x, final float y, final float width, final float height, final Runnable renderer) {
+        this.transform(new ModifierCommand.ComponentBounds(x, y, width, height), renderer);
     }
 
     @Override
-    public void scissor(final float x, final float y, final float width, final float height, final Runnable renderer) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width > 0 && height > 0) {
-            this.transform(new ModifierCommand.Scissor(x, y, width, height), renderer);
-        }
+    public void doScissor(final float x, final float y, final float width, final float height, final Runnable renderer) {
+        this.transform(new ModifierCommand.Scissor(x, y, width, height), renderer);
     }
 
     @Override
-    public void scale(final float x, final float y, final Runnable renderer) {
-        if (x == 1 && y == 1) {
-            renderer.run();
-        } else if (x != 0 && y != 0) {
-            this.transform(new ModifierCommand.Scale(x, y), renderer);
-        }
+    public void doScale(final float x, final float y, final Runnable renderer) {
+        this.transform(new ModifierCommand.Scale(x, y), renderer);
     }
 
     @Override
-    public void stencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
+    public void doStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         DeferredRenderer mask = new DeferredRenderer();
         maskRenderer.accept(mask);
         this.transform(new ModifierCommand.Stencil(mask.complete(), false), renderer);
     }
 
     @Override
-    public void inverseStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
+    public void doInverseStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         DeferredRenderer mask = new DeferredRenderer();
         maskRenderer.accept(mask);
         this.transform(new ModifierCommand.Stencil(mask.complete(), true), renderer);
@@ -118,143 +103,81 @@ public final class DeferredRenderer implements Renderer {
 
 
     @Override
-    public void fillCircle(final float x, final float y, final float radius, final Color color) {
+    public void doFillCircle(final float x, final float y, final float radius, final Color color) {
         this.checkClosed();
-        if (radius < 0) {
-            throw new IllegalArgumentException("Radius (" + radius + ") must be non-negative");
-        } else if (radius > 0 && color.getAlpha() > 0) {
-            this.currentRenderList.peek().add(new RenderCommand.FillCircle(x, y, radius, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.FillCircle(x, y, radius, color));
     }
 
     @Override
-    public void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
+    public void doOutlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
         this.checkClosed();
-        if (radius < 0) {
-            throw new IllegalArgumentException("Radius (" + radius + ") must be non-negative");
-        } else if (outlineWidth < 0) {
-            throw new IllegalArgumentException("Outline width (" + outlineWidth + ") must be non-negative");
-        } else if (radius > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            this.currentRenderList.peek().add(new RenderCommand.OutlineCircle(x, y, radius, outlineWidth, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.OutlineCircle(x, y, radius, outlineWidth, color));
     }
 
     @Override
-    public void fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3, final Color color) {
+    public void doFillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3, final Color color) {
         this.checkClosed();
-        if (color.getAlpha() > 0) {
-            this.currentRenderList.peek().add(new RenderCommand.FillTriangle(x1, y1, x2, y2, x3, y3, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.FillTriangle(x1, y1, x2, y2, x3, y3, color));
     }
 
     @Override
-    public void fillRect(final float x, final float y, final float width, final float height, final Color color) {
+    public void doFillRect(final float x, final float y, final float width, final float height, final Color color) {
         this.checkClosed();
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width > 0 && height > 0 && color.getAlpha() > 0) {
-            this.currentRenderList.peek().add(new RenderCommand.FillRect(x, y, width, height, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.FillRect(x, y, width, height, color));
     }
 
     @Override
-    public void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
+    public void doOutlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
         this.checkClosed();
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (outlineWidth < 0) {
-            throw new IllegalArgumentException("Outline width (" + outlineWidth + ") must be non-negative");
-        } else if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            this.currentRenderList.peek().add(new RenderCommand.OutlineRect(x, y, width, height, outlineWidth, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.OutlineRect(x, y, width, height, outlineWidth, color));
     }
 
     @Override
-    public void fillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
+    public void doFillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
         this.checkClosed();
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (rtl < 0 || rbl < 0 || rbr < 0 || rtr < 0) {
-            throw new IllegalArgumentException("Corner radii (" + rtl + ", " + rbl + ", " + rbr + ", " + rtr + ") must be non-negative");
-        } else if (width > 0 && height > 0 && color.getAlpha() > 0) {
-            this.currentRenderList.peek().add(new RenderCommand.FillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.FillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color));
     }
 
     @Override
-    public void outlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
+    public void doOutlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
         this.checkClosed();
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (rtl < 0 || rbl < 0 || rbr < 0 || rtr < 0) {
-            throw new IllegalArgumentException("Corner radii (" + rtl + ", " + rbl + ", " + rbr + ", " + rtr + ") must be non-negative");
-        } else if (outlineWidth < 0) {
-            throw new IllegalArgumentException("Outline width (" + outlineWidth + ") must be non-negative");
-        } else if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            this.currentRenderList.peek().add(new RenderCommand.OutlineRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, outlineWidth, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.OutlineRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, outlineWidth, color));
     }
 
     @Override
-    public void fillPolygon(final Point[] points, final Color color) {
+    public void doFillPolygon(final Point[] points, final Color color) {
         this.checkClosed();
-        if (points.length > 0 && points.length < 3) {
-            throw new IllegalArgumentException("Polygon must have at least 3 points");
-        } else if (points.length >= 3 && color.getAlpha() != 0) {
-            this.currentRenderList.peek().add(new RenderCommand.FillPolygon(points, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.FillPolygon(points, color));
     }
 
     @Override
-    public void line(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
+    public void doLine(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
         this.checkClosed();
-        if (width < 0) {
-            throw new IllegalArgumentException("Line width (" + width + ") must be non-negative");
-        } else if (width != 0 && color.getAlpha() != 0 && (x1 != x2 || y1 != y2)) {
-            this.currentRenderList.peek().add(new RenderCommand.Line(x1, y1, x2, y2, width, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.Line(x1, y1, x2, y2, width, color));
     }
 
     @Override
-    public void polyLine(final Point[] points, final float width, final Color color) {
+    public void doPolyLine(final Point[] points, final float width, final Color color) {
         this.checkClosed();
-        if (points.length == 1) {
-            throw new IllegalArgumentException("Polyline must have at least 2 points");
-        } else if (width < 0) {
-            throw new IllegalArgumentException("Line width (" + width + ") must be non-negative");
-        } else if (points.length >= 2 && color.getAlpha() != 0) {
-            this.currentRenderList.peek().add(new RenderCommand.PolyLine(points, width, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.PolyLine(points, width, color));
     }
 
     @Override
-    public void fillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr) {
+    public void doFillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr) {
         this.checkClosed();
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width != 0 && height != 0 && (ctl.getAlpha() != 0 || cbl.getAlpha() != 0 || cbr.getAlpha() != 0 || ctr.getAlpha() != 0)) {
-            this.currentRenderList.peek().add(new RenderCommand.FillGradientRect(x, y, width, height, ctl, cbl, cbr, ctr));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.FillGradientRect(x, y, width, height, ctl, cbl, cbr, ctr));
     }
 
     @Override
-    public void text(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
+    public void doText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
         this.checkClosed();
-        if (shapedText.visualBounds().width() > 0 && shapedText.visualBounds().height() > 0) {
-            float tx = x + shapedText.offset(horizontalOrigin);
-            float ty = y + shapedText.offset(verticalOrigin);
-            this.currentRenderList.peek().add(new RenderCommand.Text(shapedText, tx, ty));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.Text(shapedText, x + shapedText.offset(horizontalOrigin), y + shapedText.offset(verticalOrigin)));
     }
 
     @Override
-    public void image(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
+    public void doImage(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
         this.checkClosed();
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width != 0 && height != 0 && texture.width() > 0 && texture.height() > 0 && color.getAlpha() != 0) {
-            this.currentRenderList.peek().add(new RenderCommand.Image(texture, x, y, width, height, color));
-        }
+        this.currentRenderList.peek().add(new RenderCommand.Image(texture, x, y, width, height, color));
     }
 
     @Override
