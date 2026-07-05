@@ -54,8 +54,8 @@ public class RenderListExecutor {
             renderer.fillRoundedRect(
                     fillRoundedRect.x(), fillRoundedRect.y(),
                     fillRoundedRect.width(), fillRoundedRect.height(),
-                    fillRoundedRect.rbl(), fillRoundedRect.rbr(),
-                    fillRoundedRect.rtr(), fillRoundedRect.rtl(),
+                    fillRoundedRect.rtl(), fillRoundedRect.rbl(),
+                    fillRoundedRect.rbr(), fillRoundedRect.rtr(),
                     fillRoundedRect.color()
             );
         } else if (command instanceof RenderCommand.FillTriangle fillTriangle) {
@@ -78,8 +78,8 @@ public class RenderListExecutor {
             renderer.outlineRoundedRect(
                     outlineRoundedRect.x(), outlineRoundedRect.y(),
                     outlineRoundedRect.width(), outlineRoundedRect.height(),
-                    outlineRoundedRect.rbl(), outlineRoundedRect.rbr(),
-                    outlineRoundedRect.rtr(), outlineRoundedRect.rtl(),
+                    outlineRoundedRect.rtl(), outlineRoundedRect.rbl(),
+                    outlineRoundedRect.rbr(), outlineRoundedRect.rtr(),
                     outlineRoundedRect.outlineWidth(),
                     outlineRoundedRect.color()
             );
