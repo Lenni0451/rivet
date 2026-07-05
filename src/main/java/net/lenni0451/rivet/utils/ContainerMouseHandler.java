@@ -269,7 +269,7 @@ public abstract class ContainerMouseHandler<E> {
         NOT_HANDLED,
         MISS;
 
-        public static EventState component(boolean handled) {
+        public static EventState component(final boolean handled) {
             return handled ? HANDLED : NOT_HANDLED;
         }
 
