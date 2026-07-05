@@ -19,7 +19,6 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
-import net.lenni0451.rivet.math.Snapping;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
@@ -179,7 +178,7 @@ public class ScrollContainer extends Component implements Parent {
         }
         if (immediate) {
             float oldScrollX = this.scrollX;
-            this.scrollX = Snapping.snap(this.rivet(), this.targetScrollX);
+            this.scrollX = this.targetScrollX;
             if (oldScrollX != this.scrollX) {
                 if (this.rivet() != null) {
                     this.rivet().updateMouseState();
@@ -204,7 +203,7 @@ public class ScrollContainer extends Component implements Parent {
         }
         if (immediate) {
             float oldScrollY = this.scrollY;
-            this.scrollY = Snapping.snap(this.rivet(), this.targetScrollY);
+            this.scrollY = this.targetScrollY;
             if (oldScrollY != this.scrollY) {
                 if (this.rivet() != null) {
                     this.rivet().updateMouseState();
@@ -455,8 +454,8 @@ public class ScrollContainer extends Component implements Parent {
         }
         float oldScrollX = this.scrollX;
         float oldScrollY = this.scrollY;
-        this.scrollX = Snapping.snap(this.rivet(), this.scrollXAnimation.getValue());
-        this.scrollY = Snapping.snap(this.rivet(), this.scrollYAnimation.getValue());
+        this.scrollX = this.scrollXAnimation.getValue();
+        this.scrollY = this.scrollYAnimation.getValue();
         if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
             if (this.rivet() != null) {
                 this.rivet().updateMouseState();
@@ -630,7 +629,7 @@ public class ScrollContainer extends Component implements Parent {
             }
             float maxScrollX = Math.max(0, contentWidth - availableWidth);
             this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
-            this.scrollX = Snapping.snap(this.rivet(), MathUtils.clamp(this.scrollX, 0, maxScrollX));
+            this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
         }
         { // Vertical scroll bar
             float contentHeight = childSize.height();
@@ -643,7 +642,7 @@ public class ScrollContainer extends Component implements Parent {
             } else {
                 this.targetScrollY = MathUtils.clamp(this.targetScrollY, 0, maxScrollY);
             }
-            this.scrollY = Snapping.snap(this.rivet(), MathUtils.clamp(this.scrollY, 0, maxScrollY));
+            this.scrollY = MathUtils.clamp(this.scrollY, 0, maxScrollY);
         }
         if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
             this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));

@@ -43,8 +43,6 @@ public final class Rivet {
     @Getter
     private float scale = 1;
     @Getter
-    private boolean snapToInteger = false;
-    @Getter
     private Component focusedComponent;
     @Getter
     private Theme theme;
@@ -126,14 +124,6 @@ public final class Rivet {
     public Rivet scale(final float scale) {
         if (this.scale != scale) {
             this.scale = scale;
-            this.recalculateNextFrame();
-        }
-        return this;
-    }
-
-    public Rivet snapToInteger(final boolean snapToInteger) {
-        if (this.snapToInteger != snapToInteger) {
-            this.snapToInteger = snapToInteger;
             this.recalculateNextFrame();
         }
         return this;

@@ -15,7 +15,6 @@ import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
-import net.lenni0451.rivet.math.Snapping;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.*;
@@ -226,9 +225,7 @@ public class Container extends Component implements Parent {
     @Override
     public void computeLayout(final Size size) {
         Map<Component, Rectangle> newBounds = new IdentityHashMap<>();
-        this.layout.layoutComponents(size, this.children.stream().map(child -> child.component).toList(), (component, bounds) -> {
-            newBounds.put(component, Snapping.snap(this.rivet(), bounds));
-        });
+        this.layout.layoutComponents(size, this.children.stream().map(child -> child.component).toList(), newBounds::put);
         if (newBounds.size() != this.children.size()) {
             throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for all children (" + newBounds.size() + " provided, but " + this.children.size() + " expected)");
         }
