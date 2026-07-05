@@ -8,12 +8,14 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import org.lwjgl.glfw.GLFW;
 
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Set;
 
 @UtilityClass
 public class GLFWMapper {
 
+    @Nullable
     public static KeyEvent mapKey(final int keyCode, final int modifier) {
         Key key = switch (keyCode) {
             case GLFW.GLFW_KEY_SPACE -> Key.SPACE;
@@ -261,6 +263,7 @@ public class GLFWMapper {
         };
     }
 
+    @Nullable
     public static MouseButtonEvent mapMouseButton(final float x, final float y, final int button, final int modifier) {
         MouseButton mouseButton = switch (button) {
             case GLFW.GLFW_MOUSE_BUTTON_LEFT -> MouseButton.LEFT;
