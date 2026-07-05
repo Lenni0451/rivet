@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.utils;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.Container;
@@ -45,6 +46,9 @@ public class Tooltip {
     private final ThemeOption<Boolean> removeOnMouseMove;
     @Getter
     private final ThemeOption<Integer> mouseOffset;
+    @Getter
+    @Setter
+    private boolean hideOnDrag;
 
     private boolean mouseOver;
     private long lastMoveTime;
@@ -84,6 +88,10 @@ public class Tooltip {
 
     private void add() {
         if (this.layer == null) {
+            if (this.hideOnDrag && this.component.rivet().dragAndDropManager().isDragging()) {
+                return;
+            }
+
             this.currentTooltip = this.tooltip.get();
             this.layer = new Layer(new Container(AbsoluteLayout.INSTANCE).addChild(this.currentTooltip), LayerBucket.TOOLTIP);
             this.component.rivet().addLayer(this.layer);
@@ -122,7 +130,9 @@ public class Tooltip {
 
     private void onPositionUpdate(final Rectangle absoluteBounds) {
         if (this.mouseOver) {
-            if (System.currentTimeMillis() - this.lastMoveTime > this.delay.value()) {
+            if (this.hideOnDrag && this.component.rivet().dragAndDropManager().isDragging()) {
+                this.remove();
+            } else if (System.currentTimeMillis() - this.lastMoveTime > this.delay.value()) {
                 this.add();
             } else if (this.removeOnMouseMove.value()) {
                 this.component.rivet().runSync(this::remove);
