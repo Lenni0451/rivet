@@ -23,9 +23,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void componentBounds(final float x, final float y, final float width, final float height, final Runnable renderer) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width > 0 && height > 0) {
+        if (width > 0 && height > 0) {
             this.doComponentBounds(x, y, width, height, renderer);
         }
     }
@@ -34,9 +32,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void scissor(final float x, final float y, final float width, final float height, final Runnable renderer) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width > 0 && height > 0) {
+        if (width > 0 && height > 0) {
             this.doScissor(x, y, width, height, renderer);
         }
     }
@@ -71,9 +67,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void fillCircle(final float x, final float y, final float radius, final Color color) {
-        if (radius < 0) {
-            throw new IllegalArgumentException("Radius (" + radius + ") must be non-negative");
-        } else if (radius > 0 && color.getAlpha() > 0) {
+        if (radius > 0 && color.getAlpha() > 0) {
             this.doFillCircle(x, y, radius, color);
         }
     }
@@ -82,11 +76,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
-        if (radius < 0) {
-            throw new IllegalArgumentException("Radius (" + radius + ") must be non-negative");
-        } else if (outlineWidth < 0) {
-            throw new IllegalArgumentException("Outline width (" + outlineWidth + ") must be non-negative");
-        } else if (radius > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
+        if (radius > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
             this.doOutlineCircle(x, y, radius, outlineWidth, color);
         }
     }
@@ -104,9 +94,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void fillRect(final float x, final float y, final float width, final float height, final Color color) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width > 0 && height > 0 && color.getAlpha() > 0) {
+        if (width > 0 && height > 0 && color.getAlpha() > 0) {
             this.doFillRect(x, y, width, height, color);
         }
     }
@@ -115,11 +103,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (outlineWidth < 0) {
-            throw new IllegalArgumentException("Outline width (" + outlineWidth + ") must be non-negative");
-        } else if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
+        if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
             this.doOutlineRect(x, y, width, height, outlineWidth, color);
         }
     }
@@ -128,12 +112,8 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void fillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (rtl < 0 || rbl < 0 || rbr < 0 || rtr < 0) {
-            throw new IllegalArgumentException("Corner radii (" + rtl + ", " + rbl + ", " + rbr + ", " + rtr + ") must be non-negative");
-        } else if (width > 0 && height > 0 && color.getAlpha() > 0) {
-            this.doFillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color);
+        if (width > 0 && height > 0 && color.getAlpha() > 0) {
+            this.doFillRoundedRect(x, y, width, height, Math.max(0, rtl), Math.max(0, rbl), Math.max(0, rbr), Math.max(0, rtr), color);
         }
     }
 
@@ -141,14 +121,8 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void outlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (rtl < 0 || rbl < 0 || rbr < 0 || rtr < 0) {
-            throw new IllegalArgumentException("Corner radii (" + rtl + ", " + rbl + ", " + rbr + ", " + rtr + ") must be non-negative");
-        } else if (outlineWidth < 0) {
-            throw new IllegalArgumentException("Outline width (" + outlineWidth + ") must be non-negative");
-        } else if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            this.doOutlineRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, outlineWidth, color);
+        if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
+            this.doOutlineRoundedRect(x, y, width, height, Math.max(0, rtl), Math.max(0, rbl), Math.max(0, rbr), Math.max(0, rtr), outlineWidth, color);
         }
     }
 
@@ -158,7 +132,7 @@ public abstract class CheckedRenderer implements Renderer {
     public final void fillPolygon(final Point[] points, final Color color) {
         if (points.length > 0 && points.length < 3) {
             throw new IllegalArgumentException("Polygon must have at least 3 points");
-        } else if (points.length >= 3 && color.getAlpha() != 0) {
+        } else if (points.length >= 3 && color.getAlpha() > 0) {
             this.doFillPolygon(points, color);
         }
     }
@@ -167,9 +141,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void line(final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
-        if (width < 0) {
-            throw new IllegalArgumentException("Line width (" + width + ") must be non-negative");
-        } else if (width != 0 && color.getAlpha() != 0 && (x1 != x2 || y1 != y2)) {
+        if (width > 0 && color.getAlpha() > 0 && (x1 != x2 || y1 != y2)) {
             this.doLine(x1, y1, x2, y2, width, color);
         }
     }
@@ -180,9 +152,7 @@ public abstract class CheckedRenderer implements Renderer {
     public final void polyLine(final Point[] points, final float width, final Color color) {
         if (points.length == 1) {
             throw new IllegalArgumentException("Polyline must have at least 2 points");
-        } else if (width < 0) {
-            throw new IllegalArgumentException("Line width (" + width + ") must be non-negative");
-        } else if (points.length >= 2 && color.getAlpha() != 0) {
+        } else if (points.length >= 2 && color.getAlpha() > 0) {
             this.doPolyLine(points, width, color);
         }
     }
@@ -191,9 +161,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void fillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width != 0 && height != 0 && (ctl.getAlpha() != 0 || cbl.getAlpha() != 0 || cbr.getAlpha() != 0 || ctr.getAlpha() != 0)) {
+        if (width > 0 && height > 0 && (ctl.getAlpha() > 0 || cbl.getAlpha() > 0 || cbr.getAlpha() > 0 || ctr.getAlpha() > 0)) {
             this.doFillGradientRect(x, y, width, height, ctl, cbl, cbr, ctr);
         }
     }
@@ -211,9 +179,7 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void image(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        } else if (width != 0 && height != 0 && texture.width() > 0 && texture.height() > 0 && color.getAlpha() != 0) {
+        if (width > 0 && height > 0 && texture.width() > 0 && texture.height() > 0 && color.getAlpha() > 0) {
             this.doImage(texture, x, y, width, height, color);
         }
     }

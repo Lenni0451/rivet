@@ -22,9 +22,8 @@ public record Rectangle(float x, float y, float width, float height) {
     }
 
     public Rectangle {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        }
+        width = Math.max(0, width);
+        height = Math.max(0, height);
     }
 
     public float maxX() {

@@ -10,9 +10,8 @@ public record Size(float width, float height) {
     public static final Size EMPTY = new Size(0, 0);
 
     public Size {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height (" + width + ", " + height + ") must be non-negative");
-        }
+        width = Math.max(0, width);
+        height = Math.max(0, height);
     }
 
     public Size plus(final float x, final float y) {
