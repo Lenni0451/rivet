@@ -42,6 +42,22 @@ public class DynamicListView<E> extends ReorderableContainer {
         this.componentFactory = componentFactory;
     }
 
+    public DynamicListView<E> recreate(final E item) {
+        Component oldComponent = this.componentCache.remove(item);
+        if (oldComponent != null) {
+            this.removeChild(oldComponent);
+            Integer index = this.orderMap.remove(oldComponent);
+            Component newComponent = this.componentFactory.apply(item);
+            this.componentCache.put(item, newComponent);
+            this.addChild(newComponent);
+            if (index != null) {
+                this.orderMap.put(newComponent, index);
+            }
+            this.sortChildren(this.orderComparator);
+        }
+        return this;
+    }
+
     @Override
     public void render(final Renderer renderer, final Size size) {
         List<E> currentList = this.listSupplier.get();
