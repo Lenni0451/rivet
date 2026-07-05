@@ -333,7 +333,7 @@ public class Slider extends Component {
         if (this.tooltip != null) {
             float thumbWidth = this.thumbWidth.value();
             float barWidth = this.barWidth(absoluteBounds.size());
-            double progress = (this.value - this.min) / (this.max - this.min);
+            double progress = MathUtils.clamp((this.value - this.min) / (this.max - this.min), 0, 1);
             float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
 
             this.tooltip.position(absoluteBounds.x() + thumbX, absoluteBounds.y(), absoluteBounds.height());
@@ -347,7 +347,7 @@ public class Slider extends Component {
         float barHeight = this.barHeight.value();
         float sliderCenter = this.ticks != null ? thumbHeight / 2F : size.height() / 2F;
         float barWidth = this.barWidth(size);
-        double progress = (this.value - this.min) / (this.max - this.min);
+        double progress = MathUtils.clamp((this.value - this.min) / (this.max - this.min), 0, 1);
         float thumbX = (float) (thumbWidth / 2F + barWidth * progress);
 
         this.renderBar(renderer, size, sliderCenter, barHeight, thumbWidth, thumbX);
