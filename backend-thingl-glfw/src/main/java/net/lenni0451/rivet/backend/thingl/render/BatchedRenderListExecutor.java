@@ -3,10 +3,8 @@ package net.lenni0451.rivet.backend.thingl.render;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.rivet.backend.render.deferred.ModifierCommand;
-import net.lenni0451.rivet.backend.render.deferred.RenderCommand;
-import net.lenni0451.rivet.backend.render.deferred.RenderElement;
-import net.lenni0451.rivet.backend.render.deferred.RenderList;
+import net.lenni0451.rivet.backend.render.Renderer;
+import net.lenni0451.rivet.backend.render.deferred.*;
 import net.lenni0451.rivet.backend.thingl.util.MathUtil;
 import net.lenni0451.rivet.math.Rectangle;
 import net.raphimc.thingl.ThinGL;
@@ -14,7 +12,6 @@ import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHol
 import net.raphimc.thingl.gl.wrapper.StencilStack;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 import org.joml.primitives.Rectanglef;
 import org.lwjgl.opengl.GL43C;
 
@@ -22,14 +19,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BatchedThinGLRenderer extends ThinGLRenderer {
+public class BatchedRenderListExecutor extends RenderListExecutor {
+
+    public static final BatchedRenderListExecutor INSTANCE = new BatchedRenderListExecutor();
 
     private static final Rectanglef EMPTY_RECT = new Rectanglef(Float.NaN, Float.NaN, Float.NaN, Float.NaN);
     private static final Rectanglef FULL_SIZE_RECT = new Rectanglef(-Float.MAX_VALUE, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 
     @Override
-    public void renderList(final Matrix4fStack matrixStack, final RenderList renderList) {
-        this.renderLayers(matrixStack, this.buildLayers(renderList));
+    public void renderList(final Renderer renderer, final RenderList renderList) {
+        this.renderLayers((ThinGLRenderer) renderer, this.buildLayers(renderList));
     }
 
     public List<Layer> buildLayers(final RenderList renderList) {
@@ -38,7 +37,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
         return layers;
     }
 
-    public void renderLayers(final Matrix4fStack matrixStack, final List<Layer> layers) {
+    public void renderLayers(final ThinGLRenderer renderer, final List<Layer> layers) {
         final MultiDrawBatchDataHolder multiDrawBatchDataHolder = new ImmediateMultiDrawBatchDataHolder();
         final MultiDrawBatchDataHolder previousMultiDrawBatchDataHolder2D = ThinGL.renderer2D().getTargetMultiDrawBatchDataHolder();
         final MultiDrawBatchDataHolder previousMultiDrawBatchDataHolderText = ThinGL.rendererText().getTargetMultiDrawBatchDataHolder();
@@ -50,21 +49,21 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Layer " + i);
                 final Layer layer = layers.get(i);
                 for (Layer.CommandState commandState : layer.commandStates()) {
-                    matrixStack.pushMatrix();
-                    matrixStack.mul(commandState.matrix());
-                    this.renderCommand(matrixStack, commandState.renderCommand());
-                    matrixStack.popMatrix();
+                    renderer.positionMatrix().pushMatrix();
+                    renderer.positionMatrix().mul(commandState.matrix());
+                    this.renderCommand(renderer, commandState.renderCommand());
+                    renderer.positionMatrix().popMatrix();
                 }
                 if (layer.blurStrength > 0) {
                     ThinGL.programs().getGaussianBlur().bindInput();
                 }
                 if (layer.stencilMaskMode != null) {
                     ThinGL.stencilStack().push(layer.stencilMaskMode);
-                    this.renderLayers(matrixStack, layer.stencilMaskLayers);
+                    this.renderLayers(renderer, layer.stencilMaskLayers);
                     ThinGL.stencilStack().set();
                 }
                 if (!layer.scissor.equals(FULL_SIZE_RECT)) {
-                    ThinGL.scissorStack().pushOverwrite(matrixStack, MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
+                    ThinGL.scissorStack().pushOverwrite(renderer.positionMatrix(), MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
                 }
                 multiDrawBatchDataHolder.draw();
                 if (!layer.scissor.equals(FULL_SIZE_RECT)) {
@@ -76,7 +75,7 @@ public class BatchedThinGLRenderer extends ThinGLRenderer {
                 if (layer.blurStrength > 0) {
                     ThinGL.programs().getGaussianBlur().unbindInput();
                     ThinGL.programs().getGaussianBlur().configureParameters(layer.blurStrength);
-                    ThinGL.programs().getGaussianBlur().render(matrixStack, layer.bounds.minX, layer.bounds.minY, layer.bounds.maxX, layer.bounds.maxY);
+                    ThinGL.programs().getGaussianBlur().render(renderer.positionMatrix(), layer.bounds.minX, layer.bounds.minY, layer.bounds.maxX, layer.bounds.maxY);
                     ThinGL.programs().getGaussianBlur().clearInput();
                 }
                 GL43C.glPopDebugGroup();

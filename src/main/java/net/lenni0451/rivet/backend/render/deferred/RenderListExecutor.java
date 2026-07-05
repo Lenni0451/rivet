@@ -45,7 +45,7 @@ public class RenderListExecutor {
         }
     }
 
-    private void renderCommand(final Renderer renderer, final RenderCommand command) {
+    public void renderCommand(final Renderer renderer, final RenderCommand command) {
         if (command instanceof RenderCommand.FillCircle fillCircle) {
             renderer.fillCircle(fillCircle.x(), fillCircle.y(), fillCircle.radius(), fillCircle.color());
         } else if (command instanceof RenderCommand.FillRect fillRect) {
