@@ -129,8 +129,8 @@ public class Tooltip {
             }
             if (this.currentTooltip != null) {
                 this.currentTooltip.layoutOptions(new AbsoluteLayoutOptions(
-                        absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset().value(),
-                        absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset().value()
+                        absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset.value(),
+                        absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset.value()
                 ));
             }
         }
