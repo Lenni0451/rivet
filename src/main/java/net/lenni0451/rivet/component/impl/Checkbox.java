@@ -193,7 +193,7 @@ public class Checkbox extends Component {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         if (this.rivet() != null) {
             this.shapeText();
         }

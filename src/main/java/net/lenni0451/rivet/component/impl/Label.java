@@ -102,7 +102,7 @@ public class Label extends Component {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         this.reshape = true;
     }
 

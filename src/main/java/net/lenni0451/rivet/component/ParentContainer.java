@@ -35,7 +35,7 @@ public abstract class ParentContainer extends Component implements Parent {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         this.children().forEach(Component::onThemeChanged);
     }
 

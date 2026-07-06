@@ -51,6 +51,8 @@ public abstract class Component {
     @Getter
     private final ListenerList<Runnable> enabledListener = new ListenerList<>();
     @Getter
+    private final ListenerList<Runnable> themeChangedListener = new ListenerList<>();
+    @Getter
     private final ListenerList<BooleanSupplier> focusGainedListener = new ListenerList<>();
     @Getter
     private final ListenerList<BooleanSupplier> focusLostListener = new ListenerList<>();
@@ -198,7 +200,12 @@ public abstract class Component {
     protected void onComponentEnabled() {
     }
 
-    public void onThemeChanged() {
+    public final void onThemeChanged() {
+        this.themeChangedListener.callVoid(Runnable::run);
+        this.onComponentThemeChanged();
+    }
+
+    protected void onComponentThemeChanged() {
     }
 
     public final void onFocusGained() {

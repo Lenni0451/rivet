@@ -141,7 +141,7 @@ public class FormattedLabel extends Component {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         if (this.text != null) {
             this.line = null;
         }

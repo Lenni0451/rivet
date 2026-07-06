@@ -125,7 +125,7 @@ public class TabBackground extends Component {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         if (this.parent() instanceof DecoratedContainer decoratedContainer) {
             decoratedContainer.innerPadding(this.innerPadding.value());
             decoratedContainer.requestLayoutRecalculation();

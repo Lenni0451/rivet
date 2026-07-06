@@ -283,7 +283,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
         this.updateShapedText();
     }

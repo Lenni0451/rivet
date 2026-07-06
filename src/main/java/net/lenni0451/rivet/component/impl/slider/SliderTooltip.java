@@ -113,7 +113,7 @@ public class SliderTooltip extends Component {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         if (this.rivet() != null) {
             this.text(this.text);
         }

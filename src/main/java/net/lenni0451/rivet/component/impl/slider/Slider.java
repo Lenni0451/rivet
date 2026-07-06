@@ -263,7 +263,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         this.tickLabels.clear();
     }
 

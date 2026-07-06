@@ -158,8 +158,8 @@ public class TabContainer extends ParentContainer {
     }
 
     @Override
-    public void onThemeChanged() {
-        super.onThemeChanged();
+    protected void onComponentThemeChanged() {
+        super.onComponentThemeChanged();
         this.updateLayout();
     }
 

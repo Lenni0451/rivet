@@ -132,7 +132,7 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         this.button.onThemeChanged();
     }
 

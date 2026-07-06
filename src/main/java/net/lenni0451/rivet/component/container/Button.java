@@ -182,7 +182,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    public void onThemeChanged() {
+    protected void onComponentThemeChanged() {
         this.child.onThemeChanged();
     }
 

@@ -252,8 +252,8 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    public void onThemeChanged() {
-        super.onThemeChanged();
+    protected void onComponentThemeChanged() {
+        super.onComponentThemeChanged();
         this.scrollXAnimation = this.animationConfig.value().create(this.scrollXAnimation.getValue());
         this.scrollYAnimation = this.animationConfig.value().create(this.scrollYAnimation.getValue());
     }
