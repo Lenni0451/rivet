@@ -10,6 +10,7 @@ import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -169,9 +170,9 @@ public final class DeferredRenderer extends CheckedRenderer {
     }
 
     @Override
-    public void doText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
+    public void doText(final ShapedText shapedText, final float anchorX, final float anchorY, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
         this.checkClosed();
-        this.currentRenderList.peek().add(new RenderCommand.Text(shapedText, x + shapedText.offset(horizontalOrigin), y + shapedText.offset(verticalOrigin)));
+        this.currentRenderList.peek().add(new RenderCommand.Text(shapedText, anchorX, anchorY, horizontalOrigin, verticalOrigin));
     }
 
     @Override

@@ -130,8 +130,8 @@ public class Label extends Component {
             scale = this.scale;
         }
 
-        float x = this.horizontalOrigin.offset(size.width() / scale);
-        float y = this.verticalOrigin.offset(size.height() / scale);
+        float x = this.horizontalOrigin.position(size.width() / scale);
+        float y = this.verticalOrigin.position(size.height() / scale);
         renderer.scale(scale, () -> renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin));
     }
 

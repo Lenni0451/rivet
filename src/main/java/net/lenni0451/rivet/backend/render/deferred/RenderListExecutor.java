@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.backend.render.deferred;
 
 import net.lenni0451.rivet.backend.render.Renderer;
-import net.lenni0451.rivet.text.model.TextOrigin;
 
 import java.util.Iterator;
 import java.util.List;
@@ -90,7 +89,7 @@ public class RenderListExecutor {
         } else if (command instanceof RenderCommand.PolyLine polyLine) {
             renderer.polyLine(polyLine.points(), polyLine.width(), polyLine.color());
         } else if (command instanceof RenderCommand.Text text) {
-            renderer.text(text.shapedText(), text.x(), text.y(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.BASELINE);
+            renderer.text(text.shapedText(), text.x(), text.y(), text.horizontalOrigin(), text.verticalOrigin());
         } else if (command instanceof RenderCommand.Image image) {
             renderer.image(image.texture(), image.x(), image.y(), image.width(), image.height(), image.color());
         } else if (command instanceof RenderCommand.FillGradientRect fillGradientRect) {

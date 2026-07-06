@@ -153,8 +153,8 @@ public class SnappedRenderer<R extends Renderer> implements Renderer {
     }
 
     @Override
-    public void text(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
-        this.delegate.text(shapedText, this.snapX(x), this.snapY(y), horizontalOrigin, verticalOrigin);
+    public void text(final ShapedText shapedText, final float anchorX, final float anchorY, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
+        this.delegate.text(shapedText, this.snapX(anchorX), this.snapY(anchorY), horizontalOrigin, verticalOrigin);
     }
 
     @Override

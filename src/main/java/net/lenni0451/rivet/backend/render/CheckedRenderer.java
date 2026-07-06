@@ -169,13 +169,13 @@ public abstract class CheckedRenderer implements Renderer {
     protected abstract void doFillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr);
 
     @Override
-    public final void text(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
+    public final void text(final ShapedText shapedText, final float anchorX, final float anchorY, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
         if (shapedText.visualBounds().width() > 0 && shapedText.visualBounds().height() > 0) {
-            this.doText(shapedText, x, y, horizontalOrigin, verticalOrigin);
+            this.doText(shapedText, anchorX, anchorY, horizontalOrigin, verticalOrigin);
         }
     }
 
-    protected abstract void doText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin);
+    protected abstract void doText(final ShapedText shapedText, final float anchorX, final float anchorY, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin);
 
     @Override
     public final void image(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {

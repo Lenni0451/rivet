@@ -17,6 +17,7 @@ import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedTextBlock;
 import net.lenni0451.rivet.backend.thingl.util.MathUtil;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
+
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.gl.renderer.impl.RendererText;
@@ -171,9 +172,9 @@ public class ThinGLRenderer extends CheckedRenderer {
     }
 
     @Override
-    public void doText(final ShapedText shapedText, final float x, final float y, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
-        float tx = x + shapedText.offset(horizontalOrigin);
-        float ty = y + shapedText.offset(verticalOrigin);
+    public void doText(final ShapedText shapedText, final float anchorX, final float anchorY, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin) {
+        float tx = shapedText.alignAnchorTo(anchorX, horizontalOrigin, TextOrigin.Horizontal.LOGICAL_LEFT);
+        float ty = shapedText.alignAnchorTo(anchorY, verticalOrigin, TextOrigin.Vertical.BASELINE);
         switch (shapedText) {
             case ThinGLShapedText thinGLShapedText -> ThinGL.rendererText().textLine(
                     this.positionMatrix,

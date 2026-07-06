@@ -7,6 +7,20 @@ import lombok.experimental.UtilityClass;
 public class TextOrigin {
 
     @RequiredArgsConstructor
+    public enum Horizontal {
+        LOGICAL_LEFT(width -> 0),
+        VISUAL_LEFT(width -> 0),
+        VISUAL_CENTER(width -> width / 2F),
+        VISUAL_RIGHT(width -> width);
+
+        private final Mapper mapper;
+
+        public float position(final float width) {
+            return this.mapper.map(width);
+        }
+    }
+
+    @RequiredArgsConstructor
     public enum Vertical {
         BASELINE(height -> height / 2F),
         LOGICAL_TOP(height -> 0),
@@ -18,22 +32,8 @@ public class TextOrigin {
 
         private final Mapper mapper;
 
-        public float offset(final float height) {
+        public float position(final float height) {
             return this.mapper.map(height);
-        }
-    }
-
-    @RequiredArgsConstructor
-    public enum Horizontal {
-        LOGICAL_LEFT(width -> 0),
-        VISUAL_LEFT(width -> 0),
-        VISUAL_CENTER(width -> width / 2F),
-        VISUAL_RIGHT(width -> width);
-
-        private final Mapper mapper;
-
-        public float offset(final float width) {
-            return this.mapper.map(width);
         }
     }
 
