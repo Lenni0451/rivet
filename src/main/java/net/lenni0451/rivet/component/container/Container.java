@@ -6,12 +6,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
-import net.lenni0451.rivet.component.Parent;
-import net.lenni0451.rivet.dragdrop.DragOverEvent;
-import net.lenni0451.rivet.dragdrop.DropEvent;
-import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
-import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
+import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -23,7 +18,7 @@ import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true, chain = true, makeFinal = true)
-public class Container extends Component implements Parent {
+public class Container extends ParentContainer {
 
     @Getter
     private final Layout layout;
@@ -121,78 +116,8 @@ public class Container extends Component implements Parent {
     }
 
     @Override
-    protected void onComponentAdded() {
-        for (Child child : this.children) {
-            child.component.setRivet(this.rivet(), this);
-        }
-    }
-
-    @Override
-    protected void onComponentRemoved() {
-        for (Child child : this.children) {
-            child.component.setRivet(null, null);
-        }
-        this.mouseHandler.unsafeClear();
-    }
-
-    @Override
-    protected void onComponentDisabled() {
-        for (Child child : this.children) {
-            child.component.disabled(true);
-        }
-        this.mouseHandler.unsafeClear();
-    }
-
-    @Override
-    protected void onComponentEnabled() {
-        for (Child child : this.children) {
-            child.component.disabled(false);
-        }
-    }
-
-    @Override
-    public void onThemeChanged() {
-        this.children.forEach(c -> c.component.onThemeChanged());
-    }
-
-    @Override
-    protected void onComponentMouseLeave() {
-        this.mouseHandler.onMouseLeave();
-    }
-
-    @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
-        return this.mouseHandler.onMouseDown(this.rivet(), event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
-        return this.mouseHandler.onMouseUp(this.rivet(), event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
-        return this.mouseHandler.onMouseMove(event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
-        return this.mouseHandler.onMouseScroll(event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentDrop(final DropEvent event, final Size size) {
-        return this.mouseHandler.onDrop(event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
-        return this.mouseHandler.onDragOver(event, size).handled();
-    }
-
-    @Override
-    protected void onComponentDragLeave() {
-        this.mouseHandler.onDragLeave();
+    protected ContainerMouseHandler<?> mouseHandler() {
+        return this.mouseHandler;
     }
 
     @Override

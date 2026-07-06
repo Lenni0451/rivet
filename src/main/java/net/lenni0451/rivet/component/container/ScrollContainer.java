@@ -11,8 +11,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
-import net.lenni0451.rivet.dragdrop.DragOverEvent;
-import net.lenni0451.rivet.dragdrop.DropEvent;
+import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -30,7 +29,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
-public class ScrollContainer extends Component implements Parent {
+public class ScrollContainer extends ParentContainer {
 
     @Getter
     private final Component child;
@@ -215,16 +214,20 @@ public class ScrollContainer extends Component implements Parent {
     }
 
     @Override
+    protected ContainerMouseHandler<?> mouseHandler() {
+        return this.mouseHandler;
+    }
+
+    @Override
     protected void onComponentAdded() {
-        this.child.setRivet(this.rivet(), this);
+        super.onComponentAdded();
         this.scrollXAnimation = this.animationConfig.value().create(this.scrollX);
         this.scrollYAnimation = this.animationConfig.value().create(this.scrollY);
     }
 
     @Override
     protected void onComponentRemoved() {
-        this.child.setRivet(null, null);
-        this.mouseHandler.unsafeClear();
+        super.onComponentRemoved();
         this.hBarHovered = false;
         this.hBarPressed = false;
         this.hRailHovered = false;
@@ -237,8 +240,7 @@ public class ScrollContainer extends Component implements Parent {
 
     @Override
     protected void onComponentDisabled() {
-        this.child.disabled(true);
-        this.mouseHandler.unsafeClear();
+        super.onComponentDisabled();
         this.hBarHovered = false;
         this.hBarPressed = false;
         this.hRailHovered = false;
@@ -250,22 +252,15 @@ public class ScrollContainer extends Component implements Parent {
     }
 
     @Override
-    protected void onComponentEnabled() {
-        this.child.disabled(false);
-    }
-
-    @Override
     public void onThemeChanged() {
-        if (this.rivet() != null) {
-            this.scrollXAnimation = this.animationConfig.value().create(this.scrollXAnimation.getValue());
-            this.scrollYAnimation = this.animationConfig.value().create(this.scrollYAnimation.getValue());
-        }
-        this.child.onThemeChanged();
+        super.onThemeChanged();
+        this.scrollXAnimation = this.animationConfig.value().create(this.scrollXAnimation.getValue());
+        this.scrollYAnimation = this.animationConfig.value().create(this.scrollYAnimation.getValue());
     }
 
     @Override
     protected void onComponentMouseLeave() {
-        this.mouseHandler.onMouseLeave();
+        super.onComponentMouseLeave();
         this.hBarHovered = false;
         this.hRailHovered = false;
         this.vBarHovered = false;
@@ -323,7 +318,7 @@ public class ScrollContainer extends Component implements Parent {
                 return true;
             }
         }
-        return this.mouseHandler.onMouseDown(this.rivet(), event, size).handled();
+        return super.onComponentMouseDown(event, size);
     }
 
     @Override
@@ -346,7 +341,7 @@ public class ScrollContainer extends Component implements Parent {
         if (hThumbHovered || hRailHovered || vThumbHovered || vRailHovered || wasPressed) {
             return true;
         }
-        return this.mouseHandler.onMouseUp(this.rivet(), event, size).handled();
+        return super.onComponentMouseUp(event, size);
     }
 
     @Override
@@ -380,7 +375,7 @@ public class ScrollContainer extends Component implements Parent {
             this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
             return true;
         }
-        return this.mouseHandler.onMouseMove(event, size).handled();
+        return super.onComponentMouseMove(event, size);
     }
 
     @Override
@@ -413,21 +408,6 @@ public class ScrollContainer extends Component implements Parent {
                         this.childSize
                 )
         );
-    }
-
-    @Override
-    protected boolean onComponentDrop(final DropEvent event, final Size size) {
-        return this.mouseHandler.onDrop(event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
-        return this.mouseHandler.onDragOver(event, size).handled();
-    }
-
-    @Override
-    protected void onComponentDragLeave() {
-        this.mouseHandler.onDragLeave();
     }
 
     @Override

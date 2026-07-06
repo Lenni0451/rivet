@@ -6,11 +6,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
-import net.lenni0451.rivet.dragdrop.DragOverEvent;
-import net.lenni0451.rivet.dragdrop.DropEvent;
-import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
-import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
-import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
+import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -20,7 +16,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
-public class DecoratedContainer extends Component implements Parent {
+public class DecoratedContainer extends ParentContainer {
 
     @Getter
     private final Component background;
@@ -45,75 +41,8 @@ public class DecoratedContainer extends Component implements Parent {
     }
 
     @Override
-    protected void onComponentAdded() {
-        this.background.setRivet(this.rivet(), this);
-        this.child.setRivet(this.rivet(), this);
-    }
-
-    @Override
-    protected void onComponentRemoved() {
-        this.background.setRivet(null, null);
-        this.child.setRivet(null, null);
-        this.mouseHandler.unsafeClear();
-    }
-
-    @Override
-    protected void onComponentDisabled() {
-        this.background.disabled(true);
-        this.child.disabled(true);
-        this.mouseHandler.unsafeClear();
-    }
-
-    @Override
-    protected void onComponentEnabled() {
-        this.background.disabled(false);
-        this.child.disabled(false);
-    }
-
-    @Override
-    public void onThemeChanged() {
-        this.background.onThemeChanged();
-        this.child.onThemeChanged();
-    }
-
-    @Override
-    protected void onComponentMouseLeave() {
-        this.mouseHandler.onMouseLeave();
-    }
-
-    @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
-        return this.mouseHandler.onMouseDown(this.rivet(), event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
-        return this.mouseHandler.onMouseUp(this.rivet(), event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
-        return this.mouseHandler.onMouseMove(event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
-        return this.mouseHandler.onMouseScroll(event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentDrop(final DropEvent event, final Size size) {
-        return this.mouseHandler.onDrop(event, size).handled();
-    }
-
-    @Override
-    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
-        return this.mouseHandler.onDragOver(event, size).handled();
-    }
-
-    @Override
-    protected void onComponentDragLeave() {
-        this.mouseHandler.onDragLeave();
+    protected ContainerMouseHandler<?> mouseHandler() {
+        return this.mouseHandler;
     }
 
     @Override
@@ -140,11 +69,6 @@ public class DecoratedContainer extends Component implements Parent {
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(size.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()));
-    }
-
-    @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
     @Override
