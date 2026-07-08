@@ -63,7 +63,7 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
                     ThinGL.stencilStack().set();
                 }
                 if (!layer.scissor.equals(FULL_SIZE_RECT)) {
-                    ThinGL.scissorStack().pushOverwrite(renderer.positionMatrix(), MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
+                    ThinGL.scissorStack().pushIntersection(renderer.positionMatrix(), MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
                 }
                 multiDrawBatchDataHolder.draw();
                 if (!layer.scissor.equals(FULL_SIZE_RECT)) {
