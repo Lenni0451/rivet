@@ -562,15 +562,14 @@ public class ScrollContainer extends ParentContainer {
         float previousMaxScrollY = this.childSize.height() - this.visibleHeight(size);
         float availableWidth = size.width();
         float availableHeight = size.height();
+        Size idealChildSize = this.child.computeIdealSize(new Size(
+                this.horizontalScrolling ? Float.MAX_VALUE : size.width(),
+                this.verticalScrolling ? Float.MAX_VALUE : size.height()
+        ));
 
         this.hScrollVisible = false;
         this.vScrollVisible = false;
         if (this.barType.value() == ScrollBarType.NORMAL) {
-            Size idealChildSize = this.child.computeIdealSize(new Size(
-                    this.horizontalScrolling ? Float.MAX_VALUE : size.width(),
-                    this.verticalScrolling ? Float.MAX_VALUE : size.height()
-            ));
-
             this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() > (this.vScrollVisible ? availableWidth - this.barWidth.value() : availableWidth);
             this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > availableHeight;
             if (this.hScrollVisible && !this.vScrollVisible) {
@@ -585,8 +584,8 @@ public class ScrollContainer extends ParentContainer {
         }
 
         Size childSize = new Size(
-                MathUtils.clamp(availableWidth, this.child.minSize().width(), this.child.maxSize().width()),
-                MathUtils.clamp(availableHeight, this.child.minSize().height(), this.child.maxSize().height())
+                MathUtils.clamp(this.horizontalScrolling ? Math.max(idealChildSize.width(), availableWidth) : availableWidth, this.child.minSize().width(), this.child.maxSize().width()),
+                MathUtils.clamp(this.verticalScrolling ? Math.max(idealChildSize.height(), availableHeight) : availableHeight, this.child.minSize().height(), this.child.maxSize().height())
         );
         this.child.computeLayout(childSize);
         if (this.child instanceof Parent parent) {
