@@ -25,12 +25,14 @@ public final class BorderLayout implements Layout {
         for (Component component : components) {
             BorderPosition position = component.layoutOptions() instanceof BorderPosition pos ? pos : BorderPosition.CENTER;
             Size idealSize = component.computeIdealSize(constraints);
+            float idealWidth = this.widthOf(component, idealSize);
+            float idealHeight = this.heightOf(component, idealSize);
             switch (position) {
-                case TOP -> top = top.max(idealSize);
-                case BOTTOM -> bottom = bottom.max(idealSize);
-                case LEFT -> left = left.max(idealSize);
-                case RIGHT -> right = right.max(idealSize);
-                case CENTER -> center = center.max(idealSize);
+                case TOP -> top = top.max(idealWidth, idealHeight);
+                case BOTTOM -> bottom = bottom.max(idealWidth, idealHeight);
+                case LEFT -> left = left.max(idealWidth, idealHeight);
+                case RIGHT -> right = right.max(idealWidth, idealHeight);
+                case CENTER -> center = center.max(idealWidth, idealHeight);
             }
         }
         return new Size(
@@ -48,11 +50,13 @@ public final class BorderLayout implements Layout {
         for (Component component : components) {
             BorderPosition position = component.layoutOptions() instanceof BorderPosition pos ? pos : BorderPosition.CENTER;
             Size idealSize = component.computeIdealSize(containerSize);
+            float idealWidth = this.widthOf(component, idealSize);
+            float idealHeight = this.heightOf(component, idealSize);
             switch (position) {
-                case TOP -> topHeight = Math.max(topHeight, idealSize.height());
-                case BOTTOM -> bottomHeight = Math.max(bottomHeight, idealSize.height());
-                case LEFT -> leftWidth = Math.max(leftWidth, idealSize.width());
-                case RIGHT -> rightWidth = Math.max(rightWidth, idealSize.width());
+                case TOP -> topHeight = Math.max(topHeight, idealHeight);
+                case BOTTOM -> bottomHeight = Math.max(bottomHeight, idealHeight);
+                case LEFT -> leftWidth = Math.max(leftWidth, idealWidth);
+                case RIGHT -> rightWidth = Math.max(rightWidth, idealWidth);
             }
         }
         for (Component component : components) {
