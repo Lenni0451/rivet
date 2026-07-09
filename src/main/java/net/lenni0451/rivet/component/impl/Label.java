@@ -28,6 +28,10 @@ public class Label extends Component {
     private ShapedText shapedText;
     private boolean reshape;
     @Getter
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TEXT_COLOR);
+    @Getter
+    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.DISABLED_TEXT_COLOR);
+    @Getter
     private final ThemeOption<OverflowBehavior> overflowBehavior = new ThemeOption<>(this, Theme.LABEL_OVERFLOW_BEHAVIOR);
     @Getter
     @Setter
@@ -76,7 +80,7 @@ public class Label extends Component {
 
     private void shapeText() {
         if (this.reshape) {
-            Color textColor = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
+            Color textColor = this.disabled() ? this.disabledTextColor.value() : this.textColor.value();
             this.shapedText = this.usedFont().shapeText(this.text, textColor);
             this.reshape = false;
         }

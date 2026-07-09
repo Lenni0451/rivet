@@ -18,6 +18,7 @@ import net.lenni0451.rivet.text.model.TextFormat;
 import net.lenni0451.rivet.text.model.TextLine;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,6 +46,10 @@ public class FormattedLabel extends Component {
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
     @Getter
     private float scale = 1F;
+    @Getter
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TEXT_COLOR);
+    @Getter
+    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.DISABLED_TEXT_COLOR);
 
     public FormattedLabel(@Nonnull final String text) {
         this(text, null);
@@ -109,7 +114,17 @@ public class FormattedLabel extends Component {
 
     private void parseLine() {
         if (this.line == null) {
-            Color color = this.disabled() ? this.rivet().theme().get(Theme.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.TEXT_COLOR);
+            boolean disabled = this.disabled();
+            Color color;
+            if (this.format != null) {
+                if (disabled && this.format.color().equals(this.textColor.value())) {
+                    color = this.disabledTextColor.value();
+                } else {
+                    color = this.format.color();
+                }
+            } else {
+                color = disabled ? this.disabledTextColor.value() : this.textColor.value();
+            }
             TextFormat format = TextFormat.DEFAULT.withColor(color);
             this.line = TextParser.parse(this.text, format);
         }
