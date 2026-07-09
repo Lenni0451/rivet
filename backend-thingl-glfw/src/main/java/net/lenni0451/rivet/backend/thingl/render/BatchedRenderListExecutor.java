@@ -48,12 +48,6 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
             for (int i = 0; i < layers.size(); i++) {
                 GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Layer " + i);
                 final Layer layer = layers.get(i);
-                for (Layer.CommandState commandState : layer.commandStates()) {
-                    renderer.positionMatrix().pushMatrix();
-                    renderer.positionMatrix().mul(commandState.matrix());
-                    this.renderCommand(renderer, commandState.renderCommand());
-                    renderer.positionMatrix().popMatrix();
-                }
                 if (layer.blurStrength > 0) {
                     ThinGL.programs().getGaussianBlur().bindInput();
                 }
@@ -64,6 +58,12 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
                 }
                 if (!layer.scissor.equals(FULL_SIZE_RECT)) {
                     ThinGL.scissorStack().pushIntersection(renderer.positionMatrix(), MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
+                }
+                for (Layer.CommandState commandState : layer.commandStates) {
+                    renderer.positionMatrix().pushMatrix();
+                    renderer.positionMatrix().mul(commandState.matrix());
+                    this.renderCommand(renderer, commandState.renderCommand());
+                    renderer.positionMatrix().popMatrix();
                 }
                 multiDrawBatchDataHolder.draw();
                 if (!layer.scissor.equals(FULL_SIZE_RECT)) {
@@ -107,12 +107,12 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
                     case ModifierCommand.Scale scaleCommand -> matrix.scaleXY(scaleCommand.x(), scaleCommand.y());
                     case ThinGLModifierCommand thinGlModifierCommand -> {
                         switch (thinGlModifierCommand) {
-                            case ThinGLModifierCommand.Blur blur -> blurStrength += blur.strength();
+                            case ThinGLModifierCommand.Blur blurCommand -> blurStrength += blurCommand.strength();
                         }
                     }
-                    case ModifierCommand.Stencil stencil -> {
-                        stencilMaskMode = stencil.inverse() ? StencilStack.Mode.NOT_EQUAL : StencilStack.Mode.EQUAL_INTERSECTION;
-                        stencilMaskLayers.addRenderList(stencil.mask(), matrix, scissor);
+                    case ModifierCommand.Stencil stencilCommand -> {
+                        stencilMaskMode = stencilCommand.inverse() ? StencilStack.Mode.NOT_EQUAL : StencilStack.Mode.EQUAL_INTERSECTION;
+                        stencilMaskLayers.addRenderList(stencilCommand.mask(), matrix, scissor);
                     }
                     case ModifierCommand.Custom _ -> throw new UnsupportedOperationException("Custom modifier commands are not supported in BatchedThinGLRenderer");
                 }
@@ -128,20 +128,16 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
         public void addRenderCommand(final RenderCommand renderCommand, final Matrix4f matrix, final Rectanglef scissor, final StencilStack.Mode stencilMaskMode, final Layers stencilMaskLayers, final int blurStrength) {
             final Rectanglef bounds = MathUtil.transform(MathUtil.convert(renderCommand.bounds()), matrix);
             int insertionIndex = this.size();
-            if (!(renderCommand instanceof RenderCommand.Custom)) {
-                for (int i = this.size() - 1; i >= 0; i--) {
-                    final Layer layer = this.get(i);
-                    if (layer.isCompatible(bounds, scissor, stencilMaskMode, stencilMaskLayers, blurStrength)) {
-                        insertionIndex = i;
-                    } else if (layer.intersectsRectangle(bounds)) {
-                        if (insertionIndex <= i) {
-                            insertionIndex = i + 1;
-                        }
-                        break;
+            for (int i = this.size() - 1; i >= 0; i--) {
+                final Layer layer = this.get(i);
+                if (layer.isCompatible(bounds, scissor, stencilMaskMode, stencilMaskLayers, blurStrength)) {
+                    insertionIndex = i;
+                } else if (layer.intersectsRectangle(bounds)) {
+                    if (insertionIndex <= i) {
+                        insertionIndex = i + 1;
                     }
+                    break;
                 }
-            } else {
-                bounds.set(FULL_SIZE_RECT);
             }
             if (insertionIndex >= this.size()) {
                 this.add(new Layer(scissor, stencilMaskMode, blurStrength));
@@ -242,7 +238,7 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
         private void addStencilMaskLayers(final Layers layers) {
             if (!layers.isEmpty() && this.addedStencilMaskLayers.add(layers)) {
                 for (Layer layer : layers) {
-                    for (CommandState commandState : layer.commandStates()) {
+                    for (CommandState commandState : layer.commandStates) {
                         this.stencilMaskLayers.addRenderCommand(commandState.renderCommand(), commandState.matrix(), layer.scissor, layer.stencilMaskMode, layer.stencilMaskLayers, 0);
                     }
                 }
