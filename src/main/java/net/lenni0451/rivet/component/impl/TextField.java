@@ -263,7 +263,9 @@ public class TextField extends Component {
     @Override
     protected void onComponentDisabled() {
         this.onComponentRemoved();
-        this.updateShapedText();
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
     }
 
     @Override
