@@ -94,4 +94,16 @@ public class ReorderableContainer extends Container {
         void onReorder(final List<Object> dragData, final int insertIndex);
     }
 
+    @FunctionalInterface
+    public interface SingleReorderListener extends ReorderListener {
+        void onReorder(final Object dragData, final int insertIndex);
+
+        @Override
+        default void onReorder(final List<Object> dragData, final int insertIndex) {
+            if (dragData.size() == 1) {
+                this.onReorder(dragData.get(0), insertIndex);
+            }
+        }
+    }
+
 }
