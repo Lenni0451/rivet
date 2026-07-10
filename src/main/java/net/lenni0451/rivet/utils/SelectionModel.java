@@ -6,10 +6,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
@@ -32,6 +29,17 @@ public final class SelectionModel<E> {
 
     public Set<E> selected() {
         return Collections.unmodifiableSet(this.selectedItems);
+    }
+
+    public List<E> orderedSelected() {
+        List<E> currentData = this.dataSupplier.get();
+        List<E> result = new ArrayList<>();
+        for (E item : currentData) {
+            if (this.selectedItems.contains(item)) {
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public void clear() {

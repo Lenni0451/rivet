@@ -13,6 +13,7 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -36,6 +37,16 @@ public class ReorderableContainer extends Container {
         this.dropFilter = dropFilter;
     }
 
+    private boolean isAccepted(final List<Object> dragData) {
+        if (dragData.isEmpty()) return false;
+        for (Object data : dragData) {
+            if (!this.dropFilter.test(data)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     protected void onComponentDisabled() {
         this.currentTarget = null;
@@ -44,7 +55,7 @@ public class ReorderableContainer extends Container {
 
     @Override
     protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
-        if (this.dropFilter.test(event.dragData())) {
+        if (this.isAccepted(event.dragData())) {
             this.currentTarget = this.strategy.resolve(this, event.x(), event.y());
             return true;
         }
@@ -59,7 +70,7 @@ public class ReorderableContainer extends Container {
 
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Size size) {
-        if (this.currentTarget != null && this.dropFilter.test(event.dragData())) {
+        if (this.currentTarget != null && this.isAccepted(event.dragData())) {
             this.reorderListener.callVoid(listener -> listener.onReorder(event.dragData(), this.currentTarget.insertIndex()));
             this.currentTarget = null;
             return true;
@@ -80,7 +91,7 @@ public class ReorderableContainer extends Container {
 
     @FunctionalInterface
     public interface ReorderListener {
-        void onReorder(final Object dragData, final int insertIndex);
+        void onReorder(final List<Object> dragData, final int insertIndex);
     }
 
 }
