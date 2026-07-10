@@ -180,6 +180,11 @@ public abstract class ContainerMouseHandler<E> {
             } else {
                 return EventState.NOT_HANDLED;
             }
+        } else {
+            if (this.hoveredElement != null) {
+                this.map(this.hoveredElement).onMouseLeave();
+                this.hoveredElement = null;
+            }
         }
         return EventState.MISS;
     }
