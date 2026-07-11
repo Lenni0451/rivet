@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.Interpolator;
 import net.lenni0451.rivet.animation.Transition;
@@ -197,7 +198,8 @@ public class TextField extends Component {
     }
 
     public TextField cursor(final int cursor) {
-        this.cursor = Math.max(0, Math.min(this.text.length(), cursor));
+        this.cursor = MathUtils.clamp(cursor, 0, this.text.length());
+        this.selection = MathUtils.clamp(cursor, 0, this.text.length());
         if (this.cursorAnimation != null) {
             this.cursorAnimation.reset().start();
         }
@@ -205,7 +207,7 @@ public class TextField extends Component {
     }
 
     public TextField selection(final int selection) {
-        this.selection = Math.max(0, Math.min(this.text.length(), selection));
+        this.selection = MathUtils.clamp(selection, 0, this.text.length());
         return this;
     }
 
