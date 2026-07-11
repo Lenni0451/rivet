@@ -196,6 +196,19 @@ public class TextField extends Component {
         return this;
     }
 
+    public TextField cursor(final int cursor) {
+        this.cursor = Math.max(0, Math.min(this.text.length(), cursor));
+        if (this.cursorAnimation != null) {
+            this.cursorAnimation.reset().start();
+        }
+        return this;
+    }
+
+    public TextField selection(final int selection) {
+        this.selection = Math.max(0, Math.min(this.text.length(), selection));
+        return this;
+    }
+
     private void updateShapedText() {
         this.validate();
         String text = this.text.toString();
