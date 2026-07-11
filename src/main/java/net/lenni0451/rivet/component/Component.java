@@ -38,7 +38,7 @@ public abstract class Component {
     private LayoutOptions layoutOptions;
     @Getter
     @Setter
-    private boolean interactive = true;
+    private Capabilities capabilities = new Capabilities();
     @Getter
     private boolean disabled = false;
 
@@ -229,7 +229,7 @@ public abstract class Component {
     }
 
     public final boolean onKeyDown(final KeyEvent event) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.keyboardInput) return false;
         if (this.disabled) return false;
         return this.keyDownListener.call(l -> l.test(event), () -> this.onComponentKeyDown(event));
     }
@@ -239,7 +239,7 @@ public abstract class Component {
     }
 
     public final boolean onKeyUp(final KeyEvent event) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.keyboardInput) return false;
         if (this.disabled) return false;
         return this.keyUpListener.call(l -> l.test(event), () -> this.onComponentKeyUp(event));
     }
@@ -249,7 +249,7 @@ public abstract class Component {
     }
 
     public final boolean onCharTyped(final CharEvent event) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.keyboardInput) return false;
         if (this.disabled) return false;
         return this.charTypedListener.call(l -> l.test(event), () -> this.onComponentCharTyped(event));
     }
@@ -259,7 +259,7 @@ public abstract class Component {
     }
 
     public final void onMouseEnter() {
-        if (!this.interactive) return;
+        if (!this.capabilities.mouseHover) return;
         if (this.disabled) return;
         this.mouseEnterListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentMouseEnter();
@@ -271,7 +271,7 @@ public abstract class Component {
     }
 
     public final void onMouseLeave() {
-        if (!this.interactive) return;
+        if (!this.capabilities.mouseHover) return;
         if (this.disabled) return;
         this.mouseLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentMouseLeave();
@@ -283,37 +283,37 @@ public abstract class Component {
     }
 
     public final boolean onMouseDown(final MouseButtonEvent event, final Size size) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.mouseInput) return false;
         if (this.disabled) return false;
         return this.mouseDownListener.call(l -> l.test(event, size), () -> this.onComponentMouseDown(event, size));
     }
 
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
-        return this.interactive;
+        return true;
     }
 
     public final boolean onMouseUp(final MouseButtonEvent event, final Size size) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.mouseInput) return false;
         if (this.disabled) return false;
         return this.mouseUpListener.call(l -> l.test(event, size), () -> this.onComponentMouseUp(event, size));
     }
 
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
-        return this.interactive;
+        return true;
     }
 
     public final boolean onMouseMove(final MouseMoveEvent event, final Size size) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.mouseHover) return false;
         if (this.disabled) return false;
         return this.mouseMoveListener.call(l -> l.test(event, size), () -> this.onComponentMouseMove(event, size));
     }
 
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
-        return this.interactive;
+        return true;
     }
 
     public final boolean onMouseScroll(final MouseScrollEvent event, final Size size) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.mouseInput) return false;
         if (this.disabled) return false;
         return this.mouseScrollListener.call(l -> l.test(event, size), () -> this.onComponentMouseScroll(event, size));
     }
@@ -323,7 +323,7 @@ public abstract class Component {
     }
 
     public final boolean onDrop(final DropEvent event, final Size size) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.dragAndDrop) return false;
         if (this.disabled) return false;
         return this.dropListener.call(l -> l.test(event, size), () -> this.onComponentDrop(event, size));
     }
@@ -333,7 +333,7 @@ public abstract class Component {
     }
 
     public final boolean onDragOver(final DragOverEvent event, final Size size) {
-        if (!this.interactive) return false;
+        if (!this.capabilities.dragAndDrop) return false;
         if (this.disabled) return false;
         return this.dragOverListener.call(l -> l.test(event, size), () -> this.onComponentDragOver(event, size));
     }
@@ -343,7 +343,7 @@ public abstract class Component {
     }
 
     public final void onDragLeave() {
-        if (!this.interactive) return;
+        if (!this.capabilities.dragAndDrop) return;
         if (this.disabled) return;
         this.dragLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentDragLeave();
@@ -367,6 +367,29 @@ public abstract class Component {
     public abstract Size computeIdealSize(final Size constraints);
 
     public void computeLayout(final Size size) {
+    }
+
+
+    @Getter
+    @Setter
+    @Accessors(fluent = true, chain = true, makeFinal = true)
+    public static class Capabilities {
+        private boolean keyboardInput = true;
+        private boolean mouseInput = true;
+        private boolean mouseHover = true;
+        private boolean dragAndDrop = true;
+
+        public boolean hasAny() {
+            return this.keyboardInput || this.mouseInput || this.mouseHover || this.dragAndDrop;
+        }
+
+        public Capabilities all(final boolean value) {
+            this.keyboardInput = value;
+            this.mouseInput = value;
+            this.mouseHover = value;
+            this.dragAndDrop = value;
+            return this;
+        }
     }
 
 }

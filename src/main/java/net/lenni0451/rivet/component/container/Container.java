@@ -196,7 +196,7 @@ public class Container extends ParentContainer {
             List<Child> elements = new ArrayList<>();
             for (int i = Container.this.children.size() - 1; i >= 0; i--) {
                 Child child = Container.this.children.get(i);
-                if (child.component.interactive() && child.bounds.contains(x, y)) {
+                if (child.bounds.contains(x, y)) {
                     elements.add(child);
                 }
             }
