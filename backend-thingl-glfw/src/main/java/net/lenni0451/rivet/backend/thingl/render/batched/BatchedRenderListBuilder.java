@@ -1,90 +1,31 @@
-package net.lenni0451.rivet.backend.thingl.render;
+package net.lenni0451.rivet.backend.thingl.render.batched;
 
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
-import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.rivet.backend.render.Renderer;
-import net.lenni0451.rivet.backend.render.deferred.*;
+import net.lenni0451.rivet.backend.render.deferred.ModifierCommand;
+import net.lenni0451.rivet.backend.render.deferred.RenderCommand;
+import net.lenni0451.rivet.backend.render.deferred.RenderElement;
+import net.lenni0451.rivet.backend.render.deferred.RenderList;
+import net.lenni0451.rivet.backend.thingl.render.ThinGLModifierCommand;
 import net.lenni0451.rivet.backend.thingl.util.MathUtil;
 import net.lenni0451.rivet.math.Rectangle;
-import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.gl.wrapper.StencilStack;
-import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 import org.joml.primitives.Rectanglef;
-import org.lwjgl.opengl.GL43C;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class BatchedRenderListExecutor extends RenderListExecutor {
-
-    public static final BatchedRenderListExecutor INSTANCE = new BatchedRenderListExecutor();
+public class BatchedRenderListBuilder {
 
     private static final Rectanglef EMPTY_RECT = new Rectanglef(Float.NaN, Float.NaN, Float.NaN, Float.NaN);
-    private static final Rectanglef FULL_SIZE_RECT = new Rectanglef(-Float.MAX_VALUE, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    public static final Rectanglef FULL_SIZE_RECT = new Rectanglef(-Float.MAX_VALUE, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 
-    @Override
-    public void renderList(final Renderer renderer, final RenderList renderList) {
-        this.renderLayers((ThinGLRenderer) renderer, this.buildLayers(renderList));
-    }
-
-    public List<Layer> buildLayers(final RenderList renderList) {
+    public static Layers buildLayers(final RenderList renderList) {
         final Layers layers = new Layers();
-        layers.addRenderList(renderList, new Matrix4f(), FULL_SIZE_RECT);
+        layers.addRenderList(renderList, RenderMathUtil.getIdentityMatrix(), FULL_SIZE_RECT);
         return layers;
-    }
-
-    public void renderLayers(final ThinGLRenderer renderer, final List<Layer> layers) {
-        final MultiDrawBatchDataHolder multiDrawBatchDataHolder = new ImmediateMultiDrawBatchDataHolder();
-        final MultiDrawBatchDataHolder previousMultiDrawBatchDataHolder2D = ThinGL.renderer2D().getTargetMultiDrawBatchDataHolder();
-        final MultiDrawBatchDataHolder previousMultiDrawBatchDataHolderText = ThinGL.rendererText().getTargetMultiDrawBatchDataHolder();
-        try {
-            ThinGL.renderer2D().beginBuffering(multiDrawBatchDataHolder);
-            ThinGL.rendererText().beginBuffering(multiDrawBatchDataHolder);
-            GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Rivet");
-            for (int i = 0; i < layers.size(); i++) {
-                GL43C.glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, "Layer " + i);
-                final Layer layer = layers.get(i);
-                if (layer.blurStrength > 0) {
-                    ThinGL.programs().getGaussianBlur().bindInput();
-                }
-                if (layer.stencilMaskMode != null) {
-                    ThinGL.stencilStack().push(layer.stencilMaskMode);
-                    this.renderLayers(renderer, layer.stencilMaskLayers);
-                    ThinGL.stencilStack().set();
-                }
-                if (!layer.scissor.equals(FULL_SIZE_RECT)) {
-                    ThinGL.scissorStack().pushIntersection(renderer.positionMatrix(), MathUtils.floorInt(layer.scissor.minX), MathUtils.floorInt(layer.scissor.minY), MathUtils.ceilInt(layer.scissor.maxX), MathUtils.ceilInt(layer.scissor.maxY));
-                }
-                for (Layer.CommandState commandState : layer.commandStates) {
-                    renderer.positionMatrix().pushMatrix();
-                    renderer.positionMatrix().mul(commandState.matrix());
-                    this.renderCommand(renderer, commandState.renderCommand());
-                    renderer.positionMatrix().popMatrix();
-                }
-                multiDrawBatchDataHolder.draw();
-                if (!layer.scissor.equals(FULL_SIZE_RECT)) {
-                    ThinGL.scissorStack().pop();
-                }
-                if (layer.stencilMaskMode != null) {
-                    ThinGL.stencilStack().pop();
-                }
-                if (layer.blurStrength > 0) {
-                    ThinGL.programs().getGaussianBlur().unbindInput();
-                    ThinGL.programs().getGaussianBlur().configureParameters(layer.blurStrength);
-                    ThinGL.programs().getGaussianBlur().render(renderer.positionMatrix(), layer.bounds.minX, layer.bounds.minY, layer.bounds.maxX, layer.bounds.maxY);
-                    ThinGL.programs().getGaussianBlur().clearInput();
-                }
-                GL43C.glPopDebugGroup();
-            }
-            GL43C.glPopDebugGroup();
-        } finally {
-            ThinGL.renderer2D().beginBuffering(previousMultiDrawBatchDataHolder2D);
-            ThinGL.rendererText().beginBuffering(previousMultiDrawBatchDataHolderText);
-        }
     }
 
     public static class Layers extends ArrayList<Layer> {
@@ -178,13 +119,13 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
         private final ReferenceSet<Layers> addedStencilMaskLayers = new ReferenceOpenHashSet<>();
         private final int blurStrength;
 
-        private Layer(final Rectanglef scissor, final StencilStack.Mode stencilMaskMode, final int blurStrength) {
+        public Layer(final Rectanglef scissor, final StencilStack.Mode stencilMaskMode, final int blurStrength) {
             this.scissor = scissor;
             this.stencilMaskMode = stencilMaskMode;
             this.blurStrength = blurStrength;
         }
 
-        private boolean isCompatible(final Rectanglef renderBounds, final Rectanglef scissor, final StencilStack.Mode stencilMaskMode, final Layers stencilMaskLayers, final int blurStrength) {
+        public boolean isCompatible(final Rectanglef renderBounds, final Rectanglef scissor, final StencilStack.Mode stencilMaskMode, final Layers stencilMaskLayers, final int blurStrength) {
             if (this.intersectsRectangle(renderBounds)) {
                 return false;
             }
@@ -206,7 +147,7 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
             return true;
         }
 
-        private boolean intersectsRectangle(final Rectanglef bounds) {
+        public boolean intersectsRectangle(final Rectanglef bounds) {
             if (this.bounds.intersectsRectangle(bounds)) {
                 for (CommandState commandState : this.commandStates) {
                     if (commandState.bounds.intersectsRectangle(bounds)) {
@@ -217,7 +158,7 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
             return false;
         }
 
-        private boolean intersectsLayer(final Layer otherLayer) {
+        public boolean intersectsLayer(final Layer otherLayer) {
             if (this.bounds.intersectsRectangle(otherLayer.bounds)) {
                 for (CommandState commandState : this.commandStates) {
                     for (CommandState otherCommandState : otherLayer.commandStates) {
@@ -230,12 +171,12 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
             return false;
         }
 
-        private void addCommandState(final CommandState commandState) {
+        public void addCommandState(final CommandState commandState) {
             this.commandStates.add(commandState);
             this.bounds.union(commandState.bounds);
         }
 
-        private void addStencilMaskLayers(final Layers layers) {
+        public void addStencilMaskLayers(final Layers layers) {
             if (!layers.isEmpty() && this.addedStencilMaskLayers.add(layers)) {
                 for (Layer layer : layers) {
                     for (CommandState commandState : layer.commandStates) {
@@ -246,7 +187,27 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
         }
 
         public List<CommandState> commandStates() {
-            return Collections.unmodifiableList(this.commandStates);
+            return this.commandStates;
+        }
+
+        public Rectanglef bounds() {
+            return this.bounds;
+        }
+
+        public Rectanglef scissor() {
+            return this.scissor;
+        }
+
+        public StencilStack.Mode stencilMaskMode() {
+            return this.stencilMaskMode;
+        }
+
+        public Layers stencilMaskLayers() {
+            return this.stencilMaskLayers;
+        }
+
+        public int blurStrength() {
+            return this.blurStrength;
         }
 
         public record CommandState(Rectanglef bounds, Matrix4f matrix, RenderCommand renderCommand) {
