@@ -229,7 +229,8 @@ public abstract class Component {
     }
 
     public final boolean onKeyDown(final KeyEvent event) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.keyDownListener.call(l -> l.test(event), () -> this.onComponentKeyDown(event));
     }
 
@@ -238,7 +239,8 @@ public abstract class Component {
     }
 
     public final boolean onKeyUp(final KeyEvent event) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.keyUpListener.call(l -> l.test(event), () -> this.onComponentKeyUp(event));
     }
 
@@ -247,7 +249,8 @@ public abstract class Component {
     }
 
     public final boolean onCharTyped(final CharEvent event) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.charTypedListener.call(l -> l.test(event), () -> this.onComponentCharTyped(event));
     }
 
@@ -256,7 +259,8 @@ public abstract class Component {
     }
 
     public final void onMouseEnter() {
-        if (this.disabled()) return;
+        if (!this.interactive) return;
+        if (this.disabled) return;
         this.mouseEnterListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentMouseEnter();
             return false;
@@ -267,7 +271,8 @@ public abstract class Component {
     }
 
     public final void onMouseLeave() {
-        if (this.disabled()) return;
+        if (!this.interactive) return;
+        if (this.disabled) return;
         this.mouseLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentMouseLeave();
             return false;
@@ -278,7 +283,8 @@ public abstract class Component {
     }
 
     public final boolean onMouseDown(final MouseButtonEvent event, final Size size) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.mouseDownListener.call(l -> l.test(event, size), () -> this.onComponentMouseDown(event, size));
     }
 
@@ -287,7 +293,8 @@ public abstract class Component {
     }
 
     public final boolean onMouseUp(final MouseButtonEvent event, final Size size) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.mouseUpListener.call(l -> l.test(event, size), () -> this.onComponentMouseUp(event, size));
     }
 
@@ -296,7 +303,8 @@ public abstract class Component {
     }
 
     public final boolean onMouseMove(final MouseMoveEvent event, final Size size) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.mouseMoveListener.call(l -> l.test(event, size), () -> this.onComponentMouseMove(event, size));
     }
 
@@ -305,7 +313,8 @@ public abstract class Component {
     }
 
     public final boolean onMouseScroll(final MouseScrollEvent event, final Size size) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.mouseScrollListener.call(l -> l.test(event, size), () -> this.onComponentMouseScroll(event, size));
     }
 
@@ -314,7 +323,8 @@ public abstract class Component {
     }
 
     public final boolean onDrop(final DropEvent event, final Size size) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.dropListener.call(l -> l.test(event, size), () -> this.onComponentDrop(event, size));
     }
 
@@ -323,7 +333,8 @@ public abstract class Component {
     }
 
     public final boolean onDragOver(final DragOverEvent event, final Size size) {
-        if (this.disabled()) return false;
+        if (!this.interactive) return false;
+        if (this.disabled) return false;
         return this.dragOverListener.call(l -> l.test(event, size), () -> this.onComponentDragOver(event, size));
     }
 
@@ -332,7 +343,8 @@ public abstract class Component {
     }
 
     public final void onDragLeave() {
-        if (this.disabled()) return;
+        if (!this.interactive) return;
+        if (this.disabled) return;
         this.dragLeaveListener.call(BooleanSupplier::getAsBoolean, () -> {
             this.onComponentDragLeave();
             return false;
