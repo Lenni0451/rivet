@@ -68,6 +68,7 @@ public class DecoratedContainer extends ParentContainer {
 
     @Override
     public void computeLayout(final Size size) {
+        this.background.computeLayout(size);
         this.child.computeLayout(size.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()));
     }
 
