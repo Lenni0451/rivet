@@ -12,10 +12,16 @@ import java.util.function.BiConsumer;
 
 @With
 @WithBy
-public record VerticalListLayout(int gap, boolean fullWidth) implements Layout {
+public record VerticalListLayout(int gap, boolean fullWidth, boolean constrained) implements Layout {
+
+    public static final VerticalListLayout DEFAULT = new VerticalListLayout();
 
     public VerticalListLayout() {
         this(0, false);
+    }
+
+    public VerticalListLayout(final int gap, final boolean fullWidth) {
+        this(gap, fullWidth, false);
     }
 
     @Override
@@ -36,10 +42,17 @@ public record VerticalListLayout(int gap, boolean fullWidth) implements Layout {
     @Override
     public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         float y = 0;
+        float leftoverHeight = containerSize.height();
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(containerSize);
             float width = this.fullWidth ? this.widthOf(component, containerSize.width()) : this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
+            if (this.constrained && leftoverHeight > 0) {
+                if (height > leftoverHeight) {
+                    height = leftoverHeight;
+                }
+                leftoverHeight -= height;
+            }
             if (y != 0) y += this.gap;
             setBounds.accept(component, new Rectangle(0, y, width, height));
             y += this.heightOf(component, idealSize);
