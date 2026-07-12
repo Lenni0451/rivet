@@ -50,13 +50,21 @@ public final class Rivet {
     private float lastMouseX = -Float.MAX_VALUE;
     private float lastMouseY = -Float.MAX_VALUE;
 
+    @Getter
     private final ListenerList<BiPredicate<Component, Component>> focusChangeListener = new ListenerList<>();
+    @Getter
     private final ListenerList<Predicate<KeyEvent>> keyDownListener = new ListenerList<>();
+    @Getter
     private final ListenerList<Predicate<KeyEvent>> keyUpListener = new ListenerList<>();
+    @Getter
     private final ListenerList<Predicate<CharEvent>> charTypedListener = new ListenerList<>();
+    @Getter
     private final ListenerList<Predicate<MouseButtonEvent>> mouseDownListener = new ListenerList<>();
+    @Getter
     private final ListenerList<Predicate<MouseButtonEvent>> mouseUpListener = new ListenerList<>();
+    @Getter
     private final ListenerList<Predicate<MouseMoveEvent>> mouseMoveListener = new ListenerList<>();
+    @Getter
     private final ListenerList<Predicate<MouseScrollEvent>> mouseScrollListener = new ListenerList<>();
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
