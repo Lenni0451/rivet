@@ -17,6 +17,8 @@ import java.util.function.BiConsumer;
 @WithBy
 public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneousColumns, boolean homogeneousRows, boolean shrinkColumns, boolean shrinkRows) implements Layout {
 
+    public static final GridLayout DEFAULT = new GridLayout();
+
     public GridLayout() {
         this(0, 0);
     }

@@ -14,6 +14,8 @@ import java.util.function.BiConsumer;
 @WithBy
 public record DockLayout(float gap) implements Layout {
 
+    public static final DockLayout DEFAULT = new DockLayout();
+
     public DockLayout() {
         this(0);
     }

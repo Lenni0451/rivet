@@ -14,6 +14,8 @@ import java.util.function.BiConsumer;
 @WithBy
 public record VerticalFlowLayout(int horizontalGap, int verticalGap) implements Layout {
 
+    public static final VerticalFlowLayout DEFAULT = new VerticalFlowLayout();
+
     public VerticalFlowLayout() {
         this(0, 0);
     }
