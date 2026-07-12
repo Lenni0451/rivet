@@ -35,33 +35,33 @@ public class Checkbox extends Component {
     private boolean hovered = false;
 
     @Getter
-    private final ThemeOption<Float> cornerRadius;
+    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.CHECKBOX_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> outlineWidth;
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.CHECKBOX_OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Color> backgroundColor;
+    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> outlineColor;
+    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.CHECKBOX_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> checkColor;
+    private final ThemeOption<Color> checkColor = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_COLOR);
     @Getter
-    private final ThemeOption<Float> checkWidth;
+    private final ThemeOption<Float> checkWidth = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_WIDTH);
     @Getter
-    private final ThemeOption<Float> textGap;
+    private final ThemeOption<Float> textGap = new ThemeOption<>(this, Theme.CHECKBOX_TEXT_GAP);
     @Getter
-    private final ThemeOption<Color> hoverBackgroundColor;
+    private final ThemeOption<Color> hoverBackgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverOutlineColor;
+    private final ThemeOption<Color> hoverOutlineColor = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledBackgroundColor;
+    private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledOutlineColor;
+    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledCheckColor;
+    private final ThemeOption<Color> disabledCheckColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_CHECK_COLOR);
     @Getter
-    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_ANIMATION);
     @Getter
-    private final ThemeOption<AnimationConfig> checkAnimationConfig;
+    private final ThemeOption<AnimationConfig> checkAnimationConfig = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_ANIMATION);
 
     private Transition<Color> backgroundColorTransition;
     private Transition<Color> outlineColorTransition;
@@ -78,21 +78,6 @@ public class Checkbox extends Component {
     public Checkbox(final String text, final boolean checked) {
         this.checked = checked;
         this.text = text;
-
-        this.cornerRadius = new ThemeOption<>(this, Theme.CHECKBOX_CORNER_RADIUS);
-        this.outlineWidth = new ThemeOption<>(this, Theme.CHECKBOX_OUTLINE_WIDTH);
-        this.backgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_BACKGROUND_COLOR);
-        this.outlineColor = new ThemeOption<>(this, Theme.CHECKBOX_OUTLINE_COLOR);
-        this.checkColor = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_COLOR);
-        this.checkWidth = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_WIDTH);
-        this.textGap = new ThemeOption<>(this, Theme.CHECKBOX_TEXT_GAP);
-        this.hoverBackgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_BACKGROUND_COLOR);
-        this.hoverOutlineColor = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_OUTLINE_COLOR);
-        this.disabledBackgroundColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_BACKGROUND_COLOR);
-        this.disabledOutlineColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_OUTLINE_COLOR);
-        this.disabledCheckColor = new ThemeOption<>(this, Theme.CHECKBOX_DISABLED_CHECK_COLOR);
-        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.CHECKBOX_HOVER_ANIMATION);
-        this.checkAnimationConfig = new ThemeOption<>(this, Theme.CHECKBOX_CHECK_ANIMATION);
     }
 
     public Checkbox font(final Font font) {

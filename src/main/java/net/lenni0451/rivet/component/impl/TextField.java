@@ -63,43 +63,43 @@ public class TextField extends Component {
     private Animation cursorAnimation;
 
     @Getter
-    private final ThemeOption<Color> textColor;
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TEXT_FIELD_TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> invalidTextColor;
+    private final ThemeOption<Color> invalidTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> hintColor;
+    private final ThemeOption<Color> hintColor = new ThemeOption<>(this, Theme.TEXT_FIELD_HINT_COLOR);
     @Getter
-    private final ThemeOption<Color> backgroundColor;
+    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> outlineColor;
+    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> focusedOutlineColor;
+    private final ThemeOption<Color> focusedOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> invalidOutlineColor;
+    private final ThemeOption<Color> invalidOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> selectionColor;
+    private final ThemeOption<Color> selectionColor = new ThemeOption<>(this, Theme.TEXT_FIELD_SELECTION_COLOR);
     @Getter
-    private final ThemeOption<Color> cursorColor;
+    private final ThemeOption<Color> cursorColor = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_COLOR);
     @Getter
-    private final ThemeOption<Float> cursorWidth;
+    private final ThemeOption<Float> cursorWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_WIDTH);
     @Getter
-    private final ThemeOption<Float> outlineWidth;
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Float> cornerRadius;
+    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.TEXT_FIELD_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Padding> innerPadding;
+    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TEXT_FIELD_INNER_PADDING);
     @Getter
-    private final ThemeOption<Character> passwordChar;
+    private final ThemeOption<Character> passwordChar = new ThemeOption<>(this, Theme.TEXT_FIELD_PASSWORD_CHAR);
     @Getter
-    private final ThemeOption<Color> disabledTextColor;
+    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledBackgroundColor;
+    private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledOutlineColor;
+    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<AnimationConfig> cursorAnimationConfig;
+    private final ThemeOption<AnimationConfig> cursorAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_ANIMATION);
     @Getter
-    private final ThemeOption<AnimationConfig> focusAnimationConfig;
+    private final ThemeOption<AnimationConfig> focusAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUS_ANIMATION);
 
     private Transition<Color> outlineColorTransition;
 
@@ -109,26 +109,6 @@ public class TextField extends Component {
 
     public TextField(final String text) {
         this.text(text);
-
-        this.textColor = new ThemeOption<>(this, Theme.TEXT_FIELD_TEXT_COLOR);
-        this.invalidTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_TEXT_COLOR);
-        this.hintColor = new ThemeOption<>(this, Theme.TEXT_FIELD_HINT_COLOR);
-        this.backgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_BACKGROUND_COLOR);
-        this.outlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_COLOR);
-        this.focusedOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
-        this.invalidOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_OUTLINE_COLOR);
-        this.selectionColor = new ThemeOption<>(this, Theme.TEXT_FIELD_SELECTION_COLOR);
-        this.cursorColor = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_COLOR);
-        this.cursorWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_WIDTH);
-        this.outlineWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_WIDTH);
-        this.cornerRadius = new ThemeOption<>(this, Theme.TEXT_FIELD_CORNER_RADIUS);
-        this.innerPadding = new ThemeOption<>(this, Theme.TEXT_FIELD_INNER_PADDING);
-        this.passwordChar = new ThemeOption<>(this, Theme.TEXT_FIELD_PASSWORD_CHAR);
-        this.disabledTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_TEXT_COLOR);
-        this.disabledBackgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_BACKGROUND_COLOR);
-        this.disabledOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_OUTLINE_COLOR);
-        this.cursorAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_ANIMATION);
-        this.focusAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUS_ANIMATION);
     }
 
     public TextField font(final Font font) {

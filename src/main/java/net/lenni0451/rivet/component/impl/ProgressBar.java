@@ -19,39 +19,39 @@ public class ProgressBar extends Component {
     @Getter
     private float progress;
     @Getter
-    private final ThemeOption<String> textFormat;
+    private final ThemeOption<String> textFormat = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_FORMAT);
     @Getter
-    private final ThemeOption<TextPosition> textPosition;
+    private final ThemeOption<TextPosition> textPosition = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_POSITION);
     @Getter
-    private final ThemeOption<Float> textPadding;
+    private final ThemeOption<Float> textPadding = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_PADDING);
     @Getter
-    private final ThemeOption<Float> trackCornerRadius;
+    private final ThemeOption<Float> trackCornerRadius = new ThemeOption<>(this, Theme.PROGRESS_BAR_TRACK_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> indicatorCornerRadius;
+    private final ThemeOption<Float> indicatorCornerRadius = new ThemeOption<>(this, Theme.PROGRESS_BAR_INDICATOR_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Color> trackColor;
+    private final ThemeOption<Color> trackColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_TRACK_COLOR);
     @Getter
-    private final ThemeOption<Color> indicatorColor;
+    private final ThemeOption<Color> indicatorColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_INDICATOR_COLOR);
     @Getter
-    private final ThemeOption<Color> borderColor;
+    private final ThemeOption<Color> borderColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_COLOR);
     @Getter
-    private final ThemeOption<Float> borderWidth;
+    private final ThemeOption<Float> borderWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_WIDTH);
     @Getter
-    private final ThemeOption<Color> textColor;
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_COLOR);
     @Getter
-    private final ThemeOption<Boolean> stripes;
+    private final ThemeOption<Boolean> stripes = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPES);
     @Getter
-    private final ThemeOption<Color> stripeColor;
+    private final ThemeOption<Color> stripeColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_COLOR);
     @Getter
-    private final ThemeOption<Float> stripeWidth;
+    private final ThemeOption<Float> stripeWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_WIDTH);
     @Getter
-    private final ThemeOption<Float> stripeGap;
+    private final ThemeOption<Float> stripeGap = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_GAP);
     @Getter
-    private final ThemeOption<Float> stripeSpeed;
+    private final ThemeOption<Float> stripeSpeed = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_SPEED);
     @Getter
-    private final ThemeOption<Float> stripeAngle;
+    private final ThemeOption<Float> stripeAngle = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANGLE);
     @Getter
-    private final ThemeOption<Boolean> stripeAnimated;
+    private final ThemeOption<Boolean> stripeAnimated = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANIMATED);
 
     private String currentText = null;
     private ShapedText currentShapedText = null;
@@ -62,24 +62,6 @@ public class ProgressBar extends Component {
 
     public ProgressBar(final float progress) {
         this.progress = MathUtils.clamp(progress, 0, 1);
-
-        this.textFormat = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_FORMAT);
-        this.textPosition = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_POSITION);
-        this.textPadding = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_PADDING);
-        this.trackCornerRadius = new ThemeOption<>(this, Theme.PROGRESS_BAR_TRACK_CORNER_RADIUS);
-        this.indicatorCornerRadius = new ThemeOption<>(this, Theme.PROGRESS_BAR_INDICATOR_CORNER_RADIUS);
-        this.trackColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_TRACK_COLOR);
-        this.indicatorColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_INDICATOR_COLOR);
-        this.borderColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_COLOR);
-        this.borderWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_WIDTH);
-        this.textColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_COLOR);
-        this.stripes = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPES);
-        this.stripeColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_COLOR);
-        this.stripeWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_WIDTH);
-        this.stripeGap = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_GAP);
-        this.stripeSpeed = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_SPEED);
-        this.stripeAngle = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANGLE);
-        this.stripeAnimated = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANIMATED);
 
         this.textFormat.changeListener().add(f -> this.currentText = null);
         this.textColor.changeListener().add(c -> this.currentText = null);

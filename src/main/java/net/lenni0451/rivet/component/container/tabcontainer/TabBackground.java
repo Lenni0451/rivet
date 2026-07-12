@@ -24,18 +24,18 @@ import org.jetbrains.annotations.ApiStatus;
 public class TabBackground extends Component {
 
     private final Runnable clickListener;
-    private final ThemeOption<Corners> cornerRadius;
-    private final ThemeOption<Float> outlineWidth;
-    private final ThemeOption<Color> inactiveColor;
-    private final ThemeOption<Color> inactiveOutlineColor;
-    private final ThemeOption<Color> activeColor;
-    private final ThemeOption<Color> activeOutlineColor;
-    private final ThemeOption<Color> hoverColor;
-    private final ThemeOption<Color> hoverOutlineColor;
-    private final ThemeOption<Padding> innerPadding;
-    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
-    private final ThemeOption<AnimationConfig> activeAnimationConfig;
-    private final ThemeOption<ClickOn> clickOn;
+    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.TAB_CORNER_RADIUS);
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.TAB_OUTLINE_WIDTH);
+    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.TAB_INACTIVE_COLOR);
+    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.TAB_INACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.TAB_ACTIVE_COLOR);
+    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.TAB_ACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverColor = new ThemeOption<>(this, Theme.TAB_HOVER_COLOR);
+    private final ThemeOption<Color> hoverOutlineColor = new ThemeOption<>(this, Theme.TAB_HOVER_OUTLINE_COLOR);
+    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TAB_INNER_PADDING);
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.TAB_HOVER_ANIMATION);
+    private final ThemeOption<AnimationConfig> activeAnimationConfig = new ThemeOption<>(this, Theme.TAB_ACTIVE_ANIMATION);
+    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.TAB_CLICK_ON);
     private boolean hovered = false;
     private boolean active = false;
 
@@ -44,20 +44,8 @@ public class TabBackground extends Component {
 
     public TabBackground(final Runnable clickListener) {
         this.clickListener = clickListener;
-        this.cornerRadius = new ThemeOption<>(this, Theme.TAB_CORNER_RADIUS);
-        this.outlineWidth = new ThemeOption<>(this, Theme.TAB_OUTLINE_WIDTH);
-        this.inactiveColor = new ThemeOption<>(this, Theme.TAB_INACTIVE_COLOR);
-        this.inactiveOutlineColor = new ThemeOption<>(this, Theme.TAB_INACTIVE_OUTLINE_COLOR);
-        this.activeColor = new ThemeOption<>(this, Theme.TAB_ACTIVE_COLOR);
-        this.activeOutlineColor = new ThemeOption<>(this, Theme.TAB_ACTIVE_OUTLINE_COLOR);
-        this.hoverColor = new ThemeOption<>(this, Theme.TAB_HOVER_COLOR);
-        this.hoverOutlineColor = new ThemeOption<>(this, Theme.TAB_HOVER_OUTLINE_COLOR);
-        this.innerPadding = new ThemeOption<>(this, Theme.TAB_INNER_PADDING);
-        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.TAB_HOVER_ANIMATION);
-        this.activeAnimationConfig = new ThemeOption<>(this, Theme.TAB_ACTIVE_ANIMATION);
-        this.clickOn = new ThemeOption<>(this, Theme.TAB_CLICK_ON);
 
-        this.innerPadding.changeListener().add(padding -> {
+        this.innerPadding.initListener().add(padding -> {
             if (this.parent() instanceof DecoratedContainer decoratedContainer) {
                 decoratedContainer.innerPadding(padding);
                 decoratedContainer.requestLayoutRecalculation();
@@ -85,9 +73,6 @@ public class TabBackground extends Component {
 
     @Override
     protected void onComponentAdded() {
-        if (this.parent() instanceof DecoratedContainer decoratedContainer) {
-            decoratedContainer.innerPadding(this.innerPadding.value());
-        }
         this.backgroundColor = new StateTransition<>(
                 this,
                 this::state,
@@ -122,14 +107,6 @@ public class TabBackground extends Component {
                 },
                 Interpolator.COLOR
         );
-    }
-
-    @Override
-    protected void onComponentThemeChanged() {
-        if (this.parent() instanceof DecoratedContainer decoratedContainer) {
-            decoratedContainer.innerPadding(this.innerPadding.value());
-            decoratedContainer.requestLayoutRecalculation();
-        }
     }
 
     @Override

@@ -57,57 +57,57 @@ public class Slider extends Component {
     private String cachedFormatString = null;
 
     @Getter
-    private final ThemeOption<Color> barColor;
+    private final ThemeOption<Color> barColor = new ThemeOption<>(this, Theme.SLIDER_BAR_COLOR);
     @Getter
-    private final ThemeOption<Color> activeBarColor;
+    private final ThemeOption<Color> activeBarColor = new ThemeOption<>(this, Theme.SLIDER_ACTIVE_BAR_COLOR);
     @Getter
-    private final ThemeOption<Color> thumbColor;
+    private final ThemeOption<Color> thumbColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> thumbClickColor;
+    private final ThemeOption<Color> thumbClickColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_CLICK_COLOR);
     @Getter
-    private final ThemeOption<Color> tickColor;
+    private final ThemeOption<Color> tickColor = new ThemeOption<>(this, Theme.SLIDER_TICK_COLOR);
     @Getter
-    private final ThemeOption<Float> barHeight;
+    private final ThemeOption<Float> barHeight = new ThemeOption<>(this, Theme.SLIDER_BAR_HEIGHT);
     @Getter
-    private final ThemeOption<Float> thumbWidth;
+    private final ThemeOption<Float> thumbWidth = new ThemeOption<>(this, Theme.SLIDER_THUMB_WIDTH);
     @Getter
-    private final ThemeOption<Float> thumbHeight;
+    private final ThemeOption<Float> thumbHeight = new ThemeOption<>(this, Theme.SLIDER_THUMB_HEIGHT);
     @Getter
-    private final ThemeOption<Float> barCornerRadius;
+    private final ThemeOption<Float> barCornerRadius = new ThemeOption<>(this, Theme.SLIDER_BAR_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> thumbCornerRadius;
+    private final ThemeOption<Float> thumbCornerRadius = new ThemeOption<>(this, Theme.SLIDER_THUMB_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Boolean> thumbEncased;
+    private final ThemeOption<Boolean> thumbEncased = new ThemeOption<>(this, Theme.SLIDER_THUMB_ENCASED);
     @Getter
-    private final ThemeOption<ThumbShape> thumbShape;
+    private final ThemeOption<ThumbShape> thumbShape = new ThemeOption<>(this, Theme.SLIDER_THUMB_SHAPE);
     @Getter
-    private final ThemeOption<Color> thumbOutlineColor;
+    private final ThemeOption<Color> thumbOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> thumbClickOutlineColor;
+    private final ThemeOption<Color> thumbClickOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_CLICK_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Float> thumbOutlineWidth;
+    private final ThemeOption<Float> thumbOutlineWidth = new ThemeOption<>(this, Theme.SLIDER_THUMB_OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Boolean> showTooltip;
+    private final ThemeOption<Boolean> showTooltip = new ThemeOption<>(this, Theme.SLIDER_SHOW_TOOLTIP);
     @Getter
-    private final ThemeOption<String> tooltipFormat;
+    private final ThemeOption<String> tooltipFormat = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_FORMAT);
     @Getter
-    private final ThemeOption<Color> disabledBarColor;
+    private final ThemeOption<Color> disabledBarColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_BAR_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledActiveBarColor;
+    private final ThemeOption<Color> disabledActiveBarColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_ACTIVE_BAR_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledThumbColor;
+    private final ThemeOption<Color> disabledThumbColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledThumbOutlineColor;
+    private final ThemeOption<Color> disabledThumbOutlineColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledTickColor;
+    private final ThemeOption<Color> disabledTickColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_TICK_COLOR);
     @Getter
-    private final ThemeOption<Color> thumbHoverColor;
+    private final ThemeOption<Color> thumbHoverColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_HOVER_COLOR);
     @Getter
-    private final ThemeOption<Color> thumbHoverOutlineColor;
+    private final ThemeOption<Color> thumbHoverOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_HOVER_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.SLIDER_HOVER_ANIMATION);
     @Getter
-    private final ThemeOption<AnimationConfig> clickAnimationConfig;
+    private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.SLIDER_CLICK_ANIMATION);
 
     private StateTransition<Color, State> thumbColorTransition;
     private StateTransition<Color, State> thumbOutlineColorTransition;
@@ -122,33 +122,7 @@ public class Slider extends Component {
         this.step = step;
         this.value = value;
 
-        this.barColor = new ThemeOption<>(this, Theme.SLIDER_BAR_COLOR);
-        this.activeBarColor = new ThemeOption<>(this, Theme.SLIDER_ACTIVE_BAR_COLOR);
-        this.thumbColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_COLOR);
-        this.thumbClickColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_CLICK_COLOR);
-        this.tickColor = new ThemeOption<>(this, Theme.SLIDER_TICK_COLOR);
-        this.barHeight = new ThemeOption<>(this, Theme.SLIDER_BAR_HEIGHT);
-        this.thumbWidth = new ThemeOption<>(this, Theme.SLIDER_THUMB_WIDTH);
-        this.thumbHeight = new ThemeOption<>(this, Theme.SLIDER_THUMB_HEIGHT);
-        this.barCornerRadius = new ThemeOption<>(this, Theme.SLIDER_BAR_CORNER_RADIUS);
-        this.thumbShape = new ThemeOption<>(this, Theme.SLIDER_THUMB_SHAPE);
-        this.thumbCornerRadius = new ThemeOption<>(this, Theme.SLIDER_THUMB_CORNER_RADIUS);
-        this.thumbEncased = new ThemeOption<>(this, Theme.SLIDER_THUMB_ENCASED);
-        this.thumbOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_OUTLINE_COLOR);
-        this.thumbClickOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_CLICK_OUTLINE_COLOR);
-        this.thumbOutlineWidth = new ThemeOption<>(this, Theme.SLIDER_THUMB_OUTLINE_WIDTH);
-        this.showTooltip = new ThemeOption<>(this, Theme.SLIDER_SHOW_TOOLTIP);
-        this.tooltipFormat = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_FORMAT);
-        this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
-        this.disabledBarColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_BAR_COLOR);
-        this.disabledActiveBarColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_ACTIVE_BAR_COLOR);
-        this.disabledThumbColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_COLOR);
-        this.disabledThumbOutlineColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_THUMB_OUTLINE_COLOR);
-        this.disabledTickColor = new ThemeOption<>(this, Theme.SLIDER_DISABLED_TICK_COLOR);
-        this.thumbHoverColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_HOVER_COLOR);
-        this.thumbHoverOutlineColor = new ThemeOption<>(this, Theme.SLIDER_THUMB_HOVER_OUTLINE_COLOR);
-        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.SLIDER_HOVER_ANIMATION);
-        this.clickAnimationConfig = new ThemeOption<>(this, Theme.SLIDER_CLICK_ANIMATION);
+        this.tooltipFormat.initListener().add(f -> this.cachedFormatString = null);
     }
 
     public Slider font(final Font font) {

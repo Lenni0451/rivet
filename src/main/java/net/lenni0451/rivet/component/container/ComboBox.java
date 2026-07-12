@@ -37,15 +37,15 @@ public class ComboBox extends Component implements Parent {
     private Layer layer;
 
     @Getter
-    private final ThemeOption<Color> arrowColor;
+    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledArrowColor;
+    private final ThemeOption<Color> disabledArrowColor = new ThemeOption<>(this, Theme.COMBOBOX_DISABLED_ARROW_COLOR);
     @Getter
-    private final ThemeOption<Float> arrowSize;
+    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_SIZE);
     @Getter
-    private final ThemeOption<Float> maxPopupHeight;
+    private final ThemeOption<Float> maxPopupHeight = new ThemeOption<>(this, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
     @Getter
-    private final ThemeOption<Boolean> interceptOutsideClicks;
+    private final ThemeOption<Boolean> interceptOutsideClicks = new ThemeOption<>(this, Theme.COMBOBOX_INTERCEPT_OUTSIDE_CLICKS);
 
     public ComboBox(final String text, final Component child) {
         this(text, child, (b, c) -> {});
@@ -70,12 +70,6 @@ public class ComboBox extends Component implements Parent {
         this.child = child;
         textInitializer.accept(this, text);
         initializer.accept(this, child);
-
-        this.arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);
-        this.disabledArrowColor = new ThemeOption<>(this, Theme.COMBOBOX_DISABLED_ARROW_COLOR);
-        this.arrowSize = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_SIZE);
-        this.maxPopupHeight = new ThemeOption<>(this, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
-        this.interceptOutsideClicks = new ThemeOption<>(this, Theme.COMBOBOX_INTERCEPT_OUTSIDE_CLICKS);
     }
 
     public ComboBox open() {

@@ -38,23 +38,16 @@ public class ColorPicker extends Component {
     private boolean draggingHue;
     private boolean draggingAlpha;
 
-    private final ThemeOption<Float> outlineWidth;
-    private final ThemeOption<Color> outlineColor;
-    private final ThemeOption<Float> pickerSize;
-    private final ThemeOption<Float> sliderWidth;
-    private final ThemeOption<Float> gap;
-    private final ThemeOption<Float> selectorSize;
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_WIDTH);
+    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_COLOR);
+    private final ThemeOption<Float> pickerSize = new ThemeOption<>(this, Theme.COLOR_PICKER_PICKER_SIZE);
+    private final ThemeOption<Float> sliderWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_SLIDER_WIDTH);
+    private final ThemeOption<Float> gap = new ThemeOption<>(this, Theme.COLOR_PICKER_GAP);
+    private final ThemeOption<Float> selectorSize = new ThemeOption<>(this, Theme.COLOR_PICKER_SELECTOR_SIZE);
 
     public ColorPicker(final Color color) {
         this.color = color;
         this.updateHSB();
-
-        this.outlineWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_WIDTH);
-        this.outlineColor = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_COLOR);
-        this.pickerSize = new ThemeOption<>(this, Theme.COLOR_PICKER_PICKER_SIZE);
-        this.sliderWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_SLIDER_WIDTH);
-        this.gap = new ThemeOption<>(this, Theme.COLOR_PICKER_GAP);
-        this.selectorSize = new ThemeOption<>(this, Theme.COLOR_PICKER_SELECTOR_SIZE);
     }
 
     public ColorPicker color(final Color color) {

@@ -36,33 +36,33 @@ public class Button extends Component implements Parent {
     @Getter
     private final ListenerList<ClickListener> clickListener;
     @Getter
-    private final ThemeOption<Float> cornerRadius;
+    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.BUTTON_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> outlineWidth;
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.BUTTON_OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Color> inactiveColor;
+    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_COLOR);
     @Getter
-    private final ThemeOption<Color> inactiveOutlineColor;
+    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> activeColor;
+    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_COLOR);
     @Getter
-    private final ThemeOption<Color> activeOutlineColor;
+    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> clickColor;
+    private final ThemeOption<Color> clickColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_COLOR);
     @Getter
-    private final ThemeOption<Color> clickOutlineColor;
+    private final ThemeOption<Color> clickOutlineColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledColor;
+    private final ThemeOption<Color> disabledColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledOutlineColor;
+    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<AnimationConfig> hoverAnimationConfig;
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_HOVER_ANIMATION);
     @Getter
-    private final ThemeOption<AnimationConfig> clickAnimationConfig;
+    private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_CLICK_ANIMATION);
     @Getter
-    private final ThemeOption<Padding> innerPadding;
+    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.BUTTON_INNER_PADDING);
     @Getter
-    private final ThemeOption<ClickOn> clickOn;
+    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.BUTTON_CLICK_ON);
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
     private StateTransition<Color, State> color;
@@ -93,21 +93,6 @@ public class Button extends Component implements Parent {
         initializer.accept(child);
         this.clickListener = new ListenerList<>();
         this.clickListener.add(clickListener);
-
-        this.cornerRadius = new ThemeOption<>(this, Theme.BUTTON_CORNER_RADIUS);
-        this.outlineWidth = new ThemeOption<>(this, Theme.BUTTON_OUTLINE_WIDTH);
-        this.inactiveColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_COLOR);
-        this.inactiveOutlineColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_OUTLINE_COLOR);
-        this.activeColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_COLOR);
-        this.activeOutlineColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
-        this.clickColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_COLOR);
-        this.clickOutlineColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_OUTLINE_COLOR);
-        this.disabledColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_COLOR);
-        this.disabledOutlineColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_OUTLINE_COLOR);
-        this.hoverAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_HOVER_ANIMATION);
-        this.clickAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_CLICK_ANIMATION);
-        this.innerPadding = new ThemeOption<>(this, Theme.BUTTON_INNER_PADDING);
-        this.clickOn = new ThemeOption<>(this, Theme.BUTTON_CLICK_ON);
     }
 
     private State state() {

@@ -35,46 +35,38 @@ public class TabContainer extends ParentContainer {
     private Size tabSize;
     private Size contentSize;
     @Getter
-    private final ThemeOption<Color> headerBackgroundColor;
+    private final ThemeOption<Color> headerBackgroundColor = new ThemeOption<>(this, Theme.TAB_HEADER_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> separatorColor;
+    private final ThemeOption<Color> separatorColor = new ThemeOption<>(this, Theme.TAB_SEPARATOR_COLOR);
     @Getter
-    private final ThemeOption<Float> separatorThickness;
+    private final ThemeOption<Float> separatorThickness = new ThemeOption<>(this, Theme.TAB_SEPARATOR_THICKNESS);
     @Getter
-    private final ThemeOption<TabAlignment> tabAlignment;
+    private final ThemeOption<TabAlignment> tabAlignment = new ThemeOption<>(this, Theme.TAB_ALIGNMENT);
     @Getter
-    private final ThemeOption<Boolean> tabSameSize;
+    private final ThemeOption<Boolean> tabSameSize = new ThemeOption<>(this, Theme.TAB_SAME_SIZE);
     @Getter
-    private final ThemeOption<Float> tabVerticalGap;
+    private final ThemeOption<Float> tabVerticalGap = new ThemeOption<>(this, Theme.TAB_VERTICAL_GAP);
     @Getter
-    private final ThemeOption<Float> tabGap;
+    private final ThemeOption<Float> tabGap = new ThemeOption<>(this, Theme.TAB_TAB_GAP);
 
     public TabContainer() {
         this.tabContainer.addChild(this.leftTabContainer.layoutOptions(BorderPosition.LEFT));
         this.tabContainer.addChild(new ScrollContainer(this.centerTabContainer.layoutOptions(BorderPosition.CENTER), true, false));
         this.tabContainer.addChild(this.rightTabContainer.layoutOptions(BorderPosition.RIGHT));
 
-        this.headerBackgroundColor = new ThemeOption<>(this, Theme.TAB_HEADER_BACKGROUND_COLOR);
-        this.separatorColor = new ThemeOption<>(this, Theme.TAB_SEPARATOR_COLOR);
-        this.separatorThickness = new ThemeOption<>(this, Theme.TAB_SEPARATOR_THICKNESS);
-        this.tabAlignment = new ThemeOption<>(this, Theme.TAB_ALIGNMENT);
-        this.tabSameSize = new ThemeOption<>(this, Theme.TAB_SAME_SIZE);
-        this.tabVerticalGap = new ThemeOption<>(this, Theme.TAB_VERTICAL_GAP);
-        this.tabGap = new ThemeOption<>(this, Theme.TAB_TAB_GAP);
-
-        this.tabAlignment.changeListener().add(val -> {
+        this.tabAlignment.initListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).alignment = val;
             this.requestLayoutRecalculation();
         });
-        this.tabSameSize.changeListener().add(val -> {
+        this.tabSameSize.initListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).sameSize = val;
             this.requestLayoutRecalculation();
         });
-        this.tabVerticalGap.changeListener().add(val -> {
+        this.tabVerticalGap.initListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).verticalGap = val;
             this.requestLayoutRecalculation();
         });
-        this.tabGap.changeListener().add(val -> {
+        this.tabGap.initListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).tabGap = val;
             this.requestLayoutRecalculation();
         });
@@ -138,29 +130,9 @@ public class TabContainer extends ParentContainer {
         return this;
     }
 
-    private void updateLayout() {
-        TabLayout layout = (TabLayout) this.centerTabContainer.layout();
-        layout.alignment = this.tabAlignment.value();
-        layout.sameSize = this.tabSameSize.value();
-        layout.verticalGap = this.tabVerticalGap.value();
-        layout.tabGap = this.tabGap.value();
-    }
-
     @Override
     protected ContainerMouseHandler<?> mouseHandler() {
         return this.mouseHandler;
-    }
-
-    @Override
-    protected void onComponentAdded() {
-        super.onComponentAdded();
-        this.updateLayout();
-    }
-
-    @Override
-    protected void onComponentThemeChanged() {
-        super.onComponentThemeChanged();
-        this.updateLayout();
     }
 
     @Override

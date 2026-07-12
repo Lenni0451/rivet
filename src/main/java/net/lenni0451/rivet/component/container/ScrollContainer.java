@@ -45,45 +45,45 @@ public class ScrollContainer extends ParentContainer {
     private float autoScrollThreshold = 0.1F;
 
     @Getter
-    private final ThemeOption<Color> barColor;
+    private final ThemeOption<Color> barColor = new ThemeOption<>(this, Theme.SCROLL_BAR_COLOR);
     @Getter
-    private final ThemeOption<Color> barHoverColor;
+    private final ThemeOption<Color> barHoverColor = new ThemeOption<>(this, Theme.SCROLL_BAR_HOVER_COLOR);
     @Getter
-    private final ThemeOption<Color> barClickColor;
+    private final ThemeOption<Color> barClickColor = new ThemeOption<>(this, Theme.SCROLL_BAR_CLICK_COLOR);
     @Getter
-    private final ThemeOption<Float> barWidth;
+    private final ThemeOption<Float> barWidth = new ThemeOption<>(this, Theme.SCROLL_BAR_WIDTH);
     @Getter
-    private final ThemeOption<Float> barCornerRadius;
+    private final ThemeOption<Float> barCornerRadius = new ThemeOption<>(this, Theme.SCROLL_BAR_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> barOutlineWidth;
+    private final ThemeOption<Float> barOutlineWidth = new ThemeOption<>(this, Theme.SCROLL_BAR_OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Color> barOutlineColor;
+    private final ThemeOption<Color> barOutlineColor = new ThemeOption<>(this, Theme.SCROLL_BAR_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Float> scrollSpeed;
+    private final ThemeOption<Float> scrollSpeed = new ThemeOption<>(this, Theme.SCROLL_SPEED);
     @Getter
-    private final ThemeOption<Boolean> smoothScrolling;
+    private final ThemeOption<Boolean> smoothScrolling = new ThemeOption<>(this, Theme.SCROLL_SMOOTH);
     @Getter
-    private final ThemeOption<DynamicAnimationConfig> animationConfig;
+    private final ThemeOption<DynamicAnimationConfig> animationConfig = new ThemeOption<>(this, Theme.SCROLL_ANIMATION);
     @Getter
-    private final ThemeOption<Long> nestedScrollTimeout;
+    private final ThemeOption<Long> nestedScrollTimeout = new ThemeOption<>(this, Theme.SCROLL_NESTED_SCROLL_TIMEOUT);
     @Getter
-    private final ThemeOption<ScrollBarType> barType;
+    private final ThemeOption<ScrollBarType> barType = new ThemeOption<>(this, Theme.SCROLL_BAR_TYPE);
     @Getter
-    private final ThemeOption<Boolean> railClickJump;
+    private final ThemeOption<Boolean> railClickJump = new ThemeOption<>(this, Theme.SCROLL_RAIL_CLICK_JUMP);
     @Getter
-    private final ThemeOption<Color> railColor;
+    private final ThemeOption<Color> railColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_COLOR);
     @Getter
-    private final ThemeOption<Color> railOutlineColor;
+    private final ThemeOption<Color> railOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Float> railOutlineWidth;
+    private final ThemeOption<Float> railOutlineWidth = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Color> disabledBarColor;
+    private final ThemeOption<Color> disabledBarColor = new ThemeOption<>(this, Theme.SCROLL_BAR_DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledBarOutlineColor;
+    private final ThemeOption<Color> disabledBarOutlineColor = new ThemeOption<>(this, Theme.SCROLL_BAR_DISABLED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledRailColor;
+    private final ThemeOption<Color> disabledRailColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledRailOutlineColor;
+    private final ThemeOption<Color> disabledRailOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_DISABLED_OUTLINE_COLOR);
 
     private Size childSize = Size.EMPTY;
     private final MouseHandler mouseHandler = new MouseHandler();
@@ -132,27 +132,6 @@ public class ScrollContainer extends ParentContainer {
         initializer.accept(child);
         this.horizontalScrolling = horizontalScrolling;
         this.verticalScrolling = verticalScrolling;
-
-        this.barColor = new ThemeOption<>(this, Theme.SCROLL_BAR_COLOR);
-        this.barHoverColor = new ThemeOption<>(this, Theme.SCROLL_BAR_HOVER_COLOR);
-        this.barClickColor = new ThemeOption<>(this, Theme.SCROLL_BAR_CLICK_COLOR);
-        this.barWidth = new ThemeOption<>(this, Theme.SCROLL_BAR_WIDTH);
-        this.barCornerRadius = new ThemeOption<>(this, Theme.SCROLL_BAR_CORNER_RADIUS);
-        this.barOutlineWidth = new ThemeOption<>(this, Theme.SCROLL_BAR_OUTLINE_WIDTH);
-        this.barOutlineColor = new ThemeOption<>(this, Theme.SCROLL_BAR_OUTLINE_COLOR);
-        this.scrollSpeed = new ThemeOption<>(this, Theme.SCROLL_SPEED);
-        this.smoothScrolling = new ThemeOption<>(this, Theme.SCROLL_SMOOTH);
-        this.animationConfig = new ThemeOption<>(this, Theme.SCROLL_ANIMATION);
-        this.nestedScrollTimeout = new ThemeOption<>(this, Theme.SCROLL_NESTED_SCROLL_TIMEOUT);
-        this.barType = new ThemeOption<>(this, Theme.SCROLL_BAR_TYPE);
-        this.railClickJump = new ThemeOption<>(this, Theme.SCROLL_RAIL_CLICK_JUMP);
-        this.railColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_COLOR);
-        this.railOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_COLOR);
-        this.railOutlineWidth = new ThemeOption<>(this, Theme.SCROLL_RAIL_OUTLINE_WIDTH);
-        this.disabledBarColor = new ThemeOption<>(this, Theme.SCROLL_BAR_DISABLED_COLOR);
-        this.disabledBarOutlineColor = new ThemeOption<>(this, Theme.SCROLL_BAR_DISABLED_OUTLINE_COLOR);
-        this.disabledRailColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_DISABLED_COLOR);
-        this.disabledRailOutlineColor = new ThemeOption<>(this, Theme.SCROLL_RAIL_DISABLED_OUTLINE_COLOR);
     }
 
     public float maxScrollX() {

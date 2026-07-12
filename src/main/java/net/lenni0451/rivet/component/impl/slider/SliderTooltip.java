@@ -28,11 +28,11 @@ public class SliderTooltip extends Component {
     @Getter
     private Font font;
 
-    private final ThemeOption<Color> backgroundColor;
-    private final ThemeOption<Color> textColor;
-    private final ThemeOption<Float> cornerRadius;
-    private final ThemeOption<Float> triangleSize;
-    private final ThemeOption<Padding> padding;
+    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_BACKGROUND_COLOR);
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_TEXT_COLOR);
+    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_CORNER_RADIUS);
+    private final ThemeOption<Float> triangleSize = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_TRIANGLE_SIZE);
+    private final ThemeOption<Padding> padding = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_PADDING);
     private String text;
     private ShapedText shapedText;
     private final Layer layer;
@@ -41,12 +41,6 @@ public class SliderTooltip extends Component {
 
     public SliderTooltip(final String text) {
         this.text = text;
-
-        this.backgroundColor = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_BACKGROUND_COLOR);
-        this.textColor = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_TEXT_COLOR);
-        this.cornerRadius = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_CORNER_RADIUS);
-        this.triangleSize = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_TRIANGLE_SIZE);
-        this.padding = new ThemeOption<>(this, Theme.SLIDER_TOOLTIP_PADDING);
 
         Container container = new Container(AbsoluteLayout.INSTANCE);
         container.addChild(this);

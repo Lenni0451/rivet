@@ -16,8 +16,8 @@ import net.lenni0451.rivet.theme.ThemeOption;
 public class Separator extends Component {
 
     private Orientation orientation;
-    private final ThemeOption<Color> color;
-    private final ThemeOption<Float> thickness;
+    private final ThemeOption<Color> color = new ThemeOption<>(this, Theme.SEPARATOR_COLOR);
+    private final ThemeOption<Float> thickness = new ThemeOption<>(this, Theme.SEPARATOR_THICKNESS);
 
     public Separator() {
         this(Orientation.HORIZONTAL);
@@ -25,8 +25,6 @@ public class Separator extends Component {
 
     public Separator(final Orientation orientation) {
         this.orientation = orientation;
-        this.color = new ThemeOption<>(this, Theme.SEPARATOR_COLOR);
-        this.thickness = new ThemeOption<>(this, Theme.SEPARATOR_THICKNESS);
     }
 
     @Override
