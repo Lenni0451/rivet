@@ -101,8 +101,8 @@ public class ThinGLRenderer extends CheckedRenderer {
 
     @Override
     public void custom(final ModifierCommand.Custom command, final Runnable renderer) {
-        if (command instanceof ThinGLModifierCommand thinGLModifierCommand) {
-            switch (thinGLModifierCommand) {
+        if (command instanceof ThinGLModifierCommand thinGlModifierCommand) {
+            switch (thinGlModifierCommand) {
                 case ThinGLModifierCommand.Blur blur -> {
                     ThinGL.programs().getGaussianBlur().bindInput();
                     renderer.run();
@@ -206,6 +206,11 @@ public class ThinGLRenderer extends CheckedRenderer {
 
     @Override
     public void custom(final RenderCommand.Custom renderCommand) {
+        if (renderCommand instanceof ThinGLRenderCommand thinGlRenderCommand) {
+            switch (thinGlRenderCommand) {
+                case ThinGLRenderCommand.Custom custom -> custom.renderFunction().accept(this.positionMatrix);
+            }
+        }
     }
 
 }
