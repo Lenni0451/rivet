@@ -18,13 +18,20 @@ public final class ThemeOption<T> {
     @Getter
     private final ThemeKey<T> key;
     @Getter
-    private final ListenerList<Consumer<T>> changeListener = new ListenerList<>();
+    private final ListenerList<Consumer<T>> initListener;
+    @Getter
+    private final ListenerList<Consumer<T>> changeListener;
     @Nullable
     private Supplier<T> value;
 
     public ThemeOption(final Component component, final ThemeKey<T> key) {
         this.component = component;
         this.key = key;
+        this.initListener = new ListenerList<>();
+        this.changeListener = new ListenerList<>();
+
+        component.addedListener().add(this::fireInitListener);
+        component.themeChangedListener().add(this::fireInitListener);
     }
 
     public T value() {
@@ -58,6 +65,16 @@ public final class ThemeOption<T> {
         return this;
     }
 
+    private void fireInitListener() {
+        T currentValue = null;
+        try {
+            currentValue = this.value();
+        } catch (IllegalStateException ignored) {
+        }
+        final T finalValue = currentValue;
+        this.initListener.callVoid(c -> c.accept(finalValue));
+    }
+
     private void fireChangeListener() {
         T currentValue = null;
         try {
@@ -65,6 +82,9 @@ public final class ThemeOption<T> {
         } catch (IllegalStateException ignored) {
         }
         final T finalValue = currentValue;
+        if (this.component.rivet() != null) {
+            this.initListener.callVoid(c -> c.accept(finalValue));
+        }
         this.changeListener.callVoid(c -> c.accept(finalValue));
     }
 
