@@ -5,8 +5,10 @@ import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.render.deferred.ModifierCommand;
 import net.lenni0451.rivet.backend.render.deferred.RenderCommand;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.function.Consumer;
 
@@ -71,21 +73,18 @@ public interface Renderer {
         }
     }
 
-    default void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, float rtl, float rbl, float rbr, float rtr, final Color color) {
+    default void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
         if (width > 0 && height > 0 && color.getAlpha() > 0) {
             if (rtl == rbl && rtl == rbr && rtl == rtr) {
                 this.optimizedFillRoundedRect(x, y, width, height, rtl, color);
             } else {
-                rtl = Math.min(rtl, Math.min(width, height));
-                rtr = Math.min(rtr, Math.min(width - rtl, height));
-                rbl = Math.min(rbl, Math.min(width, height - rtl));
-                rbr = Math.min(rbr, Math.min(width - rbl, height - rtr));
-                if (rtl <= 0 && rbl <= 0 && rbr <= 0 && rtr <= 0) {
+                Corners corners = MathUtils.clampCorners(width, height, rtl, rbl, rbr, rtr);
+                if (corners.topLeft() <= 0 && corners.bottomLeft() <= 0 && corners.bottomRight() <= 0 && corners.topRight() <= 0) {
                     this.fillRect(x, y, width, height, color);
-                } else if (width == height && rtl == width / 2 && rbl == width / 2 && rbr == width / 2 && rtr == width / 2) {
-                    this.fillCircle(x + rtl, y + rtl, rtl, color);
+                } else if (width == height && corners.topLeft() == width / 2 && corners.bottomLeft() == width / 2 && corners.bottomRight() == width / 2 && corners.topRight() == width / 2) {
+                    this.fillCircle(x + corners.topLeft(), y + corners.topLeft(), corners.topLeft(), color);
                 } else {
-                    this.fillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color);
+                    this.fillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
                 }
             }
         }
@@ -109,23 +108,20 @@ public interface Renderer {
         }
     }
 
-    default void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, float rtl, float rbl, float rbr, float rtr, final float outlineWidth, final Color color) {
+    default void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
         if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
             if (rtl == rbl && rtl == rbr && rtl == rtr) {
                 this.optimizedOutlineRoundedRect(x, y, width, height, rtl, outlineWidth, color);
             } else {
-                rtl = Math.min(rtl, Math.min(width, height));
-                rtr = Math.min(rtr, Math.min(width - rtl, height));
-                rbl = Math.min(rbl, Math.min(width, height - rtl));
-                rbr = Math.min(rbr, Math.min(width - rbl, height - rtr));
+                Corners corners = MathUtils.clampCorners(width, height, rtl, rbl, rbr, rtr);
                 if (outlineWidth >= width || outlineWidth >= height) {
-                    this.optimizedFillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color);
-                } else if (rtl <= 0 && rbl <= 0 && rbr <= 0 && rtr <= 0) {
+                    this.optimizedFillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
+                } else if (corners.topLeft() <= 0 && corners.bottomLeft() <= 0 && corners.bottomRight() <= 0 && corners.topRight() <= 0) {
                     this.outlineRect(x, y, width, height, outlineWidth, color);
-                } else if (width == height && rtl == width / 2 && rbl == width / 2 && rbr == width / 2 && rtr == width / 2) {
+                } else if (width == height && corners.topLeft() == width / 2 && corners.bottomLeft() == width / 2 && corners.bottomRight() == width / 2 && corners.topRight() == width / 2) {
                     this.outlineCircle(x + width / 2, y + width / 2, width / 2, outlineWidth, color);
                 } else {
-                    this.outlineRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, outlineWidth, color);
+                    this.outlineRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), outlineWidth, color);
                 }
             }
         }

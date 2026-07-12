@@ -8,8 +8,10 @@ import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.render.deferred.ModifierCommand;
 import net.lenni0451.rivet.backend.render.deferred.RenderCommand;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.function.Consumer;
 
@@ -114,12 +116,18 @@ public class SnappedRenderer<R extends Renderer> implements Renderer {
 
     @Override
     public void fillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
-        this.delegate.fillRoundedRect(this.snapX(x), this.snapY(y), this.snapWidth(x, width), this.snapHeight(y, height), Math.round(rtl), Math.round(rbl), Math.round(rbr), Math.round(rtr), color);
+        float snappedWidth = this.snapWidth(x, width);
+        float snappedHeight = this.snapHeight(y, height);
+        Corners corners = MathUtils.clampCorners(snappedWidth, snappedHeight, Math.round(rtl), Math.round(rbl), Math.round(rbr), Math.round(rtr));
+        this.delegate.fillRoundedRect(this.snapX(x), this.snapY(y), snappedWidth, snappedHeight, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
     }
 
     @Override
     public void outlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
-        this.delegate.outlineRoundedRect(this.snapX(x), this.snapY(y), this.snapWidth(x, width), this.snapHeight(y, height), Math.round(rtl), Math.round(rbl), Math.round(rbr), Math.round(rtr), Math.round(outlineWidth), color);
+        float snappedWidth = this.snapWidth(x, width);
+        float snappedHeight = this.snapHeight(y, height);
+        Corners corners = MathUtils.clampCorners(snappedWidth, snappedHeight, Math.round(rtl), Math.round(rbl), Math.round(rbr), Math.round(rtr));
+        this.delegate.outlineRoundedRect(this.snapX(x), this.snapY(y), snappedWidth, snappedHeight, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), Math.round(outlineWidth), color);
     }
 
     @Override
