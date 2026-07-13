@@ -11,7 +11,7 @@ thingl = { module = "net.raphimc:thingl", version = "0.2.0-20260704.215811-7" }
 commons-core = { module = "net.lenni0451.commons:core", version.ref = "commons" }
 commons-animation = { module = "net.lenni0451.commons:animation", version.ref = "commons" }
 
-junit-bom = { module = "org.junit:junit-bom", version = "6.1.1" }
+junit-bom = { module = "org.junit:junit-bom", version = "6.1.2" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
