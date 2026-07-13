@@ -6,7 +6,6 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
-import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -37,13 +36,16 @@ public class FormattedLabel extends Component {
     @Getter
     @Nullable
     private TextLine line;
-    private ShapedText shapedText;
+    private ShapedTextBlock shapedText;
     @Getter
     @Setter
     private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;
     @Getter
     @Setter
     private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
+    @Getter
+    @Setter
+    private ShapedTextBlock.LineAlignment lineAlignment = ShapedTextBlock.LineAlignment.LEFT;
     @Getter
     private float scale = 1F;
     @Getter
@@ -177,7 +179,7 @@ public class FormattedLabel extends Component {
         float x = this.horizontalOrigin.position(size.width() / this.scale);
         float y = this.verticalOrigin.position(size.height() / this.scale);
         renderer.scale(this.scale, () -> {
-            renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin);
+            renderer.text(this.shapedText, x, y, this.horizontalOrigin, this.verticalOrigin, this.lineAlignment);
         });
     }
 

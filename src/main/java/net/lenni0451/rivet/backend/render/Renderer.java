@@ -5,6 +5,7 @@ import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.render.deferred.ModifierCommand;
 import net.lenni0451.rivet.backend.render.deferred.RenderCommand;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -136,6 +137,22 @@ public interface Renderer {
     void fillGradientRect(final float x, final float y, final float width, final float height, final Color ctl, final Color cbl, final Color cbr, final Color ctr);
 
     void text(final ShapedText shapedText, final float anchorX, final float anchorY, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin);
+
+    default void text(final ShapedTextBlock shapedTextBlock, final float anchorX, final float anchorY, final TextOrigin.Horizontal horizontalOrigin, final TextOrigin.Vertical verticalOrigin, final ShapedTextBlock.LineAlignment lineAlignment) {
+        float blockLeft = shapedTextBlock.alignAnchorTo(anchorX, horizontalOrigin, TextOrigin.Horizontal.LOGICAL_LEFT);
+        float currentY = shapedTextBlock.alignAnchorTo(anchorY, verticalOrigin, TextOrigin.Vertical.BASELINE);
+        float blockWidth = shapedTextBlock.visualBounds().width();
+        for (ShapedText line : shapedTextBlock.lines()) {
+            float lineX = switch (lineAlignment) {
+                case LEFT -> blockLeft;
+                case RIGHT -> blockLeft + (blockWidth - line.visualBounds().width());
+                case CENTER -> blockLeft + (blockWidth - line.visualBounds().width()) / 2F;
+            };
+            this.text(line, lineX, currentY, TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.BASELINE);
+            currentY += line.logicalBounds().height();
+        }
+    }
+
 
     void image(final Texture texture, final float x, final float y, final float width, final float height, final Color color);
 

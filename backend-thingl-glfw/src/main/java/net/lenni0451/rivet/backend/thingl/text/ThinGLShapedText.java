@@ -8,20 +8,15 @@ import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import net.raphimc.thingl.text.shaping.TextShaper;
-import org.joml.primitives.Rectanglef;
 
-public record ThinGLShapedText(ShapedTextLine shapedTextLine) implements ShapedText {
+public record ThinGLShapedText(ShapedTextLine shapedTextLine, Rectangle visualBounds, Rectangle logicalBounds) implements ShapedText {
 
-    @Override
-    public Rectangle visualBounds() {
-        Rectanglef bounds = this.shapedTextLine.visualBounds();
-        return new Rectangle(bounds.minX, bounds.minY, bounds.lengthX(), bounds.lengthY());
-    }
-
-    @Override
-    public Rectangle logicalBounds() {
-        Rectanglef bounds = this.shapedTextLine.logicalBounds();
-        return new Rectangle(bounds.minX, bounds.minY, bounds.lengthX(), bounds.lengthY());
+    public ThinGLShapedText(final ShapedTextLine shapedTextLine) {
+        this(
+                shapedTextLine,
+                new Rectangle(shapedTextLine.visualBounds().minX, shapedTextLine.visualBounds().minY, shapedTextLine.visualBounds().lengthX(), shapedTextLine.visualBounds().lengthY()),
+                new Rectangle(shapedTextLine.logicalBounds().minX, shapedTextLine.logicalBounds().minY, shapedTextLine.logicalBounds().lengthX(), shapedTextLine.logicalBounds().lengthY())
+        );
     }
 
     @Override
@@ -29,8 +24,7 @@ public record ThinGLShapedText(ShapedTextLine shapedTextLine) implements ShapedT
         if (index <= 0) return new Point(0, 0);
         int currentIndex = 0;
         float runX = 0;
-        for (int i = 0; i < this.shapedTextLine.runs().size(); i++) {
-            ShapedTextRun run = this.shapedTextLine.runs().get(i);
+        for (ShapedTextRun run : this.shapedTextLine.runs()) {
             for (ShapedTextSegment segment : run.segments()) {
                 for (TextShaper.Glyph glyph : segment.glyphs()) {
                     if (currentIndex == index) return new Point(runX + glyph.x(), 0);

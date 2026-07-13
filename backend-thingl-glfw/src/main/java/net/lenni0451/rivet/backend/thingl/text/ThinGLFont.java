@@ -6,7 +6,6 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
-import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.text.model.TextSection;
 import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import net.raphimc.thingl.text.TextStyle;
@@ -44,15 +43,6 @@ public class ThinGLFont implements Font {
     @Override
     public ShapedText shapeText(final net.lenni0451.rivet.text.model.TextLine line) {
         return new ThinGLShapedText(this.toThinGL(line).shape());
-    }
-
-    @Override
-    public ShapedTextBlock shapeText(final net.lenni0451.rivet.text.model.TextBlock block) {
-        net.raphimc.thingl.text.TextBlock thinglBlock = new net.raphimc.thingl.text.TextBlock();
-        for (net.lenni0451.rivet.text.model.TextLine line : block.lines()) {
-            thinglBlock.add(this.toThinGL(line));
-        }
-        return new ThinGLShapedTextBlock(thinglBlock.shape());
     }
 
     private net.raphimc.thingl.text.TextLine toThinGL(final net.lenni0451.rivet.text.model.TextLine line) {

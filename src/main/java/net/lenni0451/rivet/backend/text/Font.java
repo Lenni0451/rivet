@@ -5,6 +5,9 @@ import net.lenni0451.rivet.text.model.TextBlock;
 import net.lenni0451.rivet.text.model.TextLine;
 import net.lenni0451.rivet.text.model.TextSection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface Font {
 
     int size();
@@ -21,6 +24,12 @@ public interface Font {
 
     ShapedText shapeText(final TextLine line);
 
-    ShapedTextBlock shapeText(final TextBlock block);
+    default ShapedTextBlock shapeText(final TextBlock block) {
+        List<ShapedText> lines = new ArrayList<>();
+        for (TextLine line : block.lines()) {
+            lines.add(this.shapeText(line));
+        }
+        return new ShapedTextBlock(lines);
+    }
 
 }
