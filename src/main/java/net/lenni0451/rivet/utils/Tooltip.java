@@ -9,7 +9,7 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
-import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
+import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
@@ -138,7 +138,7 @@ public class Tooltip {
                 this.component.rivet().runSync(this::remove);
             }
             if (this.currentTooltip != null) {
-                this.currentTooltip.layoutOptions(new AbsoluteLayoutOptions(
+                this.currentTooltip.layoutOptions(new AbsoluteOptions(
                         absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset.value(),
                         absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset.value()
                 ));

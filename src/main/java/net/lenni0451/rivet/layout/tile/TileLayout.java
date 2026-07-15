@@ -49,7 +49,7 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
         BitSet occupied = new BitSet(grid.count());
         List<Component> notLayouted = new ArrayList<>();
         for (Component component : components) {
-            if (component.layoutOptions() instanceof TileLayoutOptions options) {
+            if (component.layoutOptions() instanceof TileOptions options) {
                 int column = options.column();
                 int row = options.row();
                 if (column < 0 || row < 0 || column >= grid.columns || row >= grid.rows) {

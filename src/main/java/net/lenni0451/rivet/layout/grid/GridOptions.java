@@ -7,7 +7,7 @@ import net.lenni0451.rivet.math.Padding;
 
 @With
 @WithBy
-public record GridLayoutOptions(
+public record GridOptions(
         int column, int row,
         int columnSpan, int rowSpan,
         float weightX, float weightY,
@@ -16,21 +16,21 @@ public record GridLayoutOptions(
         Padding padding
 ) implements LayoutOptions {
 
-    public static final GridLayoutOptions EMPTY = new GridLayoutOptions(0, 0, 1, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY);
+    public static final GridOptions EMPTY = new GridOptions(0, 0, 1, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY);
 
-    public GridLayoutOptions(final int column, final int row) {
+    public GridOptions(final int column, final int row) {
         this(column, row, 1, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY);
     }
 
-    public GridLayoutOptions at(final int column, final int row) {
+    public GridOptions at(final int column, final int row) {
         return this.withColumn(column).withRow(row);
     }
 
-    public GridLayoutOptions span(final int columnSpan, final int rowSpan) {
+    public GridOptions span(final int columnSpan, final int rowSpan) {
         return this.withColumnSpan(columnSpan).withRowSpan(rowSpan);
     }
 
-    public GridLayoutOptions weight(final float weightX, final float weightY) {
+    public GridOptions weight(final float weightX, final float weightY) {
         return this.withWeightX(weightX).withWeightY(weightY);
     }
 

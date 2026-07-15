@@ -4,7 +4,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.container.Button;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.layout.tile.TileLayout;
-import net.lenni0451.rivet.layout.tile.TileLayoutOptions;
+import net.lenni0451.rivet.layout.tile.TileOptions;
 import test.TestBase;
 
 public class TileLayoutTest extends TestBase {
@@ -26,7 +26,7 @@ public class TileLayoutTest extends TestBase {
             if (column == 1 && row == 2) continue;
             container.addChild(new Button("Testing " + i, () -> {
                 System.out.println("Clicked " + finalI);
-            }), button -> button.layoutOptions(new TileLayoutOptions(column, row)));
+            }), button -> button.layoutOptions(new TileOptions(column, row)));
         }
         rivet.root().addChild(container);
     }

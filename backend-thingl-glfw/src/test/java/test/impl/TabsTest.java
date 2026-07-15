@@ -14,7 +14,7 @@ import net.lenni0451.rivet.component.impl.SolidColor;
 import net.lenni0451.rivet.layout.grid.GridAnchor;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
-import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
+import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import test.TestBase;
@@ -48,7 +48,7 @@ public class TabsTest extends TestBase {
 
     private Component newTabHeader(final TabContainer tabContainer, final String name) {
         Container container = new Container(new GridLayout(10, 10));
-        container.addChild(new Label(name).layoutOptions(new GridLayoutOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+        container.addChild(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL)));
         container.addChild(new Button(new Label("x").scale(0.75F).horizontalOrigin(TextOrigin.Horizontal.VISUAL_CENTER).verticalOrigin(TextOrigin.Vertical.VISUAL_CENTER), () -> {
             for (Tab tab : tabContainer.tabs()) {
                 Label label = (Label) ((Container) tab.header()).children().get(0);
@@ -59,7 +59,7 @@ public class TabsTest extends TestBase {
             }
         }), button -> {
             button.fixedSize(40, 40);
-            button.layoutOptions(new GridLayoutOptions(1, 0).withAnchor(GridAnchor.RIGHT));
+            button.layoutOptions(new GridOptions(1, 0).withAnchor(GridAnchor.RIGHT));
             button.innerPadding().set(Padding.EMPTY);
             button.cornerRadius().set(Float.MAX_VALUE);
             button.outlineWidth().set(0F);

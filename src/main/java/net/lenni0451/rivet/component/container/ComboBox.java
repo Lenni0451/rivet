@@ -13,7 +13,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
-import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
+import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -82,7 +82,7 @@ public class ComboBox extends Component implements Parent {
                 return true;
             });
             clickInterceptor.mouseMoveListener().add((event, bounds) -> true);
-            container.addChild(clickInterceptor.layoutOptions(new AbsoluteLayoutOptions(0, 0, -1F, -1F)));
+            container.addChild(clickInterceptor.layoutOptions(new AbsoluteOptions(0, 0, -1F, -1F)));
         }
         container.addChild(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
@@ -164,11 +164,11 @@ public class ComboBox extends Component implements Parent {
             Size idealSize = this.child.computeIdealSize(region.size());
             float maxHeight = Math.min(region.height(), this.maxPopupHeight.value());
             region = region.withHeight(Math.min(idealSize.height(), maxHeight));
-            if (!(this.child.layoutOptions() instanceof AbsoluteLayoutOptions options)
+            if (!(this.child.layoutOptions() instanceof AbsoluteOptions options)
                     || options.x() != region.x() || options.y() != region.y()
                     || options.width() == null || options.width() != region.width()
                     || options.height() == null || options.height() != region.height()) {
-                this.child.layoutOptions(new AbsoluteLayoutOptions(region));
+                this.child.layoutOptions(new AbsoluteOptions(region));
             }
         }
     }

@@ -31,8 +31,8 @@ public final class AnchorLayout implements Layout {
     @Override
     public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         for (Component component : components) {
-            AnchorLayoutOptions options = AnchorLayoutOptions.EMPTY;
-            if (component.layoutOptions() instanceof AnchorLayoutOptions o) {
+            AnchorOptions options = AnchorOptions.EMPTY;
+            if (component.layoutOptions() instanceof AnchorOptions o) {
                 options = o;
             }
 

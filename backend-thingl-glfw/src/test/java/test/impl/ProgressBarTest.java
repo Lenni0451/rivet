@@ -8,7 +8,7 @@ import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.layout.grid.GridAnchor;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
-import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
+import net.lenni0451.rivet.layout.grid.GridOptions;
 import test.TestBase;
 
 import java.util.ArrayList;
@@ -28,16 +28,16 @@ public class ProgressBarTest extends TestBase {
         AtomicInteger y = new AtomicInteger(0);
         for (ProgressBar.TextPosition textPosition : ProgressBar.TextPosition.values()) {
             container.addChild(new Label(textPosition.name()), label -> {
-                label.layoutOptions(new GridLayoutOptions(0, y.get()).withAnchor(GridAnchor.LEFT));
+                label.layoutOptions(new GridOptions(0, y.get()).withAnchor(GridAnchor.LEFT));
             });
             container.addChild(new ProgressBar(), bar -> {
                 progressBars.add(bar);
                 bar.textPosition().set(textPosition);
-                bar.layoutOptions(new GridLayoutOptions(1, y.getAndIncrement()).withFill(GridFill.HORIZONTAL).withWeightX(1));
+                bar.layoutOptions(new GridOptions(1, y.getAndIncrement()).withFill(GridFill.HORIZONTAL).withWeightX(1));
             });
         }
         container.addChild(new Slider(0, 100, 0.01, 50), slider -> {
-            slider.layoutOptions(new GridLayoutOptions(0, y.getAndIncrement()).withFill(GridFill.HORIZONTAL).withWeightX(1).withColumnSpan(2));
+            slider.layoutOptions(new GridOptions(0, y.getAndIncrement()).withFill(GridFill.HORIZONTAL).withWeightX(1).withColumnSpan(2));
             slider.valueChangeListener().add(value -> {
                 for (ProgressBar bar : progressBars) {
                     bar.progress(value.floatValue() / 100F);

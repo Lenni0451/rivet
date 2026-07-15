@@ -14,7 +14,7 @@ import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
-import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
+import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -82,12 +82,12 @@ public class SliderTooltip extends Component {
     }
 
     private void update(final Position position, final float x, final float y, final float pointerOffset) {
-        if (this.layoutOptions() instanceof AbsoluteLayoutOptions options) {
+        if (this.layoutOptions() instanceof AbsoluteOptions options) {
             if (options.x() == x && options.y() == y && this.position.equals(position) && this.pointerOffset == pointerOffset) {
                 return;
             }
         }
-        this.layoutOptions(new AbsoluteLayoutOptions(x, y));
+        this.layoutOptions(new AbsoluteOptions(x, y));
         this.position = position;
         this.pointerOffset = pointerOffset;
         this.parent().requestLayoutRecalculation();

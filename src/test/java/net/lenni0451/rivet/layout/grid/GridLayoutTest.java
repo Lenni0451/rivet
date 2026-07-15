@@ -32,7 +32,7 @@ class GridLayoutTest {
     void testSingleComponentIdealSize() {
         final GridLayout layout = new GridLayout(10, 10);
         final Component c = new TestComponent(new Size(50, 30));
-        c.layoutOptions(new GridLayoutOptions(0, 0));
+        c.layoutOptions(new GridOptions(0, 0));
 
         final Size ideal = layout.computeIdealSize(new Size(800, 600), List.of(c));
         assertEquals(new Size(50, 30), ideal);
@@ -43,13 +43,13 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(10, 20);
 
         final Component c1 = new TestComponent(new Size(100, 50));
-        c1.layoutOptions(new GridLayoutOptions(0, 0));
+        c1.layoutOptions(new GridOptions(0, 0));
 
         final Component c2 = new TestComponent(new Size(150, 80));
-        c2.layoutOptions(new GridLayoutOptions(1, 0));
+        c2.layoutOptions(new GridOptions(1, 0));
 
         final Component c3 = new TestComponent(new Size(80, 60));
-        c3.layoutOptions(new GridLayoutOptions(0, 1));
+        c3.layoutOptions(new GridOptions(0, 1));
 
         final List<Component> components = List.of(c1, c2, c3);
         final Size ideal = layout.computeIdealSize(new Size(800, 600), components);
@@ -83,14 +83,14 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(10, 10);
 
         final Component c1 = new TestComponent(new Size(50, 50));
-        c1.layoutOptions(new GridLayoutOptions(0, 0));
+        c1.layoutOptions(new GridOptions(0, 0));
 
         final Component c2 = new TestComponent(new Size(50, 50));
-        c2.layoutOptions(new GridLayoutOptions(1, 0));
+        c2.layoutOptions(new GridOptions(1, 0));
 
         // Spans column 0 & 1, row 1.
         final Component cSpanning = new TestComponent(new Size(150, 40));
-        cSpanning.layoutOptions(new GridLayoutOptions(0, 1, 2, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY, null, null));
+        cSpanning.layoutOptions(new GridOptions(0, 1, 2, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY));
 
         final List<Component> components = List.of(c1, c2, cSpanning);
         final Size ideal = layout.computeIdealSize(new Size(800, 600), components);
@@ -116,10 +116,10 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(10, 10, true, true, false, false);
 
         final Component c1 = new TestComponent(new Size(50, 30));
-        c1.layoutOptions(new GridLayoutOptions(0, 0));
+        c1.layoutOptions(new GridOptions(0, 0));
 
         final Component c2 = new TestComponent(new Size(100, 80));
-        c2.layoutOptions(new GridLayoutOptions(1, 1));
+        c2.layoutOptions(new GridOptions(1, 1));
 
         final List<Component> components = List.of(c1, c2);
         final Size ideal = layout.computeIdealSize(new Size(800, 600), components);
@@ -137,10 +137,10 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(10, 10);
 
         final Component c1 = new TestComponent(new Size(100, 50));
-        c1.layoutOptions(new GridLayoutOptions(0, 0).withWeightX(1.0f).withWeightY(1.0f));
+        c1.layoutOptions(new GridOptions(0, 0).withWeightX(1.0f).withWeightY(1.0f));
 
         final Component c2 = new TestComponent(new Size(100, 50));
-        c2.layoutOptions(new GridLayoutOptions(1, 0).withWeightX(3.0f).withWeightY(0.0f));
+        c2.layoutOptions(new GridOptions(1, 0).withWeightX(3.0f).withWeightY(0.0f));
 
         final List<Component> components = List.of(c1, c2);
         // Ideal is Width = 100 + 100 + 10 = 210, Height = 50.
@@ -167,10 +167,10 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(10, 10, false, false, true, true);
 
         final Component c1 = new TestComponent(new Size(100, 100));
-        c1.layoutOptions(new GridLayoutOptions(0, 0));
+        c1.layoutOptions(new GridOptions(0, 0));
 
         final Component c2 = new TestComponent(new Size(100, 100));
-        c2.layoutOptions(new GridLayoutOptions(1, 0));
+        c2.layoutOptions(new GridOptions(1, 0));
 
         final List<Component> components = List.of(c1, c2);
         // Ideal size = 100 + 100 + 10 = 210 (Width), 100 (Height).
@@ -202,7 +202,7 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(0, 0);
 
         final Component c = new TestComponent(new Size(40, 30));
-        c.layoutOptions(new GridLayoutOptions(0, 0)
+        c.layoutOptions(new GridOptions(0, 0)
                 .withPadding(new Padding(20, 10, 20, 10))
                 .withAnchor(GridAnchor.BOTTOM_RIGHT)
                 .withWeightX(1.0f)
@@ -236,10 +236,10 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(10, 20);
 
         final Component c1 = new TestComponent(new Size(100, 50));
-        c1.layoutOptions(new GridLayoutOptions(1, 1));
+        c1.layoutOptions(new GridOptions(1, 1));
 
         final Component c2 = new TestComponent(new Size(150, 80));
-        c2.layoutOptions(new GridLayoutOptions(2, 2));
+        c2.layoutOptions(new GridOptions(2, 2));
 
         final List<Component> components = List.of(c1, c2);
         final Size ideal = layout.computeIdealSize(new Size(800, 600), components);
@@ -258,10 +258,10 @@ class GridLayoutTest {
         final GridLayout layout = new GridLayout(0, 0);
 
         final Component c1 = new TestComponent(new Size(100, 100));
-        c1.layoutOptions(new GridLayoutOptions(0, 0, 1, 1, 0.0f, 0.0f, GridAnchor.CENTER, GridFill.BOTH, Padding.EMPTY, null, null));
+        c1.layoutOptions(new GridOptions(0, 0, 1, 1, 0.0f, 0.0f, GridAnchor.CENTER, GridFill.BOTH, Padding.EMPTY));
 
         final Component c2 = new TestComponent(new Size(100, 300));
-        c2.layoutOptions(new GridLayoutOptions(0, 1, 1, 1, 0.0f, 1.0f, GridAnchor.CENTER, GridFill.BOTH, Padding.EMPTY, null, null));
+        c2.layoutOptions(new GridOptions(0, 1, 1, 1, 0.0f, 1.0f, GridAnchor.CENTER, GridFill.BOTH, Padding.EMPTY));
 
         final List<Component> components = List.of(c1, c2);
 

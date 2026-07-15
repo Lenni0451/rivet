@@ -12,7 +12,7 @@ import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
-import net.lenni0451.rivet.layout.absolute.AbsoluteLayoutOptions;
+import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
@@ -88,7 +88,7 @@ public final class DragAndDropManager {
         for (int i = Math.min(ghostComponents.size(), STACK_SIZE) - 1; i >= 0; i--) {
             this.ghostContainer.addChild(ghostComponents.get(i));
         }
-        this.ghostContainer.layoutOptions(new AbsoluteLayoutOptions(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY));
+        this.ghostContainer.layoutOptions(new AbsoluteOptions(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY));
         Container dragContainer = new Container(AbsoluteLayout.INSTANCE) {
             @Override
             public void render(final Renderer renderer, final Size size) {
@@ -141,7 +141,7 @@ public final class DragAndDropManager {
         this.mouseX = event.x();
         this.mouseY = event.y();
         if (this.dragLayer != null) {
-            this.ghostContainer.layoutOptions(new AbsoluteLayoutOptions(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY));
+            this.ghostContainer.layoutOptions(new AbsoluteOptions(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY));
             this.dragLayer.requestLayoutRecalculation();
         }
 

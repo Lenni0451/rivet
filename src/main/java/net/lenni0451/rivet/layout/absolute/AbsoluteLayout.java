@@ -22,7 +22,7 @@ public final class AbsoluteLayout implements Layout {
             Size idealSize = component.computeIdealSize(constraints);
             float width = this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
-            if (component.layoutOptions() instanceof AbsoluteLayoutOptions options) {
+            if (component.layoutOptions() instanceof AbsoluteOptions options) {
                 if (options.width() != null && options.width() >= 0) width = options.width();
                 width += options.x();
 
@@ -42,7 +42,7 @@ public final class AbsoluteLayout implements Layout {
             float y = 0;
             float width = this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
-            if (component.layoutOptions() instanceof AbsoluteLayoutOptions options) {
+            if (component.layoutOptions() instanceof AbsoluteOptions options) {
                 x = options.x();
                 y = options.y();
                 if (options.width() != null) {

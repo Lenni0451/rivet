@@ -9,7 +9,7 @@ import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.layout.flow.HorizontalFlowLayout;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
-import net.lenni0451.rivet.layout.grid.GridLayoutOptions;
+import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.theme.ThemeOption;
 import test.TestBase;
@@ -61,15 +61,15 @@ public class SliderStyleTest extends TestBase {
     private Component floatOption(final Rivet rivet, final String name, final ThemeOption<Float> option) {
         Label currentValue = new Label(String.format("%,.1f", rivet.theme().get(option.key())));
         return new Container(new GridLayout(5, 5))
-                .addChild(new Label(name).layoutOptions(new GridLayoutOptions(0, 0)))
+                .addChild(new Label(name).layoutOptions(new GridOptions(0, 0)))
                 .addChild(new Slider(0, 50, 0.1F, rivet.theme().get(option.key())), slider -> {
-                    slider.layoutOptions(new GridLayoutOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
+                    slider.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
                     slider.valueChangeListener().add(d -> {
                         option.set(d.floatValue());
                         currentValue.text(String.format("%,.1f", d.floatValue()));
                     });
                 })
-                .addChild(currentValue.layoutOptions(new GridLayoutOptions(2, 0)));
+                .addChild(currentValue.layoutOptions(new GridOptions(2, 0)));
     }
 
     private Component booleanOption(final Rivet rivet, final String name, final ThemeOption<Boolean> option) {
@@ -98,9 +98,9 @@ public class SliderStyleTest extends TestBase {
 
     private Component stringOption(final Rivet rivet, final String name, final ThemeOption<String> option) {
         return new Container(new GridLayout(5, 5))
-                .addChild(new Label(name).layoutOptions(new GridLayoutOptions(0, 0)))
+                .addChild(new Label(name).layoutOptions(new GridOptions(0, 0)))
                 .addChild(new TextField(rivet.theme().get(option.key())), textField -> {
-                    textField.layoutOptions(new GridLayoutOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
+                    textField.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
                     textField.valueChangeListener().add(option::set);
                 });
     }
