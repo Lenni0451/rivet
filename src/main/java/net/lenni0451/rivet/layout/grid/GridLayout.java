@@ -83,11 +83,8 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             final Size componentConstraints = new Size(availableWidth, availableHeight);
             final Size idealSize = component.computeIdealSize(componentConstraints);
 
-            final float idealWidth = options.width() != null ? options.width() : this.widthOf(component, idealSize);
-            final float idealHeight = options.height() != null ? options.height() : this.heightOf(component, idealSize);
-
-            float width = idealWidth;
-            float height = idealHeight;
+            float width = this.widthOf(component, idealSize);
+            float height = this.heightOf(component, idealSize);
 
             if (options.fill() == GridFill.HORIZONTAL || options.fill() == GridFill.BOTH) width = availableWidth;
             if (options.fill() == GridFill.VERTICAL || options.fill() == GridFill.BOTH) height = availableHeight;
@@ -136,7 +133,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             final GridLayoutOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
             if (options.columnSpan() == 1) {
                 final Size idealSize = component.computeIdealSize(constraints);
-                float width = (options.width() != null ? options.width() : this.widthOf(component, idealSize)) + options.padding().horizontal();
+                float width = this.widthOf(component, idealSize) + options.padding().horizontal();
                 columnWidths[options.column()] = Math.max(columnWidths[options.column()], width);
                 columnWeights[options.column()] = Math.max(columnWeights[options.column()], options.weightX());
             }
@@ -147,7 +144,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             final GridLayoutOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
             if (options.columnSpan() > 1) {
                 final Size idealSize = component.computeIdealSize(constraints);
-                float width = (options.width() != null ? options.width() : this.widthOf(component, idealSize)) + options.padding().horizontal();
+                float width = this.widthOf(component, idealSize) + options.padding().horizontal();
 
                 float currentWidth = this.sumRange(columnWidths, options.column(), options.columnSpan()) + this.getGaps(options.columnSpan(), this.horizontalGap);
                 float currentWeight = this.sumRange(columnWeights, options.column(), options.columnSpan());
@@ -191,7 +188,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             final Size componentConstraints = new Size(availableWidth, constraints.height() - options.padding().vertical());
             final Size idealSize = component.computeIdealSize(componentConstraints);
 
-            float height = (options.height() != null ? options.height() : this.heightOf(component, idealSize)) + options.padding().vertical();
+            float height = this.heightOf(component, idealSize) + options.padding().vertical();
             componentHeights.put(component, height);
 
             if (options.rowSpan() == 1) {
