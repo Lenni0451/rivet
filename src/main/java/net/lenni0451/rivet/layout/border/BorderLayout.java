@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.layout.border;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.With;
+import lombok.experimental.WithBy;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -10,10 +10,15 @@ import net.lenni0451.rivet.math.Size;
 import java.util.Collection;
 import java.util.function.BiConsumer;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BorderLayout implements Layout {
+@With
+@WithBy
+public record BorderLayout(TopLeftPriority topLeftPriority, BottomLeftPriority bottomLeftPriority, BottomRightPriority bottomRightPriority, TopRightPriority topRightPriority) implements Layout {
 
-    public static final BorderLayout INSTANCE = new BorderLayout();
+    public static final BorderLayout DEFAULT = new BorderLayout();
+
+    public BorderLayout() {
+        this(TopLeftPriority.TOP, BottomLeftPriority.BOTTOM, BottomRightPriority.BOTTOM, TopRightPriority.TOP);
+    }
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
@@ -35,9 +40,16 @@ public final class BorderLayout implements Layout {
                 case CENTER -> center = center.max(idealWidth, idealHeight);
             }
         }
+
+        float topRowWidth = (this.topLeftPriority.equals(TopLeftPriority.LEFT) ? left.width() : 0) + top.width() + (this.topRightPriority.equals(TopRightPriority.RIGHT) ? right.width() : 0);
+        float middleRowWidth = left.width() + center.width() + right.width();
+        float bottomRowWidth = (this.bottomLeftPriority.equals(BottomLeftPriority.LEFT) ? left.width() : 0) + bottom.width() + (this.bottomRightPriority.equals(BottomRightPriority.RIGHT) ? right.width() : 0);
+        float leftColumnHeight = (this.topLeftPriority.equals(TopLeftPriority.TOP) ? top.height() : 0) + left.height() + (this.bottomLeftPriority.equals(BottomLeftPriority.BOTTOM) ? bottom.height() : 0);
+        float middleColumnHeight = top.height() + center.height() + bottom.height();
+        float rightColumnHeight = (this.topRightPriority.equals(TopRightPriority.TOP) ? top.height() : 0) + right.height() + (this.bottomRightPriority.equals(BottomRightPriority.BOTTOM) ? bottom.height() : 0);
         return new Size(
-                Math.max(Math.max(left.width() + center.width() + right.width(), top.width()), bottom.width()),
-                Math.max(Math.max(center.height(), left.height()), right.height()) + top.height() + bottom.height()
+                Math.max(Math.max(topRowWidth, middleRowWidth), bottomRowWidth),
+                Math.max(Math.max(leftColumnHeight, middleColumnHeight), rightColumnHeight)
         );
     }
 
@@ -62,10 +74,26 @@ public final class BorderLayout implements Layout {
         for (Component component : components) {
             BorderPosition position = component.layoutOptions() instanceof BorderPosition pos ? pos : BorderPosition.CENTER;
             setBounds.accept(component, switch (position) {
-                case TOP -> new Rectangle(0, 0, containerSize.width(), topHeight);
-                case BOTTOM -> new Rectangle(0, containerSize.height() - bottomHeight, containerSize.width(), bottomHeight);
-                case LEFT -> new Rectangle(0, topHeight, leftWidth, containerSize.height() - topHeight - bottomHeight);
-                case RIGHT -> new Rectangle(containerSize.width() - rightWidth, topHeight, rightWidth, containerSize.height() - topHeight - bottomHeight);
+                case TOP -> {
+                    float leftStart = this.topLeftPriority.equals(TopLeftPriority.LEFT) ? leftWidth : 0;
+                    float rightEnd = this.topRightPriority.equals(TopRightPriority.RIGHT) ? containerSize.width() - rightWidth : containerSize.width();
+                    yield new Rectangle(leftStart, 0, rightEnd - leftStart, topHeight);
+                }
+                case BOTTOM -> {
+                    float leftStart = this.bottomLeftPriority.equals(BottomLeftPriority.LEFT) ? leftWidth : 0;
+                    float rightEnd = this.bottomRightPriority.equals(BottomRightPriority.RIGHT) ? containerSize.width() - rightWidth : containerSize.width();
+                    yield new Rectangle(leftStart, containerSize.height() - bottomHeight, rightEnd - leftStart, bottomHeight);
+                }
+                case LEFT -> {
+                    float topStart = this.topLeftPriority.equals(TopLeftPriority.TOP) ? topHeight : 0;
+                    float bottomEnd = this.bottomLeftPriority.equals(BottomLeftPriority.BOTTOM) ? containerSize.height() - bottomHeight : containerSize.height();
+                    yield new Rectangle(0, topStart, leftWidth, bottomEnd - topStart);
+                }
+                case RIGHT -> {
+                    float topStart = this.topRightPriority.equals(TopRightPriority.TOP) ? topHeight : 0;
+                    float bottomEnd = this.bottomRightPriority.equals(BottomRightPriority.BOTTOM) ? containerSize.height() - bottomHeight : containerSize.height();
+                    yield new Rectangle(containerSize.width() - rightWidth, topStart, rightWidth, bottomEnd - topStart);
+                }
                 case CENTER -> new Rectangle(leftWidth, topHeight, containerSize.width() - leftWidth - rightWidth, containerSize.height() - topHeight - bottomHeight);
             });
         }

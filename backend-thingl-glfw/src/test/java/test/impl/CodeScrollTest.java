@@ -20,7 +20,7 @@ public class CodeScrollTest extends TestBase {
 
     @Override
     protected void init(final Rivet rivet) {
-        Container container = new Container(BorderLayout.INSTANCE);
+        Container container = new Container(BorderLayout.DEFAULT);
         Container labelContainer = new Container(new VerticalListLayout());
         ScrollContainer sc = new ScrollContainer(labelContainer);
         Container buttonContainer = new Container(new HorizontalFlowLayout());

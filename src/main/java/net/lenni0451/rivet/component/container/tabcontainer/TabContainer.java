@@ -27,7 +27,7 @@ public class TabContainer extends ParentContainer {
 
     private final List<Tab> tabs = new ArrayList<>();
     private final MouseHandler mouseHandler = new MouseHandler();
-    private final Container tabContainer = new Container(BorderLayout.INSTANCE);
+    private final Container tabContainer = new Container(BorderLayout.DEFAULT);
     private final Container leftTabContainer = new Container(new HorizontalListLayout(0, true));
     private final Container centerTabContainer = new Container(new TabLayout());
     private final Container rightTabContainer = new Container(new HorizontalListLayout(0, true));
