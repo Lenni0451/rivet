@@ -1,6 +1,6 @@
 package test;
 
-import net.lenni0451.rivet.backend.thingl.RivetThinGLApplication;
+import net.lenni0451.rivet.backend.thingl.GLFWApplication;
 import net.raphimc.thingl.resource.font.face.impl.FreeTypeFontFace;
 import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.SequencedMap;
 
-public abstract class TestBase extends RivetThinGLApplication {
+public abstract class TestBase extends GLFWApplication {
 
     static {
         if (System.getProperty("os.name").contains("Linux")) {

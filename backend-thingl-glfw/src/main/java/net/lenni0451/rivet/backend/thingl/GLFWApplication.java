@@ -30,19 +30,19 @@ import java.util.Set;
 
 @Getter
 @Accessors(fluent = true, chain = true)
-public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
+public abstract class GLFWApplication extends GLFWApplicationRunner {
 
     private final ThinGLRenderer renderer = new ThinGLRenderer();
     private FontInstanceSet fontInstanceSet;
-    private ThinGLBackend backend;
+    private GLFWBackend backend;
     private Rivet rivet;
     private final Set<MouseButton> heldMouseButtons = EnumSet.noneOf(MouseButton.class);
 
-    public RivetThinGLApplication() {
+    public GLFWApplication() {
         this(new Configuration());
     }
 
-    public RivetThinGLApplication(final Configuration configuration) {
+    public GLFWApplication(final Configuration configuration) {
         super(configuration);
     }
 
@@ -53,7 +53,7 @@ public abstract class RivetThinGLApplication extends GLFWApplicationRunner {
         this.setupCallbacks();
 
         this.fontInstanceSet = this.createFont();
-        this.backend = new ThinGLBackend(this.window, new ThinGLFont(this.fontInstanceSet));
+        this.backend = new GLFWBackend(this.window, new ThinGLFont(this.fontInstanceSet));
         this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
 
         this.init(this.rivet);

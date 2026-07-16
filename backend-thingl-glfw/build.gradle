@@ -10,22 +10,14 @@ repositories {
 }
 
 dependencies {
-    api project(":")
-    api (libs.thingl) {
-        exclude group: "org.jetbrains.kotlin"
-    }
-    api libs.lwjgl
+    api project(":backend-thingl")
     api libs.lwjgl.glfw
-    api libs.lwjgl.opengl
 
-    testImplementation libs.bundles.lwjgl
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
         testImplementation(variantOf(libs.lwjgl) { classifier(natives) })
         testImplementation(variantOf(libs.lwjgl.opengl) { classifier(natives) })
         testImplementation(variantOf(libs.lwjgl.stb) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.glfw) { classifier(natives) })
         testImplementation(variantOf(libs.lwjgl.freetype) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.harfbuzz) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.par) { classifier(natives) })
+        testImplementation(variantOf(libs.lwjgl.glfw) { classifier(natives) })
     }
 }
