@@ -23,7 +23,6 @@ import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -55,7 +54,11 @@ public abstract class GLFWApplication extends GLFWApplicationRunner {
         this.fontInstanceSet = this.createFont();
         this.backend = new GLFWBackend(this.window, new ThinGLFont(this.fontInstanceSet));
         this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
+        ThinGL.windowInterface().addFramebufferResizeCallback((width, height) -> this.rivet.size(new Size(width, height)));
 
+        float[] xscale = new float[1];
+        GLFW.glfwGetWindowContentScale(this.window, xscale, new float[1]);
+        this.rivet.scale().automaticScale(xscale[0]);
         this.init(this.rivet);
     }
 
@@ -107,16 +110,14 @@ public abstract class GLFWApplication extends GLFWApplicationRunner {
         GLFW.glfwSetCharCallback(this.window, (_, codepoint) -> {
             this.rivet.onCharTyped(new CharEvent(codepoint));
         });
-        GLFWFramebufferSizeCallback[] oldCallback = new GLFWFramebufferSizeCallback[1];
-        oldCallback[0] = GLFW.glfwSetFramebufferSizeCallback(this.window, (window, width, height) -> {
-            if (oldCallback[0] != null) oldCallback[0].invoke(window, width, height);
-            this.rivet.size(new Size(width, height));
-        });
-        GLFW.glfwSetWindowFocusCallback(this.window, (window, focused) -> {
+        GLFW.glfwSetWindowFocusCallback(this.window, (_, focused) -> {
             if (!focused) {
                 this.heldMouseButtons.clear();
                 this.rivet.unfocus();
             }
+        });
+        GLFW.glfwSetWindowContentScaleCallback(this.window, (_, xscale, _) -> {
+            this.rivet.scale().automaticScale(xscale);
         });
     }
 

@@ -19,6 +19,7 @@ import net.lenni0451.rivet.layer.LayerList;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.math.WindowScale;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
@@ -41,7 +42,7 @@ public final class Rivet {
     @Getter
     private Size size;
     @Getter
-    private float scale = 1;
+    private final WindowScale scale = new WindowScale();
     @Getter
     private Component focusedComponent;
     @Getter
@@ -123,18 +124,7 @@ public final class Rivet {
     }
 
     public Size scaledSize() {
-        return new Size(
-                this.size.width() / this.scale,
-                this.size.height() / this.scale
-        );
-    }
-
-    public Rivet scale(final float scale) {
-        if (this.scale != scale) {
-            this.scale = scale;
-            this.recalculateNextFrame();
-        }
-        return this;
+        return this.scale.scale(this.size);
     }
 
     public Rivet focusedComponent(final Component component) {
@@ -250,8 +240,8 @@ public final class Rivet {
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         return this.mouseDownListener.call(l -> l.test(event), () -> {
-            float x = event.x() / this.scale;
-            float y = event.y() / this.scale;
+            float x = this.scale.scale(event.x());
+            float y = this.scale.scale(event.y());
             return this.mouseHandler.onMouseDown(this, event.withX(x).withY(y), this.scaledSize()).handled();
         });
     }
@@ -264,8 +254,8 @@ public final class Rivet {
             if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
         return this.mouseUpListener.call(l -> l.test(event), () -> {
-            float x = event.x() / this.scale;
-            float y = event.y() / this.scale;
+            float x = this.scale.scale(event.x());
+            float y = this.scale.scale(event.y());
             MouseButtonEvent translatedEvent = event.withX(x).withY(y);
             boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, this.layers::interactableLayers);
             boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, this.scaledSize()).handled();
@@ -277,8 +267,8 @@ public final class Rivet {
         return this.mouseMoveListener.call(l -> l.test(event), () -> {
             this.lastMouseX = event.x();
             this.lastMouseY = event.y();
-            float x = event.x() / this.scale;
-            float y = event.y() / this.scale;
+            float x = this.scale.scale(event.x());
+            float y = this.scale.scale(event.y());
             MouseMoveEvent translatedEvent = event.withX(x).withY(y);
             boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, this.layers::interactableLayers);
             boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, this.scaledSize()).handled();
@@ -292,8 +282,8 @@ public final class Rivet {
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
         return this.mouseScrollListener.call(l -> l.test(event), () -> {
-            float x = event.x() / this.scale;
-            float y = event.y() / this.scale;
+            float x = this.scale.scale(event.x());
+            float y = this.scale.scale(event.y());
             return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), this.scaledSize()).handled();
         });
     }
@@ -303,7 +293,7 @@ public final class Rivet {
         while ((task = this.tasks.poll()) != null) task.run();
 
         Size scaledSize = this.scaledSize();
-        renderer.scale(this.scale, () -> {
+        renderer.scale(this.scale.scaleFactor(), () -> {
             for (Layer layer : this.layers.get()) {
                 if (layer.container().rivet() == null) continue;
                 if (layer.recalculateNextFrame()) {

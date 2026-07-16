@@ -63,6 +63,7 @@ public abstract class SDLApplication extends SDLApplicationRunner {
         this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
         ThinGL.windowInterface().addFramebufferResizeCallback((width, height) -> this.rivet.size(new Size(width, height)));
 
+        this.updateWindowScale();
         this.init(this.rivet);
     }
 
@@ -123,6 +124,9 @@ public abstract class SDLApplication extends SDLApplicationRunner {
                 this.heldMouseButtons.clear();
                 this.rivet.unfocus();
             }
+            case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED -> {
+                this.updateWindowScale();
+            }
         }
     }
 
@@ -144,6 +148,13 @@ public abstract class SDLApplication extends SDLApplicationRunner {
 
     protected void renderBackground(final Matrix4fStack matrix4fStack) {
         ThinGL.renderer2D().filledRectangle(matrix4fStack, 0, 0, ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight(), Color.GRAY.darker().darker().darker().darker());
+    }
+
+    private void updateWindowScale() {
+        float scale = SDLVideo.SDL_GetWindowDisplayScale(this.window);
+        if (scale > 0) {
+            this.rivet.scale().automaticScale(scale);
+        }
     }
 
     private float[] getMouseScale() {
