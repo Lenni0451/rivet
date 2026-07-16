@@ -260,6 +260,7 @@ public class GLFWMapper {
             case RIGHT_ALT -> GLFW.GLFW_KEY_RIGHT_ALT;
             case RIGHT_SUPER -> GLFW.GLFW_KEY_RIGHT_SUPER;
             case MENU -> GLFW.GLFW_KEY_MENU;
+            default -> GLFW.GLFW_KEY_UNKNOWN;
         };
     }
 

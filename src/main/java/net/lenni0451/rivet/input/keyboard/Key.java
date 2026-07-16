@@ -118,7 +118,27 @@ public enum Key {
     RIGHT_CONTROL,
     RIGHT_ALT,
     RIGHT_SUPER,
-    MENU;
+    MENU,
+    PLUS,
+    ASTERISK,
+    HASH, LESS,
+    GREATER,
+    QUESTION,
+    AT,
+    CARET,
+    UNDERSCORE,
+    LEFT_PARENTHESIS,
+    RIGHT_PARENTHESIS,
+    LEFT_BRACE,
+    RIGHT_BRACE,
+    PIPE,
+    TILDE,
+    COLON,
+    EXCLAMATION,
+    DOUBLE_QUOTE,
+    DOLLAR,
+    PERCENT,
+    AMPERSAND;
 
     public boolean isEquivalent(final Key key) {
         return switch (key) {
