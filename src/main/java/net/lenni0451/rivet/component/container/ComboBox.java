@@ -3,6 +3,7 @@ package net.lenni0451.rivet.component.container;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
@@ -155,15 +156,20 @@ public class ComboBox extends Component implements Parent {
         this.button.updatePosition(absoluteBounds);
         if (this.isOpen()) {
             Size screenSize = this.rivet().scaledSize();
+            float availableWidth = screenSize.width() - absoluteBounds.x();
+            float availableHeight = screenSize.height() - absoluteBounds.y() - absoluteBounds.height();
+            float width = Math.min(availableWidth, absoluteBounds.width());
+            width = MathUtils.clamp(width, this.child.minSize().width(), this.child.maxSize().width());
+            Size idealSize = this.child.computeIdealSize(new Size(width, availableHeight));
+            float maxHeight = Math.min(availableHeight, this.maxPopupHeight.value());
+            float height = Math.min(idealSize.height(), maxHeight);
+            height = MathUtils.clamp(height, this.child.minSize().height(), this.child.maxSize().height());
             Rectangle region = new Rectangle(
                     absoluteBounds.x(),
                     absoluteBounds.y() + absoluteBounds.height(),
-                    Math.min(screenSize.width() - absoluteBounds.x(), absoluteBounds.width()),
-                    screenSize.height() - absoluteBounds.y() - absoluteBounds.height()
+                    width,
+                    height
             );
-            Size idealSize = this.child.computeIdealSize(region.size());
-            float maxHeight = Math.min(region.height(), this.maxPopupHeight.value());
-            region = region.withHeight(Math.min(idealSize.height(), maxHeight));
             if (!(this.child.layoutOptions() instanceof AbsoluteOptions options)
                     || options.x() != region.x() || options.y() != region.y()
                     || options.width() == null || options.width() != region.width()
