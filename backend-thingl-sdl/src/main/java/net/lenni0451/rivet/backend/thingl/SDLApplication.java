@@ -20,6 +20,7 @@ import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.SDLApplicationRunner;
+import net.raphimc.thingl.implementation.util.sdl.SdlException;
 import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.sdl.*;
@@ -50,7 +51,7 @@ public abstract class SDLApplication extends SDLApplicationRunner {
     @Override
     protected void launchWindowSystem() {
         super.launchWindowSystem();
-        SDLKeyboard.SDL_StartTextInput(this.window);
+        SdlException.check(SDLKeyboard.SDL_StartTextInput(this.window), "Failed to start text input");
     }
 
     @Override
@@ -154,6 +155,8 @@ public abstract class SDLApplication extends SDLApplicationRunner {
         float scale = SDLVideo.SDL_GetWindowDisplayScale(this.window);
         if (scale > 0) {
             this.rivet.scale().automaticScale(scale);
+        } else {
+            SdlException.check(false, "Failed to get window display scale");
         }
     }
 
@@ -161,7 +164,7 @@ public abstract class SDLApplication extends SDLApplicationRunner {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer windowWidth = stack.mallocInt(1);
             IntBuffer windowHeight = stack.mallocInt(1);
-            SDLVideo.SDL_GetWindowSize(this.window, windowWidth, windowHeight);
+            SdlException.check(SDLVideo.SDL_GetWindowSize(this.window, windowWidth, windowHeight), "Failed to get window size");
             float framebufferWidth = ThinGL.windowInterface().getFramebufferWidth();
             float framebufferHeight = ThinGL.windowInterface().getFramebufferHeight();
             return new float[]{framebufferWidth / windowWidth.get(), framebufferHeight / windowHeight.get()};

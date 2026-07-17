@@ -3,6 +3,7 @@ package net.lenni0451.rivet.backend.thingl;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
 import net.lenni0451.rivet.backend.thingl.utils.SDLMapper;
 import net.lenni0451.rivet.input.keyboard.Key;
+import net.raphimc.thingl.implementation.util.sdl.SdlException;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.sdl.SDLClipboard;
 import org.lwjgl.sdl.SDLKeyboard;
@@ -28,7 +29,7 @@ public class SDLBackend extends ThinGLBackend {
     public void setClipboard(final String clipboard) {
         ByteBuffer buffer = MemoryUtil.memUTF8(clipboard);
         try {
-            SDLClipboard.SDL_SetClipboardText(buffer);
+            SdlException.check(SDLClipboard.SDL_SetClipboardText(buffer), "Failed to set clipboard text");
         } finally {
             MemoryUtil.memFree(buffer);
         }
