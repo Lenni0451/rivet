@@ -73,7 +73,7 @@ public record BorderLayout(TopLeftPriority topLeftPriority, BottomLeftPriority b
         }
         for (Component component : components) {
             BorderPosition position = component.layoutOptions() instanceof BorderPosition pos ? pos : BorderPosition.CENTER;
-            setBounds.accept(component, switch (position) {
+            Rectangle bounds = switch (position) {
                 case TOP -> {
                     float leftStart = this.topLeftPriority.equals(TopLeftPriority.LEFT) ? leftWidth : 0;
                     float rightEnd = this.topRightPriority.equals(TopRightPriority.RIGHT) ? containerSize.width() - rightWidth : containerSize.width();
@@ -95,7 +95,8 @@ public record BorderLayout(TopLeftPriority topLeftPriority, BottomLeftPriority b
                     yield new Rectangle(containerSize.width() - rightWidth, topStart, rightWidth, bottomEnd - topStart);
                 }
                 case CENTER -> new Rectangle(leftWidth, topHeight, containerSize.width() - leftWidth - rightWidth, containerSize.height() - topHeight - bottomHeight);
-            });
+            };
+            setBounds.accept(component, new Rectangle(bounds.x(), bounds.y(), this.widthOf(component, bounds.width()), this.heightOf(component, bounds.height())));
         }
     }
 

@@ -30,4 +30,8 @@ public interface Layout {
         return MathUtils.clamp(height, component.minSize().height(), component.maxSize().height());
     }
 
+    default Size sizeOf(final Component component, final Size size) {
+        return new Size(this.widthOf(component, size), this.heightOf(component, size));
+    }
+
 }

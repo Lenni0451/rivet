@@ -23,10 +23,14 @@ public final class AbsoluteLayout implements Layout {
             float width = this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
             if (component.layoutOptions() instanceof AbsoluteOptions options) {
-                if (options.width() != null && options.width() >= 0) width = options.width();
+                if (options.width() != null && options.width() >= 0) {
+                    width = this.widthOf(component, options.width());
+                }
                 width += options.x();
 
-                if (options.height() != null && options.height() >= 0) height = options.height();
+                if (options.height() != null && options.height() >= 0) {
+                    height = this.heightOf(component, options.height());
+                }
                 height += options.y();
             }
             size = size.max(width, height);
@@ -60,7 +64,7 @@ public final class AbsoluteLayout implements Layout {
                     }
                 }
             }
-            setBounds.accept(component, new Rectangle(x, y, width, height));
+            setBounds.accept(component, new Rectangle(x, y, this.widthOf(component, width), this.heightOf(component, height)));
         }
     }
 

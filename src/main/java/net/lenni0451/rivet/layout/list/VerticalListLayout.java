@@ -47,15 +47,15 @@ public record VerticalListLayout(int gap, boolean fullWidth, boolean constrained
             Size idealSize = component.computeIdealSize(containerSize);
             float width = this.fullWidth ? this.widthOf(component, containerSize.width()) : this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
-            if (this.constrained && leftoverHeight > 0) {
-                if (height > leftoverHeight) {
-                    height = leftoverHeight;
+            if (this.constrained) {
+                if (leftoverHeight > 0 && height > leftoverHeight) {
+                    height = this.heightOf(component, leftoverHeight);
                 }
                 leftoverHeight -= height;
             }
             if (y != 0) y += this.gap;
             setBounds.accept(component, new Rectangle(0, y, width, height));
-            y += this.heightOf(component, idealSize);
+            y += height;
         }
     }
 

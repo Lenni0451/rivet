@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.component.container.tabcontainer;
 
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -26,15 +27,16 @@ class TabLayout implements Layout {
         if (this.sameSize) {
             Size maxSize = Size.EMPTY;
             for (Component component : components) {
-                maxSize = maxSize.max(component.computeIdealSize(constraints));
+                Size idealSize = component.computeIdealSize(constraints);
+                maxSize = maxSize.max(new Size(this.widthOf(component, idealSize), this.heightOf(component, idealSize)));
             }
             width = maxSize.width() * components.size();
             height = maxSize.height();
         } else {
             for (Component component : components) {
                 Size idealSize = component.computeIdealSize(constraints);
-                width += idealSize.width();
-                height = Math.max(height, idealSize.height());
+                width += this.widthOf(component, idealSize);
+                height = Math.max(height, this.heightOf(component, idealSize));
             }
         }
         return new Size(
@@ -48,19 +50,21 @@ class TabLayout implements Layout {
         if (components.isEmpty()) return;
 
         Map<Component, Size> idealSizes = new IdentityHashMap<>();
+        Size maxSize = Size.EMPTY;
         for (Component component : components) {
-            idealSizes.put(component, component.computeIdealSize(containerSize));
+            Size idealSize = this.sizeOf(component, component.computeIdealSize(containerSize));
+            idealSizes.put(component, idealSize);
+            if (this.sameSize) {
+                maxSize = maxSize.max(idealSize);
+            }
         }
 
-        Size maxSize = null;
         if (this.sameSize) {
-            maxSize = idealSizes.values().stream().reduce(Size.EMPTY, Size::max);
-            maxSize = maxSize.withHeightBy(height -> Math.min(containerSize.height() - this.verticalGap * 2, height + this.verticalGap * 2));
+            maxSize = maxSize.withHeight(MathUtils.clamp(maxSize.height(), 0, containerSize.height() - this.verticalGap * 2));
         }
         float totalWidth = 0;
         for (Component component : components) {
-            Size size = maxSize == null ? idealSizes.get(component) : maxSize;
-            totalWidth += size.width() + this.tabGap;
+            totalWidth += this.widthOf(component, this.sameSize ? maxSize.width() : idealSizes.get(component).width()) + this.tabGap;
         }
         totalWidth -= this.tabGap;
 
@@ -72,9 +76,10 @@ class TabLayout implements Layout {
         if (startX < 0) startX = 0;
 
         for (Component component : components) {
-            Size size = maxSize == null ? idealSizes.get(component) : maxSize;
-            setBounds.accept(component, new Rectangle(startX, this.verticalGap, size));
-            startX += size.width() + this.tabGap;
+            float width = this.widthOf(component, this.sameSize ? maxSize.width() : idealSizes.get(component).width());
+            float height = this.heightOf(component, this.sameSize ? maxSize.height() : idealSizes.get(component).height());
+            setBounds.accept(component, new Rectangle(startX, this.verticalGap, width, height));
+            startX += width + this.tabGap;
         }
     }
 

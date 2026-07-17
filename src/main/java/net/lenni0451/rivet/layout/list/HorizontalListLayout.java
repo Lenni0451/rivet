@@ -47,9 +47,9 @@ public record HorizontalListLayout(int gap, boolean fullHeight, boolean constrai
             Size idealSize = component.computeIdealSize(containerSize);
             float width = this.widthOf(component, idealSize);
             float height = this.fullHeight ? this.heightOf(component, containerSize.height()) : this.heightOf(component, idealSize);
-            if (this.constrained && leftoverWidth > 0) {
-                if (width > leftoverWidth) {
-                    width = leftoverWidth;
+            if (this.constrained) {
+                if (leftoverWidth > 0 && width > leftoverWidth) {
+                    width = this.widthOf(component, leftoverWidth);
                 }
                 leftoverWidth -= width;
             }

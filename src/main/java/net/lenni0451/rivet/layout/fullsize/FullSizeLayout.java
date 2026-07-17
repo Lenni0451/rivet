@@ -31,8 +31,8 @@ public final class FullSizeLayout implements Layout {
     @Override
     public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         for (Component component : components) {
-            float width = Math.min(containerSize.width(), component.maxSize().width());
-            float height = Math.min(containerSize.height(), component.maxSize().height());
+            float width = this.widthOf(component, containerSize.width());
+            float height = this.heightOf(component, containerSize.height());
             setBounds.accept(component, new Rectangle((containerSize.width() - width) / 2F, (containerSize.height() - height) / 2F, width, height));
         }
     }

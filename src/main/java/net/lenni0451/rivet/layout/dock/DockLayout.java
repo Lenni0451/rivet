@@ -67,27 +67,33 @@ public record DockLayout(float gap) implements Layout {
             Size idealSize = component.computeIdealSize(new Size(remainingWidth, remainingHeight));
             switch (position) {
                 case LEFT -> {
-                    float width = Math.min(remainingWidth, this.widthOf(component, idealSize.width()));
-                    setBounds.accept(component, new Rectangle(left, top, width, remainingHeight));
+                    float width = this.widthOf(component, Math.min(remainingWidth, idealSize.width()));
+                    float height = this.heightOf(component, remainingHeight);
+                    setBounds.accept(component, new Rectangle(left, top, width, height));
                     left += width + this.gap;
                 }
                 case RIGHT -> {
-                    float width = Math.min(remainingWidth, this.widthOf(component, idealSize.width()));
-                    setBounds.accept(component, new Rectangle(right - width, top, width, remainingHeight));
+                    float width = this.widthOf(component, Math.min(remainingWidth, idealSize.width()));
+                    float height = this.heightOf(component, remainingHeight);
+                    setBounds.accept(component, new Rectangle(right - width, top, width, height));
                     right -= width + this.gap;
                 }
                 case TOP -> {
-                    float height = Math.min(remainingHeight, this.heightOf(component, idealSize.height()));
-                    setBounds.accept(component, new Rectangle(left, top, remainingWidth, height));
+                    float width = this.widthOf(component, remainingWidth);
+                    float height = this.heightOf(component, Math.min(remainingHeight, idealSize.height()));
+                    setBounds.accept(component, new Rectangle(left, top, width, height));
                     top += height + this.gap;
                 }
                 case BOTTOM -> {
-                    float height = Math.min(remainingHeight, this.heightOf(component, idealSize.height()));
-                    setBounds.accept(component, new Rectangle(left, bottom - height, remainingWidth, height));
+                    float width = this.widthOf(component, remainingWidth);
+                    float height = this.heightOf(component, Math.min(remainingHeight, idealSize.height()));
+                    setBounds.accept(component, new Rectangle(left, bottom - height, width, height));
                     bottom -= height + this.gap;
                 }
                 case CENTER -> {
-                    setBounds.accept(component, new Rectangle(left, top, remainingWidth, remainingHeight));
+                    float width = this.widthOf(component, remainingWidth);
+                    float height = this.heightOf(component, remainingHeight);
+                    setBounds.accept(component, new Rectangle(left, top, width, height));
                     left = right;
                     top = bottom;
                 }

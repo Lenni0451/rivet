@@ -86,11 +86,19 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             float width = this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
 
-            if (options.fill() == GridFill.HORIZONTAL || options.fill() == GridFill.BOTH) width = availableWidth;
-            if (options.fill() == GridFill.VERTICAL || options.fill() == GridFill.BOTH) height = availableHeight;
+            if (options.fill() == GridFill.HORIZONTAL || options.fill() == GridFill.BOTH) {
+                width = availableWidth;
+            } else {
+                width = Math.min(width, availableWidth);
+            }
+            if (options.fill() == GridFill.VERTICAL || options.fill() == GridFill.BOTH) {
+                height = availableHeight;
+            } else {
+                height = Math.min(height, availableHeight);
+            }
 
-            width = Math.max(0, Math.min(width, Math.min(availableWidth, component.maxSize().width())));
-            height = Math.max(0, Math.min(height, Math.min(availableHeight, component.maxSize().height())));
+            width = this.widthOf(component, width);
+            height = this.heightOf(component, height);
 
             float x = cellX + options.padding().left();
             float y = cellY + options.padding().top();
