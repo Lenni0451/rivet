@@ -80,7 +80,7 @@ public abstract class SDLApplication extends SDLApplicationRunner {
             case SDLEvents.SDL_EVENT_MOUSE_BUTTON_DOWN -> {
                 SDL_MouseButtonEvent mouseButton = event.button();
                 float[] mouseScale = this.getMouseScale();
-                MouseButtonEvent rivetEvent = SDLMapper.mapMouseButton(mouseButton.x() * mouseScale[0], mouseButton.y() * mouseScale[1], mouseButton.button(), 0);
+                MouseButtonEvent rivetEvent = SDLMapper.mapMouseButton(mouseButton.x() * mouseScale[0], mouseButton.y() * mouseScale[1], mouseButton.button(), SDLKeyboard.SDL_GetModState());
                 if (rivetEvent != null) {
                     this.heldMouseButtons.add(rivetEvent.button());
                     this.rivet.onMouseDown(rivetEvent.withHeldButtons(this.heldMouseButtons));
@@ -89,7 +89,7 @@ public abstract class SDLApplication extends SDLApplicationRunner {
             case SDLEvents.SDL_EVENT_MOUSE_BUTTON_UP -> {
                 SDL_MouseButtonEvent mouseButton = event.button();
                 float[] mouseScale = this.getMouseScale();
-                MouseButtonEvent rivetEvent = SDLMapper.mapMouseButton(mouseButton.x() * mouseScale[0], mouseButton.y() * mouseScale[1], mouseButton.button(), 0);
+                MouseButtonEvent rivetEvent = SDLMapper.mapMouseButton(mouseButton.x() * mouseScale[0], mouseButton.y() * mouseScale[1], mouseButton.button(), SDLKeyboard.SDL_GetModState());
                 if (rivetEvent != null) {
                     this.rivet.onMouseUp(rivetEvent.withHeldButtons(this.heldMouseButtons));
                     this.heldMouseButtons.remove(rivetEvent.button());
