@@ -181,9 +181,10 @@ public class TabContainer extends ParentContainer {
 
     @Override
     public Size contentSize() {
+        Size contentContainerSize = this.contentContainer.contentSize();
         return new Size(
-                this.tabSize.width(),
-                this.tabSize.height() + this.contentSize.height()
+                Math.max(this.tabSize.width(), contentContainerSize.width()),
+                this.tabSize.height() + contentContainerSize.height()
         );
     }
 

@@ -82,7 +82,10 @@ public class PaddedContainer extends ParentContainer {
     @Override
     public Size contentSize() {
         if (this.child instanceof Parent parent) {
-            return parent.contentSize().plus(this.padding.horizontal(), this.padding.vertical());
+            Size parentContentSize = parent.contentSize();
+            if (!parentContentSize.equals(Size.EMPTY)) {
+                return parentContentSize.plus(this.padding.horizontal(), this.padding.vertical());
+            }
         }
         return Size.EMPTY;
     }

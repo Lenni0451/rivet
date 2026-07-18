@@ -239,7 +239,10 @@ public class Button extends Component implements Parent {
     @Override
     public Size contentSize() {
         if (this.child instanceof Parent parent) {
-            return parent.contentSize().plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
+            Size parentContentSize = parent.contentSize();
+            if (!parentContentSize.equals(Size.EMPTY)) {
+                return parentContentSize.plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
+            }
         }
         return Size.EMPTY;
     }
