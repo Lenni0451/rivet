@@ -174,9 +174,8 @@ public class NumberPicker extends Component implements Parent {
         if (event.key() == Key.ENTER) {
             this.editing = false;
             try {
-                this.value = Double.parseDouble(this.field.text());
+                value(Double.parseDouble(this.field.text()));
             } catch (Exception ignored) {}
-            this.updateShapedText();
         }
 
         if (this.editing) {
