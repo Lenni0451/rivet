@@ -43,7 +43,7 @@ public class NumberPicker extends Component implements Parent {
     @Getter
     private double value;
 
-    private float prevMouseX = Float.MAX_VALUE;
+    private float prevMouseX = -Float.MAX_VALUE;
     private boolean over;
     private boolean holding, editing;
     private boolean changed;
@@ -217,7 +217,7 @@ public class NumberPicker extends Component implements Parent {
         }
 
         this.holding = true;
-        this.prevMouseX = Float.MAX_VALUE;
+        this.prevMouseX = -Float.MAX_VALUE;
         updateShapedText();
         return true;
     }
@@ -227,7 +227,7 @@ public class NumberPicker extends Component implements Parent {
         if (this.editing) {
             this.field.onComponentMouseMove(event, size);
         } else if (this.holding) {
-            if (this.prevMouseX != Float.MAX_VALUE) {
+            if (this.prevMouseX != -Float.MAX_VALUE) {
                 float delta = event.x() - this.prevMouseX;
 
                 value(value + step * Math.signum(delta));
