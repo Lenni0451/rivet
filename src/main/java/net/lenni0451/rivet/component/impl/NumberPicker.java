@@ -252,6 +252,8 @@ public class NumberPicker extends Component implements Parent {
         }
 
         this.editing = true;
+        this.field.onComponentFocusGained();
+        this.field.cursor(String.valueOf(this.value).length());
         this.field.onComponentMouseUp(event, size);
         return true;
     }
