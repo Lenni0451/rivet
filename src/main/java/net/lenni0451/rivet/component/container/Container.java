@@ -177,12 +177,6 @@ public class Container extends ParentContainer {
         this.contentSize = contentSize;
     }
 
-    @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
-    }
-
-
     @RequiredArgsConstructor
     private static final class Child {
         private final Component component;

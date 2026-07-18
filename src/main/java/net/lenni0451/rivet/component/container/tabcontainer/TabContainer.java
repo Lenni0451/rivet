@@ -16,7 +16,6 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
-import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +25,6 @@ import java.util.List;
 public class TabContainer extends ParentContainer {
 
     private final List<Tab> tabs = new ArrayList<>();
-    private final MouseHandler mouseHandler = new MouseHandler();
     private final Container tabContainer = new Container(BorderLayout.DEFAULT);
     private final Container leftTabContainer = new Container(new HorizontalListLayout(0, true));
     private final Container centerTabContainer = new Container(new TabLayout());
@@ -130,10 +128,6 @@ public class TabContainer extends ParentContainer {
         return this;
     }
 
-    @Override
-    protected ContainerMouseHandler<?> mouseHandler() {
-        return this.mouseHandler;
-    }
 
     @Override
     public void render(final Renderer renderer, final Size size) {
@@ -201,34 +195,6 @@ public class TabContainer extends ParentContainer {
             return new Rectangle(0, this.tabSize.height(), this.contentSize);
         }
         return Rectangle.EMPTY;
-    }
-
-
-    private class MouseHandler extends ContainerMouseHandler<Component> {
-        @Override
-        protected Component map(final Component element) {
-            return element;
-        }
-
-        @Override
-        protected Rectangle relativeBounds(final Size containerBounds, final Component element) {
-            if (element == TabContainer.this.tabContainer) {
-                return new Rectangle(0, 0, TabContainer.this.tabSize);
-            } else if (element == TabContainer.this.contentContainer) {
-                return new Rectangle(0, TabContainer.this.tabSize.height(), TabContainer.this.contentSize);
-            }
-            return Rectangle.EMPTY;
-        }
-
-        @Override
-        protected List<Component> elementsAt(final float x, final float y, final Size containerBounds) {
-            if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
-            if (y < TabContainer.this.tabSize.height()) {
-                return List.of(TabContainer.this.tabContainer);
-            } else {
-                return List.of(TabContainer.this.contentContainer);
-            }
-        }
     }
 
 }

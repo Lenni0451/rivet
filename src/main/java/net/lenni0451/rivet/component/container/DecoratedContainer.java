@@ -10,7 +10,6 @@ import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
-import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,7 +21,6 @@ public class DecoratedContainer extends ParentContainer {
     private final Component background;
     @Getter
     private final Component child;
-    private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
     @Setter
     private Padding innerPadding;
@@ -40,10 +38,6 @@ public class DecoratedContainer extends ParentContainer {
         this.innerPadding = Padding.EMPTY;
     }
 
-    @Override
-    protected ContainerMouseHandler<?> mouseHandler() {
-        return this.mouseHandler;
-    }
 
     @Override
     public void render(final Renderer renderer, final Size size) {
@@ -101,38 +95,6 @@ public class DecoratedContainer extends ParentContainer {
             );
         }
         return Rectangle.EMPTY;
-    }
-
-
-    private class MouseHandler extends ContainerMouseHandler<Component> {
-        @Override
-        protected Component map(final Component element) {
-            return element;
-        }
-
-        @Override
-        protected Rectangle relativeBounds(final Size containerBounds, final Component element) {
-            if (element == DecoratedContainer.this.child) {
-                Padding padding = DecoratedContainer.this.innerPadding;
-                return new Rectangle(
-                        padding.left(), padding.top(),
-                        containerBounds.width() - padding.horizontal(), containerBounds.height() - padding.vertical()
-                );
-            } else {
-                return new Rectangle(0, 0, containerBounds.width(), containerBounds.height());
-            }
-        }
-
-        @Override
-        protected List<Component> elementsAt(final float x, final float y, final Size containerBounds) {
-            if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
-            Padding padding = DecoratedContainer.this.innerPadding;
-            if (x >= padding.left() && x < containerBounds.width() - padding.right() && y >= padding.top() && y < containerBounds.height() - padding.bottom()) {
-                return List.of(DecoratedContainer.this.child, DecoratedContainer.this.background);
-            } else {
-                return List.of(DecoratedContainer.this.background);
-            }
-        }
     }
 
 }

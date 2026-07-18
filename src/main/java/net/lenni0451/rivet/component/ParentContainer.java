@@ -5,12 +5,23 @@ import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class ParentContainer extends Component implements Parent {
 
-    protected abstract ContainerMouseHandler<?> mouseHandler();
+    private ContainerMouseHandler<Component> defaultMouseHandler;
+
+    protected ContainerMouseHandler<?> mouseHandler() {
+        if (this.defaultMouseHandler == null) {
+            this.defaultMouseHandler = new DefaultMouseHandler();
+        }
+        return this.defaultMouseHandler;
+    }
 
     @Override
     protected void onComponentAdded() {
@@ -85,6 +96,35 @@ public abstract class ParentContainer extends Component implements Parent {
     @Override
     public void requestLayoutRecalculation() {
         if (this.parent() != null) this.parent().requestLayoutRecalculation();
+    }
+
+
+    private class DefaultMouseHandler extends ContainerMouseHandler<Component> {
+        @Override
+        protected Component map(final Component element) {
+            return element;
+        }
+
+        @Override
+        protected Rectangle relativeBounds(final Size containerBounds, final Component element) {
+            return ParentContainer.this.childBounds(element);
+        }
+
+        @Override
+        protected List<Component> elementsAt(final float x, final float y, final Size containerBounds) {
+            if (x >= 0 && x < containerBounds.width() && y >= 0 && y < containerBounds.height()) {
+                List<Component> children = ParentContainer.this.children();
+                List<Component> elements = new ArrayList<>();
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    Component child = children.get(i);
+                    if (ParentContainer.this.childBounds(child).contains(x, y)) {
+                        elements.add(child);
+                    }
+                }
+                return elements;
+            }
+            return List.of();
+        }
     }
 
 }

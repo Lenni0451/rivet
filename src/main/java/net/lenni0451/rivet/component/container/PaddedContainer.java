@@ -10,7 +10,6 @@ import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
-import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,7 +21,6 @@ public class PaddedContainer extends ParentContainer {
     private Padding padding;
     @Getter
     private final Component child;
-    private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
     @Setter
     private boolean cropChild = true;
@@ -43,10 +41,6 @@ public class PaddedContainer extends ParentContainer {
         return this;
     }
 
-    @Override
-    protected ContainerMouseHandler<?> mouseHandler() {
-        return this.mouseHandler;
-    }
 
     @Override
     public void render(final Renderer renderer, final Size size) {
@@ -74,10 +68,6 @@ public class PaddedContainer extends ParentContainer {
         this.child.computeLayout(size.minus(this.padding.horizontal(), this.padding.vertical()));
     }
 
-    @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
-    }
 
     @Override
     public Size contentSize() {
@@ -106,33 +96,6 @@ public class PaddedContainer extends ParentContainer {
             );
         }
         return Rectangle.EMPTY;
-    }
-
-
-    private class MouseHandler extends ContainerMouseHandler<Component> {
-        @Override
-        protected Component map(final Component element) {
-            return element;
-        }
-
-        @Override
-        protected Rectangle relativeBounds(final Size containerBounds, final Component element) {
-            Padding padding = PaddedContainer.this.padding;
-            return new Rectangle(
-                    padding.left(), padding.top(),
-                    containerBounds.width() - padding.horizontal(), containerBounds.height() - padding.vertical()
-            );
-        }
-
-        @Override
-        protected List<Component> elementsAt(final float x, final float y, final Size containerBounds) {
-            Padding padding = PaddedContainer.this.padding;
-            if (x >= padding.left() && x < containerBounds.width() - padding.right() && y >= padding.top() && y < containerBounds.height() - padding.bottom()) {
-                return List.of(PaddedContainer.this.child);
-            } else {
-                return List.of();
-            }
-        }
     }
 
 }

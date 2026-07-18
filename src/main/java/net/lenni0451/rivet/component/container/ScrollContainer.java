@@ -608,11 +608,6 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
-    }
-
-    @Override
     public Size contentSize() {
         return Size.EMPTY;
     }
