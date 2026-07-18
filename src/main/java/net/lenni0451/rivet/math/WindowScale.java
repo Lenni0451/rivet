@@ -2,9 +2,9 @@ package net.lenni0451.rivet.math;
 
 public final class WindowScale {
 
-    private boolean manual;
-    private float manualScale;
-    private float automaticScale;
+    private boolean manual = false;
+    private float manualScale = 1;
+    private float automaticScale = 1;
 
     public boolean manual() {
         return this.manual;
