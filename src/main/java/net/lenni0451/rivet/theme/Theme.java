@@ -90,6 +90,24 @@ public abstract class Theme {
     public static final ThemeKey<AnimationConfig> SLIDER_HOVER_ANIMATION = register("slider.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
     public static final ThemeKey<AnimationConfig> SLIDER_CLICK_ANIMATION = register("slider.click_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
 
+    // NumberPicker
+    public static final ThemeKey<Color> NUMBER_PICKER_TEXT_COLOR = register("number_picker.text_color", Color.class, r -> r.theme().get(TEXT_COLOR));
+    public static final ThemeKey<Color> NUMBER_PICKER_BACKGROUND_COLOR = register("number_picker.background_color", Color.class, r -> Color.fromRGB(30, 30, 30));
+    public static final ThemeKey<Color> NUMBER_PICKER_OUTLINE_COLOR = register("number_picker.outline_color", Color.class, r -> Color.GRAY);
+    public static final ThemeKey<Float> NUMBER_PICKER_OUTLINE_WIDTH = register("number_picker.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
+    public static final ThemeKey<Float> NUMBER_PICKER_CORNER_RADIUS = register("number_picker.corner_radius", Float.class, r -> 0F);
+    public static final ThemeKey<Color> NUMBER_PICKER_DISABLED_TEXT_COLOR = register("number_picker.disabled_text_color", Color.class, r -> r.theme().get(TEXT_COLOR));
+    public static final ThemeKey<Color> NUMBER_PICKER_DISABLED_BACKGROUND_COLOR = register("number_picker.holding_background_color", Color.class, r -> Color.fromRGB(20, 20, 20));
+    public static final ThemeKey<Color> NUMBER_PICKER_DISABLED_OUTLINE_COLOR = register("number_picker.holding_outline_color", Color.class, r -> Color.fromRGB(45, 45, 45));
+    public static final ThemeKey<Color> NUMBER_PICKER_HOLDING_TEXT_COLOR = register("number_picker.holding_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
+    public static final ThemeKey<Color> NUMBER_PICKER_HOLDING_BACKGROUND_COLOR = register("number_picker.holding_background_color", Color.class, r -> Color.fromRGB(20, 20, 20));
+    public static final ThemeKey<Color> NUMBER_PICKER_HOLDING_OUTLINE_COLOR = register("number_picker.holding_outline_color", Color.class, r -> Color.GRAY);
+    public static final ThemeKey<String> NUMBER_PICKER_FORMAT = register("number_picker.tooltip_format", String.class, r -> "%,f");
+
+    public static final ThemeKey<Color> NUMBER_PICKER_HIGHLIGHT_BACKGROUND_COLOR = register("number_picker.highlight_background_color", Color.class, r -> Color.fromRGB(50, 50, 50));
+    public static final ThemeKey<Color> NUMBER_PICKER_HIGHLIGHT_OUTLINE_COLOR = register("number_picker.highlight_outline_color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Color> NUMBER_PICKER_HIGHLIGHT_TEXT_COLOR = register("number_picker.highlight_text_color", Color.class, r -> r.theme().get(TEXT_COLOR));
+
     // ScrollContainer
     public static final ThemeKey<Color> SCROLL_BAR_COLOR = register("scroll.bar_color", Color.class, r -> Color.fromRGBA(120, 120, 125, 100));
     public static final ThemeKey<Color> SCROLL_BAR_HOVER_COLOR = register("scroll.bar_hover_color", Color.class, r -> Color.fromRGBA(140, 140, 145, 150));
