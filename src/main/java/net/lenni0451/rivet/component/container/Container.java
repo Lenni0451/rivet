@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
@@ -159,9 +160,18 @@ public class Container extends ParentContainer {
         for (Child child : this.children) {
             child.bounds = newBounds.get(child.component);
             child.component.computeLayout(child.bounds.size());
+            float childWidth = child.bounds.width();
+            float childHeight = child.bounds.height();
+            if (child.component instanceof Parent parent) {
+                Size parentContentSize = parent.contentSize();
+                if (!parentContentSize.equals(Size.EMPTY)) {
+                    childWidth = Math.max(childWidth, parentContentSize.width());
+                    childHeight = Math.max(childHeight, parentContentSize.height());
+                }
+            }
             contentSize = contentSize.max(
-                    child.bounds.x() + child.bounds.width(),
-                    child.bounds.y() + child.bounds.height()
+                    child.bounds.x() + childWidth,
+                    child.bounds.y() + childHeight
             );
         }
         this.contentSize = contentSize;

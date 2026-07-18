@@ -75,7 +75,10 @@ public class DecoratedContainer extends ParentContainer {
     @Override
     public Size contentSize() {
         if (this.child instanceof Parent parent) {
-            return parent.contentSize().plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
+            Size parentContentSize = parent.contentSize();
+            if (!parentContentSize.equals(Size.EMPTY)) {
+                return parentContentSize.plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
+            }
         }
         return Size.EMPTY;
     }
