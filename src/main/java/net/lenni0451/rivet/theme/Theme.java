@@ -226,6 +226,16 @@ public abstract class Theme {
     public static final ThemeKey<Float> PROGRESS_BAR_STRIPE_ANGLE = register("progress_bar.stripe_angle", Float.class, r -> 45F);
     public static final ThemeKey<Boolean> PROGRESS_BAR_STRIPE_ANIMATED = register("progress_bar.stripe_animated", Boolean.class, r -> true);
 
+    // CollapsibleContainer
+    public static final ThemeKey<Color> COLLAPSIBLE_CONTAINER_ARROW_COLOR = register("collapsible_container.arrow_color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Color> COLLAPSIBLE_CONTAINER_DISABLED_ARROW_COLOR = register("collapsible_container.disabled_arrow_color", Color.class, r -> Color.fromRGB(150, 150, 150));
+    public static final ThemeKey<Float> COLLAPSIBLE_CONTAINER_ARROW_WIDTH = register("collapsible_container.arrow_width", Float.class, r -> roundMin(r.backend().font().height() / 15F, 1));
+    public static final ThemeKey<Float> COLLAPSIBLE_CONTAINER_ARROW_SIZE = register("collapsible_container.arrow_size", Float.class, r -> r.backend().font().height());
+    public static final ThemeKey<ClickOn> COLLAPSIBLE_CONTAINER_CLICK_ON = register("collapsible_container.click_on", ClickOn.class, r -> ClickOn.UP);
+    public static final ThemeKey<AnimationConfig> COLLAPSIBLE_CONTAINER_COLLAPSE_ANIMATION = register("collapsible_container.collapse_animation", AnimationConfig.class, r -> new AnimationConfig(
+            AnimationMode.DEFAULT,
+            new AnimationFrameConfig(EasingFunction.CIRC, EasingMode.EASE_OUT, 0F, 1F, 200, EasingBehavior.KEEP)
+    ));
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);
