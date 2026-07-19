@@ -236,6 +236,28 @@ public abstract class Theme {
     public static final ThemeKey<Float> ARROW_LINE_WIDTH = register("arrow.line_width", Float.class, r -> roundMin(r.backend().font().height() / 15F, 1));
     public static final ThemeKey<Float> ARROW_SIZE = register("arrow.size", Float.class, r -> r.backend().font().height());
 
+    // DragNumberInput
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_BACKGROUND_COLOR = register("drag_number_input.background_color", Color.class, r -> Color.fromRGB(50, 50, 50));
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_TEXT_COLOR = register("drag_number_input.text_color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_OUTLINE_COLOR = register("drag_number_input.outline_color", Color.class, r -> Color.fromRGB(100, 100, 105));
+    public static final ThemeKey<Float> DRAG_NUMBER_INPUT_OUTLINE_WIDTH = register("drag_number_input.outline_width", Float.class, r -> 1F);
+    public static final ThemeKey<Float> DRAG_NUMBER_INPUT_CORNER_RADIUS = register("drag_number_input.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 4F, 0));
+    public static final ThemeKey<Padding> DRAG_NUMBER_INPUT_INNER_PADDING = register("drag_number_input.inner_padding", Padding.class, r -> {
+        float textHeight = r.backend().font().height();
+        return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
+    });
+    public static final ThemeKey<String> DRAG_NUMBER_INPUT_VALUE_FORMAT = register("drag_number_input.value_format", String.class, r -> "%,f");
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_HOVER_BACKGROUND_COLOR = register("drag_number_input.hover_background_color", Color.class, r -> Color.fromRGB(60, 60, 60));
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_HOVER_OUTLINE_COLOR = register("drag_number_input.hover_outline_color", Color.class, r -> Color.fromRGB(120, 120, 125));
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_CLICK_BACKGROUND_COLOR = register("drag_number_input.click_background_color", Color.class, r -> Color.fromRGB(40, 40, 40));
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_CLICK_OUTLINE_COLOR = register("drag_number_input.click_outline_color", Color.class, r -> Color.fromRGB(80, 80, 85));
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_DISABLED_BACKGROUND_COLOR = register("drag_number_input.disabled_background_color", Color.class, r -> Color.fromRGB(30, 30, 30));
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_DISABLED_TEXT_COLOR = register("drag_number_input.disabled_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
+    public static final ThemeKey<Color> DRAG_NUMBER_INPUT_DISABLED_OUTLINE_COLOR = register("drag_number_input.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 55));
+    public static final ThemeKey<AnimationConfig> DRAG_NUMBER_INPUT_HOVER_ANIMATION = register("drag_number_input.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
+    public static final ThemeKey<AnimationConfig> DRAG_NUMBER_INPUT_CLICK_ANIMATION = register("drag_number_input.click_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
+
+
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);
         REGISTERED_KEYS.add(themeKey);
