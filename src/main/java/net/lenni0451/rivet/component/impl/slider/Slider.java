@@ -49,6 +49,7 @@ public class Slider extends Component {
     @Getter
     @Nullable
     private Ticks ticks;
+
     private boolean dragged = false;
     private boolean hovered = false;
     @Nullable
@@ -291,8 +292,7 @@ public class Slider extends Component {
         float progress = (mouseX - thumbWidth / 2F) / barWidth;
         progress = MathUtils.clamp(progress, 0, 1);
         double newValue = this.min + progress * (this.max - this.min);
-        newValue = Math.round(newValue / this.step) * this.step;
-        newValue = MathUtils.clamp(newValue, this.min, this.max);
+        newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.min, this.max, this.step);
         if (this.value != newValue) {
             this.value = newValue;
             if (this.tooltip != null) {

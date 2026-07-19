@@ -28,4 +28,23 @@ public class MathUtils {
         return start + (end - start) * progress;
     }
 
+    public static double snap(final double value, final double min, final double max, final double step) {
+        if (step <= 0) {
+            return net.lenni0451.commons.math.MathUtils.clamp(value, min, max);
+        }
+        double diff = value - min;
+        double lowerStep = Math.floor(diff / step);
+        double v1 = min + lowerStep * step;
+        double v2 = min + (lowerStep + 1) * step;
+        v2 = Math.min(v2, max);
+
+        double snapped;
+        if (value - v1 < v2 - value) {
+            snapped = v1;
+        } else {
+            snapped = v2;
+        }
+        return Math.max(min, Math.min(max, snapped));
+    }
+
 }

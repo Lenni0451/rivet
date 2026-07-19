@@ -243,8 +243,7 @@ public class DragNumberInput extends Component implements Parent {
             float deltaY = event.y() - this.mouseDownY;
             double deltaValue = (deltaX - deltaY) * this.step;
             double newValue = this.dragStartValue + deltaValue;
-            newValue = Math.round(newValue / this.step) * this.step;
-            newValue = MathUtils.clamp(newValue, this.min, this.max);
+            newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.min, this.max, this.step);
             this.value(newValue);
         }
         return true;
