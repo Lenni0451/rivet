@@ -13,6 +13,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -219,8 +220,11 @@ public class Checkbox extends Component {
             Color checkColor = this.disabled() ? this.disabledCheckColor.value() : this.checkColor.value();
             checkColor = checkColor.withAlphaF(checkColor.getAlpha() / 255F * progress);
 
-            renderer.line(offset + padding, offset + boxSize / 2F, offset + boxSize / 2.5F, offset + boxSize - padding, checkWidth, checkColor);
-            renderer.line(offset + boxSize / 2.5F, offset + boxSize - padding, offset + boxSize - padding, offset + padding, checkWidth, checkColor);
+            renderer.polyLine(new Point[]{
+                    new Point(offset + padding, offset + boxSize / 2F),
+                    new Point(offset + boxSize / 2.5F, offset + boxSize - padding),
+                    new Point(offset + boxSize - padding, offset + padding),
+            }, checkWidth, checkColor);
         }
 
         if (!this.text.isEmpty()) {
