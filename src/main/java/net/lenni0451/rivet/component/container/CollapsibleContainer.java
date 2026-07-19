@@ -11,6 +11,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.ParentContainer;
+import net.lenni0451.rivet.component.impl.Arrow;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -19,12 +20,10 @@ import net.lenni0451.rivet.layout.grid.GridAnchor;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridOptions;
-import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
-import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -43,13 +42,13 @@ public class CollapsibleContainer extends ParentContainer {
     private final ListenerList<Consumer<Boolean>> collapseChangeListener = new ListenerList<>();
 
     @Getter
-    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_ARROW_COLOR);
+    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.ARROW_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledArrowColor = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_DISABLED_ARROW_COLOR);
+    private final ThemeOption<Color> arrowDisabledColor = new ThemeOption<>(this, Theme.ARROW_DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Float> arrowWidth = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_ARROW_WIDTH);
+    private final ThemeOption<Float> arrowLineWidth = new ThemeOption<>(this, Theme.ARROW_LINE_WIDTH);
     @Getter
-    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_ARROW_SIZE);
+    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.ARROW_SIZE);
     @Getter
     private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_CLICK_ON);
     @Getter
@@ -186,46 +185,19 @@ public class CollapsibleContainer extends ParentContainer {
         return Rectangle.EMPTY;
     }
 
-
-    private class Arrow extends Component {
-        public Arrow() {
-            this.capabilities().mouseInput(false);
-        }
-
-        @Override
-        public void render(final Renderer renderer, final Size size) {
-            float width = size.width() / 4 * 2;
-            float height = size.height() / 4 * 1;
-            float widthGap = (size.width() - width) / 2;
-            float heightGap = (size.height() - height) / 2;
-            Color color = CollapsibleContainer.this.disabled() ? CollapsibleContainer.this.disabledArrowColor.value() : CollapsibleContainer.this.arrowColor.value();
-            float lineWidth = CollapsibleContainer.this.arrowWidth.value();
-            float progress = CollapsibleContainer.this.collapseAnimation.getValue();
-
-            renderer.polyLine(
-                    new Point[]{
-                            new Point(widthGap, MathUtils.lerp(heightGap, size.height() - heightGap, progress)),
-                            new Point(size.width() / 2, MathUtils.lerp(size.height() - heightGap, heightGap, progress)),
-                            new Point(size.width() - widthGap, MathUtils.lerp(heightGap, size.height() - heightGap, progress)),
-                    },
-                    lineWidth,
-                    color
-            );
-        }
-
-        @Override
-        public Size computeIdealSize(final Size constraints) {
-            float arrowSize = CollapsibleContainer.this.arrowSize.value();
-            return new Size(arrowSize, arrowSize);
-        }
-    }
-
     private class ClickableHeader extends Container {
         private boolean hovered = false;
 
         private ClickableHeader(final Component header) {
-            super(new GridLayout(0, 0));
-            this.addChild(new Arrow().layoutOptions(GridOptions.EMPTY.at(0, 0).withAnchor(GridAnchor.LEFT)));
+            super(GridLayout.DEFAULT);
+
+            Arrow arrow = new Arrow(() -> CollapsibleContainer.this.collapseAnimation.getValue());
+            CollapsibleContainer.this.arrowColor.initListener().add(arrow.color()::set);
+            CollapsibleContainer.this.arrowDisabledColor.initListener().add(arrow.disabledColor()::set);
+            CollapsibleContainer.this.arrowLineWidth.initListener().add(arrow.lineWidth()::set);
+            CollapsibleContainer.this.arrowSize.initListener().add(arrow.size()::set);
+
+            this.addChild(arrow.layoutOptions(GridOptions.EMPTY.at(0, 0).withAnchor(GridAnchor.LEFT)));
             this.addChild(header.layoutOptions(GridOptions.EMPTY.at(1, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
         }
 

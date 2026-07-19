@@ -7,14 +7,18 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
-import net.lenni0451.rivet.component.Parent;
+import net.lenni0451.rivet.component.ParentContainer;
+import net.lenni0451.rivet.component.impl.Arrow;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.SolidColor;
-import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
 import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
+import net.lenni0451.rivet.layout.grid.GridAnchor;
+import net.lenni0451.rivet.layout.grid.GridFill;
+import net.lenni0451.rivet.layout.grid.GridLayout;
+import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -25,8 +29,10 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
-public class ComboBox extends Component implements Parent {
+public class ComboBox extends ParentContainer {
 
+    @Getter
+    private final Arrow arrow;
     @Getter
     private final Button button;
     @Getter
@@ -38,11 +44,13 @@ public class ComboBox extends Component implements Parent {
     private Layer layer;
 
     @Getter
-    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_COLOR);
+    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.ARROW_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledArrowColor = new ThemeOption<>(this, Theme.COMBOBOX_DISABLED_ARROW_COLOR);
+    private final ThemeOption<Color> arrowDisabledColor = new ThemeOption<>(this, Theme.ARROW_DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.COMBOBOX_ARROW_SIZE);
+    private final ThemeOption<Float> arrowLineWidth = new ThemeOption<>(this, Theme.ARROW_LINE_WIDTH);
+    @Getter
+    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.ARROW_SIZE);
     @Getter
     private final ThemeOption<Float> maxPopupHeight = new ThemeOption<>(this, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
     @Getter
@@ -61,7 +69,11 @@ public class ComboBox extends Component implements Parent {
     }
 
     public <T extends Component, C extends Component> ComboBox(final T text, final BiConsumer<ComboBox, T> textInitializer, final C child, final BiConsumer<ComboBox, C> initializer) {
-        this.button = new Button(text, event -> {
+        this.arrow = new Arrow(() -> this.isOpen() ? 1F : 0F);
+        this.button = new Button(new Container(GridLayout.DEFAULT), buttonContent -> {
+            buttonContent.addChild(text.layoutOptions(GridOptions.EMPTY.at(0, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+            buttonContent.addChild(this.arrow.layoutOptions(GridOptions.EMPTY.at(1, 0).withAnchor(GridAnchor.RIGHT)));
+        }, () -> {
             if (this.isOpen()) {
                 this.close();
             } else {
@@ -69,6 +81,12 @@ public class ComboBox extends Component implements Parent {
             }
         });
         this.child = child;
+
+        this.arrowColor.initListener().add(this.arrow.color()::set);
+        this.arrowDisabledColor.initListener().add(this.arrow.disabledColor()::set);
+        this.arrowLineWidth.initListener().add(this.arrow.lineWidth()::set);
+        this.arrowSize.initListener().add(this.arrow.size()::set);
+
         textInitializer.accept(this, text);
         initializer.accept(this, child);
     }
@@ -105,50 +123,15 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
-    protected void onComponentAdded() {
-        this.button.setRivet(this.rivet(), this);
-    }
-
-    @Override
     protected void onComponentRemoved() {
+        super.onComponentRemoved();
         this.close();
-        this.button.setRivet(null, null);
     }
 
     @Override
     protected void onComponentDisabled() {
+        super.onComponentDisabled();
         this.close();
-        this.button.disabled(true);
-    }
-
-    @Override
-    protected void onComponentEnabled() {
-        this.button.disabled(false);
-    }
-
-    @Override
-    protected void onComponentThemeChanged() {
-        this.button.onThemeChanged();
-    }
-
-    @Override
-    protected void onComponentMouseEnter() {
-        this.button.onMouseEnter();
-    }
-
-    @Override
-    protected void onComponentMouseLeave() {
-        this.button.onMouseLeave();
-    }
-
-    @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
-        return this.button.onMouseDown(event, size);
-    }
-
-    @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
-        return this.button.onMouseUp(event, size);
     }
 
     @Override
@@ -182,29 +165,6 @@ public class ComboBox extends Component implements Parent {
     @Override
     public void render(final Renderer renderer, final Size size) {
         this.button.render(renderer, size);
-        float triangleSize = this.arrowSize.value();
-        Color arrowColor = this.disabled() ? this.disabledArrowColor.value() : this.arrowColor.value();
-        if (this.isOpen()) {
-            renderer.fillTriangle(
-                    size.width() - this.button.innerPadding().value().right() - triangleSize,
-                    size.height() / 2F + triangleSize / 2F,
-                    size.width() - this.button.innerPadding().value().right(),
-                    size.height() / 2F + triangleSize / 2F,
-                    size.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
-                    size.height() / 2F - triangleSize / 2F,
-                    arrowColor
-            );
-        } else {
-            renderer.fillTriangle(
-                    size.width() - this.button.innerPadding().value().right() - triangleSize,
-                    size.height() / 2F - triangleSize / 2F,
-                    size.width() - this.button.innerPadding().value().right() - triangleSize / 2F,
-                    size.height() / 2F + triangleSize / 2F,
-                    size.width() - this.button.innerPadding().value().right(),
-                    size.height() / 2F - triangleSize / 2F,
-                    arrowColor
-            );
-        }
     }
 
     @Override
@@ -213,8 +173,8 @@ public class ComboBox extends Component implements Parent {
     }
 
     @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
+    public void computeLayout(final Size size) {
+        this.button.computeLayout(size);
     }
 
     @Override

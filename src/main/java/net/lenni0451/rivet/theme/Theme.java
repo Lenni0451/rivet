@@ -168,9 +168,6 @@ public abstract class Theme {
     public static final ThemeKey<Float> COLOR_PICKER_SELECTOR_SIZE = register("color_picker.selector_size", Float.class, r -> roundMin(r.backend().font().height() / 8F, 1));
 
     // ComboBox
-    public static final ThemeKey<Color> COMBOBOX_ARROW_COLOR = register("combobox.arrow_color", Color.class, r -> Color.WHITE);
-    public static final ThemeKey<Color> COMBOBOX_DISABLED_ARROW_COLOR = register("combobox.disabled_arrow_color", Color.class, r -> Color.fromRGB(150, 150, 150));
-    public static final ThemeKey<Float> COMBOBOX_ARROW_SIZE = register("combobox.arrow_size", Float.class, r -> roundMin(r.backend().font().height() / 2F, 1));
     public static final ThemeKey<Float> COMBOBOX_MAX_POPUP_HEIGHT = register("combobox.max_popup_height", Float.class, r -> roundMin(r.backend().font().height() * 10F, 1));
     public static final ThemeKey<Boolean> COMBOBOX_INTERCEPT_OUTSIDE_CLICKS = register("combobox.intercept_outside_clicks", Boolean.class, r -> true);
 
@@ -227,15 +224,17 @@ public abstract class Theme {
     public static final ThemeKey<Boolean> PROGRESS_BAR_STRIPE_ANIMATED = register("progress_bar.stripe_animated", Boolean.class, r -> true);
 
     // CollapsibleContainer
-    public static final ThemeKey<Color> COLLAPSIBLE_CONTAINER_ARROW_COLOR = register("collapsible_container.arrow_color", Color.class, r -> Color.WHITE);
-    public static final ThemeKey<Color> COLLAPSIBLE_CONTAINER_DISABLED_ARROW_COLOR = register("collapsible_container.disabled_arrow_color", Color.class, r -> Color.fromRGB(150, 150, 150));
-    public static final ThemeKey<Float> COLLAPSIBLE_CONTAINER_ARROW_WIDTH = register("collapsible_container.arrow_width", Float.class, r -> roundMin(r.backend().font().height() / 15F, 1));
-    public static final ThemeKey<Float> COLLAPSIBLE_CONTAINER_ARROW_SIZE = register("collapsible_container.arrow_size", Float.class, r -> r.backend().font().height());
     public static final ThemeKey<ClickOn> COLLAPSIBLE_CONTAINER_CLICK_ON = register("collapsible_container.click_on", ClickOn.class, r -> ClickOn.UP);
     public static final ThemeKey<AnimationConfig> COLLAPSIBLE_CONTAINER_COLLAPSE_ANIMATION = register("collapsible_container.collapse_animation", AnimationConfig.class, r -> new AnimationConfig(
             AnimationMode.DEFAULT,
             new AnimationFrameConfig(EasingFunction.CIRC, EasingMode.EASE_OUT, 0F, 1F, 200, EasingBehavior.KEEP)
     ));
+
+    // Arrow
+    public static final ThemeKey<Color> ARROW_COLOR = register("arrow.color", Color.class, r -> Color.WHITE);
+    public static final ThemeKey<Color> ARROW_DISABLED_COLOR = register("arrow.disabled_color", Color.class, r -> Color.fromRGB(150, 150, 150));
+    public static final ThemeKey<Float> ARROW_LINE_WIDTH = register("arrow.line_width", Float.class, r -> roundMin(r.backend().font().height() / 15F, 1));
+    public static final ThemeKey<Float> ARROW_SIZE = register("arrow.size", Float.class, r -> r.backend().font().height());
 
     public static <T> ThemeKey<T> register(final String key, final Class<T> type, final Function<Rivet, T> defaultValue) {
         ThemeKey<T> themeKey = new ThemeKey<>(key, type, defaultValue);
