@@ -2,6 +2,7 @@ package net.lenni0451.rivet.component.container;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.lenni0451.commons.Sneaky;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.animation.AnimationDirection;
 import net.lenni0451.commons.color.Color;
@@ -23,7 +24,6 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
-import net.lenni0451.rivet.utils.ContainerMouseHandler;
 import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.List;
@@ -41,7 +41,6 @@ public class CollapsibleContainer extends ParentContainer {
     private boolean collapsed = true;
     @Getter
     private final ListenerList<Consumer<Boolean>> collapseChangeListener = new ListenerList<>();
-    private final MouseHandler mouseHandler = new MouseHandler();
 
     @Getter
     private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_ARROW_COLOR);
@@ -87,7 +86,7 @@ public class CollapsibleContainer extends ParentContainer {
         if (this.collapsed != collapsed) {
             this.collapsed = collapsed;
             if (collapsed) {
-                this.mouseHandler.checkAndRemove(this.content);
+                this.mouseHandler().checkAndRemove(Sneaky.unsafeCast(this.content));
             }
             if (this.collapseAnimation != null) {
                 this.collapseAnimation.runInDirection(collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS);
@@ -96,11 +95,6 @@ public class CollapsibleContainer extends ParentContainer {
             this.requestLayoutRecalculation();
         }
         return this;
-    }
-
-    @Override
-    protected ContainerMouseHandler<?> mouseHandler() {
-        return this.mouseHandler;
     }
 
     @Override
@@ -160,6 +154,8 @@ public class CollapsibleContainer extends ParentContainer {
             float remainingHeight = Math.max(0, size.height() - idealHeaderSize.height());
             this.contentSize = new Size(size.width(), remainingHeight);
             this.content.computeLayout(this.contentSize);
+        } else {
+            this.contentSize = new Size(size.width(), 0);
         }
     }
 
@@ -271,32 +267,6 @@ public class CollapsibleContainer extends ParentContainer {
         protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
             super.onComponentMouseMove(event, size);
             return true;
-        }
-    }
-
-    private class MouseHandler extends ContainerMouseHandler<Component> {
-        @Override
-        protected Component map(final Component element) {
-            return element;
-        }
-
-        @Override
-        protected Rectangle relativeBounds(final Size containerBounds, final Component element) {
-            return CollapsibleContainer.this.childBounds(element);
-        }
-
-        @Override
-        protected List<Component> elementsAt(final float x, final float y, final Size containerBounds) {
-            float headerHeight = CollapsibleContainer.this.headerSize.height();
-            if (x >= 0 && x < CollapsibleContainer.this.headerSize.width() && y >= 0 && y < headerHeight) {
-                return List.of(CollapsibleContainer.this.clickableHeader);
-            }
-            if (!CollapsibleContainer.this.collapsed) {
-                if (x >= 0 && x < CollapsibleContainer.this.contentSize.width() && y >= headerHeight && y < CollapsibleContainer.this.contentSize.height() + headerHeight) {
-                    return List.of(CollapsibleContainer.this.content);
-                }
-            }
-            return List.of();
         }
     }
 
