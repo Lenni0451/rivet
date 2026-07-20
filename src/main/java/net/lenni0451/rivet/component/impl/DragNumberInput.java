@@ -129,6 +129,11 @@ public class DragNumberInput extends Component implements Parent {
         return this;
     }
 
+    @Deprecated(forRemoval = true)
+    public Label valueLabel() {
+        return this.valueLabel;
+    }
+
     private State state() {
         if (this.disabled()) {
             return State.DISABLED;
