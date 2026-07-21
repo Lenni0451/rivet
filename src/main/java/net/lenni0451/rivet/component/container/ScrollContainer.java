@@ -539,49 +539,70 @@ public class ScrollContainer extends ParentContainer {
     public void computeLayout(final Size size) {
         float previousMaxScrollX = this.childSize.width() - this.visibleWidth(size);
         float previousMaxScrollY = this.childSize.height() - this.visibleHeight(size);
-        float availableWidth = size.width();
-        float availableHeight = size.height();
-        Size idealChildSize = this.child.computeIdealSize(new Size(
-                this.horizontalScrolling ? Float.MAX_VALUE : size.width(),
-                this.verticalScrolling ? Float.MAX_VALUE : size.height()
-        ));
 
         this.hScrollVisible = false;
         this.vScrollVisible = false;
-        if (this.barType.value() == ScrollBarType.NORMAL) {
-            this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() > (this.vScrollVisible ? availableWidth - this.barWidth.value() : availableWidth);
-            this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > availableHeight;
-            if (this.hScrollVisible && !this.vScrollVisible) {
-                this.vScrollVisible = this.verticalScrolling && idealChildSize.height() > (availableHeight - this.barWidth.value());
-            }
-            if (this.vScrollVisible && !this.hScrollVisible) {
-                this.hScrollVisible = this.horizontalScrolling && idealChildSize.width() > (availableWidth - this.barWidth.value());
+
+        float availableWidth;
+        float availableHeight;
+
+        boolean checkAgain;
+        int iterations = 0;
+        do {
+            checkAgain = false;
+            iterations++;
+
+            availableWidth = size.width();
+            availableHeight = size.height();
+            if (this.barType.value() == ScrollBarType.NORMAL) {
+                if (this.hScrollVisible) availableHeight -= this.barWidth.value();
+                if (this.vScrollVisible) availableWidth -= this.barWidth.value();
             }
 
-            if (this.hScrollVisible) availableHeight -= this.barWidth.value();
-            if (this.vScrollVisible) availableWidth -= this.barWidth.value();
-        }
+            Size idealChildSize = this.child.computeIdealSize(new Size(
+                    this.horizontalScrolling ? Float.MAX_VALUE : availableWidth,
+                    this.verticalScrolling ? Float.MAX_VALUE : availableHeight
+            ));
 
-        Size childSize = new Size(
-                MathUtils.clamp(this.horizontalScrolling ? Math.max(idealChildSize.width(), availableWidth) : availableWidth, this.child.minSize().width(), this.child.maxSize().width()),
-                MathUtils.clamp(this.verticalScrolling ? Math.max(idealChildSize.height(), availableHeight) : availableHeight, this.child.minSize().height(), this.child.maxSize().height())
-        );
-        this.child.computeLayout(childSize);
-        if (this.child instanceof Parent parent) {
-            Size parentContentSize = parent.contentSize();
-            if (!parentContentSize.equals(Size.EMPTY)) {
-                childSize = new Size(
-                        this.horizontalScrolling ? MathUtils.clamp(Math.max(childSize.width(), parentContentSize.width()), this.child.minSize().width(), this.child.maxSize().width()) : childSize.width(),
-                        this.verticalScrolling ? MathUtils.clamp(Math.max(childSize.height(), parentContentSize.height()), this.child.minSize().height(), this.child.maxSize().height()) : childSize.height()
-                );
+            Size childSize = new Size(
+                    MathUtils.clamp(this.horizontalScrolling ? Math.max(idealChildSize.width(), availableWidth) : availableWidth, this.child.minSize().width(), this.child.maxSize().width()),
+                    MathUtils.clamp(this.verticalScrolling ? Math.max(idealChildSize.height(), availableHeight) : availableHeight, this.child.minSize().height(), this.child.maxSize().height())
+            );
+            this.child.computeLayout(childSize);
+            if (this.child instanceof Parent parent) {
+                Size parentContentSize = parent.contentSize();
+                if (!parentContentSize.equals(Size.EMPTY)) {
+                    childSize = new Size(
+                            this.horizontalScrolling ? MathUtils.clamp(Math.max(childSize.width(), parentContentSize.width()), this.child.minSize().width(), this.child.maxSize().width()) : childSize.width(),
+                            this.verticalScrolling ? MathUtils.clamp(Math.max(childSize.height(), parentContentSize.height()), this.child.minSize().height(), this.child.maxSize().height()) : childSize.height()
+                    );
+                }
             }
-        }
-        this.childSize = childSize;
+            this.childSize = childSize;
+
+            if (this.barType.value() == ScrollBarType.NORMAL) {
+                boolean newHScrollVisible = this.horizontalScrolling && this.childSize.width() > availableWidth;
+                boolean newVScrollVisible = this.verticalScrolling && this.childSize.height() > availableHeight;
+
+                if (newHScrollVisible && !newVScrollVisible) {
+                    newVScrollVisible = this.verticalScrolling && this.childSize.height() > (availableHeight - this.barWidth.value());
+                }
+                if (newVScrollVisible && !newHScrollVisible) {
+                    newHScrollVisible = this.horizontalScrolling && this.childSize.width() > (availableWidth - this.barWidth.value());
+                }
+
+                if (newHScrollVisible != this.hScrollVisible || newVScrollVisible != this.vScrollVisible) {
+                    this.hScrollVisible = newHScrollVisible;
+                    this.vScrollVisible = newVScrollVisible;
+                    checkAgain = true;
+                }
+            }
+        } while (checkAgain && iterations < 3);
 
         float oldScrollX = this.scrollX;
         float oldScrollY = this.scrollY;
         { // Horizontal scroll bar
-            float contentWidth = childSize.width();
+            float contentWidth = this.childSize.width();
             if (this.barType.value() == ScrollBarType.FLOATING) {
                 this.hScrollVisible = this.horizontalScrolling && contentWidth > availableWidth;
             }
@@ -590,7 +611,7 @@ public class ScrollContainer extends ParentContainer {
             this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
         }
         { // Vertical scroll bar
-            float contentHeight = childSize.height();
+            float contentHeight = this.childSize.height();
             if (this.barType.value() == ScrollBarType.FLOATING) {
                 this.vScrollVisible = this.verticalScrolling && contentHeight > availableHeight;
             }
@@ -687,6 +708,7 @@ public class ScrollContainer extends ParentContainer {
         @Override
         protected List<Component> elementsAt(final float x, final float y, final Size containerBounds) {
             if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
+            if (x >= ScrollContainer.this.visibleWidth(containerBounds) || y >= ScrollContainer.this.visibleHeight(containerBounds)) return List.of();
             Rectangle hThumb = ScrollContainer.this.getHThumbBounds(containerBounds);
             Rectangle hRail = ScrollContainer.this.getHScrollArea(containerBounds);
             Rectangle vThumb = ScrollContainer.this.getVThumbBounds(containerBounds);
