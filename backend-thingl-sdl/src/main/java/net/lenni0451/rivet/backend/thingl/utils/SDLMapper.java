@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.backend.thingl.utils;
 
+import lombok.experimental.UtilityClass;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
@@ -12,6 +13,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Set;
 
+@UtilityClass
 public class SDLMapper {
 
     @Nullable

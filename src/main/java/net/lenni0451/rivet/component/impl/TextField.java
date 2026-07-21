@@ -21,6 +21,7 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -271,12 +272,14 @@ public class TextField extends Component {
     @Override
     protected void onComponentFocusGained() {
         this.focused = true;
+        this.rivet().backend().textInput().start();
     }
 
     @Override
     protected void onComponentFocusLost() {
         this.selection = this.cursor;
         this.focused = false;
+        this.rivet().backend().textInput().stop();
     }
 
     @Override
@@ -412,6 +415,13 @@ public class TextField extends Component {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
         }
         return true;
+    }
+
+    @Override
+    protected void updateComponentPosition(final Rectangle absoluteBounds) {
+        if (this.focused) {
+            this.rivet().backend().textInput().area(absoluteBounds);
+        }
     }
 
     @Override

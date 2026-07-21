@@ -49,12 +49,6 @@ public abstract class SDLApplication extends SDLApplicationRunner {
     }
 
     @Override
-    protected void launchWindowSystem() {
-        super.launchWindowSystem();
-        SdlException.check(SDLKeyboard.SDL_StartTextInput(this.window), "Failed to start text input");
-    }
-
-    @Override
     @SneakyThrows
     protected void init() {
         super.init();
@@ -99,7 +93,13 @@ public abstract class SDLApplication extends SDLApplicationRunner {
             case SDLEvents.SDL_EVENT_MOUSE_WHEEL -> {
                 SDL_MouseWheelEvent mouseWheel = event.wheel();
                 float[] mouseScale = this.getMouseScale();
-                this.rivet.onMouseScroll(new MouseScrollEvent(mouseWheel.mouse_x() * mouseScale[0], mouseWheel.mouse_y() * mouseScale[1], mouseWheel.x(), mouseWheel.y()));
+                float x = mouseWheel.x();
+                float y = mouseWheel.y();
+                if (mouseWheel.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED) {
+                    x = -x;
+                    y = -y;
+                }
+                this.rivet.onMouseScroll(new MouseScrollEvent(mouseWheel.mouse_x() * mouseScale[0], mouseWheel.mouse_y() * mouseScale[1], x, y));
             }
             case SDLEvents.SDL_EVENT_KEY_DOWN -> {
                 SDL_KeyboardEvent keyboard = event.key();
@@ -117,15 +117,16 @@ public abstract class SDLApplication extends SDLApplicationRunner {
             }
             case SDLEvents.SDL_EVENT_TEXT_INPUT -> {
                 SDL_TextInputEvent textInput = event.text();
-                for (char c : textInput.textString().toCharArray()) {
-                    this.rivet.onCharTyped(new CharEvent(c));
+                String text = textInput.textString();
+                if (text != null) {
+                    text.codePoints().forEach(c -> this.rivet.onCharTyped(new CharEvent(c)));
                 }
             }
             case SDLEvents.SDL_EVENT_WINDOW_FOCUS_LOST -> {
                 this.heldMouseButtons.clear();
                 this.rivet.unfocus();
             }
-            case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED -> {
+            case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED, SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED -> {
                 this.updateWindowScale();
             }
         }

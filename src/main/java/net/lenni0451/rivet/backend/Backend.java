@@ -26,4 +26,8 @@ public interface Backend {
 
     boolean isKeyDown(final Key key);
 
+    default TextInput textInput() {
+        return TextInput.NOOP;
+    }
+
 }
