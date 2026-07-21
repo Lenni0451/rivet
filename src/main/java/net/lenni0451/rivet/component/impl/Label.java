@@ -44,6 +44,9 @@ public class Label extends Component {
 
     public Label(final String text) {
         this.text = text;
+
+        this.textColor.changeListener().add(c -> this.reshape = true);
+        this.disabledTextColor.changeListener().add(c -> this.reshape = true);
     }
 
     public final Label font(@Nullable final Font font) {
