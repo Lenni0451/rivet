@@ -67,7 +67,7 @@ public class ProgressBar extends Component {
         this.textColor.changeListener().add(c -> this.currentText = null);
     }
 
-    public ProgressBar progress(final float progress) {
+    public final ProgressBar progress(final float progress) {
         this.progress = MathUtils.clamp(progress, 0, 1);
         return this;
     }

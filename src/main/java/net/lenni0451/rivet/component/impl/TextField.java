@@ -112,7 +112,7 @@ public class TextField extends Component {
         this.text(text);
     }
 
-    public TextField font(final Font font) {
+    public final TextField font(final Font font) {
         if (this.font != font) {
             this.font = font;
             if (this.rivet() != null) {
@@ -125,11 +125,11 @@ public class TextField extends Component {
         return this;
     }
 
-    public String text() {
+    public final String text() {
         return this.text.toString();
     }
 
-    public TextField text(final String text) {
+    public final TextField text(final String text) {
         this.text.setLength(0);
         this.text.append(text);
         this.cursor = Math.min(this.cursor, this.text.length());
@@ -141,7 +141,7 @@ public class TextField extends Component {
         return this;
     }
 
-    public TextField hint(final String hint) {
+    public final TextField hint(final String hint) {
         this.hint = hint;
         if (this.rivet() != null) {
             this.updateShapedText();
@@ -149,7 +149,7 @@ public class TextField extends Component {
         return this;
     }
 
-    public TextField passwordField(final boolean enabled) {
+    public final TextField passwordField(final boolean enabled) {
         if (enabled) {
             this.charReplacer = c -> this.passwordChar.value();
         } else {
@@ -161,7 +161,7 @@ public class TextField extends Component {
         return this;
     }
 
-    public TextField charReplacer(final Function<Character, Character> charReplacer) {
+    public final TextField charReplacer(final Function<Character, Character> charReplacer) {
         this.charReplacer = charReplacer;
         if (this.rivet() != null) {
             this.updateShapedText();
@@ -169,7 +169,7 @@ public class TextField extends Component {
         return this;
     }
 
-    public TextField validator(final Predicate<String> validator) {
+    public final TextField validator(final Predicate<String> validator) {
         this.validator = validator;
         this.validate();
         if (this.rivet() != null) {
@@ -178,7 +178,7 @@ public class TextField extends Component {
         return this;
     }
 
-    public TextField cursor(final int cursor) {
+    public final TextField cursor(final int cursor) {
         this.cursor = MathUtils.clamp(cursor, 0, this.text.length());
         this.selection = MathUtils.clamp(cursor, 0, this.text.length());
         if (this.cursorAnimation != null) {
@@ -187,7 +187,7 @@ public class TextField extends Component {
         return this;
     }
 
-    public TextField selection(final int selection) {
+    public final TextField selection(final int selection) {
         this.selection = MathUtils.clamp(selection, 0, this.text.length());
         return this;
     }

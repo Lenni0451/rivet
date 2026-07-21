@@ -117,7 +117,7 @@ public class Container extends ParentContainer {
     }
 
     @Override
-    protected ContainerMouseHandler<?> mouseHandler() {
+    protected final ContainerMouseHandler<?> mouseHandler() {
         return this.mouseHandler;
     }
 
@@ -176,6 +176,7 @@ public class Container extends ParentContainer {
         this.contentSize = contentSize;
         this.updateChildPositions();
     }
+
 
     @RequiredArgsConstructor
     private static final class Child {

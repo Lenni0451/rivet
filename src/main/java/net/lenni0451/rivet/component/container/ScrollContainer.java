@@ -134,19 +134,19 @@ public class ScrollContainer extends ParentContainer {
         this.verticalScrolling = verticalScrolling;
     }
 
-    public float maxScrollX() {
+    public final float maxScrollX() {
         return Math.max(0, this.childSize.width() - this.visibleWidth(this.relativeBounds().size()));
     }
 
-    public float maxScrollY() {
+    public final float maxScrollY() {
         return Math.max(0, this.childSize.height() - this.visibleHeight(this.relativeBounds().size()));
     }
 
-    public ScrollContainer scrollX(final float scrollX) {
+    public final ScrollContainer scrollX(final float scrollX) {
         return this.scrollX(scrollX, false);
     }
 
-    public ScrollContainer scrollX(final float scrollX, final boolean immediate) {
+    public final ScrollContainer scrollX(final float scrollX, final boolean immediate) {
         this.targetScrollX = MathUtils.clamp(scrollX, 0, this.maxScrollX());
         if (this.scrollXAnimation != null) {
             this.scrollXAnimation.setTarget(this.targetScrollX);
@@ -167,11 +167,11 @@ public class ScrollContainer extends ParentContainer {
         return this;
     }
 
-    public ScrollContainer scrollY(final float scrollY) {
+    public final ScrollContainer scrollY(final float scrollY) {
         return this.scrollY(scrollY, false);
     }
 
-    public ScrollContainer scrollY(final float scrollY, final boolean immediate) {
+    public final ScrollContainer scrollY(final float scrollY, final boolean immediate) {
         this.targetScrollY = MathUtils.clamp(scrollY, 0, this.maxScrollY());
         if (this.scrollYAnimation != null) {
             this.scrollYAnimation.setTarget(this.targetScrollY);

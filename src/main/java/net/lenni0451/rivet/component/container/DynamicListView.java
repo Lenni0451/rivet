@@ -42,7 +42,7 @@ public class DynamicListView<E> extends ReorderableContainer {
         this.componentFactory = componentFactory;
     }
 
-    public DynamicListView<E> recreate(final E item) {
+    public final DynamicListView<E> recreate(final E item) {
         Component oldComponent = this.componentCache.remove(item);
         if (oldComponent != null) {
             this.removeChild(oldComponent);

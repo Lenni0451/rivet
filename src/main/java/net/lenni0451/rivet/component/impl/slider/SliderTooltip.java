@@ -47,7 +47,7 @@ public class SliderTooltip extends Component {
         this.layer = new Layer(container, LayerBucket.TOOLTIP);
     }
 
-    public SliderTooltip font(final Font font) {
+    public final SliderTooltip font(final Font font) {
         if (this.font != font) {
             this.font = font;
             this.text(this.text);
@@ -56,13 +56,13 @@ public class SliderTooltip extends Component {
         return this;
     }
 
-    public void text(final String text) {
+    public final void text(final String text) {
         this.text = text;
         Font font = this.font != null ? this.font : this.rivet().backend().font();
         this.shapedText = font.shapeText(text, this.textColor.value());
     }
 
-    public void position(final float x, final float y, final float height) {
+    public final void position(final float x, final float y, final float height) {
         Size idealSize = this.computeIdealSize(null);
         Size screenBounds = this.rivet().scaledSize();
 
@@ -93,11 +93,11 @@ public class SliderTooltip extends Component {
         this.parent().requestLayoutRecalculation();
     }
 
-    public void add(final Rivet rivet) {
+    public final void add(final Rivet rivet) {
         rivet.addLayer(this.layer);
     }
 
-    public void remove() {
+    public final void remove() {
         this.rivet().removeLayer(this.layer);
     }
 

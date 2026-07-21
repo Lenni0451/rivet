@@ -104,22 +104,22 @@ public class DragNumberInput extends Component implements Parent {
         this.disabledTextColor.initListener().add(this.valueLabel.disabledTextColor()::set);
     }
 
-    public Font font() {
+    public final Font font() {
         return this.valueLabel.font();
     }
 
-    public DragNumberInput font(@Nullable final Font font) {
+    public final DragNumberInput font(@Nullable final Font font) {
         this.valueLabel.font(font);
         return this;
     }
 
-    public DragNumberInput step(final double step) {
+    public final DragNumberInput step(final double step) {
         this.step = step;
         this.cachedFormatString = null;
         return this;
     }
 
-    public DragNumberInput value(final double value) {
+    public final DragNumberInput value(final double value) {
         double newValue = MathUtils.clamp(value, this.min, this.max);
         if (this.value != newValue) {
             this.value = newValue;
@@ -130,7 +130,7 @@ public class DragNumberInput extends Component implements Parent {
     }
 
     @Deprecated(forRemoval = true)
-    public Label valueLabel() {
+    public final Label valueLabel() {
         return this.valueLabel;
     }
 

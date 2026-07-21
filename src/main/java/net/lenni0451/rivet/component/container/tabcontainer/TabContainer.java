@@ -70,31 +70,31 @@ public class TabContainer extends ParentContainer {
         });
     }
 
-    public List<Tab> tabs() {
+    public final List<Tab> tabs() {
         return Collections.unmodifiableList(this.tabs);
     }
 
-    public TabContainer addLeftComponent(final Component component) {
+    public final TabContainer addLeftComponent(final Component component) {
         this.leftTabContainer.addChild(component);
         return this;
     }
 
-    public TabContainer removeLeftComponent(final Component component) {
+    public final TabContainer removeLeftComponent(final Component component) {
         this.leftTabContainer.removeChild(component);
         return this;
     }
 
-    public TabContainer addRightComponent(final Component component) {
+    public final TabContainer addRightComponent(final Component component) {
         this.rightTabContainer.addChild(component);
         return this;
     }
 
-    public TabContainer removeRightComponent(final Component component) {
+    public final TabContainer removeRightComponent(final Component component) {
         this.rightTabContainer.removeChild(component);
         return this;
     }
 
-    public Tab addTab(final Component header, final Component content) {
+    public final Tab addTab(final Component header, final Component content) {
         Tab tab = new Tab(header, this::selectTab, content);
         this.tabs.add(tab);
         this.centerTabContainer.addChild(tab.button());
@@ -104,7 +104,7 @@ public class TabContainer extends ParentContainer {
         return tab;
     }
 
-    public TabContainer removeTab(final Tab tab) {
+    public final TabContainer removeTab(final Tab tab) {
         if (!this.tabs.contains(tab)) throw new IllegalArgumentException("Tab is not part of this TabContainer");
         int tabIndex = this.tabs.indexOf(tab);
         if (tab.headerBackground().active()) {
@@ -119,7 +119,7 @@ public class TabContainer extends ParentContainer {
         return this;
     }
 
-    public TabContainer selectTab(final Tab tab) {
+    public final TabContainer selectTab(final Tab tab) {
         if (!this.tabs.contains(tab)) throw new IllegalArgumentException("Tab is not part of this TabContainer");
         this.tabs.forEach(t -> t.headerBackground().deactivate());
         tab.headerBackground().activate();
@@ -171,6 +171,7 @@ public class TabContainer extends ParentContainer {
         this.contentContainer.computeLayout(this.contentSize);
         this.updateChildPositions();
     }
+
 
     @Override
     public Size contentSize() {

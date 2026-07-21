@@ -54,12 +54,12 @@ public class TabBackground extends Component {
     }
 
     @ApiStatus.Internal
-    public void activate() {
+    public final void activate() {
         this.active = true;
     }
 
     @ApiStatus.Internal
-    public void deactivate() {
+    public final void deactivate() {
         this.active = false;
     }
 

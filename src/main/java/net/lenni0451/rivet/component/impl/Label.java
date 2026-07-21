@@ -46,7 +46,7 @@ public class Label extends Component {
         this.text = text;
     }
 
-    public Label font(@Nullable final Font font) {
+    public final Label font(@Nullable final Font font) {
         if (this.font != font) {
             this.font = font;
             this.reshape = true;
@@ -57,7 +57,7 @@ public class Label extends Component {
         return this;
     }
 
-    public Label text(final String text) {
+    public final Label text(final String text) {
         if (!this.text.equals(text)) {
             this.text = text;
             this.reshape = true;
@@ -68,7 +68,7 @@ public class Label extends Component {
         return this;
     }
 
-    public Label scale(final float scale) {
+    public final Label scale(final float scale) {
         if (this.scale != scale) {
             this.scale = scale;
             if (this.parent() != null) {

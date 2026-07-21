@@ -81,7 +81,7 @@ public class Checkbox extends Component {
         this.text = text;
     }
 
-    public Checkbox font(final Font font) {
+    public final Checkbox font(final Font font) {
         if (this.font != font) {
             this.font = font;
             if (this.rivet() != null) {
@@ -94,7 +94,7 @@ public class Checkbox extends Component {
         return this;
     }
 
-    public Checkbox checked(final boolean checked) {
+    public final Checkbox checked(final boolean checked) {
         if (this.checked != checked) {
             this.checked = checked;
             this.toggleListener.callVoid(c -> c.accept(this.checked));
@@ -102,7 +102,7 @@ public class Checkbox extends Component {
         return this;
     }
 
-    public Checkbox text(final String text) {
+    public final Checkbox text(final String text) {
         if (!this.text.equals(text)) {
             this.text = text;
             if (this.rivet() != null) {

@@ -66,7 +66,7 @@ public class FormattedLabel extends Component {
         this.line = line;
     }
 
-    public FormattedLabel font(final Font font) {
+    public final FormattedLabel font(final Font font) {
         if (this.font != font) {
             this.font = font;
             if (this.parent() != null) {
@@ -76,7 +76,7 @@ public class FormattedLabel extends Component {
         return this;
     }
 
-    public FormattedLabel text(final String text) {
+    public final FormattedLabel text(final String text) {
         this.text = text;
         this.line = null;
         if (this.parent() != null) {
@@ -85,7 +85,7 @@ public class FormattedLabel extends Component {
         return this;
     }
 
-    public FormattedLabel text(final String text, final TextFormat defaultFormat) {
+    public final FormattedLabel text(final String text, final TextFormat defaultFormat) {
         this.text = text;
         this.format = defaultFormat;
         this.line = null;
@@ -95,7 +95,7 @@ public class FormattedLabel extends Component {
         return this;
     }
 
-    public FormattedLabel text(final TextLine line) {
+    public final FormattedLabel text(final TextLine line) {
         this.text = null;
         this.line = line;
         if (this.parent() != null) {
@@ -104,7 +104,7 @@ public class FormattedLabel extends Component {
         return this;
     }
 
-    public FormattedLabel scale(final float scale) {
+    public final FormattedLabel scale(final float scale) {
         if (this.scale != scale) {
             this.scale = scale;
             if (this.parent() != null) {

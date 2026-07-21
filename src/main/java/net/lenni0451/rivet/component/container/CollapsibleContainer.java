@@ -81,7 +81,7 @@ public class CollapsibleContainer extends ParentContainer {
         this.arrowSize.initListener().add(val -> this.requestLayoutRecalculation());
     }
 
-    public CollapsibleContainer collapsed(final boolean collapsed) {
+    public final CollapsibleContainer collapsed(final boolean collapsed) {
         if (this.collapsed != collapsed) {
             this.collapsed = collapsed;
             if (collapsed) {

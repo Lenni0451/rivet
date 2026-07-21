@@ -35,7 +35,7 @@ public class PaddedContainer extends ParentContainer {
         initializer.accept(child);
     }
 
-    public PaddedContainer padding(final Padding padding) {
+    public final PaddedContainer padding(final Padding padding) {
         this.padding = padding;
         this.requestLayoutRecalculation();
         return this;

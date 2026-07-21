@@ -91,7 +91,7 @@ public class ComboBox extends ParentContainer {
         initializer.accept(this, child);
     }
 
-    public ComboBox open() {
+    public final ComboBox open() {
         if (this.isOpen()) return this;
         Container container = new Container(AbsoluteLayout.INSTANCE);
         if (this.interceptOutsideClicks.value()) {
@@ -135,7 +135,7 @@ public class ComboBox extends ParentContainer {
         }
     }
 
-    public ComboBox close() {
+    public final ComboBox close() {
         if (!this.isOpen()) return this;
         this.rivet().removeLayer(this.layer);
         this.layer = null;
@@ -143,7 +143,7 @@ public class ComboBox extends ParentContainer {
         return this;
     }
 
-    public boolean isOpen() {
+    public final boolean isOpen() {
         return this.layer != null;
     }
 

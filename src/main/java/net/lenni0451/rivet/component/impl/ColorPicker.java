@@ -50,7 +50,7 @@ public class ColorPicker extends Component {
         this.updateHSB();
     }
 
-    public ColorPicker color(final Color color) {
+    public final ColorPicker color(final Color color) {
         this.color = color;
         this.updateHSB();
         return this;

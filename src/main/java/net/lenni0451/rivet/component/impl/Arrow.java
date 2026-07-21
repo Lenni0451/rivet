@@ -34,7 +34,7 @@ public class Arrow extends Component {
         this.capabilities().mouseInput(false);
     }
 
-    public Arrow progress(final Supplier<Float> progressSupplier) {
+    public final Arrow progress(final Supplier<Float> progressSupplier) {
         this.progress = progressSupplier;
         return this;
     }

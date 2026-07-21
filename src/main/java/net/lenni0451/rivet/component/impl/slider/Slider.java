@@ -126,7 +126,7 @@ public class Slider extends Component {
         this.tooltipFormat.initListener().add(f -> this.cachedFormatString = null);
     }
 
-    public Slider font(final Font font) {
+    public final Slider font(final Font font) {
         if (this.font != font) {
             this.font = font;
             this.tickLabels.clear();
@@ -137,25 +137,25 @@ public class Slider extends Component {
         return this;
     }
 
-    public Slider min(final double min) {
+    public final Slider min(final double min) {
         this.min = min;
         this.tickLabels.clear();
         return this;
     }
 
-    public Slider max(final double max) {
+    public final Slider max(final double max) {
         this.max = max;
         this.tickLabels.clear();
         return this;
     }
 
-    public Slider step(final double step) {
+    public final Slider step(final double step) {
         this.step = step;
         this.cachedFormatString = null;
         return this;
     }
 
-    public Slider ticks(@Nullable final Ticks ticks) {
+    public final Slider ticks(@Nullable final Ticks ticks) {
         this.ticks = ticks;
         this.tickLabels.clear();
         return this;
