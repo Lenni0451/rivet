@@ -157,7 +157,11 @@ public class Container extends ParentContainer {
 
         Size contentSize = Size.EMPTY;
         for (Child child : this.children) {
-            child.bounds = newBounds.get(child.component);
+            Rectangle newChildBounds = newBounds.get(child.component);
+            if (newChildBounds == null) {
+                throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for child '" + child.component.getClass().getSimpleName() + "'");
+            }
+            child.bounds = newChildBounds;
             child.component.computeLayout(child.bounds.size());
             float childWidth = child.bounds.width();
             float childHeight = child.bounds.height();
