@@ -17,7 +17,6 @@ import net.lenni0451.rivet.theme.ThemeOption;
 
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -38,7 +37,7 @@ public class Tooltip {
         return false;
     };
     private final Runnable removedListener = this::onRemoved;
-    private final Consumer<Rectangle> positionUpdateListener = this::onPositionUpdate;
+    private final Runnable renderListener = this::onRenderTick;
 
     @Getter
     private final ThemeOption<Long> delay;
@@ -73,7 +72,6 @@ public class Tooltip {
         this.component.mouseLeaveListener().add(this.mouseLeaveListener);
         this.component.mouseMoveListener().add(this.mouseMoveListener);
         this.component.removedListener().add(this.removedListener);
-        this.component.positionUpdateListener().add(this.positionUpdateListener);
         return this;
     }
 
@@ -82,7 +80,8 @@ public class Tooltip {
         this.component.mouseLeaveListener().remove(this.mouseLeaveListener);
         this.component.mouseMoveListener().remove(this.mouseMoveListener);
         this.component.removedListener().remove(this.removedListener);
-        this.component.positionUpdateListener().remove(this.positionUpdateListener);
+        this.stopRenderTick();
+        this.remove();
         return this;
     }
 
@@ -106,43 +105,62 @@ public class Tooltip {
         }
     }
 
+    private void startRenderTick() {
+        this.component.rivet().renderListener().add(this.renderListener);
+    }
+
+    private void stopRenderTick() {
+        this.component.rivet().renderListener().remove(this.renderListener);
+    }
+
+
     private void onMouseEnter() {
         this.mouseOver = true;
         this.lastMoveTime = System.currentTimeMillis();
+        this.startRenderTick();
     }
 
     private void onMouseLeave() {
         this.mouseOver = false;
+        this.stopRenderTick();
         this.remove();
     }
 
     private void onMouseMove(final MouseMoveEvent event) {
         if (Math.abs(this.mouseOffsetX - event.x()) > 1 || Math.abs(this.mouseOffsetY - event.y()) > 1) {
             this.lastMoveTime = System.currentTimeMillis();
+            if (this.removeOnMouseMove.value()) {
+                this.remove();
+            }
         }
         this.mouseOffsetX = event.x();
         this.mouseOffsetY = event.y();
     }
 
     private void onRemoved() {
+        this.stopRenderTick();
         this.remove();
     }
 
-    private void onPositionUpdate(final Rectangle absoluteBounds) {
-        if (this.mouseOver) {
-            if (this.hideOnDrag && this.component.rivet().dragAndDropManager().isDragging()) {
-                this.remove();
-            } else if (System.currentTimeMillis() - this.lastMoveTime > this.delay.value()) {
+    private void onRenderTick() {
+        if (!this.mouseOver) {
+            this.stopRenderTick();
+            this.remove();
+            return;
+        } else if (this.hideOnDrag && this.component.rivet().dragAndDropManager().isDragging()) {
+            this.remove();
+            return;
+        } else if (this.layer == null) {
+            if (System.currentTimeMillis() - this.lastMoveTime >= this.delay.value()) {
                 this.add();
-            } else if (this.removeOnMouseMove.value()) {
-                this.component.rivet().runSync(this::remove);
             }
-            if (this.currentTooltip != null) {
-                this.currentTooltip.layoutOptions(new AbsoluteOptions(
-                        absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset.value(),
-                        absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset.value()
-                ));
-            }
+        }
+        if (this.currentTooltip != null) {
+            Rectangle absoluteBounds = this.component.absoluteBounds();
+            this.currentTooltip.layoutOptions(new AbsoluteOptions(
+                    absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset.value(),
+                    absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset.value()
+            ));
         }
     }
 

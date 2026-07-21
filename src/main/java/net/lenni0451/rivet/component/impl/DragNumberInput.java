@@ -270,7 +270,6 @@ public class DragNumberInput extends Component implements Parent {
         renderer.translate(padding.left(), padding.top(), () -> {
             float width = size.width() - padding.horizontal();
             float height = size.height() - padding.vertical();
-            this.valueLabel.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), width, height));
             renderer.componentBounds(0, 0, width, height, () -> {
                 this.valueLabel.render(renderer, new Size(width, height));
             });
@@ -298,6 +297,7 @@ public class DragNumberInput extends Component implements Parent {
     public void computeLayout(final Size size) {
         Padding padding = this.innerPadding.value();
         this.valueLabel.computeLayout(size.minus(padding.horizontal(), padding.vertical()));
+        this.updateChildPositions();
     }
 
     @Override

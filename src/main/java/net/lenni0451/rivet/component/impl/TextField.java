@@ -273,6 +273,7 @@ public class TextField extends Component {
     protected void onComponentFocusGained() {
         this.focused = true;
         this.rivet().backend().textInput().start();
+        this.updateComponentPosition(this.absoluteBounds());
     }
 
     @Override

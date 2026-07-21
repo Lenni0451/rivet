@@ -82,8 +82,10 @@ public abstract class Component {
     private final ListenerList<BooleanSupplier> dragLeaveListener = new ListenerList<>();
     @Getter
     private final ListenerList<Consumer<Rectangle>> positionUpdateListener = new ListenerList<>();
+    private Rectangle lastAbsoluteBounds;
 
     public final void setRivet(@Nullable final Rivet rivet, @Nullable final Parent parent) {
+        this.lastAbsoluteBounds = null;
         if (rivet == null) {
             if (parent != null) {
                 throw new IllegalArgumentException("Parent must be null when detaching from Rivet");
@@ -181,6 +183,7 @@ public abstract class Component {
     }
 
     public final Rectangle absoluteBounds() {
+        if (this.lastAbsoluteBounds != null) return this.lastAbsoluteBounds;
         if (this.parent == null) return Rectangle.EMPTY;
         Rectangle parentBounds = this.parent.absoluteBounds();
         Rectangle relative = this.relativeBounds();
@@ -355,6 +358,8 @@ public abstract class Component {
     }
 
     public final void updatePosition(final Rectangle absoluteBounds) {
+        if (absoluteBounds.equals(this.lastAbsoluteBounds)) return;
+        this.lastAbsoluteBounds = absoluteBounds;
         this.positionUpdateListener.callVoid(l -> l.accept(absoluteBounds), () -> this.updateComponentPosition(absoluteBounds));
     }
 

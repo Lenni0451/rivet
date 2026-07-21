@@ -260,6 +260,7 @@ public class Slider extends Component {
                 this.tooltip = new SliderTooltip(this.formatValue(this.value));
                 this.tooltip.add(this.rivet());
                 this.tooltip.font(this.font);
+                this.updateComponentPosition(this.absoluteBounds());
             }
             this.updateValue(event.x(), size);
         }
@@ -297,6 +298,7 @@ public class Slider extends Component {
             this.value = newValue;
             if (this.tooltip != null) {
                 this.tooltip.text(this.formatValue(this.value));
+                this.updateComponentPosition(this.absoluteBounds());
             }
             this.valueChangeListener.callVoid(c -> c.accept(this.value));
         }

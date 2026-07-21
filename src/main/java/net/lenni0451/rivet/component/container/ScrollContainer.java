@@ -394,7 +394,6 @@ public class ScrollContainer extends ParentContainer {
         this.updateAnimation();
         renderer.scissor(0, 0, this.visibleWidth(size), this.visibleHeight(size), () -> {
             renderer.translate(-this.scrollX, -this.scrollY, () -> {
-                this.child.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), this.childSize));
                 this.child.render(renderer, this.childSize);
             });
         });
@@ -419,6 +418,7 @@ public class ScrollContainer extends ParentContainer {
             if (this.rivet() != null) {
                 this.rivet().updateMouseState();
             }
+            this.updateChildPositions();
             this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
         }
     }
@@ -605,6 +605,7 @@ public class ScrollContainer extends ParentContainer {
         if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
             this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
         }
+        this.updateChildPositions();
     }
 
     @Override

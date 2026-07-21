@@ -106,8 +106,33 @@ public class ComboBox extends ParentContainer {
         container.addChild(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
         this.rivet().addLayer(this.layer);
+        this.updatePopupPosition(this.absoluteBounds());
         this.openListener.callVoid(Runnable::run);
         return this;
+    }
+
+    private void updatePopupPosition(final Rectangle absoluteBounds) {
+        Size screenSize = this.rivet().scaledSize();
+        float availableWidth = screenSize.width() - absoluteBounds.x();
+        float availableHeight = screenSize.height() - absoluteBounds.y() - absoluteBounds.height();
+        float width = Math.min(availableWidth, absoluteBounds.width());
+        width = MathUtils.clamp(width, this.child.minSize().width(), this.child.maxSize().width());
+        Size idealSize = this.child.computeIdealSize(new Size(width, availableHeight));
+        float maxHeight = Math.min(availableHeight, this.maxPopupHeight.value());
+        float height = Math.min(idealSize.height(), maxHeight);
+        height = MathUtils.clamp(height, this.child.minSize().height(), this.child.maxSize().height());
+        Rectangle region = new Rectangle(
+                absoluteBounds.x(),
+                absoluteBounds.y() + absoluteBounds.height(),
+                width,
+                height
+        );
+        if (!(this.child.layoutOptions() instanceof AbsoluteOptions options)
+                || options.x() != region.x() || options.y() != region.y()
+                || options.width() == null || options.width() != region.width()
+                || options.height() == null || options.height() != region.height()) {
+            this.child.layoutOptions(new AbsoluteOptions(region));
+        }
     }
 
     public ComboBox close() {
@@ -136,29 +161,8 @@ public class ComboBox extends ParentContainer {
 
     @Override
     protected void updateComponentPosition(final Rectangle absoluteBounds) {
-        this.button.updatePosition(absoluteBounds);
         if (this.isOpen()) {
-            Size screenSize = this.rivet().scaledSize();
-            float availableWidth = screenSize.width() - absoluteBounds.x();
-            float availableHeight = screenSize.height() - absoluteBounds.y() - absoluteBounds.height();
-            float width = Math.min(availableWidth, absoluteBounds.width());
-            width = MathUtils.clamp(width, this.child.minSize().width(), this.child.maxSize().width());
-            Size idealSize = this.child.computeIdealSize(new Size(width, availableHeight));
-            float maxHeight = Math.min(availableHeight, this.maxPopupHeight.value());
-            float height = Math.min(idealSize.height(), maxHeight);
-            height = MathUtils.clamp(height, this.child.minSize().height(), this.child.maxSize().height());
-            Rectangle region = new Rectangle(
-                    absoluteBounds.x(),
-                    absoluteBounds.y() + absoluteBounds.height(),
-                    width,
-                    height
-            );
-            if (!(this.child.layoutOptions() instanceof AbsoluteOptions options)
-                    || options.x() != region.x() || options.y() != region.y()
-                    || options.width() == null || options.width() != region.width()
-                    || options.height() == null || options.height() != region.height()) {
-                this.child.layoutOptions(new AbsoluteOptions(region));
-            }
+            this.updatePopupPosition(absoluteBounds);
         }
     }
 
@@ -175,6 +179,7 @@ public class ComboBox extends ParentContainer {
     @Override
     public void computeLayout(final Size size) {
         this.button.computeLayout(size);
+        this.updateChildPositions();
     }
 
     @Override

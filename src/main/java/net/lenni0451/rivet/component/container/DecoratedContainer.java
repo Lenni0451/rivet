@@ -41,13 +41,11 @@ public class DecoratedContainer extends ParentContainer {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        this.background.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), size));
         this.background.render(renderer, size);
 
         float width = size.width() - this.innerPadding.horizontal();
         float height = size.height() - this.innerPadding.vertical();
         renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
-            this.child.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), width, height));
             renderer.componentBounds(0, 0, width, height, () -> {
                 this.child.render(renderer, new Size(width, height));
             });
@@ -64,6 +62,7 @@ public class DecoratedContainer extends ParentContainer {
     public void computeLayout(final Size size) {
         this.background.computeLayout(size);
         this.child.computeLayout(size.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()));
+        this.updateChildPositions();
     }
 
     @Override

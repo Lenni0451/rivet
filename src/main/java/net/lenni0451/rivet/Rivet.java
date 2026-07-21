@@ -67,6 +67,8 @@ public final class Rivet {
     private final ListenerList<Predicate<MouseMoveEvent>> mouseMoveListener = new ListenerList<>();
     @Getter
     private final ListenerList<Predicate<MouseScrollEvent>> mouseScrollListener = new ListenerList<>();
+    @Getter
+    private final ListenerList<Runnable> renderListener = new ListenerList<>();
 
     public Rivet(final Backend backend, final Layout layout, final Size size) {
         this.backend = backend;
@@ -291,6 +293,7 @@ public final class Rivet {
     public <R extends Renderer> R render(final R renderer) {
         Runnable task;
         while ((task = this.tasks.poll()) != null) task.run();
+        this.renderListener.callVoid(Runnable::run);
 
         Size scaledSize = this.scaledSize();
         renderer.scale(this.scale.scaleFactor(), () -> {

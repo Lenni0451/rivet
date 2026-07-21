@@ -47,7 +47,6 @@ public class PaddedContainer extends ParentContainer {
         float width = size.width() - this.padding.horizontal();
         float height = size.height() - this.padding.vertical();
         renderer.translate(this.padding.left(), this.padding.top(), () -> {
-            this.child.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), width, height));
             Runnable renderChild = () -> this.child.render(renderer, new Size(width, height));
             if (this.cropChild) {
                 renderer.componentBounds(0, 0, width, height, renderChild);
@@ -66,6 +65,7 @@ public class PaddedContainer extends ParentContainer {
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(size.minus(this.padding.horizontal(), this.padding.vertical()));
+        this.updateChildPositions();
     }
 
 

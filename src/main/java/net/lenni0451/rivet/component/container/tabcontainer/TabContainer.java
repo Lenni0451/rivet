@@ -136,7 +136,6 @@ public class TabContainer extends ParentContainer {
             renderer.fillRect(0, 0, size.width(), this.tabSize.height(), headerColor);
         }
 
-        this.tabContainer.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), size.width(), this.tabSize.height()));
         renderer.componentBounds(0, 0, size.width(), this.tabSize.height(), () -> {
             this.tabContainer.render(renderer, new Size(size.width(), this.tabSize.height()));
         });
@@ -148,7 +147,6 @@ public class TabContainer extends ParentContainer {
         }
 
         renderer.translate(0, this.tabSize.height(), () -> {
-            this.contentContainer.updatePosition(new Rectangle(renderer.xOffset(), renderer.yOffset(), size.width(), this.contentSize.height()));
             renderer.componentBounds(0, 0, size.width(), this.contentSize.height(), () -> {
                 this.contentContainer.render(renderer, new Size(size.width(), this.contentSize.height()));
             });
@@ -171,6 +169,7 @@ public class TabContainer extends ParentContainer {
         this.contentSize = new Size(size.width(), size.height() - this.tabSize.height());
         this.tabContainer.computeLayout(this.tabSize);
         this.contentContainer.computeLayout(this.contentSize);
+        this.updateChildPositions();
     }
 
     @Override

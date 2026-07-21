@@ -127,7 +127,6 @@ public class Container extends ParentContainer {
         for (Child child : this.children) {
             float childX = child.bounds.x() + renderer.xOffset();
             float childY = child.bounds.y() + renderer.yOffset();
-            child.component.updatePosition(new Rectangle(childX, childY, child.bounds.size()));
             if ((childX < 0 && childX + child.bounds.width() < 0) || childX > screenSize.width()) {
                 continue;
             }
@@ -175,6 +174,7 @@ public class Container extends ParentContainer {
             );
         }
         this.contentSize = contentSize;
+        this.updateChildPositions();
     }
 
     @RequiredArgsConstructor
