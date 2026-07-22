@@ -60,15 +60,6 @@ public class CollapsibleContainer extends ParentContainer {
 
     public CollapsibleContainer(final Component header, final Component content) {
         this(header, h -> {}, content, c -> {});
-
-        this.collapseAnimationConfig.initListener().add(config -> {
-            this.collapseAnimation = this.collapseAnimationConfig.value().create();
-            if (this.collapsed) {
-                this.collapseAnimation.finish(AnimationDirection.BACKWARDS);
-            } else {
-                this.collapseAnimation.finish(AnimationDirection.FORWARDS);
-            }
-        });
     }
 
     public <H extends Component, C extends Component> CollapsibleContainer(final H header, final Consumer<H> headerInitializer, final C content, final Consumer<C> contentInitializer) {
@@ -79,6 +70,14 @@ public class CollapsibleContainer extends ParentContainer {
         contentInitializer.accept(content);
 
         this.arrowSize.initListener().add(val -> this.requestLayoutRecalculation());
+        this.collapseAnimationConfig.initListener().add(config -> {
+            this.collapseAnimation = this.collapseAnimationConfig.value().create();
+            if (this.collapsed) {
+                this.collapseAnimation.finish(AnimationDirection.BACKWARDS);
+            } else {
+                this.collapseAnimation.finish(AnimationDirection.FORWARDS);
+            }
+        });
     }
 
     public final CollapsibleContainer collapsed(final boolean collapsed) {
@@ -97,14 +96,11 @@ public class CollapsibleContainer extends ParentContainer {
     }
 
     @Override
-    protected void updateComponentPosition(final Rectangle absoluteBounds) {
+    public void render(final Renderer renderer, final Size size) {
         if (this.collapseAnimation.isRunning()) {
             this.requestLayoutRecalculation();
         }
-    }
 
-    @Override
-    public void render(final Renderer renderer, final Size size) {
         renderer.componentBounds(0, 0, this.headerSize.width(), this.headerSize.height(), () -> {
             this.clickableHeader.render(renderer, this.headerSize);
         });
