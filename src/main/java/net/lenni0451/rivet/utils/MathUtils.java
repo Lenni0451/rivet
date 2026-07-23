@@ -24,10 +24,6 @@ public class MathUtils {
         }
     }
 
-    public static float lerp(final float start, final float end, final float progress) {
-        return start + (end - start) * progress;
-    }
-
     public static double snap(final double value, final double min, final double max, final double step) {
         if (step <= 0) {
             return net.lenni0451.commons.math.MathUtils.clamp(value, min, max);

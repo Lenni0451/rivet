@@ -3,13 +3,13 @@ package net.lenni0451.rivet.component.impl;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
-import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.function.Supplier;
 
