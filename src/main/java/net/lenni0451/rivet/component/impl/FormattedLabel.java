@@ -132,7 +132,7 @@ public class FormattedLabel extends Component {
         }
     }
 
-    private Font usedFont() {
+    protected final Font usedFont() {
         return this.font != null ? this.font : this.rivet().backend().font();
     }
 

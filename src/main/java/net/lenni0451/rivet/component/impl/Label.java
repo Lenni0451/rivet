@@ -89,7 +89,7 @@ public class Label extends Component {
         }
     }
 
-    private Font usedFont() {
+    protected final Font usedFont() {
         return this.font != null ? this.font : this.rivet().backend().font();
     }
 
