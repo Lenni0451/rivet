@@ -43,6 +43,9 @@ public class ScrollContainer extends ParentContainer {
     @Getter
     @Setter
     private float autoScrollThreshold = 0.1F;
+    @Getter
+    @Setter
+    private boolean presentInfiniteSize = true;
 
     @Getter
     private final ThemeOption<Color> barColor = new ThemeOption<>(this, Theme.SCROLL_BAR_COLOR);
@@ -530,8 +533,8 @@ public class ScrollContainer extends ParentContainer {
     @Override
     public Size computeIdealSize(final Size constraints) {
         return this.child.computeIdealSize(new Size(
-                this.horizontalScrolling ? Float.MAX_VALUE : constraints.width(),
-                this.verticalScrolling ? Float.MAX_VALUE : constraints.height()
+                this.horizontalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : constraints.width(),
+                this.verticalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : constraints.height()
         ));
     }
 
@@ -560,8 +563,8 @@ public class ScrollContainer extends ParentContainer {
             }
 
             Size idealChildSize = this.child.computeIdealSize(new Size(
-                    this.horizontalScrolling ? Float.MAX_VALUE : availableWidth,
-                    this.verticalScrolling ? Float.MAX_VALUE : availableHeight
+                    this.horizontalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : availableWidth,
+                    this.verticalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : availableHeight
             ));
 
             Size childSize = new Size(
