@@ -28,11 +28,11 @@ public class Label extends Component {
     private ShapedText shapedText;
     private boolean reshape;
     @Getter
-    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TEXT_COLOR);
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.General.TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.DISABLED_TEXT_COLOR);
+    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.General.DISABLED_TEXT_COLOR);
     @Getter
-    private final ThemeOption<OverflowBehavior> overflowBehavior = new ThemeOption<>(this, Theme.LABEL_OVERFLOW_BEHAVIOR);
+    private final ThemeOption<OverflowBehavior> overflowBehavior = new ThemeOption<>(this, Theme.Label.OVERFLOW_BEHAVIOR);
     @Getter
     @Setter
     private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;

@@ -44,17 +44,17 @@ public class ComboBox extends ParentContainer {
     private Layer layer;
 
     @Getter
-    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.ARROW_COLOR);
+    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.Arrow.COLOR);
     @Getter
-    private final ThemeOption<Color> arrowDisabledColor = new ThemeOption<>(this, Theme.ARROW_DISABLED_COLOR);
+    private final ThemeOption<Color> arrowDisabledColor = new ThemeOption<>(this, Theme.Arrow.DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Float> arrowLineWidth = new ThemeOption<>(this, Theme.ARROW_LINE_WIDTH);
+    private final ThemeOption<Float> arrowLineWidth = new ThemeOption<>(this, Theme.Arrow.LINE_WIDTH);
     @Getter
-    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.ARROW_SIZE);
+    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.Arrow.SIZE);
     @Getter
-    private final ThemeOption<Float> maxPopupHeight = new ThemeOption<>(this, Theme.COMBOBOX_MAX_POPUP_HEIGHT);
+    private final ThemeOption<Float> maxPopupHeight = new ThemeOption<>(this, Theme.ComboBox.MAX_POPUP_HEIGHT);
     @Getter
-    private final ThemeOption<Boolean> interceptOutsideClicks = new ThemeOption<>(this, Theme.COMBOBOX_INTERCEPT_OUTSIDE_CLICKS);
+    private final ThemeOption<Boolean> interceptOutsideClicks = new ThemeOption<>(this, Theme.ComboBox.INTERCEPT_OUTSIDE_CLICKS);
 
     public ComboBox(final String text, final Component child) {
         this(text, child, (b, c) -> {});

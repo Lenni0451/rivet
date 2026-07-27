@@ -52,37 +52,37 @@ public class DragNumberInput extends Component implements Parent {
     private String cachedFormatString = null;
 
     @Getter
-    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_BACKGROUND_COLOR);
+    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.DragNumberInput.BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_TEXT_COLOR);
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.DragNumberInput.TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_OUTLINE_COLOR);
+    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.DragNumberInput.OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_OUTLINE_WIDTH);
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.DragNumberInput.OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_CORNER_RADIUS);
+    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.DragNumberInput.CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_INNER_PADDING);
+    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.DragNumberInput.INNER_PADDING);
     @Getter
-    private final ThemeOption<String> valueFormat = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_VALUE_FORMAT);
+    private final ThemeOption<String> valueFormat = new ThemeOption<>(this, Theme.DragNumberInput.VALUE_FORMAT);
     @Getter
-    private final ThemeOption<Color> hoverBackgroundColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_HOVER_BACKGROUND_COLOR);
+    private final ThemeOption<Color> hoverBackgroundColor = new ThemeOption<>(this, Theme.DragNumberInput.HOVER_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverOutlineColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_HOVER_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverOutlineColor = new ThemeOption<>(this, Theme.DragNumberInput.HOVER_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> clickBackgroundColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_CLICK_BACKGROUND_COLOR);
+    private final ThemeOption<Color> clickBackgroundColor = new ThemeOption<>(this, Theme.DragNumberInput.CLICK_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> clickOutlineColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_CLICK_OUTLINE_COLOR);
+    private final ThemeOption<Color> clickOutlineColor = new ThemeOption<>(this, Theme.DragNumberInput.CLICK_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_DISABLED_BACKGROUND_COLOR);
+    private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.DragNumberInput.DISABLED_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_DISABLED_TEXT_COLOR);
+    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.DragNumberInput.DISABLED_TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_DISABLED_OUTLINE_COLOR);
+    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.DragNumberInput.DISABLED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_HOVER_ANIMATION);
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.DragNumberInput.HOVER_ANIMATION);
     @Getter
-    private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.DRAG_NUMBER_INPUT_CLICK_ANIMATION);
+    private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.DragNumberInput.CLICK_ANIMATION);
 
     private StateTransition<Color, State> backgroundColorTransition;
     private StateTransition<Color, State> outlineColorTransition;

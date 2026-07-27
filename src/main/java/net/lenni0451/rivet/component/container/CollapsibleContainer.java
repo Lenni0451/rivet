@@ -42,17 +42,17 @@ public class CollapsibleContainer extends ParentContainer {
     private final ListenerList<Consumer<Boolean>> collapseChangeListener = new ListenerList<>();
 
     @Getter
-    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.ARROW_COLOR);
+    private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.Arrow.COLOR);
     @Getter
-    private final ThemeOption<Color> arrowDisabledColor = new ThemeOption<>(this, Theme.ARROW_DISABLED_COLOR);
+    private final ThemeOption<Color> arrowDisabledColor = new ThemeOption<>(this, Theme.Arrow.DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Float> arrowLineWidth = new ThemeOption<>(this, Theme.ARROW_LINE_WIDTH);
+    private final ThemeOption<Float> arrowLineWidth = new ThemeOption<>(this, Theme.Arrow.LINE_WIDTH);
     @Getter
-    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.ARROW_SIZE);
+    private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.Arrow.SIZE);
     @Getter
-    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_CLICK_ON);
+    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.CollapsibleContainer.CLICK_ON);
     @Getter
-    private final ThemeOption<AnimationConfig> collapseAnimationConfig = new ThemeOption<>(this, Theme.COLLAPSIBLE_CONTAINER_COLLAPSE_ANIMATION);
+    private final ThemeOption<AnimationConfig> collapseAnimationConfig = new ThemeOption<>(this, Theme.CollapsibleContainer.COLLAPSE_ANIMATION);
 
     private Animation collapseAnimation;
     private Size headerSize;

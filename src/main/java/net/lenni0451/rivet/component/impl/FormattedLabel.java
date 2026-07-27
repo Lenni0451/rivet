@@ -49,9 +49,9 @@ public class FormattedLabel extends Component {
     @Getter
     private float scale = 1F;
     @Getter
-    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TEXT_COLOR);
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.General.TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.DISABLED_TEXT_COLOR);
+    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.General.DISABLED_TEXT_COLOR);
 
     public FormattedLabel(@Nonnull final String text) {
         this(text, null);

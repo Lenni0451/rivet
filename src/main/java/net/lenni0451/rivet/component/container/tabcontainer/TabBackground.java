@@ -24,18 +24,18 @@ import org.jetbrains.annotations.ApiStatus;
 public class TabBackground extends Component {
 
     private final Runnable clickListener;
-    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.TAB_CORNER_RADIUS);
-    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.TAB_OUTLINE_WIDTH);
-    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.TAB_INACTIVE_COLOR);
-    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.TAB_INACTIVE_OUTLINE_COLOR);
-    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.TAB_ACTIVE_COLOR);
-    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.TAB_ACTIVE_OUTLINE_COLOR);
-    private final ThemeOption<Color> hoverColor = new ThemeOption<>(this, Theme.TAB_HOVER_COLOR);
-    private final ThemeOption<Color> hoverOutlineColor = new ThemeOption<>(this, Theme.TAB_HOVER_OUTLINE_COLOR);
-    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TAB_INNER_PADDING);
-    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.TAB_HOVER_ANIMATION);
-    private final ThemeOption<AnimationConfig> activeAnimationConfig = new ThemeOption<>(this, Theme.TAB_ACTIVE_ANIMATION);
-    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.TAB_CLICK_ON);
+    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.Tab.CORNER_RADIUS);
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.Tab.OUTLINE_WIDTH);
+    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.Tab.INACTIVE_COLOR);
+    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.Tab.INACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.Tab.ACTIVE_COLOR);
+    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.Tab.ACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverColor = new ThemeOption<>(this, Theme.Tab.HOVER_COLOR);
+    private final ThemeOption<Color> hoverOutlineColor = new ThemeOption<>(this, Theme.Tab.HOVER_OUTLINE_COLOR);
+    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.Tab.INNER_PADDING);
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.Tab.HOVER_ANIMATION);
+    private final ThemeOption<AnimationConfig> activeAnimationConfig = new ThemeOption<>(this, Theme.Tab.ACTIVE_ANIMATION);
+    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.Tab.CLICK_ON);
     private boolean hovered = false;
     private boolean active = false;
 

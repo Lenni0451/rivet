@@ -63,81 +63,81 @@ class ThemeLoaderTest {
     @Test
     void parseTypes() {
         // Color
-        check(Theme.TEXT_COLOR, "#AABBCC", Color.fromRGB(0xAABBCC));
-        check(Theme.TEXT_COLOR, "rgb(#AABBCC)", Color.fromRGB(0xAA, 0xBB, 0xCC));
+        check(Theme.General.TEXT_COLOR, "#AABBCC", Color.fromRGB(0xAABBCC));
+        check(Theme.General.TEXT_COLOR, "rgb(#AABBCC)", Color.fromRGB(0xAA, 0xBB, 0xCC));
 
         // Boolean
-        check(Theme.SLIDER_THUMB_ENCASED, "true", true);
-        check(Theme.SLIDER_THUMB_ENCASED, "false", false);
+        check(Theme.Slider.THUMB_ENCASED, "true", true);
+        check(Theme.Slider.THUMB_ENCASED, "false", false);
 
         // Character
-        check(Theme.TEXT_FIELD_PASSWORD_CHAR, "a", 'a');
-        check(Theme.TEXT_FIELD_PASSWORD_CHAR, "*", '*');
+        check(Theme.TextField.PASSWORD_CHAR, "a", 'a');
+        check(Theme.TextField.PASSWORD_CHAR, "*", '*');
 
         // Integer // Currently disabled because there is no key using it
 //        check(Theme.BUTTON_ANIMATION_DURATION, "123", 123);
 //        check(Theme.BUTTON_ANIMATION_DURATION, "-123", -123);
 
         // Long
-        check(Theme.SCROLL_NESTED_SCROLL_TIMEOUT, "999999999999", 999_999_999_999L);
-        check(Theme.SCROLL_NESTED_SCROLL_TIMEOUT, "-999999999999", -999_999_999_999L);
+        check(Theme.ScrollContainer.NESTED_SCROLL_TIMEOUT, "999999999999", 999_999_999_999L);
+        check(Theme.ScrollContainer.NESTED_SCROLL_TIMEOUT, "-999999999999", -999_999_999_999L);
 
         // Float
-        check(Theme.SCROLL_BAR_WIDTH, "0.12", 0.12F);
-        check(Theme.SCROLL_BAR_WIDTH, "-9.12", -9.12F);
+        check(Theme.ScrollContainer.BAR_WIDTH, "0.12", 0.12F);
+        check(Theme.ScrollContainer.BAR_WIDTH, "-9.12", -9.12F);
 
         // String
-        check(Theme.SLIDER_TOOLTIP_FORMAT, "abc", "abc");
-        check(Theme.SLIDER_TOOLTIP_FORMAT, "defg", "defg");
+        check(Theme.Slider.TOOLTIP_FORMAT, "abc", "abc");
+        check(Theme.Slider.TOOLTIP_FORMAT, "defg", "defg");
 
         // Padding
-        check(Theme.BUTTON_INNER_PADDING, "5.5", new Padding(5.5F));
-        check(Theme.BUTTON_INNER_PADDING, "0 1 2 3", new Padding(0, 1, 2, 3));
-        check(Theme.BUTTON_INNER_PADDING, "top=1 bottom=3 left=0 right=2", new Padding(0, 1, 2, 3));
+        check(Theme.Button.INNER_PADDING, "5.5", new Padding(5.5F));
+        check(Theme.Button.INNER_PADDING, "0 1 2 3", new Padding(0, 1, 2, 3));
+        check(Theme.Button.INNER_PADDING, "top=1 bottom=3 left=0 right=2", new Padding(0, 1, 2, 3));
 
         // Corners
-        check(Theme.TAB_CORNER_RADIUS, "5.5", new Corners(5.5F));
-        check(Theme.TAB_CORNER_RADIUS, "0 1 2 3", new Corners(0, 1, 2, 3));
-        check(Theme.TAB_CORNER_RADIUS, "bottomLeft=1 topRight=3 topLeft=0 bottomRight=2", new Corners(0, 1, 2, 3));
+        check(Theme.Tab.CORNER_RADIUS, "5.5", new Corners(5.5F));
+        check(Theme.Tab.CORNER_RADIUS, "0 1 2 3", new Corners(0, 1, 2, 3));
+        check(Theme.Tab.CORNER_RADIUS, "bottomLeft=1 topRight=3 topLeft=0 bottomRight=2", new Corners(0, 1, 2, 3));
 
         // AnimationConfig
-        check(Theme.TEXT_FIELD_CURSOR_ANIMATION, "loop; sine ease_out 1 1 250 keep; endValue=0 duration=500", new AnimationConfig(
+        check(Theme.TextField.CURSOR_ANIMATION, "loop; sine ease_out 1 1 250 keep; endValue=0 duration=500", new AnimationConfig(
                 AnimationMode.LOOP,
                 new AnimationFrameConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 1F, 1F, 250, EasingBehavior.KEEP),
                 AnimationFrameConfig.builder().endValue(0).duration(500).build()
         ));
 
         // DynamicAnimationConfig
-        check(Theme.SCROLL_ANIMATION, "back ease_in_out 100", new DynamicAnimationConfig(EasingFunction.BACK, EasingMode.EASE_IN_OUT, 100));
+        check(Theme.ScrollContainer.ANIMATION, "back ease_in_out 100", new DynamicAnimationConfig(EasingFunction.BACK, EasingMode.EASE_IN_OUT, 100));
 
         // ClickOn
         for (ClickOn value : ClickOn.values()) {
-            check(Theme.BUTTON_CLICK_ON, value.toString().toLowerCase(Locale.ROOT), value);
+            check(Theme.Button.CLICK_ON, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
         // Slider.ThumbShape
         for (Slider.ThumbShape value : Slider.ThumbShape.values()) {
-            check(Theme.SLIDER_THUMB_SHAPE, value.toString().toLowerCase(Locale.ROOT), value);
+            check(Theme.Slider.THUMB_SHAPE, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
         // ScrollContainer.ScrollBarType
         for (ScrollContainer.ScrollBarType value : ScrollContainer.ScrollBarType.values()) {
-            check(Theme.SCROLL_BAR_TYPE, value.toString().toLowerCase(Locale.ROOT), value);
+            check(Theme.ScrollContainer.BAR_TYPE, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
         // TabAlignment
         for (TabAlignment value : TabAlignment.values()) {
-            check(Theme.TAB_ALIGNMENT, value.toString().toLowerCase(Locale.ROOT), value);
+            check(Theme.Tab.ALIGNMENT, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
         // Label.OverflowBehavior
         for (Label.OverflowBehavior value : Label.OverflowBehavior.values()) {
-            check(Theme.LABEL_OVERFLOW_BEHAVIOR, value.toString().toLowerCase(Locale.ROOT), value);
+            check(Theme.Label.OVERFLOW_BEHAVIOR, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
         // ProgressBar.TextPosition
         for (ProgressBar.TextPosition value : ProgressBar.TextPosition.values()) {
-            check(Theme.PROGRESS_BAR_TEXT_POSITION, value.toString().toLowerCase(Locale.ROOT), value);
+            check(Theme.ProgressBar.TEXT_POSITION, value.toString().toLowerCase(Locale.ROOT), value);
         }
     }
 

@@ -64,43 +64,43 @@ public class TextField extends Component {
     private Animation cursorAnimation;
 
     @Getter
-    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TEXT_FIELD_TEXT_COLOR);
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TextField.TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> invalidTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_TEXT_COLOR);
+    private final ThemeOption<Color> invalidTextColor = new ThemeOption<>(this, Theme.TextField.INVALID_TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> hintColor = new ThemeOption<>(this, Theme.TEXT_FIELD_HINT_COLOR);
+    private final ThemeOption<Color> hintColor = new ThemeOption<>(this, Theme.TextField.HINT_COLOR);
     @Getter
-    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_BACKGROUND_COLOR);
+    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.TextField.BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_COLOR);
+    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.TextField.OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> focusedOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUSED_OUTLINE_COLOR);
+    private final ThemeOption<Color> focusedOutlineColor = new ThemeOption<>(this, Theme.TextField.FOCUSED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> invalidOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_INVALID_OUTLINE_COLOR);
+    private final ThemeOption<Color> invalidOutlineColor = new ThemeOption<>(this, Theme.TextField.INVALID_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> selectionColor = new ThemeOption<>(this, Theme.TEXT_FIELD_SELECTION_COLOR);
+    private final ThemeOption<Color> selectionColor = new ThemeOption<>(this, Theme.TextField.SELECTION_COLOR);
     @Getter
-    private final ThemeOption<Color> cursorColor = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_COLOR);
+    private final ThemeOption<Color> cursorColor = new ThemeOption<>(this, Theme.TextField.CURSOR_COLOR);
     @Getter
-    private final ThemeOption<Float> cursorWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_WIDTH);
+    private final ThemeOption<Float> cursorWidth = new ThemeOption<>(this, Theme.TextField.CURSOR_WIDTH);
     @Getter
-    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.TEXT_FIELD_OUTLINE_WIDTH);
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.TextField.OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.TEXT_FIELD_CORNER_RADIUS);
+    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.TextField.CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TEXT_FIELD_INNER_PADDING);
+    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TextField.INNER_PADDING);
     @Getter
-    private final ThemeOption<Character> passwordChar = new ThemeOption<>(this, Theme.TEXT_FIELD_PASSWORD_CHAR);
+    private final ThemeOption<Character> passwordChar = new ThemeOption<>(this, Theme.TextField.PASSWORD_CHAR);
     @Getter
-    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_TEXT_COLOR);
+    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.TextField.DISABLED_TEXT_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_BACKGROUND_COLOR);
+    private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.TextField.DISABLED_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.TEXT_FIELD_DISABLED_OUTLINE_COLOR);
+    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.TextField.DISABLED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<AnimationConfig> cursorAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_CURSOR_ANIMATION);
+    private final ThemeOption<AnimationConfig> cursorAnimationConfig = new ThemeOption<>(this, Theme.TextField.CURSOR_ANIMATION);
     @Getter
-    private final ThemeOption<AnimationConfig> focusAnimationConfig = new ThemeOption<>(this, Theme.TEXT_FIELD_FOCUS_ANIMATION);
+    private final ThemeOption<AnimationConfig> focusAnimationConfig = new ThemeOption<>(this, Theme.TextField.FOCUS_ANIMATION);
 
     private Transition<Color> outlineColorTransition;
 

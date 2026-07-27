@@ -60,9 +60,9 @@ public class Tooltip {
         this.component = component;
         this.tooltip = tooltip;
 
-        this.delay = new ThemeOption<>(component, Theme.TOOLTIP_DELAY);
-        this.removeOnMouseMove = new ThemeOption<>(component, Theme.TOOLTIP_REMOVE_ON_MOUSE_MOVE);
-        this.mouseOffset = new ThemeOption<>(component, Theme.TOOLTIP_MOUSE_OFFSET);
+        this.delay = new ThemeOption<>(component, Theme.Tooltip.DELAY);
+        this.removeOnMouseMove = new ThemeOption<>(component, Theme.Tooltip.REMOVE_ON_MOUSE_MOVE);
+        this.mouseOffset = new ThemeOption<>(component, Theme.Tooltip.MOUSE_OFFSET);
 
         this.register();
     }

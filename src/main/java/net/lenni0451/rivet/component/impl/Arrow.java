@@ -19,10 +19,10 @@ public class Arrow extends Component {
 
     private Supplier<Float> progress;
 
-    private final ThemeOption<Color> color = new ThemeOption<>(this, Theme.ARROW_COLOR);
-    private final ThemeOption<Color> disabledColor = new ThemeOption<>(this, Theme.ARROW_DISABLED_COLOR);
-    private final ThemeOption<Float> lineWidth = new ThemeOption<>(this, Theme.ARROW_LINE_WIDTH);
-    private final ThemeOption<Float> size = new ThemeOption<>(this, Theme.ARROW_SIZE);
+    private final ThemeOption<Color> color = new ThemeOption<>(this, Theme.Arrow.COLOR);
+    private final ThemeOption<Color> disabledColor = new ThemeOption<>(this, Theme.Arrow.DISABLED_COLOR);
+    private final ThemeOption<Float> lineWidth = new ThemeOption<>(this, Theme.Arrow.LINE_WIDTH);
+    private final ThemeOption<Float> size = new ThemeOption<>(this, Theme.Arrow.SIZE);
 
     public Arrow() {
         this(() -> 0F);

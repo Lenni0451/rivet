@@ -19,39 +19,39 @@ public class ProgressBar extends Component {
     @Getter
     private float progress;
     @Getter
-    private final ThemeOption<String> textFormat = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_FORMAT);
+    private final ThemeOption<String> textFormat = new ThemeOption<>(this, Theme.ProgressBar.TEXT_FORMAT);
     @Getter
-    private final ThemeOption<TextPosition> textPosition = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_POSITION);
+    private final ThemeOption<TextPosition> textPosition = new ThemeOption<>(this, Theme.ProgressBar.TEXT_POSITION);
     @Getter
-    private final ThemeOption<Float> textPadding = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_PADDING);
+    private final ThemeOption<Float> textPadding = new ThemeOption<>(this, Theme.ProgressBar.TEXT_PADDING);
     @Getter
-    private final ThemeOption<Float> trackCornerRadius = new ThemeOption<>(this, Theme.PROGRESS_BAR_TRACK_CORNER_RADIUS);
+    private final ThemeOption<Float> trackCornerRadius = new ThemeOption<>(this, Theme.ProgressBar.TRACK_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> indicatorCornerRadius = new ThemeOption<>(this, Theme.PROGRESS_BAR_INDICATOR_CORNER_RADIUS);
+    private final ThemeOption<Float> indicatorCornerRadius = new ThemeOption<>(this, Theme.ProgressBar.INDICATOR_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Color> trackColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_TRACK_COLOR);
+    private final ThemeOption<Color> trackColor = new ThemeOption<>(this, Theme.ProgressBar.TRACK_COLOR);
     @Getter
-    private final ThemeOption<Color> indicatorColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_INDICATOR_COLOR);
+    private final ThemeOption<Color> indicatorColor = new ThemeOption<>(this, Theme.ProgressBar.INDICATOR_COLOR);
     @Getter
-    private final ThemeOption<Color> borderColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_COLOR);
+    private final ThemeOption<Color> borderColor = new ThemeOption<>(this, Theme.ProgressBar.BORDER_COLOR);
     @Getter
-    private final ThemeOption<Float> borderWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_BORDER_WIDTH);
+    private final ThemeOption<Float> borderWidth = new ThemeOption<>(this, Theme.ProgressBar.BORDER_WIDTH);
     @Getter
-    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_TEXT_COLOR);
+    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.ProgressBar.TEXT_COLOR);
     @Getter
-    private final ThemeOption<Boolean> stripes = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPES);
+    private final ThemeOption<Boolean> stripes = new ThemeOption<>(this, Theme.ProgressBar.STRIPES);
     @Getter
-    private final ThemeOption<Color> stripeColor = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_COLOR);
+    private final ThemeOption<Color> stripeColor = new ThemeOption<>(this, Theme.ProgressBar.STRIPE_COLOR);
     @Getter
-    private final ThemeOption<Float> stripeWidth = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_WIDTH);
+    private final ThemeOption<Float> stripeWidth = new ThemeOption<>(this, Theme.ProgressBar.STRIPE_WIDTH);
     @Getter
-    private final ThemeOption<Float> stripeGap = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_GAP);
+    private final ThemeOption<Float> stripeGap = new ThemeOption<>(this, Theme.ProgressBar.STRIPE_GAP);
     @Getter
-    private final ThemeOption<Float> stripeSpeed = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_SPEED);
+    private final ThemeOption<Float> stripeSpeed = new ThemeOption<>(this, Theme.ProgressBar.STRIPE_SPEED);
     @Getter
-    private final ThemeOption<Float> stripeAngle = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANGLE);
+    private final ThemeOption<Float> stripeAngle = new ThemeOption<>(this, Theme.ProgressBar.STRIPE_ANGLE);
     @Getter
-    private final ThemeOption<Boolean> stripeAnimated = new ThemeOption<>(this, Theme.PROGRESS_BAR_STRIPE_ANIMATED);
+    private final ThemeOption<Boolean> stripeAnimated = new ThemeOption<>(this, Theme.ProgressBar.STRIPE_ANIMATED);
 
     private String currentText = null;
     private ShapedText currentShapedText = null;

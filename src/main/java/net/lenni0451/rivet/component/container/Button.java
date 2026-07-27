@@ -36,33 +36,33 @@ public class Button extends Component implements Parent {
     @Getter
     private final ListenerList<ClickListener> clickListener;
     @Getter
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.BUTTON_CORNER_RADIUS);
+    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.Button.CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.BUTTON_OUTLINE_WIDTH);
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.Button.OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_COLOR);
+    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.Button.INACTIVE_COLOR);
     @Getter
-    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.BUTTON_INACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.Button.INACTIVE_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_COLOR);
+    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.Button.ACTIVE_COLOR);
     @Getter
-    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.BUTTON_ACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.Button.ACTIVE_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> clickColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_COLOR);
+    private final ThemeOption<Color> clickColor = new ThemeOption<>(this, Theme.Button.CLICK_COLOR);
     @Getter
-    private final ThemeOption<Color> clickOutlineColor = new ThemeOption<>(this, Theme.BUTTON_CLICK_OUTLINE_COLOR);
+    private final ThemeOption<Color> clickOutlineColor = new ThemeOption<>(this, Theme.Button.CLICK_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_COLOR);
+    private final ThemeOption<Color> disabledColor = new ThemeOption<>(this, Theme.Button.DISABLED_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.BUTTON_DISABLED_OUTLINE_COLOR);
+    private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.Button.DISABLED_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_HOVER_ANIMATION);
+    private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.Button.HOVER_ANIMATION);
     @Getter
-    private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.BUTTON_CLICK_ANIMATION);
+    private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.Button.CLICK_ANIMATION);
     @Getter
-    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.BUTTON_INNER_PADDING);
+    private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.Button.INNER_PADDING);
     @Getter
-    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.BUTTON_CLICK_ON);
+    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.Button.CLICK_ON);
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
     private StateTransition<Color, State> color;

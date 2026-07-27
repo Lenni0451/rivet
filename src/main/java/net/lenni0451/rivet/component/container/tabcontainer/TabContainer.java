@@ -33,19 +33,19 @@ public class TabContainer extends ParentContainer {
     private Size tabSize;
     private Size contentSize;
     @Getter
-    private final ThemeOption<Color> headerBackgroundColor = new ThemeOption<>(this, Theme.TAB_HEADER_BACKGROUND_COLOR);
+    private final ThemeOption<Color> headerBackgroundColor = new ThemeOption<>(this, Theme.Tab.HEADER_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> separatorColor = new ThemeOption<>(this, Theme.TAB_SEPARATOR_COLOR);
+    private final ThemeOption<Color> separatorColor = new ThemeOption<>(this, Theme.Tab.SEPARATOR_COLOR);
     @Getter
-    private final ThemeOption<Float> separatorThickness = new ThemeOption<>(this, Theme.TAB_SEPARATOR_THICKNESS);
+    private final ThemeOption<Float> separatorThickness = new ThemeOption<>(this, Theme.Tab.SEPARATOR_THICKNESS);
     @Getter
-    private final ThemeOption<TabAlignment> tabAlignment = new ThemeOption<>(this, Theme.TAB_ALIGNMENT);
+    private final ThemeOption<TabAlignment> tabAlignment = new ThemeOption<>(this, Theme.Tab.ALIGNMENT);
     @Getter
-    private final ThemeOption<Boolean> tabSameSize = new ThemeOption<>(this, Theme.TAB_SAME_SIZE);
+    private final ThemeOption<Boolean> tabSameSize = new ThemeOption<>(this, Theme.Tab.SAME_SIZE);
     @Getter
-    private final ThemeOption<Float> tabVerticalGap = new ThemeOption<>(this, Theme.TAB_VERTICAL_GAP);
+    private final ThemeOption<Float> tabVerticalGap = new ThemeOption<>(this, Theme.Tab.VERTICAL_GAP);
     @Getter
-    private final ThemeOption<Float> tabGap = new ThemeOption<>(this, Theme.TAB_TAB_GAP);
+    private final ThemeOption<Float> tabGap = new ThemeOption<>(this, Theme.Tab.TAB_GAP);
 
     public TabContainer() {
         this.tabContainer.addChild(this.leftTabContainer.layoutOptions(BorderPosition.LEFT));

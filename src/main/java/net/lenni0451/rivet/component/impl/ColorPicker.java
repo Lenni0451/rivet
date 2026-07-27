@@ -38,12 +38,12 @@ public class ColorPicker extends Component {
     private boolean draggingHue;
     private boolean draggingAlpha;
 
-    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_WIDTH);
-    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.COLOR_PICKER_OUTLINE_COLOR);
-    private final ThemeOption<Float> pickerSize = new ThemeOption<>(this, Theme.COLOR_PICKER_PICKER_SIZE);
-    private final ThemeOption<Float> sliderWidth = new ThemeOption<>(this, Theme.COLOR_PICKER_SLIDER_WIDTH);
-    private final ThemeOption<Float> gap = new ThemeOption<>(this, Theme.COLOR_PICKER_GAP);
-    private final ThemeOption<Float> selectorSize = new ThemeOption<>(this, Theme.COLOR_PICKER_SELECTOR_SIZE);
+    private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.ColorPicker.OUTLINE_WIDTH);
+    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.ColorPicker.OUTLINE_COLOR);
+    private final ThemeOption<Float> pickerSize = new ThemeOption<>(this, Theme.ColorPicker.PICKER_SIZE);
+    private final ThemeOption<Float> sliderWidth = new ThemeOption<>(this, Theme.ColorPicker.SLIDER_WIDTH);
+    private final ThemeOption<Float> gap = new ThemeOption<>(this, Theme.ColorPicker.GAP);
+    private final ThemeOption<Float> selectorSize = new ThemeOption<>(this, Theme.ColorPicker.SELECTOR_SIZE);
 
     public ColorPicker(final Color color) {
         this.color = color;
