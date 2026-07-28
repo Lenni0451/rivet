@@ -25,7 +25,7 @@ public class SliderStyleTest extends TestBase {
         Container container = new Container(new VerticalListLayout(5, true));
         Slider slider = new Slider(0, 100, 50);
         container.addChild(this.colorOption(rivet, "Bar Color", slider.barColor()));
-        container.addChild(this.colorOption(rivet, "Active Bar Color", slider.activeBarColor()));
+        container.addChild(this.colorOption(rivet, "Bar Fill Color", slider.barFillColor()));
         container.addChild(this.colorOption(rivet, "Thumb Color", slider.thumbColor()));
         container.addChild(this.colorOption(rivet, "Thumb Click Color", slider.thumbClickColor()));
         container.addChild(this.colorOption(rivet, "Thumb Outline Color", slider.thumbOutlineColor()));

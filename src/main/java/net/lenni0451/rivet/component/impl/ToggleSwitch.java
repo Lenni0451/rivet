@@ -36,63 +36,63 @@ public class ToggleSwitch extends Component {
     @Getter
     private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.ToggleSwitch.OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.ToggleSwitch.INACTIVE_COLOR);
+    private final ThemeOption<Color> offColor = new ThemeOption<>(this, Theme.ToggleSwitch.OFF_COLOR);
     @Getter
-    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.INACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> offOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.OFF_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.ToggleSwitch.ACTIVE_COLOR);
+    private final ThemeOption<Color> onColor = new ThemeOption<>(this, Theme.ToggleSwitch.ON_COLOR);
     @Getter
-    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.ACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> onOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.ON_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> inactiveThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.INACTIVE_THUMB_COLOR);
+    private final ThemeOption<Color> offThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.OFF_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> activeThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.ACTIVE_THUMB_COLOR);
+    private final ThemeOption<Color> onThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.ON_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> inactiveThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.INACTIVE_THUMB_OUTLINE_COLOR);
+    private final ThemeOption<Color> offThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.OFF_THUMB_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> activeThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.ACTIVE_THUMB_OUTLINE_COLOR);
+    private final ThemeOption<Color> onThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.ON_THUMB_OUTLINE_COLOR);
     @Getter
     private final ThemeOption<Float> thumbOutlineWidth = new ThemeOption<>(this, Theme.ToggleSwitch.THUMB_OUTLINE_WIDTH);
     @Getter
     private final ThemeOption<Float> thumbRatio = new ThemeOption<>(this, Theme.ToggleSwitch.THUMB_RATIO);
     @Getter
-    private final ThemeOption<Color> hoverInactiveColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_INACTIVE_COLOR);
+    private final ThemeOption<Color> hoverOffColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_OFF_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverActiveColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ACTIVE_COLOR);
+    private final ThemeOption<Color> hoverOnColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ON_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverInactiveOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_INACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverOffOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_OFF_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverActiveOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverOnOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ON_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverInactiveThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_INACTIVE_THUMB_COLOR);
+    private final ThemeOption<Color> hoverOffThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_OFF_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverActiveThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ACTIVE_THUMB_COLOR);
+    private final ThemeOption<Color> hoverOnThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ON_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverInactiveThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_INACTIVE_THUMB_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverOffThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_OFF_THUMB_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> hoverActiveThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ACTIVE_THUMB_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverOnThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ON_THUMB_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledInactiveColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_INACTIVE_COLOR);
+    private final ThemeOption<Color> disabledOffColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_OFF_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledActiveColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ACTIVE_COLOR);
+    private final ThemeOption<Color> disabledOnColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ON_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledInactiveOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_INACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> disabledOffOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_OFF_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledActiveOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> disabledOnOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ON_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledInactiveThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_INACTIVE_THUMB_COLOR);
+    private final ThemeOption<Color> disabledOffThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_OFF_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledActiveThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ACTIVE_THUMB_COLOR);
+    private final ThemeOption<Color> disabledOnThumbColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ON_THUMB_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledInactiveThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_INACTIVE_THUMB_OUTLINE_COLOR);
+    private final ThemeOption<Color> disabledOffThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_OFF_THUMB_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledActiveThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ACTIVE_THUMB_OUTLINE_COLOR);
+    private final ThemeOption<Color> disabledOnThumbOutlineColor = new ThemeOption<>(this, Theme.ToggleSwitch.DISABLED_ON_THUMB_OUTLINE_COLOR);
     @Getter
     private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.ToggleSwitch.HOVER_ANIMATION);
     @Getter
     private final ThemeOption<AnimationConfig> toggleAnimationConfig = new ThemeOption<>(this, Theme.ToggleSwitch.TOGGLE_ANIMATION);
     @Getter
-    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.ToggleSwitch.CLICK_ON);
+    private final ThemeOption<ClickOn> toggleOn = new ThemeOption<>(this, Theme.ToggleSwitch.TOGGLE_ON);
     @Getter
     private final ThemeOption<Boolean> thumbEncased = new ThemeOption<>(this, Theme.ToggleSwitch.THUMB_ENCASED);
     @Getter
@@ -137,12 +137,12 @@ public class ToggleSwitch extends Component {
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case INACTIVE_OFF -> this.inactiveColor.value();
-                    case INACTIVE_ON -> this.activeColor.value();
-                    case HOVERED_OFF -> this.hoverInactiveColor.value();
-                    case HOVERED_ON -> this.hoverActiveColor.value();
-                    case DISABLED_OFF -> this.disabledInactiveColor.value();
-                    case DISABLED_ON -> this.disabledActiveColor.value();
+                    case NORMAL_OFF -> this.offColor.value();
+                    case NORMAL_ON -> this.onColor.value();
+                    case HOVERED_OFF -> this.hoverOffColor.value();
+                    case HOVERED_ON -> this.hoverOnColor.value();
+                    case DISABLED_OFF -> this.disabledOffColor.value();
+                    case DISABLED_ON -> this.disabledOnColor.value();
                 },
                 Interpolator.COLOR
         );
@@ -157,12 +157,12 @@ public class ToggleSwitch extends Component {
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case INACTIVE_OFF -> this.inactiveOutlineColor.value();
-                    case INACTIVE_ON -> this.activeOutlineColor.value();
-                    case HOVERED_OFF -> this.hoverInactiveOutlineColor.value();
-                    case HOVERED_ON -> this.hoverActiveOutlineColor.value();
-                    case DISABLED_OFF -> this.disabledInactiveOutlineColor.value();
-                    case DISABLED_ON -> this.disabledActiveOutlineColor.value();
+                    case NORMAL_OFF -> this.offOutlineColor.value();
+                    case NORMAL_ON -> this.onOutlineColor.value();
+                    case HOVERED_OFF -> this.hoverOffOutlineColor.value();
+                    case HOVERED_ON -> this.hoverOnOutlineColor.value();
+                    case DISABLED_OFF -> this.disabledOffOutlineColor.value();
+                    case DISABLED_ON -> this.disabledOnOutlineColor.value();
                 },
                 Interpolator.COLOR
         );
@@ -177,12 +177,12 @@ public class ToggleSwitch extends Component {
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case INACTIVE_OFF -> this.inactiveThumbColor.value();
-                    case INACTIVE_ON -> this.activeThumbColor.value();
-                    case HOVERED_OFF -> this.hoverInactiveThumbColor.value();
-                    case HOVERED_ON -> this.hoverActiveThumbColor.value();
-                    case DISABLED_OFF -> this.disabledInactiveThumbColor.value();
-                    case DISABLED_ON -> this.disabledActiveThumbColor.value();
+                    case NORMAL_OFF -> this.offThumbColor.value();
+                    case NORMAL_ON -> this.onThumbColor.value();
+                    case HOVERED_OFF -> this.hoverOffThumbColor.value();
+                    case HOVERED_ON -> this.hoverOnThumbColor.value();
+                    case DISABLED_OFF -> this.disabledOffThumbColor.value();
+                    case DISABLED_ON -> this.disabledOnThumbColor.value();
                 },
                 Interpolator.COLOR
         );
@@ -197,12 +197,12 @@ public class ToggleSwitch extends Component {
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case INACTIVE_OFF -> this.inactiveThumbOutlineColor.value();
-                    case INACTIVE_ON -> this.activeThumbOutlineColor.value();
-                    case HOVERED_OFF -> this.hoverInactiveThumbOutlineColor.value();
-                    case HOVERED_ON -> this.hoverActiveThumbOutlineColor.value();
-                    case DISABLED_OFF -> this.disabledInactiveThumbOutlineColor.value();
-                    case DISABLED_ON -> this.disabledActiveThumbOutlineColor.value();
+                    case NORMAL_OFF -> this.offThumbOutlineColor.value();
+                    case NORMAL_ON -> this.onThumbOutlineColor.value();
+                    case HOVERED_OFF -> this.hoverOffThumbOutlineColor.value();
+                    case HOVERED_ON -> this.hoverOnThumbOutlineColor.value();
+                    case DISABLED_OFF -> this.disabledOffThumbOutlineColor.value();
+                    case DISABLED_ON -> this.disabledOnThumbOutlineColor.value();
                 },
                 Interpolator.COLOR
         );
@@ -239,7 +239,7 @@ public class ToggleSwitch extends Component {
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.pressed = true;
-            if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
+            if (this.toggleOn.value().equals(ClickOn.DOWN) || this.toggleOn.value().equals(ClickOn.BOTH)) {
                 this.toggled(!this.toggled);
             }
         }
@@ -251,7 +251,7 @@ public class ToggleSwitch extends Component {
         if (event.button().equals(MouseButton.LEFT)) {
             boolean wasPressed = this.pressed;
             this.pressed = false;
-            if (this.hovered && wasPressed && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
+            if (this.hovered && wasPressed && (this.toggleOn.value().equals(ClickOn.UP) || this.toggleOn.value().equals(ClickOn.BOTH))) {
                 this.toggled(!this.toggled);
             }
         }
@@ -300,7 +300,7 @@ public class ToggleSwitch extends Component {
 
     @RequiredArgsConstructor
     private enum VisualState {
-        INACTIVE_OFF(false), INACTIVE_ON(true),
+        NORMAL_OFF(false), NORMAL_ON(true),
         HOVERED_OFF(false), HOVERED_ON(true),
         DISABLED_OFF(false), DISABLED_ON(true);
 
@@ -312,7 +312,7 @@ public class ToggleSwitch extends Component {
             } else if (hovered) {
                 return toggled ? HOVERED_ON : HOVERED_OFF;
             } else {
-                return toggled ? INACTIVE_ON : INACTIVE_OFF;
+                return toggled ? NORMAL_ON : NORMAL_OFF;
             }
         }
     }

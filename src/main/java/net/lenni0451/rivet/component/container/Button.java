@@ -40,19 +40,19 @@ public class Button extends Component implements Parent {
     @Getter
     private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.Button.OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Color> inactiveColor = new ThemeOption<>(this, Theme.Button.INACTIVE_COLOR);
+    private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.Button.BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> inactiveOutlineColor = new ThemeOption<>(this, Theme.Button.INACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.Button.OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> activeColor = new ThemeOption<>(this, Theme.Button.ACTIVE_COLOR);
+    private final ThemeOption<Color> hoverBackgroundColor = new ThemeOption<>(this, Theme.Button.HOVER_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> activeOutlineColor = new ThemeOption<>(this, Theme.Button.ACTIVE_OUTLINE_COLOR);
+    private final ThemeOption<Color> hoverOutlineColor = new ThemeOption<>(this, Theme.Button.HOVER_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> clickColor = new ThemeOption<>(this, Theme.Button.CLICK_COLOR);
+    private final ThemeOption<Color> clickBackgroundColor = new ThemeOption<>(this, Theme.Button.CLICK_BACKGROUND_COLOR);
     @Getter
     private final ThemeOption<Color> clickOutlineColor = new ThemeOption<>(this, Theme.Button.CLICK_OUTLINE_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledColor = new ThemeOption<>(this, Theme.Button.DISABLED_COLOR);
+    private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.Button.DISABLED_BACKGROUND_COLOR);
     @Getter
     private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.Button.DISABLED_OUTLINE_COLOR);
     @Getter
@@ -65,8 +65,8 @@ public class Button extends Component implements Parent {
     private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.Button.CLICK_ON);
     private boolean hovered = false;
     private final Set<MouseButton> pressed = new HashSet<>();
-    private StateTransition<Color, State> color;
-    private StateTransition<Color, State> outlineColor;
+    private StateTransition<Color, State> backgroundColorTransition;
+    private StateTransition<Color, State> outlineColorTransition;
 
     public Button(final String text, final Runnable clickListener) {
         this(text, event -> clickListener.run());
@@ -101,7 +101,7 @@ public class Button extends Component implements Parent {
         } else if (!this.pressed.isEmpty()) {
             return State.PRESSED;
         } else {
-            return this.hovered ? State.HOVERED : State.INACTIVE;
+            return this.hovered ? State.HOVERED : State.NORMAL;
         }
     }
 
@@ -109,7 +109,7 @@ public class Button extends Component implements Parent {
     protected void onComponentAdded() {
         this.child.setRivet(this.rivet(), this);
 
-        this.color = new StateTransition<>(
+        this.backgroundColorTransition = new StateTransition<>(
                 this,
                 this::state,
                 (start, target) -> {
@@ -120,14 +120,14 @@ public class Button extends Component implements Parent {
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.inactiveColor.value();
-                    case HOVERED -> this.activeColor.value();
-                    case PRESSED -> this.clickColor.value();
-                    case DISABLED -> this.disabledColor.value();
+                    case NORMAL -> this.backgroundColor.value();
+                    case HOVERED -> this.hoverBackgroundColor.value();
+                    case PRESSED -> this.clickBackgroundColor.value();
+                    case DISABLED -> this.disabledBackgroundColor.value();
                 },
                 Interpolator.COLOR
         );
-        this.outlineColor = new StateTransition<>(
+        this.outlineColorTransition = new StateTransition<>(
                 this,
                 this::state,
                 (start, target) -> {
@@ -138,8 +138,8 @@ public class Button extends Component implements Parent {
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.inactiveOutlineColor.value();
-                    case HOVERED -> this.activeOutlineColor.value();
+                    case NORMAL -> this.outlineColor.value();
+                    case HOVERED -> this.hoverOutlineColor.value();
                     case PRESSED -> this.clickOutlineColor.value();
                     case DISABLED -> this.disabledOutlineColor.value();
                 },
@@ -205,9 +205,9 @@ public class Button extends Component implements Parent {
     public void render(final Renderer renderer, final Size size) {
         float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.color.value());
+        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
         if (outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColor.value());
+            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColorTransition.value());
         }
 
         float width = size.width() - this.innerPadding.value().horizontal();
@@ -273,7 +273,7 @@ public class Button extends Component implements Parent {
     }
 
     private enum State {
-        INACTIVE, HOVERED, PRESSED, DISABLED
+        NORMAL, HOVERED, PRESSED, DISABLED
     }
 
 }

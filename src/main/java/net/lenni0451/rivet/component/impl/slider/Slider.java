@@ -60,7 +60,7 @@ public class Slider extends Component {
     @Getter
     private final ThemeOption<Color> barColor = new ThemeOption<>(this, Theme.Slider.BAR_COLOR);
     @Getter
-    private final ThemeOption<Color> activeBarColor = new ThemeOption<>(this, Theme.Slider.ACTIVE_BAR_COLOR);
+    private final ThemeOption<Color> barFillColor = new ThemeOption<>(this, Theme.Slider.BAR_FILL_COLOR);
     @Getter
     private final ThemeOption<Color> thumbColor = new ThemeOption<>(this, Theme.Slider.THUMB_COLOR);
     @Getter
@@ -94,7 +94,7 @@ public class Slider extends Component {
     @Getter
     private final ThemeOption<Color> disabledBarColor = new ThemeOption<>(this, Theme.Slider.DISABLED_BAR_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledActiveBarColor = new ThemeOption<>(this, Theme.Slider.DISABLED_ACTIVE_BAR_COLOR);
+    private final ThemeOption<Color> disabledBarFillColor = new ThemeOption<>(this, Theme.Slider.DISABLED_BAR_FILL_COLOR);
     @Getter
     private final ThemeOption<Color> disabledThumbColor = new ThemeOption<>(this, Theme.Slider.DISABLED_THUMB_COLOR);
     @Getter
@@ -344,13 +344,13 @@ public class Slider extends Component {
 
     private void renderBar(final Renderer renderer, final Size size, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbX) {
         Color barColor = this.disabled() ? this.disabledBarColor.value() : this.barColor.value();
-        Color activeBarColor = this.disabled() ? this.disabledActiveBarColor.value() : this.activeBarColor.value();
+        Color barFillColor = this.disabled() ? this.disabledBarFillColor.value() : this.barFillColor.value();
         if (this.thumbEncased.value()) {
             renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), barColor);
-            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), activeBarColor);
+            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, thumbX, barHeight, this.barCornerRadius.value(), barFillColor);
         } else {
             renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.value(), barColor);
-            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), activeBarColor);
+            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, thumbX - thumbWidth / 2F, barHeight, this.barCornerRadius.value(), barFillColor);
         }
     }
 

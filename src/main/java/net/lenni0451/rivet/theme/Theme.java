@@ -96,18 +96,20 @@ public abstract class Theme {
             return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
         });
 
-        // Colors - Base / Inactive
-        public static final ThemeKey<Color> INACTIVE_COLOR = register("button.inactive_color", Color.class, r -> Color.fromRGB(45, 45, 48));
-        public static final ThemeKey<Color> INACTIVE_OUTLINE_COLOR = register("button.inactive_outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
+        // Colors - Normal
+        public static final ThemeKey<Color> BACKGROUND_COLOR = register("button.background_color", Color.class, r -> Color.fromRGB(45, 45, 48));
+        public static final ThemeKey<Color> OUTLINE_COLOR = register("button.outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
 
-        // Colors - States (Hover / Active / Click)
-        public static final ThemeKey<Color> ACTIVE_COLOR = register("button.active_color", Color.class, r -> Color.fromRGB(65, 65, 70));
-        public static final ThemeKey<Color> ACTIVE_OUTLINE_COLOR = register("button.active_outline_color", Color.class, r -> Color.fromRGB(100, 100, 105));
-        public static final ThemeKey<Color> CLICK_COLOR = register("button.click_color", Color.class, r -> Color.fromRGB(55, 55, 60));
+        // Colors - Hover
+        public static final ThemeKey<Color> HOVER_BACKGROUND_COLOR = register("button.hover_background_color", Color.class, r -> Color.fromRGB(65, 65, 70));
+        public static final ThemeKey<Color> HOVER_OUTLINE_COLOR = register("button.hover_outline_color", Color.class, r -> Color.fromRGB(100, 100, 105));
+
+        // Colors - Click/Pressed
+        public static final ThemeKey<Color> CLICK_BACKGROUND_COLOR = register("button.click_background_color", Color.class, r -> Color.fromRGB(55, 55, 60));
         public static final ThemeKey<Color> CLICK_OUTLINE_COLOR = register("button.click_outline_color", Color.class, r -> Color.fromRGB(110, 110, 115));
 
         // Colors - Disabled
-        public static final ThemeKey<Color> DISABLED_COLOR = register("button.disabled_color", Color.class, r -> Color.fromRGB(35, 35, 38));
+        public static final ThemeKey<Color> DISABLED_BACKGROUND_COLOR = register("button.disabled_background_color", Color.class, r -> Color.fromRGB(35, 35, 38));
         public static final ThemeKey<Color> DISABLED_OUTLINE_COLOR = register("button.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 55));
 
         // Animations
@@ -142,7 +144,7 @@ public abstract class Theme {
         public static final ThemeKey<Color> TOOLTIP_TEXT_COLOR = register("slider.tooltip_text_color", Color.class, r -> Color.WHITE);
 
         // Colors - States (Hover / Click)
-        public static final ThemeKey<Color> ACTIVE_BAR_COLOR = register("slider.active_bar_color", Color.class, r -> Color.fromRGB(80, 80, 85));
+        public static final ThemeKey<Color> BAR_FILL_COLOR = register("slider.bar_fill_color", Color.class, r -> Color.fromRGB(80, 80, 85));
         public static final ThemeKey<Color> THUMB_HOVER_COLOR = register("slider.thumb_hover_color", Color.class, r -> Color.fromRGB(140, 140, 145));
         public static final ThemeKey<Color> THUMB_HOVER_OUTLINE_COLOR = register("slider.thumb_hover_outline_color", Color.class, r -> Color.fromRGB(160, 160, 165));
         public static final ThemeKey<Color> THUMB_CLICK_COLOR = register("slider.thumb_click_color", Color.class, r -> Color.fromRGB(100, 100, 105));
@@ -150,7 +152,7 @@ public abstract class Theme {
 
         // Colors - Disabled
         public static final ThemeKey<Color> DISABLED_BAR_COLOR = register("slider.disabled_bar_color", Color.class, r -> Color.fromRGB(45, 45, 48));
-        public static final ThemeKey<Color> DISABLED_ACTIVE_BAR_COLOR = register("slider.disabled_active_bar_color", Color.class, r -> Color.fromRGB(55, 55, 58));
+        public static final ThemeKey<Color> DISABLED_BAR_FILL_COLOR = register("slider.disabled_bar_fill_color", Color.class, r -> Color.fromRGB(55, 55, 58));
         public static final ThemeKey<Color> DISABLED_THUMB_COLOR = register("slider.disabled_thumb_color", Color.class, r -> Color.fromRGB(75, 75, 78));
         public static final ThemeKey<Color> DISABLED_THUMB_OUTLINE_COLOR = register("slider.disabled_thumb_outline_color", Color.class, r -> Color.fromRGB(95, 95, 98));
         public static final ThemeKey<Color> DISABLED_TICK_COLOR = register("slider.disabled_tick_color", Color.class, r -> Color.fromRGB(100, 100, 105));
@@ -328,7 +330,7 @@ public abstract class Theme {
         // Behaviors & Settings
         public static final ThemeKey<TabAlignment> ALIGNMENT = register("tab.alignment", TabAlignment.class, r -> TabAlignment.LEFT);
         public static final ThemeKey<Boolean> SAME_SIZE = register("tab.same_size", Boolean.class, r -> false);
-        public static final ThemeKey<ClickOn> CLICK_ON = register("tab.click_on", ClickOn.class, r -> ClickOn.UP);
+        public static final ThemeKey<ClickOn> SELECT_ON = register("tab.select_on", ClickOn.class, r -> ClickOn.UP);
     }
 
     public static class Tooltip {
@@ -371,7 +373,7 @@ public abstract class Theme {
         ));
 
         // Behaviors & Settings
-        public static final ThemeKey<ClickOn> CLICK_ON = register("collapsible_container.click_on", ClickOn.class, r -> ClickOn.UP);
+        public static final ThemeKey<ClickOn> COLLAPSE_ON = register("collapsible_container.collapse_on", ClickOn.class, r -> ClickOn.UP);
     }
 
     public static class Arrow {
@@ -427,44 +429,44 @@ public abstract class Theme {
         public static final ThemeKey<Float> THUMB_RATIO = register("toggle_switch.thumb_ratio", Float.class, r -> 0.9F);
         public static final ThemeKey<Float> RAIL_RATIO = register("toggle_switch.rail_ratio", Float.class, r -> 0.6F);
 
-        // Colors - Base / Inactive
-        public static final ThemeKey<Color> INACTIVE_COLOR = register("toggle_switch.inactive_color", Color.class, r -> Color.fromRGB(65, 65, 70));
-        public static final ThemeKey<Color> INACTIVE_OUTLINE_COLOR = register("toggle_switch.inactive_outline_color", Color.class, r -> Color.fromRGB(85, 85, 90));
-        public static final ThemeKey<Color> INACTIVE_THUMB_COLOR = register("toggle_switch.inactive_thumb_color", Color.class, r -> Color.fromRGB(200, 200, 200));
-        public static final ThemeKey<Color> INACTIVE_THUMB_OUTLINE_COLOR = register("toggle_switch.inactive_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
+        // Colors - Off state
+        public static final ThemeKey<Color> OFF_COLOR = register("toggle_switch.off_color", Color.class, r -> Color.fromRGB(65, 65, 70));
+        public static final ThemeKey<Color> OFF_OUTLINE_COLOR = register("toggle_switch.off_outline_color", Color.class, r -> Color.fromRGB(85, 85, 90));
+        public static final ThemeKey<Color> OFF_THUMB_COLOR = register("toggle_switch.off_thumb_color", Color.class, r -> Color.fromRGB(200, 200, 200));
+        public static final ThemeKey<Color> OFF_THUMB_OUTLINE_COLOR = register("toggle_switch.off_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
 
-        // Colors - Active
-        public static final ThemeKey<Color> ACTIVE_COLOR = register("toggle_switch.active_color", Color.class, r -> Color.fromRGB(0, 122, 204));
-        public static final ThemeKey<Color> ACTIVE_OUTLINE_COLOR = register("toggle_switch.active_outline_color", Color.class, r -> Color.fromRGB(0, 142, 224));
-        public static final ThemeKey<Color> ACTIVE_THUMB_COLOR = register("toggle_switch.active_thumb_color", Color.class, r -> Color.fromRGB(200, 200, 200));
-        public static final ThemeKey<Color> ACTIVE_THUMB_OUTLINE_COLOR = register("toggle_switch.active_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
+        // Colors - On state
+        public static final ThemeKey<Color> ON_COLOR = register("toggle_switch.on_color", Color.class, r -> Color.fromRGB(0, 122, 204));
+        public static final ThemeKey<Color> ON_OUTLINE_COLOR = register("toggle_switch.on_outline_color", Color.class, r -> Color.fromRGB(0, 142, 224));
+        public static final ThemeKey<Color> ON_THUMB_COLOR = register("toggle_switch.on_thumb_color", Color.class, r -> Color.fromRGB(200, 200, 200));
+        public static final ThemeKey<Color> ON_THUMB_OUTLINE_COLOR = register("toggle_switch.on_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
 
-        // Colors - Hover (Inactive & Active)
-        public static final ThemeKey<Color> HOVER_INACTIVE_COLOR = register("toggle_switch.hover_inactive_color", Color.class, r -> Color.fromRGB(75, 75, 80));
-        public static final ThemeKey<Color> HOVER_ACTIVE_COLOR = register("toggle_switch.hover_active_color", Color.class, r -> Color.fromRGB(0, 142, 224));
-        public static final ThemeKey<Color> HOVER_INACTIVE_OUTLINE_COLOR = register("toggle_switch.hover_inactive_outline_color", Color.class, r -> Color.fromRGB(95, 95, 100));
-        public static final ThemeKey<Color> HOVER_ACTIVE_OUTLINE_COLOR = register("toggle_switch.hover_active_outline_color", Color.class, r -> Color.fromRGB(0, 162, 244));
-        public static final ThemeKey<Color> HOVER_INACTIVE_THUMB_COLOR = register("toggle_switch.hover_inactive_thumb_color", Color.class, r -> Color.fromRGB(220, 220, 220));
-        public static final ThemeKey<Color> HOVER_ACTIVE_THUMB_COLOR = register("toggle_switch.hover_active_thumb_color", Color.class, r -> Color.fromRGB(220, 220, 220));
-        public static final ThemeKey<Color> HOVER_INACTIVE_THUMB_OUTLINE_COLOR = register("toggle_switch.hover_inactive_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
-        public static final ThemeKey<Color> HOVER_ACTIVE_THUMB_OUTLINE_COLOR = register("toggle_switch.hover_active_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
+        // Colors - Hover (Off & On)
+        public static final ThemeKey<Color> HOVER_OFF_COLOR = register("toggle_switch.hover_off_color", Color.class, r -> Color.fromRGB(75, 75, 80));
+        public static final ThemeKey<Color> HOVER_ON_COLOR = register("toggle_switch.hover_on_color", Color.class, r -> Color.fromRGB(0, 142, 224));
+        public static final ThemeKey<Color> HOVER_OFF_OUTLINE_COLOR = register("toggle_switch.hover_off_outline_color", Color.class, r -> Color.fromRGB(95, 95, 100));
+        public static final ThemeKey<Color> HOVER_ON_OUTLINE_COLOR = register("toggle_switch.hover_on_outline_color", Color.class, r -> Color.fromRGB(0, 162, 244));
+        public static final ThemeKey<Color> HOVER_OFF_THUMB_COLOR = register("toggle_switch.hover_off_thumb_color", Color.class, r -> Color.fromRGB(220, 220, 220));
+        public static final ThemeKey<Color> HOVER_ON_THUMB_COLOR = register("toggle_switch.hover_on_thumb_color", Color.class, r -> Color.fromRGB(220, 220, 220));
+        public static final ThemeKey<Color> HOVER_OFF_THUMB_OUTLINE_COLOR = register("toggle_switch.hover_off_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
+        public static final ThemeKey<Color> HOVER_ON_THUMB_OUTLINE_COLOR = register("toggle_switch.hover_on_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
 
-        // Colors - Disabled (Inactive & Active)
-        public static final ThemeKey<Color> DISABLED_INACTIVE_COLOR = register("toggle_switch.disabled_inactive_color", Color.class, r -> Color.fromRGB(45, 45, 48));
-        public static final ThemeKey<Color> DISABLED_ACTIVE_COLOR = register("toggle_switch.disabled_active_color", Color.class, r -> Color.fromRGB(0, 82, 144));
-        public static final ThemeKey<Color> DISABLED_INACTIVE_OUTLINE_COLOR = register("toggle_switch.disabled_inactive_outline_color", Color.class, r -> Color.fromRGB(55, 55, 58));
-        public static final ThemeKey<Color> DISABLED_ACTIVE_OUTLINE_COLOR = register("toggle_switch.disabled_active_outline_color", Color.class, r -> Color.fromRGB(0, 92, 154));
-        public static final ThemeKey<Color> DISABLED_INACTIVE_THUMB_COLOR = register("toggle_switch.disabled_inactive_thumb_color", Color.class, r -> Color.fromRGB(120, 120, 125));
-        public static final ThemeKey<Color> DISABLED_ACTIVE_THUMB_COLOR = register("toggle_switch.disabled_active_thumb_color", Color.class, r -> Color.fromRGB(120, 120, 125));
-        public static final ThemeKey<Color> DISABLED_INACTIVE_THUMB_OUTLINE_COLOR = register("toggle_switch.disabled_inactive_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
-        public static final ThemeKey<Color> DISABLED_ACTIVE_THUMB_OUTLINE_COLOR = register("toggle_switch.disabled_active_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
+        // Colors - Disabled (Off & On)
+        public static final ThemeKey<Color> DISABLED_OFF_COLOR = register("toggle_switch.disabled_off_color", Color.class, r -> Color.fromRGB(45, 45, 48));
+        public static final ThemeKey<Color> DISABLED_ON_COLOR = register("toggle_switch.disabled_on_color", Color.class, r -> Color.fromRGB(0, 82, 144));
+        public static final ThemeKey<Color> DISABLED_OFF_OUTLINE_COLOR = register("toggle_switch.disabled_off_outline_color", Color.class, r -> Color.fromRGB(55, 55, 58));
+        public static final ThemeKey<Color> DISABLED_ON_OUTLINE_COLOR = register("toggle_switch.disabled_on_outline_color", Color.class, r -> Color.fromRGB(0, 92, 154));
+        public static final ThemeKey<Color> DISABLED_OFF_THUMB_COLOR = register("toggle_switch.disabled_off_thumb_color", Color.class, r -> Color.fromRGB(120, 120, 125));
+        public static final ThemeKey<Color> DISABLED_ON_THUMB_COLOR = register("toggle_switch.disabled_on_thumb_color", Color.class, r -> Color.fromRGB(120, 120, 125));
+        public static final ThemeKey<Color> DISABLED_OFF_THUMB_OUTLINE_COLOR = register("toggle_switch.disabled_off_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
+        public static final ThemeKey<Color> DISABLED_ON_THUMB_OUTLINE_COLOR = register("toggle_switch.disabled_on_thumb_outline_color", Color.class, r -> Color.TRANSPARENT);
 
         // Animations
         public static final ThemeKey<AnimationConfig> HOVER_ANIMATION = register("toggle_switch.hover_animation", AnimationConfig.class, r -> DefaultTheme.HOVER_ANIMATION);
         public static final ThemeKey<AnimationConfig> TOGGLE_ANIMATION = register("toggle_switch.toggle_animation", AnimationConfig.class, r -> DefaultTheme.CLICK_ANIMATION);
 
         // Behaviors & Settings
-        public static final ThemeKey<ClickOn> CLICK_ON = register("toggle_switch.click_on", ClickOn.class, r -> ClickOn.UP);
+        public static final ThemeKey<ClickOn> TOGGLE_ON = register("toggle_switch.toggle_on", ClickOn.class, r -> ClickOn.UP);
         public static final ThemeKey<Boolean> THUMB_ENCASED = register("toggle_switch.thumb_encased", Boolean.class, r -> true);
     }
 

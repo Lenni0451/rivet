@@ -35,7 +35,7 @@ public class TabBackground extends Component {
     private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.Tab.INNER_PADDING);
     private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.Tab.HOVER_ANIMATION);
     private final ThemeOption<AnimationConfig> activeAnimationConfig = new ThemeOption<>(this, Theme.Tab.ACTIVE_ANIMATION);
-    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.Tab.CLICK_ON);
+    private final ThemeOption<ClickOn> selectOn = new ThemeOption<>(this, Theme.Tab.SELECT_ON);
     private boolean hovered = false;
     private boolean active = false;
 
@@ -122,7 +122,7 @@ public class TabBackground extends Component {
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
         if (!this.active && event.button().equals(MouseButton.LEFT)) {
-            if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
+            if (this.selectOn.value().equals(ClickOn.DOWN) || this.selectOn.value().equals(ClickOn.BOTH)) {
                 this.clickListener.run();
                 this.active = true;
             }
@@ -133,7 +133,7 @@ public class TabBackground extends Component {
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         if (!this.active && this.hovered && event.button().equals(MouseButton.LEFT)) {
-            if (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH)) {
+            if (this.selectOn.value().equals(ClickOn.UP) || this.selectOn.value().equals(ClickOn.BOTH)) {
                 this.clickListener.run();
                 this.active = true;
             }

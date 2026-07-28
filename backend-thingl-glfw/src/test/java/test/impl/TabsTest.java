@@ -63,8 +63,8 @@ public class TabsTest extends TestBase {
             button.innerPadding().set(Padding.EMPTY);
             button.cornerRadius().set(Float.MAX_VALUE);
             button.outlineWidth().set(0F);
-            button.inactiveColor().set(Color.TRANSPARENT);
-            button.activeColor().set(Color.RED.darker().darker().darker());
+            button.backgroundColor().set(Color.TRANSPARENT);
+            button.hoverBackgroundColor().set(Color.RED.darker().darker().darker());
         });
         return container;
     }

@@ -50,7 +50,7 @@ public class CollapsibleContainer extends ParentContainer {
     @Getter
     private final ThemeOption<Float> arrowSize = new ThemeOption<>(this, Theme.Arrow.SIZE);
     @Getter
-    private final ThemeOption<ClickOn> clickOn = new ThemeOption<>(this, Theme.CollapsibleContainer.CLICK_ON);
+    private final ThemeOption<ClickOn> collapseOn = new ThemeOption<>(this, Theme.CollapsibleContainer.COLLAPSE_ON);
     @Getter
     private final ThemeOption<AnimationConfig> collapseAnimationConfig = new ThemeOption<>(this, Theme.CollapsibleContainer.COLLAPSE_ANIMATION);
 
@@ -210,7 +210,7 @@ public class CollapsibleContainer extends ParentContainer {
         protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
             if (!super.onComponentMouseDown(event, size)) {
                 if (event.button().equals(MouseButton.LEFT)) {
-                    if (CollapsibleContainer.this.clickOn.value().equals(ClickOn.DOWN) || CollapsibleContainer.this.clickOn.value().equals(ClickOn.BOTH)) {
+                    if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.DOWN) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
                         CollapsibleContainer.this.collapsed(!CollapsibleContainer.this.collapsed);
                     }
                 }
@@ -222,7 +222,7 @@ public class CollapsibleContainer extends ParentContainer {
         protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
             if (!super.onComponentMouseUp(event, size)) {
                 if (this.hovered && event.button().equals(MouseButton.LEFT)) {
-                    if (CollapsibleContainer.this.clickOn.value().equals(ClickOn.UP) || CollapsibleContainer.this.clickOn.value().equals(ClickOn.BOTH)) {
+                    if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.UP) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
                         CollapsibleContainer.this.collapsed(!CollapsibleContainer.this.collapsed);
                     }
                 }
