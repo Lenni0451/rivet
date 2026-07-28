@@ -7,12 +7,12 @@ import javax.annotation.Nullable;
 @RequiredArgsConstructor
 public final class EnumParser<E extends Enum<E>> implements Parser<E> {
 
-    private final E[] values;
+    private final Class<E> enumClass;
 
     @Nullable
     @Override
     public E parse(final String s) {
-        for (E value : this.values) {
+        for (E value : this.enumClass.getEnumConstants()) {
             if (value.name().equalsIgnoreCase(s)) {
                 return value;
             }

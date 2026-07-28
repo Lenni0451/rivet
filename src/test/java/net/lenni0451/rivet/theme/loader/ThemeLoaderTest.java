@@ -54,7 +54,7 @@ class ThemeLoaderTest {
         Map<Class<?>, Parser<?>> parsers = (Map<Class<?>, Parser<?>>) parsersField.get(null);
 
         for (ThemeKey<?> key : Theme.registeredKeys()) {
-            if (!parsers.containsKey(key.type())) {
+            if (!parsers.containsKey(key.type()) && !key.type().isEnum()) {
                 fail("No parser implemented for theme key type: " + key.type());
             }
         }

@@ -6,7 +6,7 @@ import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 public class DynamicAnimationConfigParser implements Parser<DynamicAnimationConfig> {
 
     private final EasingFunctionParser easingFunctionParser = new EasingFunctionParser();
-    private final EnumParser<EasingMode> easingModeParser = new EnumParser<>(EasingMode.values());
+    private final EnumParser<EasingMode> easingModeParser = new EnumParser<>(EasingMode.class);
 
     @Override
     public DynamicAnimationConfig parse(final String s) {

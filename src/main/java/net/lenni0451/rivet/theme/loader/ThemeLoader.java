@@ -5,12 +5,6 @@ import lombok.experimental.UtilityClass;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
-import net.lenni0451.rivet.component.container.ScrollContainer;
-import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
-import net.lenni0451.rivet.component.impl.Label;
-import net.lenni0451.rivet.component.impl.ProgressBar;
-import net.lenni0451.rivet.component.impl.slider.Slider;
-import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
@@ -44,12 +38,6 @@ public class ThemeLoader {
         registerParser(Corners.class, new CornersParser());
         registerParser(AnimationConfig.class, new AnimationConfigParser());
         registerParser(DynamicAnimationConfig.class, new DynamicAnimationConfigParser());
-        registerParser(ClickOn.class, new EnumParser<>(ClickOn.values()));
-        registerParser(Slider.ThumbShape.class, new EnumParser<>(Slider.ThumbShape.values()));
-        registerParser(ScrollContainer.ScrollBarType.class, new EnumParser<>(ScrollContainer.ScrollBarType.values()));
-        registerParser(TabAlignment.class, new EnumParser<>(TabAlignment.values()));
-        registerParser(Label.OverflowBehavior.class, new EnumParser<>(Label.OverflowBehavior.values()));
-        registerParser(ProgressBar.TextPosition.class, new EnumParser<>(ProgressBar.TextPosition.values()));
     }
 
     public static <T> void registerParser(final Class<T> type, final Parser<T> parser) {
@@ -76,7 +64,12 @@ public class ThemeLoader {
             throw new IllegalArgumentException("Unknown key: " + key);
         }
 
-        Parser<?> parser = parsers.get(themeKey.type());
+        Parser<?> parser;
+        if (themeKey.type().isEnum()) {
+            parser = new EnumParser(themeKey.type());
+        } else {
+            parser = parsers.get(themeKey.type());
+        }
         if (parser == null) {
             throw new UnsupportedOperationException("Unsupported theme value type: " + themeKey.type());
         }

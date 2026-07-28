@@ -14,9 +14,9 @@ import java.util.Locale;
 public final class AnimationConfigParser implements Parser<AnimationConfig> {
 
     private final EasingFunctionParser easingFunctionParser = new EasingFunctionParser();
-    private final EnumParser<EasingMode> easingModeParser = new EnumParser<>(EasingMode.values());
-    private final EnumParser<AnimationMode> modeParser = new EnumParser<>(AnimationMode.values());
-    private final EnumParser<EasingBehavior> behaviorParser = new EnumParser<>(EasingBehavior.values());
+    private final EnumParser<EasingMode> easingModeParser = new EnumParser<>(EasingMode.class);
+    private final EnumParser<AnimationMode> modeParser = new EnumParser<>(AnimationMode.class);
+    private final EnumParser<EasingBehavior> behaviorParser = new EnumParser<>(EasingBehavior.class);
 
     @Override
     public AnimationConfig parse(final String s) {
