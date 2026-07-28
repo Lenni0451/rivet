@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.theme.text.parser;
+package net.lenni0451.rivet.theme.loader.parser;
 
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;

@@ -3,7 +3,7 @@ package test;
 import lombok.SneakyThrows;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.theme.Theme;
-import net.lenni0451.rivet.theme.text.ThemeLoader;
+import net.lenni0451.rivet.theme.loader.ThemeLoader;
 
 public class TestTheme extends Theme {
 

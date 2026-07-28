@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.theme.text.parser;
+package net.lenni0451.rivet.theme.loader.parser;
 
 public class BooleanParser implements Parser<Boolean> {
 

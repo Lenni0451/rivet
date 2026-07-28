@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.theme.text.parser;
+package net.lenni0451.rivet.theme.loader.parser;
 
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.text.ParserException;

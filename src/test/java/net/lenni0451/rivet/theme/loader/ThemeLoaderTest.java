@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.theme.text;
+package net.lenni0451.rivet.theme.loader;
 
 import lombok.SneakyThrows;
 import net.lenni0451.commons.animation.AnimationMode;
@@ -19,7 +19,7 @@ import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
-import net.lenni0451.rivet.theme.text.parser.Parser;
+import net.lenni0451.rivet.theme.loader.parser.Parser;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

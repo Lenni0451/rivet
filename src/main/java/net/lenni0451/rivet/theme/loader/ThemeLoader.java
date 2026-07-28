@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.theme.text;
+package net.lenni0451.rivet.theme.loader;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -15,7 +15,7 @@ import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
-import net.lenni0451.rivet.theme.text.parser.*;
+import net.lenni0451.rivet.theme.loader.parser.*;
 
 import javax.annotation.WillNotClose;
 import java.io.*;
