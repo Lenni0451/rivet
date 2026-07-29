@@ -278,6 +278,15 @@ public abstract class Theme {
         public static final ThemeKey<Float> SLIDER_WIDTH = register("color_picker.slider_width", Float.class, r -> roundMin(r.backend().font().height(), 1));
         public static final ThemeKey<Float> GAP = register("color_picker.gap", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1));
         public static final ThemeKey<Float> SELECTOR_SIZE = register("color_picker.selector_size", Float.class, r -> roundMin(r.backend().font().height() / 8F, 1));
+        public static final ThemeKey<Float> PICKER_INDICATOR_OUTLINE_WIDTH = register("color_picker.picker_indicator_outline_width", Float.class, r -> 1F);
+        public static final ThemeKey<Float> SLIDER_INDICATOR_OUTLINE_WIDTH = register("color_picker.slider_indicator_outline_width", Float.class, r -> 1F);
+        public static final ThemeKey<Float> PICKER_INDICATOR_RADIUS = register("color_picker.picker_indicator_radius", Float.class, r -> roundMin(r.backend().font().height() / 8F, 1));
+        public static final ThemeKey<Float> SLIDER_INDICATOR_INNER_WIDTH = register("color_picker.slider_indicator_inner_width", Float.class, r -> 2F);
+
+        // Behaviors & Settings
+        public static final ThemeKey<Boolean> SHOW_ALPHA = register("color_picker.show_alpha", Boolean.class, r -> true);
+        public static final ThemeKey<Boolean> SHOW_PREVIEW = register("color_picker.show_preview", Boolean.class, r -> true);
+        public static final ThemeKey<Boolean> ALLOW_SCALING = register("color_picker.allow_scaling", Boolean.class, r -> true);
 
         // Colors - Base / Inactive
         public static final ThemeKey<Color> OUTLINE_COLOR = register("color_picker.outline_color", Color.class, r -> Color.GRAY);
