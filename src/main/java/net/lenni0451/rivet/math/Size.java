@@ -30,4 +30,12 @@ public record Size(float width, float height) {
         return new Size(Math.max(this.width, width), Math.max(this.height, height));
     }
 
+    public Size min(final Size other) {
+        return this.min(other.width, other.height);
+    }
+
+    public Size min(final float width, final float height) {
+        return new Size(Math.min(this.width, width), Math.min(this.height, height));
+    }
+
 }

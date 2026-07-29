@@ -3,18 +3,12 @@ package net.lenni0451.rivet.component.container;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.component.impl.Arrow;
 import net.lenni0451.rivet.component.impl.Label;
-import net.lenni0451.rivet.component.impl.SolidColor;
-import net.lenni0451.rivet.layer.Layer;
-import net.lenni0451.rivet.layer.LayerBucket;
-import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
-import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
 import net.lenni0451.rivet.layout.grid.GridAnchor;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
@@ -24,6 +18,7 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.ComponentPopup;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -38,10 +33,7 @@ public class ComboBox extends ParentContainer {
     @Getter
     private final Component child;
     @Getter
-    private final ListenerList<Runnable> openListener = new ListenerList<>();
-    @Getter
-    private final ListenerList<Runnable> closeListener = new ListenerList<>();
-    private Layer layer;
+    private final ComponentPopup popup;
 
     @Getter
     private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.Arrow.COLOR);
@@ -81,6 +73,7 @@ public class ComboBox extends ParentContainer {
             }
         });
         this.child = child;
+        this.popup = new ComponentPopup(this, this.child, () -> new Size(Float.MAX_VALUE, this.maxPopupHeight.value()), this.interceptOutsideClicks::value);
 
         this.arrowColor.initListener().add(this.arrow.color()::set);
         this.arrowDisabledColor.initListener().add(this.arrow.disabledColor()::set);
@@ -92,78 +85,25 @@ public class ComboBox extends ParentContainer {
     }
 
     public final ComboBox open() {
-        if (this.isOpen()) return this;
-        Container container = new Container(AbsoluteLayout.INSTANCE);
-        if (this.interceptOutsideClicks.value()) {
-            SolidColor clickInterceptor = new SolidColor();
-            clickInterceptor.mouseDownListener().add((event, bounds) -> {
-                this.close();
-                return true;
-            });
-            clickInterceptor.mouseMoveListener().add((event, bounds) -> true);
-            container.addChild(clickInterceptor.layoutOptions(new AbsoluteOptions(0, 0, -1F, -1F)));
-        }
-        container.addChild(this.child);
-        this.layer = new Layer(container, LayerBucket.OVERLAY);
-        this.rivet().addLayer(this.layer);
-        this.updatePopupPosition(this.absoluteBounds());
-        this.openListener.callVoid(Runnable::run);
+        this.popup.open();
         return this;
     }
 
-    private void updatePopupPosition(final Rectangle absoluteBounds) {
-        Size screenSize = this.rivet().scaledSize();
-        float availableWidth = screenSize.width() - absoluteBounds.x();
-        float availableHeight = screenSize.height() - absoluteBounds.y() - absoluteBounds.height();
-        float width = Math.min(availableWidth, absoluteBounds.width());
-        width = MathUtils.clamp(width, this.child.minSize().width(), this.child.maxSize().width());
-        Size idealSize = this.child.computeIdealSize(new Size(width, availableHeight));
-        float maxHeight = Math.min(availableHeight, this.maxPopupHeight.value());
-        float height = Math.min(idealSize.height(), maxHeight);
-        height = MathUtils.clamp(height, this.child.minSize().height(), this.child.maxSize().height());
-        Rectangle region = new Rectangle(
-                absoluteBounds.x(),
-                absoluteBounds.y() + absoluteBounds.height(),
-                width,
-                height
-        );
-        if (!(this.child.layoutOptions() instanceof AbsoluteOptions options)
-                || options.x() != region.x() || options.y() != region.y()
-                || options.width() == null || options.width() != region.width()
-                || options.height() == null || options.height() != region.height()) {
-            this.child.layoutOptions(new AbsoluteOptions(region));
-        }
-    }
-
     public final ComboBox close() {
-        if (!this.isOpen()) return this;
-        this.rivet().removeLayer(this.layer);
-        this.layer = null;
-        this.closeListener.callVoid(Runnable::run);
+        this.popup.close();
         return this;
     }
 
     public final boolean isOpen() {
-        return this.layer != null;
+        return this.popup.isOpen();
     }
 
-    @Override
-    protected void onComponentRemoved() {
-        super.onComponentRemoved();
-        this.close();
+    public final ListenerList<Runnable> openListener() {
+        return this.popup.openListener();
     }
 
-    @Override
-    protected void onComponentDisabled() {
-        super.onComponentDisabled();
-        this.close();
-    }
-
-    @Override
-    protected void updateComponentPosition(final Rectangle absoluteBounds) {
-        if (this.isOpen()) {
-            this.updatePopupPosition(absoluteBounds);
-        }
+    public final ListenerList<Runnable> closeListener() {
+        return this.popup.closeListener();
     }
 
     @Override
