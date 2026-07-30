@@ -68,6 +68,14 @@ public class Button extends Component implements Parent {
     private StateTransition<Color, State> backgroundColorTransition;
     private StateTransition<Color, State> outlineColorTransition;
 
+    public Button(final String text) {
+        this(text, () -> {});
+    }
+
+    public Button(final Component child) {
+        this(child, () -> {});
+    }
+
     public Button(final String text, final Runnable clickListener) {
         this(text, event -> clickListener.run());
     }
