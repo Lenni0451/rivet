@@ -7,6 +7,7 @@ import net.lenni0451.rivet.input.keyboard.Key;
 import net.raphimc.thingl.implementation.util.sdl.SdlException;
 import org.lwjgl.sdl.SDLClipboard;
 import org.lwjgl.sdl.SDLKeyboard;
+import org.lwjgl.system.MemoryUtil;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -32,7 +33,12 @@ public class SDLBackend extends ThinGLBackend {
     @Override
     public void setClipboard(final String clipboard) {
         if (clipboard != null) {
-            SdlException.check(SDLClipboard.SDL_SetClipboardText(clipboard), "Failed to set clipboard text");
+            ByteBuffer buffer = MemoryUtil.memUTF8(clipboard);
+            try {
+                SdlException.check(SDLClipboard.SDL_SetClipboardText(buffer), "Failed to set clipboard text");
+            } finally {
+                MemoryUtil.memFree(buffer);
+            }
         }
     }
 
