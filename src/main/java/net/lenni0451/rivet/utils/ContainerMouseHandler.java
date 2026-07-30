@@ -79,11 +79,12 @@ public abstract class ContainerMouseHandler<E> {
                 this.componentMouseButtons.add(event.button());
                 Component hoveredComponent = this.map(this.clickedElement);
                 Rectangle clickedRelativeBounds = this.relativeBounds(containerBounds, this.clickedElement);
-                rivet.focusedComponent(hoveredComponent);
-                return EventState.component(hoveredComponent.onMouseDown(
+                boolean handled = hoveredComponent.onMouseDown(
                         event.withX(event.x() - clickedRelativeBounds.x()).withY(event.y() - clickedRelativeBounds.y()),
                         clickedRelativeBounds.size()
-                ));
+                );
+                if (handled) this.focus(rivet, hoveredComponent);
+                return EventState.component(handled);
             }
             return EventState.NOT_HANDLED;
         } else if (!nonComponentButtonsHeld && !hoveredElements.isEmpty()) {
@@ -93,11 +94,11 @@ public abstract class ContainerMouseHandler<E> {
 
                 this.clickedElement = hoveredElement;
                 this.componentMouseButtons.add(event.button());
-                rivet.focusedComponent(hoveredComponent);
                 if (hoveredComponent.onMouseDown(
                         event.withX(event.x() - clickedRelativeBounds.x()).withY(event.y() - clickedRelativeBounds.y()),
                         clickedRelativeBounds.size()
                 )) {
+                    this.focus(rivet, hoveredComponent);
                     return EventState.HANDLED;
                 }
             }
@@ -259,6 +260,12 @@ public abstract class ContainerMouseHandler<E> {
             return EventState.HANDLED;
         }
         return EventState.MISS;
+    }
+
+    private void focus(final Rivet rivet, final Component component) {
+        if (rivet.focusedComponent() == null || !rivet.focusedComponent().isDescendantOf(component)) {
+            rivet.focusedComponent(component);
+        }
     }
 
 

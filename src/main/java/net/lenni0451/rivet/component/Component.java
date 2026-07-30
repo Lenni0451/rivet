@@ -190,6 +190,19 @@ public abstract class Component {
         return new Rectangle(parentBounds.x() + relative.x(), parentBounds.y() + relative.y(), relative.width(), relative.height());
     }
 
+    public final boolean isDescendantOf(final Component parent) {
+        Component current = this;
+        while (true) {
+            if (current == parent) {
+                return true;
+            } else if (current.parent() instanceof Component p) {
+                current = p;
+            } else {
+                return false;
+            }
+        }
+    }
+
 
     protected void onComponentAdded() {
     }
