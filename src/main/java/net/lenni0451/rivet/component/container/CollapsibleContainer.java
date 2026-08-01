@@ -53,6 +53,8 @@ public class CollapsibleContainer extends ParentContainer {
     private final ThemeOption<ClickOn> collapseOn = new ThemeOption<>(this, Theme.CollapsibleContainer.COLLAPSE_ON);
     @Getter
     private final ThemeOption<AnimationConfig> collapseAnimationConfig = new ThemeOption<>(this, Theme.CollapsibleContainer.COLLAPSE_ANIMATION);
+    @Getter
+    private final ThemeOption<ArrowPosition> arrowPosition = new ThemeOption<>(this, Theme.CollapsibleContainer.ARROW_POSITION);
 
     private Animation collapseAnimation;
     private Size headerSize;
@@ -70,6 +72,7 @@ public class CollapsibleContainer extends ParentContainer {
         contentInitializer.accept(content);
 
         this.arrowSize.initListener().add(val -> this.requestLayoutRecalculation());
+        this.arrowPosition.initListener().add(val -> this.requestLayoutRecalculation());
         this.collapseAnimationConfig.initListener().add(config -> {
             this.collapseAnimation = this.collapseAnimationConfig.value().create();
             if (this.collapsed) {
@@ -194,6 +197,21 @@ public class CollapsibleContainer extends ParentContainer {
 
             this.addChild(arrow.layoutOptions(GridOptions.EMPTY.at(0, 0).withAnchor(GridAnchor.LEFT)));
             this.addChild(header.layoutOptions(GridOptions.EMPTY.at(1, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+
+            CollapsibleContainer.this.arrowPosition.initListener().add(position -> {
+                int arrowPosition;
+                int headerPosition;
+                if (position.equals(ArrowPosition.LEFT)) {
+                    arrowPosition = 0;
+                    headerPosition = 1;
+                } else {
+                    arrowPosition = 1;
+                    headerPosition = 0;
+                }
+                arrow.layoutOptions(GridOptions.EMPTY.at(arrowPosition, 0).withAnchor(GridAnchor.RIGHT));
+                header.layoutOptions(GridOptions.EMPTY.at(headerPosition, 0).withWeightX(1).withFill(GridFill.HORIZONTAL));
+                this.requestLayoutRecalculation();
+            });
         }
 
         @Override
@@ -235,6 +253,10 @@ public class CollapsibleContainer extends ParentContainer {
             super.onComponentMouseMove(event, size);
             return true;
         }
+    }
+
+    public enum ArrowPosition {
+        LEFT, RIGHT
     }
 
 }

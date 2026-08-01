@@ -10,6 +10,7 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
+import net.lenni0451.rivet.component.container.CollapsibleContainer.ArrowPosition;
 import net.lenni0451.rivet.component.container.ScrollContainer.ScrollBarType;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.Label.OverflowBehavior;
@@ -383,6 +384,7 @@ public abstract class Theme {
 
         // Behaviors & Settings
         public static final ThemeKey<ClickOn> COLLAPSE_ON = register("collapsible_container.collapse_on", ClickOn.class, r -> ClickOn.UP);
+        public static final ThemeKey<ArrowPosition> ARROW_POSITION = register("collapsible_container.arrow_position", ArrowPosition.class, r -> ArrowPosition.LEFT);
     }
 
     public static class Arrow {
