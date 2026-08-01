@@ -22,6 +22,7 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.FormatUtils;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -31,6 +32,8 @@ public class DragNumberInput extends Component implements Parent {
 
     @Getter
     private final Component child;
+    @Nullable
+    private UpdatedLabel updatedLabel;
     @Getter
     @Setter
     private double min;
@@ -101,13 +104,15 @@ public class DragNumberInput extends Component implements Parent {
         this.step = step;
         this.value = value;
 
-        if (child instanceof UpdatedLabel updatedLabel) {
-            updatedLabel.step = step;
-            this.valueFormat.initListener().add(format -> {
-                updatedLabel.valueFormat = format;
-                updatedLabel.cachedFormatString = null;
-            });
+        if (child instanceof UpdatedLabel label) {
+            this.registerUpdatedLabel(label);
         }
+        this.valueFormat.initListener().add(format -> {
+            if (this.updatedLabel != null) {
+                this.updatedLabel.valueFormat = format;
+                this.updatedLabel.cachedFormatString = null;
+            }
+        });
     }
 
     public <C extends Component> DragNumberInput(final C child, final BiConsumer<C, Double> valueUpdater, final double min, final double max, final double value) {
@@ -122,9 +127,9 @@ public class DragNumberInput extends Component implements Parent {
 
     public final DragNumberInput step(final double step) {
         this.step = step;
-        if (this.child instanceof UpdatedLabel updatedLabel) {
-            updatedLabel.step = step;
-            updatedLabel.cachedFormatString = null;
+        if (this.updatedLabel != null) {
+            this.updatedLabel.step = step;
+            this.updatedLabel.cachedFormatString = null;
         }
         return this;
     }
@@ -133,10 +138,23 @@ public class DragNumberInput extends Component implements Parent {
         double newValue = MathUtils.clamp(value, this.min, this.max);
         if (this.value != newValue) {
             this.value = newValue;
-            if (this.child instanceof UpdatedLabel updatedLabel) {
-                updatedLabel.update(this.value);
+            if (this.updatedLabel != null) {
+                this.updatedLabel.update(this.value);
             }
             this.valueChangeListener.callVoid(c -> c.accept(this.value));
+        }
+        return this;
+    }
+
+    public final DragNumberInput registerUpdatedLabel(@Nullable final UpdatedLabel updatedLabel) {
+        this.updatedLabel = updatedLabel;
+        if (updatedLabel != null) {
+            updatedLabel.step = this.step;
+            if (this.rivet() != null) {
+                updatedLabel.valueFormat = this.valueFormat.value();
+                updatedLabel.cachedFormatString = null;
+                updatedLabel.update(this.value);
+            }
         }
         return this;
     }
@@ -154,8 +172,8 @@ public class DragNumberInput extends Component implements Parent {
     @Override
     protected void onComponentAdded() {
         this.child.setRivet(this.rivet(), this);
-        if (this.child instanceof UpdatedLabel updatedLabel) {
-            updatedLabel.update(this.value);
+        if (this.updatedLabel != null) {
+            this.updatedLabel.update(this.value);
         }
 
         this.backgroundColorTransition = new StateTransition<>(
@@ -218,8 +236,8 @@ public class DragNumberInput extends Component implements Parent {
     @Override
     protected void onComponentThemeChanged() {
         this.child.onThemeChanged();
-        if (this.child instanceof UpdatedLabel updatedLabel) {
-            updatedLabel.cachedFormatString = null;
+        if (this.updatedLabel != null) {
+            this.updatedLabel.cachedFormatString = null;
         }
     }
 
