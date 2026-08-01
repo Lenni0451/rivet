@@ -9,7 +9,6 @@ import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.Interpolator;
 import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
-import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
@@ -23,13 +22,15 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.FormatUtils;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class DragNumberInput extends Component implements Parent {
 
+    @Getter
+    private final Component child;
     @Getter
     @Setter
     private double min;
@@ -42,19 +43,15 @@ public class DragNumberInput extends Component implements Parent {
     private double value;
     @Getter
     private final ListenerList<Consumer<Double>> valueChangeListener = new ListenerList<>();
-    private final Label valueLabel;
 
     private boolean dragging = false;
     private boolean hovered = false;
     private float mouseDownX = 0;
     private float mouseDownY = 0;
     private double dragStartValue = 0;
-    private String cachedFormatString = null;
 
     @Getter
     private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.DragNumberInput.BACKGROUND_COLOR);
-    @Getter
-    private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.DragNumberInput.TEXT_COLOR);
     @Getter
     private final ThemeOption<Color> outlineColor = new ThemeOption<>(this, Theme.DragNumberInput.OUTLINE_COLOR);
     @Getter
@@ -76,8 +73,6 @@ public class DragNumberInput extends Component implements Parent {
     @Getter
     private final ThemeOption<Color> disabledBackgroundColor = new ThemeOption<>(this, Theme.DragNumberInput.DISABLED_BACKGROUND_COLOR);
     @Getter
-    private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.DragNumberInput.DISABLED_TEXT_COLOR);
-    @Getter
     private final ThemeOption<Color> disabledOutlineColor = new ThemeOption<>(this, Theme.DragNumberInput.DISABLED_OUTLINE_COLOR);
     @Getter
     private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.DragNumberInput.HOVER_ANIMATION);
@@ -92,30 +87,45 @@ public class DragNumberInput extends Component implements Parent {
     }
 
     public DragNumberInput(final double min, final double max, final double step, final double value) {
+        this(new UpdatedLabel(), min, max, step, value);
+    }
+
+    public DragNumberInput(final Component child, final double min, final double max, final double value) {
+        this(child, min, max, 1, value);
+    }
+
+    public DragNumberInput(final Component child, final double min, final double max, final double step, final double value) {
+        this.child = child;
         this.min = min;
         this.max = max;
         this.step = step;
         this.value = value;
 
-        this.valueLabel = new Label("Not initialized");
-
-        this.textColor.initListener().add(this.valueLabel.textColor()::set);
-        this.valueFormat.initListener().add(f -> this.cachedFormatString = null);
-        this.disabledTextColor.initListener().add(this.valueLabel.disabledTextColor()::set);
+        if (child instanceof UpdatedLabel updatedLabel) {
+            updatedLabel.step = step;
+            this.valueFormat.initListener().add(format -> {
+                updatedLabel.valueFormat = format;
+                updatedLabel.cachedFormatString = null;
+            });
+        }
     }
 
-    public final Font font() {
-        return this.valueLabel.font();
+    public <C extends Component> DragNumberInput(final C child, final BiConsumer<C, Double> valueUpdater, final double min, final double max, final double value) {
+        this(child, valueUpdater, min, max, 1, value);
     }
 
-    public final DragNumberInput font(@Nullable final Font font) {
-        this.valueLabel.font(font);
-        return this;
+    public <C extends Component> DragNumberInput(final C child, final BiConsumer<C, Double> valueUpdater, final double min, final double max, final double step, final double value) {
+        this(child, min, max, step, value);
+        this.valueChangeListener.add(val -> valueUpdater.accept(child, val));
+        valueUpdater.accept(child, this.value);
     }
 
     public final DragNumberInput step(final double step) {
         this.step = step;
-        this.cachedFormatString = null;
+        if (this.child instanceof UpdatedLabel updatedLabel) {
+            updatedLabel.step = step;
+            updatedLabel.cachedFormatString = null;
+        }
         return this;
     }
 
@@ -123,15 +133,12 @@ public class DragNumberInput extends Component implements Parent {
         double newValue = MathUtils.clamp(value, this.min, this.max);
         if (this.value != newValue) {
             this.value = newValue;
-            this.valueLabel.text(this.formatValue(this.value));
+            if (this.child instanceof UpdatedLabel updatedLabel) {
+                updatedLabel.update(this.value);
+            }
             this.valueChangeListener.callVoid(c -> c.accept(this.value));
         }
         return this;
-    }
-
-    @Deprecated(forRemoval = true)
-    public final Label valueLabel() {
-        return this.valueLabel;
     }
 
     private State state() {
@@ -146,8 +153,10 @@ public class DragNumberInput extends Component implements Parent {
 
     @Override
     protected void onComponentAdded() {
-        this.valueLabel.setRivet(this.rivet(), this);
-        this.valueLabel.text(this.formatValue(this.value));
+        this.child.setRivet(this.rivet(), this);
+        if (this.child instanceof UpdatedLabel updatedLabel) {
+            updatedLabel.update(this.value);
+        }
 
         this.backgroundColorTransition = new StateTransition<>(
                 this,
@@ -189,27 +198,29 @@ public class DragNumberInput extends Component implements Parent {
 
     @Override
     protected void onComponentRemoved() {
-        this.valueLabel.setRivet(null, null);
+        this.child.setRivet(null, null);
         this.dragging = false;
         this.hovered = false;
     }
 
     @Override
     protected void onComponentDisabled() {
-        this.valueLabel.disabled(true);
+        this.child.disabled(true);
         this.dragging = false;
         this.hovered = false;
     }
 
     @Override
     protected void onComponentEnabled() {
-        this.valueLabel.disabled(false);
+        this.child.disabled(false);
     }
 
     @Override
     protected void onComponentThemeChanged() {
-        this.valueLabel.onThemeChanged();
-        this.cachedFormatString = null;
+        this.child.onThemeChanged();
+        if (this.child instanceof UpdatedLabel updatedLabel) {
+            updatedLabel.cachedFormatString = null;
+        }
     }
 
     @Override
@@ -271,32 +282,21 @@ public class DragNumberInput extends Component implements Parent {
             float width = size.width() - padding.horizontal();
             float height = size.height() - padding.vertical();
             renderer.componentBounds(0, 0, width, height, () -> {
-                this.valueLabel.render(renderer, new Size(width, height));
+                this.child.render(renderer, new Size(width, height));
             });
         });
-    }
-
-    private String formatValue(final double value) {
-        if (this.cachedFormatString == null) {
-            this.cachedFormatString = FormatUtils.formatDecimalString(this.valueFormat.value(), this.step);
-        }
-        try {
-            return String.format(this.cachedFormatString, value);
-        } catch (Throwable t) {
-            return Double.toString(value);
-        }
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
         Padding padding = this.innerPadding.value();
-        return this.valueLabel.computeIdealSize(constraints.minus(padding.horizontal(), padding.vertical())).plus(padding.horizontal(), padding.vertical());
+        return this.child.computeIdealSize(constraints.minus(padding.horizontal(), padding.vertical())).plus(padding.horizontal(), padding.vertical());
     }
 
     @Override
     public void computeLayout(final Size size) {
         Padding padding = this.innerPadding.value();
-        this.valueLabel.computeLayout(size.minus(padding.horizontal(), padding.vertical()));
+        this.child.computeLayout(size.minus(padding.horizontal(), padding.vertical()));
         this.updateChildPositions();
     }
 
@@ -307,17 +307,23 @@ public class DragNumberInput extends Component implements Parent {
 
     @Override
     public Size contentSize() {
+        if (this.child instanceof Parent parent) {
+            Size parentContentSize = parent.contentSize();
+            if (!parentContentSize.equals(Size.EMPTY)) {
+                return parentContentSize.plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
+            }
+        }
         return Size.EMPTY;
     }
 
     @Override
     public List<Component> children() {
-        return List.of(this.valueLabel);
+        return List.of(this.child);
     }
 
     @Override
     public Rectangle childBounds(final Component component) {
-        if (component == this.valueLabel) {
+        if (component == this.child) {
             Rectangle bounds = this.relativeBounds();
             Padding padding = this.innerPadding.value();
             return new Rectangle(
@@ -329,6 +335,35 @@ public class DragNumberInput extends Component implements Parent {
         return Rectangle.EMPTY;
     }
 
+
+    public static class UpdatedLabel extends Label {
+        private double step;
+        private String valueFormat;
+        private String cachedFormatString = null;
+
+        public UpdatedLabel() {
+            this("Not initialized");
+        }
+
+        public UpdatedLabel(final String text) {
+            super(text);
+        }
+
+        public final void update(final double value) {
+            this.text(this.formatValue(value));
+        }
+
+        private String formatValue(final double value) {
+            if (this.cachedFormatString == null) {
+                this.cachedFormatString = FormatUtils.formatDecimalString(this.valueFormat, this.step);
+            }
+            try {
+                return String.format(this.cachedFormatString, value);
+            } catch (Throwable t) {
+                return Double.toString(value);
+            }
+        }
+    }
 
     private enum State {
         INACTIVE, HOVERED, DRAGGED, DISABLED

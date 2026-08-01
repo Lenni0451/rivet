@@ -410,7 +410,6 @@ public abstract class Theme {
 
         // Colors - Base / Inactive
         public static final ThemeKey<Color> BACKGROUND_COLOR = register("drag_number_input.background_color", Color.class, r -> Color.fromRGB(50, 50, 50));
-        public static final ThemeKey<Color> TEXT_COLOR = register("drag_number_input.text_color", Color.class, r -> Color.WHITE);
         public static final ThemeKey<Color> OUTLINE_COLOR = register("drag_number_input.outline_color", Color.class, r -> Color.fromRGB(100, 100, 105));
 
         // Colors - States (Hover / Click)
@@ -421,7 +420,6 @@ public abstract class Theme {
 
         // Colors - Disabled
         public static final ThemeKey<Color> DISABLED_BACKGROUND_COLOR = register("drag_number_input.disabled_background_color", Color.class, r -> Color.fromRGB(30, 30, 30));
-        public static final ThemeKey<Color> DISABLED_TEXT_COLOR = register("drag_number_input.disabled_text_color", Color.class, r -> Color.fromRGB(150, 150, 150));
         public static final ThemeKey<Color> DISABLED_OUTLINE_COLOR = register("drag_number_input.disabled_outline_color", Color.class, r -> Color.fromRGB(50, 50, 55));
 
         // Animations
