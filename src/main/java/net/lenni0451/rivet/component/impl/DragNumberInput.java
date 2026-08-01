@@ -12,6 +12,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
+import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -28,7 +29,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
-public class DragNumberInput extends Component implements Parent {
+public class DragNumberInput extends ParentContainer {
 
     @Getter
     private final Component child;
@@ -171,7 +172,7 @@ public class DragNumberInput extends Component implements Parent {
 
     @Override
     protected void onComponentAdded() {
-        this.child.setRivet(this.rivet(), this);
+        super.onComponentAdded();
         if (this.updatedLabel != null) {
             this.updatedLabel.update(this.value);
         }
@@ -216,26 +217,21 @@ public class DragNumberInput extends Component implements Parent {
 
     @Override
     protected void onComponentRemoved() {
-        this.child.setRivet(null, null);
+        super.onComponentRemoved();
         this.dragging = false;
         this.hovered = false;
     }
 
     @Override
     protected void onComponentDisabled() {
-        this.child.disabled(true);
+        super.onComponentDisabled();
         this.dragging = false;
         this.hovered = false;
     }
 
     @Override
-    protected void onComponentEnabled() {
-        this.child.disabled(false);
-    }
-
-    @Override
     protected void onComponentThemeChanged() {
-        this.child.onThemeChanged();
+        super.onComponentThemeChanged();
         if (this.updatedLabel != null) {
             this.updatedLabel.cachedFormatString = null;
         }
@@ -248,22 +244,26 @@ public class DragNumberInput extends Component implements Parent {
 
     @Override
     protected void onComponentMouseLeave() {
+        super.onComponentMouseLeave();
         this.hovered = false;
     }
 
     @Override
     protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
-        if (event.button().equals(MouseButton.LEFT)) {
-            this.dragging = true;
-            this.mouseDownX = event.x();
-            this.mouseDownY = event.y();
-            this.dragStartValue = this.value;
+        if (!super.onComponentMouseDown(event, size)) {
+            if (event.button().equals(MouseButton.LEFT)) {
+                this.dragging = true;
+                this.mouseDownX = event.x();
+                this.mouseDownY = event.y();
+                this.dragStartValue = this.value;
+            }
         }
         return true;
     }
 
     @Override
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+        super.onComponentMouseUp(event, size);
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragging = false;
         }
@@ -272,6 +272,7 @@ public class DragNumberInput extends Component implements Parent {
 
     @Override
     protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+        super.onComponentMouseMove(event, size);
         if (this.dragging) {
             float deltaX = event.x() - this.mouseDownX;
             float deltaY = event.y() - this.mouseDownY;
@@ -316,11 +317,6 @@ public class DragNumberInput extends Component implements Parent {
         Padding padding = this.innerPadding.value();
         this.child.computeLayout(size.minus(padding.horizontal(), padding.vertical()));
         this.updateChildPositions();
-    }
-
-    @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
     @Override
