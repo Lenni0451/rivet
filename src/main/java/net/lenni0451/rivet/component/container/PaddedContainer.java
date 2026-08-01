@@ -58,13 +58,12 @@ public class PaddedContainer extends ParentContainer {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        Size childSize = this.child.computeIdealSize(constraints.minus(this.padding.horizontal(), this.padding.vertical()));
-        return childSize.plus(this.padding.horizontal(), this.padding.vertical());
+        return this.child.computeIdealSize(constraints.minus(this.padding)).plus(this.padding);
     }
 
     @Override
     public void computeLayout(final Size size) {
-        this.child.computeLayout(size.minus(this.padding.horizontal(), this.padding.vertical()));
+        this.child.computeLayout(size.minus(this.padding));
         this.updateChildPositions();
     }
 
@@ -74,7 +73,7 @@ public class PaddedContainer extends ParentContainer {
         if (this.child instanceof Parent parent) {
             Size parentContentSize = parent.contentSize();
             if (!parentContentSize.equals(Size.EMPTY)) {
-                return parentContentSize.plus(this.padding.horizontal(), this.padding.vertical());
+                return parentContentSize.plus(this.padding);
             }
         }
         return Size.EMPTY;

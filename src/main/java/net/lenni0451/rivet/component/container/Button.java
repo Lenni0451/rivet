@@ -229,13 +229,12 @@ public class Button extends Component implements Parent {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()))
-                .plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
+        return this.child.computeIdealSize(constraints.minus(this.innerPadding.value())).plus(this.innerPadding.value());
     }
 
     @Override
     public void computeLayout(final Size size) {
-        this.child.computeLayout(size.minus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical()));
+        this.child.computeLayout(size.minus(this.innerPadding.value()));
         this.updateChildPositions();
     }
 
@@ -249,7 +248,7 @@ public class Button extends Component implements Parent {
         if (this.child instanceof Parent parent) {
             Size parentContentSize = parent.contentSize();
             if (!parentContentSize.equals(Size.EMPTY)) {
-                return parentContentSize.plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
+                return parentContentSize.plus(this.innerPadding.value());
             }
         }
         return Size.EMPTY;

@@ -309,13 +309,13 @@ public class DragNumberInput extends ParentContainer {
     @Override
     public Size computeIdealSize(final Size constraints) {
         Padding padding = this.innerPadding.value();
-        return this.child.computeIdealSize(constraints.minus(padding.horizontal(), padding.vertical())).plus(padding.horizontal(), padding.vertical());
+        return this.child.computeIdealSize(constraints.minus(padding)).plus(padding);
     }
 
     @Override
     public void computeLayout(final Size size) {
         Padding padding = this.innerPadding.value();
-        this.child.computeLayout(size.minus(padding.horizontal(), padding.vertical()));
+        this.child.computeLayout(size.minus(padding));
         this.updateChildPositions();
     }
 
@@ -324,7 +324,7 @@ public class DragNumberInput extends ParentContainer {
         if (this.child instanceof Parent parent) {
             Size parentContentSize = parent.contentSize();
             if (!parentContentSize.equals(Size.EMPTY)) {
-                return parentContentSize.plus(this.innerPadding.value().horizontal(), this.innerPadding.value().vertical());
+                return parentContentSize.plus(this.innerPadding.value());
             }
         }
         return Size.EMPTY;

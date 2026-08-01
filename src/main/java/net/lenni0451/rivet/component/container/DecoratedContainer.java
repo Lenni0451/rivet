@@ -54,14 +54,13 @@ public class DecoratedContainer extends ParentContainer {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()))
-                .plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
+        return this.child.computeIdealSize(constraints.minus(this.innerPadding)).plus(this.innerPadding);
     }
 
     @Override
     public void computeLayout(final Size size) {
         this.background.computeLayout(size);
-        this.child.computeLayout(size.minus(this.innerPadding.horizontal(), this.innerPadding.vertical()));
+        this.child.computeLayout(size.minus(this.innerPadding));
         this.updateChildPositions();
     }
 
@@ -70,7 +69,7 @@ public class DecoratedContainer extends ParentContainer {
         if (this.child instanceof Parent parent) {
             Size parentContentSize = parent.contentSize();
             if (!parentContentSize.equals(Size.EMPTY)) {
-                return parentContentSize.plus(this.innerPadding.horizontal(), this.innerPadding.vertical());
+                return parentContentSize.plus(this.innerPadding);
             }
         }
         return Size.EMPTY;
