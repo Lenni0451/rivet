@@ -117,18 +117,20 @@ public class FormattedLabel extends Component {
     private void parseLine() {
         if (this.line == null) {
             boolean disabled = this.disabled();
+            TextFormat format;
             Color color;
             if (this.format != null) {
+                format = this.format;
                 if (disabled && this.format.color().equals(this.textColor.value())) {
                     color = this.disabledTextColor.value();
                 } else {
                     color = this.format.color();
                 }
             } else {
+                format = TextFormat.DEFAULT;
                 color = disabled ? this.disabledTextColor.value() : this.textColor.value();
             }
-            TextFormat format = TextFormat.DEFAULT.withColor(color);
-            this.line = TextParser.parse(this.text, format);
+            this.line = TextParser.parse(this.text, format.withColor(color));
         }
     }
 
