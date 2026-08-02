@@ -149,10 +149,10 @@ public class CollapsibleContainer extends ParentContainer {
         if (!this.collapsed || this.collapseAnimation.isRunning()) {
             float remainingHeight = Math.max(0, size.height() - idealHeaderSize.height());
             this.contentSize = new Size(size.width(), remainingHeight);
-            this.content.computeLayout(this.contentSize);
         } else {
             this.contentSize = new Size(size.width(), 0);
         }
+        this.content.computeLayout(this.contentSize);
         this.updateChildPositions();
     }
 
