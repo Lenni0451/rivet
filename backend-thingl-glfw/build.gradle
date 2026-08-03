@@ -6,6 +6,7 @@ dependencies {
     api project(":backend-thingl")
     api libs.lwjgl.glfw
 
+    testImplementation(project(":editor"))
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
         testImplementation(variantOf(libs.lwjgl) { classifier(natives) })
         testImplementation(variantOf(libs.lwjgl.opengl) { classifier(natives) })
