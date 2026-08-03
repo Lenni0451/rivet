@@ -11,16 +11,16 @@ import net.lenni0451.rivet.layout.grid.GridOptions;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class IntegerPropertyComponent extends Container {
+public class FloatPropertyComponent extends Container {
 
-    public IntegerPropertyComponent(final String name, final Supplier<Integer> getter, final Consumer<Integer> setter) {
+    public FloatPropertyComponent(final String name, final Supplier<Float> getter, final Consumer<Float> setter) {
         super(new GridLayout(2, 2));
 
         Label valueLabel = new Label(String.valueOf(getter.get()));
         Slider slider = new Slider(0, 100, 1, getter.get()); //TODO: Min, max and step should be configurable
         slider.valueChangeListener().add(value -> {
-            valueLabel.text(String.valueOf(value.intValue()));
-            setter.accept(value.intValue());
+            valueLabel.text(String.valueOf(value.floatValue()));
+            setter.accept(value.floatValue());
         });
 
         this.addChild(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1)));
