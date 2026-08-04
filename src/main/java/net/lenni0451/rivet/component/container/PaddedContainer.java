@@ -25,6 +25,10 @@ public class PaddedContainer extends ParentContainer {
     @Setter
     private boolean cropChild = true;
 
+    public PaddedContainer(final float padding, final Component child) {
+        this(new Padding(padding), child);
+    }
+
     public PaddedContainer(final Padding padding, final Component child) {
         this(padding, child, c -> {});
     }
