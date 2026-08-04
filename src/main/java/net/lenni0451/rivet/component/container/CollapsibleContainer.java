@@ -57,6 +57,7 @@ public class CollapsibleContainer extends ParentContainer {
     private final ThemeOption<ArrowPosition> arrowPosition = new ThemeOption<>(this, Theme.CollapsibleContainer.ARROW_POSITION);
 
     private Animation collapseAnimation;
+    private float collapseProgress;
     private Size headerSize;
     private Size contentSize;
 
@@ -80,6 +81,7 @@ public class CollapsibleContainer extends ParentContainer {
             } else {
                 this.collapseAnimation.finish(AnimationDirection.FORWARDS);
             }
+            this.collapseProgress = this.collapseAnimation.getValue();
         });
     }
 
@@ -100,15 +102,11 @@ public class CollapsibleContainer extends ParentContainer {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        if (this.collapseAnimation.isRunning()) {
-            this.requestLayoutRecalculation();
-        }
-
         renderer.componentBounds(0, 0, this.headerSize.width(), this.headerSize.height(), () -> {
             this.clickableHeader.render(renderer, this.headerSize);
         });
 
-        if (!this.collapsed || this.collapseAnimation.isRunning()) {
+        if (this.collapseProgress > 0) {
             float contentX = 0;
             float contentY = this.headerSize.height();
             float contentWidth = this.contentSize.width();
@@ -117,26 +115,32 @@ public class CollapsibleContainer extends ParentContainer {
                 Runnable render = () -> {
                     this.content.render(renderer, new Size(contentWidth, contentHeight));
                 };
-                if (this.collapseAnimation.isRunning()) {
+                if (this.collapseProgress < 1) {
                     renderer.scissor(0, 0, contentWidth, contentHeight, render);
                 } else {
                     renderer.componentBounds(0, 0, contentWidth, contentHeight, render);
                 }
             });
         }
+
+        float collapseProgress = this.collapseAnimation.getValue();
+        if (this.collapseProgress != collapseProgress) {
+            this.collapseProgress = collapseProgress;
+            this.requestLayoutRecalculation();
+        }
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
         Size idealHeaderSize = this.clickableHeader.computeIdealSize(constraints);
-        if (this.collapsed && !this.collapseAnimation.isRunning()) {
+        if (this.collapseProgress <= 0) {
             return idealHeaderSize;
         } else {
             Size contentConstraints = constraints.minus(0, idealHeaderSize.height());
             Size contentIdealSize = this.content.computeIdealSize(contentConstraints);
             return new Size(
                     Math.max(idealHeaderSize.width(), contentIdealSize.width()),
-                    idealHeaderSize.height() + contentIdealSize.height() * this.collapseAnimation.getValue()
+                    idealHeaderSize.height() + contentIdealSize.height() * this.collapseProgress
             );
         }
     }
@@ -146,7 +150,7 @@ public class CollapsibleContainer extends ParentContainer {
         Size idealHeaderSize = this.clickableHeader.computeIdealSize(size);
         this.headerSize = new Size(size.width(), idealHeaderSize.height());
         this.clickableHeader.computeLayout(this.headerSize);
-        if (!this.collapsed || this.collapseAnimation.isRunning()) {
+        if (this.collapseProgress > 0) {
             float remainingHeight = Math.max(0, size.height() - idealHeaderSize.height());
             this.contentSize = new Size(size.width(), remainingHeight);
         } else {
@@ -158,7 +162,7 @@ public class CollapsibleContainer extends ParentContainer {
 
     @Override
     public Size contentSize() {
-        if (this.collapsed) {
+        if (this.collapseProgress <= 0) {
             return this.headerSize;
         } else {
             return new Size(
@@ -189,7 +193,7 @@ public class CollapsibleContainer extends ParentContainer {
         private ClickableHeader(final Component header) {
             super(GridLayout.DEFAULT);
 
-            Arrow arrow = new Arrow(() -> CollapsibleContainer.this.collapseAnimation.getValue());
+            Arrow arrow = new Arrow(() -> CollapsibleContainer.this.collapseProgress);
             CollapsibleContainer.this.arrowColor.initListener().add(arrow.color()::set);
             CollapsibleContainer.this.arrowDisabledColor.initListener().add(arrow.disabledColor()::set);
             CollapsibleContainer.this.arrowLineWidth.initListener().add(arrow.lineWidth()::set);
