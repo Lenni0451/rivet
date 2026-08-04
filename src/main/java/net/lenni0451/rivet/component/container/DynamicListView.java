@@ -68,12 +68,22 @@ public class DynamicListView<E> extends ReorderableContainer {
     }
 
     @Override
+    public Size computeIdealSize(final Size constraints) {
+        this.syncChildrenIfNeeded();
+        return super.computeIdealSize(constraints);
+    }
+
+    @Override
     public void computeLayout(final Size size) {
+        this.syncChildrenIfNeeded();
+        super.computeLayout(size);
+    }
+
+    private void syncChildrenIfNeeded() {
         List<E> currentList = this.listSupplier.get();
         if (!this.isSame(currentList, this.lastSeenList)) {
             this.syncChildren(currentList);
         }
-        super.computeLayout(size);
     }
 
     private boolean isSame(final List<E> a, final List<E> b) {
