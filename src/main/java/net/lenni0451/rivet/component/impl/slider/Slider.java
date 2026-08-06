@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component.impl.slider;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
@@ -42,7 +41,6 @@ public class Slider extends Component {
     @Getter
     private double step;
     @Getter
-    @Setter
     private double value;
     @Getter
     private final ListenerList<Consumer<Double>> valueChangeListener = new ListenerList<>();
@@ -124,6 +122,11 @@ public class Slider extends Component {
         this.value = value;
 
         this.tooltipFormat.initListener().add(f -> this.cachedFormatString = null);
+    }
+
+    public final Slider value(final double value) {
+        this.updateValue(value);
+        return this;
     }
 
     public final Slider font(final Font font) {
@@ -294,6 +297,10 @@ public class Slider extends Component {
         progress = MathUtils.clamp(progress, 0, 1);
         double newValue = this.min + progress * (this.max - this.min);
         newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.min, this.max, this.step);
+        this.updateValue(newValue);
+    }
+
+    private void updateValue(final double newValue) {
         if (this.value != newValue) {
             this.value = newValue;
             if (this.tooltip != null) {
