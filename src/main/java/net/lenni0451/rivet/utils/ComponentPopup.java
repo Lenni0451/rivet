@@ -6,9 +6,9 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.impl.SolidColor;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
@@ -41,9 +41,9 @@ public class ComponentPopup {
     private boolean matchOwnerWidth = true;
 
     @Getter
-    private final ListenerList<Runnable> openListener = new ListenerList<>();
+    private final ListenerList<Runnable> openedListener = new ListenerList<>();
     @Getter
-    private final ListenerList<Runnable> closeListener = new ListenerList<>();
+    private final ListenerList<Runnable> closedListener = new ListenerList<>();
 
     private Layer layer;
 
@@ -76,18 +76,18 @@ public class ComponentPopup {
         Container container = new Container(AbsoluteLayout.INSTANCE);
         if (this.interceptOutsideClicks.get()) {
             SolidColor clickInterceptor = new SolidColor();
-            clickInterceptor.mouseDownListener().add((event, bounds) -> {
+            clickInterceptor.mouseDownListener().add((ctx, event, size) -> {
+                ctx.cancel(true);
                 this.close();
-                return true;
             });
-            clickInterceptor.mouseMoveListener().add((event, bounds) -> true);
+            clickInterceptor.mouseMoveListener().add((ctx, event, size) -> ctx.cancel(true));
             container.addChild(clickInterceptor.layoutOptions(new AbsoluteOptions(0, 0, -1F, -1F)));
         }
         container.addChild(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
         rivet.addLayer(this.layer);
         this.updatePopupPosition(this.owner.absoluteBounds());
-        this.openListener.callVoid(Runnable::run);
+        this.openedListener.call(Runnable::run);
         return this;
     }
 
@@ -98,7 +98,7 @@ public class ComponentPopup {
             rivet.removeLayer(this.layer);
         }
         this.layer = null;
-        this.closeListener.callVoid(Runnable::run);
+        this.closedListener.call(Runnable::run);
         return this;
     }
 

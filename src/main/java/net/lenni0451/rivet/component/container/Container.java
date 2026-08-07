@@ -5,9 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.ParentContainer;
+import net.lenni0451.rivet.event.ListenerList;
+import net.lenni0451.rivet.event.listener.VoidListener;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -15,7 +16,6 @@ import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -26,7 +26,7 @@ public class Container extends ParentContainer {
     private final List<Child> children = new ArrayList<>();
     private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
-    private final ListenerList<Predicate<Component>> addChildListener = new ListenerList<>();
+    private final ListenerList<VoidListener<Component>> addChildListener = new ListenerList<>();
     @Getter
     private final ListenerList<Consumer<Component>> removeChildListener = new ListenerList<>();
     @Getter
@@ -42,15 +42,15 @@ public class Container extends ParentContainer {
 
     public final <E extends Component> Container addChild(final E component, final Consumer<E> initializer) {
         initializer.accept(component);
-        if (!this.addChildListener.call(l -> l.test(component))) {
+        this.addChildListener.callVoid((l, c) -> l.accept(c, component), () -> {
             this.removeChild(component);
             this.children.add(new Child(component));
             if (this.rivet() != null) {
                 component.setRivet(this.rivet(), this);
                 this.requestLayoutRecalculation();
             }
-            this.childChangedListener.callVoid(Runnable::run);
-        }
+            this.childChangedListener.call(Runnable::run);
+        });
         return this;
     }
 
@@ -89,8 +89,8 @@ public class Container extends ParentContainer {
                     component.setRivet(null, null);
                     this.requestLayoutRecalculation();
                 }
-                this.removeChildListener.callVoid(l -> l.accept(component));
-                this.childChangedListener.callVoid(Runnable::run);
+                this.removeChildListener.call(l -> l.accept(component));
+                this.childChangedListener.call(Runnable::run);
                 return true;
             }
         }
@@ -111,8 +111,8 @@ public class Container extends ParentContainer {
         if (this.rivet() != null) {
             this.requestLayoutRecalculation();
         }
-        this.clearChildrenListener.callVoid(Runnable::run);
-        this.childChangedListener.callVoid(Runnable::run);
+        this.clearChildrenListener.call(Runnable::run);
+        this.childChangedListener.call(Runnable::run);
         return this;
     }
 

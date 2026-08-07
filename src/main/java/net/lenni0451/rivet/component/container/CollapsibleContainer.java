@@ -9,9 +9,9 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.component.impl.Arrow;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -94,7 +94,7 @@ public class CollapsibleContainer extends ParentContainer {
             if (this.collapseAnimation != null) {
                 this.collapseAnimation.runInDirection(collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS);
             }
-            this.collapseChangeListener.callVoid(l -> l.accept(collapsed));
+            this.collapseChangeListener.call(l -> l.accept(collapsed));
             this.requestLayoutRecalculation();
         }
         return this;

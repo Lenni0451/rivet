@@ -12,7 +12,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -526,7 +526,7 @@ public class TextField extends Component {
 
     private void onTextChange() {
         this.validate();
-        this.valueChangeListener.callVoid(c -> c.accept(this.text()));
+        this.valueChangeListener.call(c -> c.accept(this.text()));
     }
 
     private void validate() {

@@ -3,7 +3,7 @@ package net.lenni0451.rivet.utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
 
 import java.util.*;
@@ -16,7 +16,7 @@ public final class SelectionModel<E> {
     private final Supplier<List<E>> dataSupplier;
     private final Set<E> selectedItems = Collections.newSetFromMap(new IdentityHashMap<>());
     @Getter
-    private final ListenerList<Runnable> changeListeners = new ListenerList<>();
+    private final ListenerList<Runnable> changedListener = new ListenerList<>();
     private E lastSelected = null;
 
     public SelectionModel(final List<E> dataList) {
@@ -95,7 +95,7 @@ public final class SelectionModel<E> {
     }
 
     private void fireChange() {
-        this.changeListeners.callVoid(Runnable::run);
+        this.changedListener.call(Runnable::run);
     }
 
 }

@@ -9,9 +9,9 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.ParentContainer;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -164,7 +164,7 @@ public class ScrollContainer extends ParentContainer {
                 if (this.rivet() != null) {
                     this.rivet().updateMouseState();
                 }
-                this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
+                this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
             }
         }
         return this;
@@ -189,7 +189,7 @@ public class ScrollContainer extends ParentContainer {
                 if (this.rivet() != null) {
                     this.rivet().updateMouseState();
                 }
-                this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
+                this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
             }
         }
         return this;
@@ -422,7 +422,7 @@ public class ScrollContainer extends ParentContainer {
                 this.rivet().updateMouseState();
             }
             this.updateChildPositions();
-            this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
+            this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
         }
     }
 
@@ -627,7 +627,7 @@ public class ScrollContainer extends ParentContainer {
             this.scrollY = MathUtils.clamp(this.scrollY, 0, maxScrollY);
         }
         if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
-            this.scrollListener.callVoid(c -> c.onScroll(this.scrollX, this.scrollY));
+            this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
         }
         this.updateChildPositions();
     }

@@ -10,7 +10,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Point;
@@ -97,7 +97,7 @@ public class Checkbox extends Component {
     public final Checkbox checked(final boolean checked) {
         if (this.checked != checked) {
             this.checked = checked;
-            this.toggleListener.callVoid(c -> c.accept(this.checked));
+            this.toggleListener.call(c -> c.accept(this.checked));
         }
         return this;
     }

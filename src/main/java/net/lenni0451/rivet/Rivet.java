@@ -5,9 +5,12 @@ import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.Backend;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.dragdrop.DragAndDropManager;
+import net.lenni0451.rivet.event.ListenerList;
+import net.lenni0451.rivet.event.PrePostListenerList;
+import net.lenni0451.rivet.event.listener.BiVoidListener;
+import net.lenni0451.rivet.event.listener.ReturnableListener;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -27,8 +30,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public final class Rivet {
@@ -52,21 +54,21 @@ public final class Rivet {
     private float lastMouseY = -Float.MAX_VALUE;
 
     @Getter
-    private final ListenerList<BiPredicate<Component, Component>> focusChangeListener = new ListenerList<>();
+    private final PrePostListenerList<BiVoidListener<Component, Component>, Consumer<Component>> focusChangeListener = new PrePostListenerList<>();
     @Getter
-    private final ListenerList<Predicate<KeyEvent>> keyDownListener = new ListenerList<>();
+    private final PrePostListenerList<ReturnableListener<Boolean, KeyEvent>, Consumer<KeyEvent>> keyDownListener = new PrePostListenerList<>();
     @Getter
-    private final ListenerList<Predicate<KeyEvent>> keyUpListener = new ListenerList<>();
+    private final PrePostListenerList<ReturnableListener<Boolean, KeyEvent>, Consumer<KeyEvent>> keyUpListener = new PrePostListenerList<>();
     @Getter
-    private final ListenerList<Predicate<CharEvent>> charTypedListener = new ListenerList<>();
+    private final PrePostListenerList<ReturnableListener<Boolean, CharEvent>, Consumer<CharEvent>> charTypedListener = new PrePostListenerList<>();
     @Getter
-    private final ListenerList<Predicate<MouseButtonEvent>> mouseDownListener = new ListenerList<>();
+    private final PrePostListenerList<ReturnableListener<Boolean, MouseButtonEvent>, Consumer<MouseButtonEvent>> mouseDownListener = new PrePostListenerList<>();
     @Getter
-    private final ListenerList<Predicate<MouseButtonEvent>> mouseUpListener = new ListenerList<>();
+    private final PrePostListenerList<ReturnableListener<Boolean, MouseButtonEvent>, Consumer<MouseButtonEvent>> mouseUpListener = new PrePostListenerList<>();
     @Getter
-    private final ListenerList<Predicate<MouseMoveEvent>> mouseMoveListener = new ListenerList<>();
+    private final PrePostListenerList<ReturnableListener<Boolean, MouseMoveEvent>, Consumer<MouseMoveEvent>> mouseMoveListener = new PrePostListenerList<>();
     @Getter
-    private final ListenerList<Predicate<MouseScrollEvent>> mouseScrollListener = new ListenerList<>();
+    private final PrePostListenerList<ReturnableListener<Boolean, MouseScrollEvent>, Consumer<MouseScrollEvent>> mouseScrollListener = new PrePostListenerList<>();
     @Getter
     private final ListenerList<Runnable> renderListener = new ListenerList<>();
 
@@ -132,15 +134,19 @@ public final class Rivet {
     public Rivet focusedComponent(final Component component) {
         if (component != null && component.disabled()) return this;
         if (this.focusedComponent == component) return this;
-        if (!this.focusChangeListener.call(l -> l.test(this.focusedComponent, component))) {
-            if (this.focusedComponent != null) {
-                this.focusedComponent.onFocusLost();
-            }
-            this.focusedComponent = component;
-            if (component != null) {
-                component.onFocusGained();
-            }
-        }
+        this.focusChangeListener.callVoid(
+                (listener, ctx) -> listener.accept(ctx, this.focusedComponent, component),
+                listener -> listener.accept(component),
+                () -> {
+                    if (this.focusedComponent != null) {
+                        this.focusedComponent.onFocusLost();
+                    }
+                    this.focusedComponent = component;
+                    if (component != null) {
+                        component.onFocusGained();
+                    }
+                }
+        );
         return this;
     }
 
@@ -186,54 +192,66 @@ public final class Rivet {
 
 
     public boolean onKeyDown(final KeyEvent event) {
-        return this.keyDownListener.call(l -> l.test(event), () -> {
-            if (this.focusedComponent != null) {
-                Component current = this.focusedComponent;
-                while (true) {
-                    if (current.onKeyDown(event)) return true;
-                    if (current.parent() instanceof Component parent) {
-                        current = parent;
-                    } else {
-                        break;
+        return this.keyDownListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, event),
+                listener -> listener.accept(event),
+                () -> {
+                    if (this.focusedComponent != null) {
+                        Component current = this.focusedComponent;
+                        while (true) {
+                            if (current.onKeyDown(event)) return true;
+                            if (current.parent() instanceof Component parent) {
+                                current = parent;
+                            } else {
+                                break;
+                            }
+                        }
                     }
+                    return false;
                 }
-            }
-            return false;
-        });
+        );
     }
 
     public boolean onKeyUp(final KeyEvent event) {
-        return this.keyUpListener.call(l -> l.test(event), () -> {
-            if (this.focusedComponent != null) {
-                Component current = this.focusedComponent;
-                while (true) {
-                    if (current.onKeyUp(event)) return true;
-                    if (current.parent() instanceof Component parent) {
-                        current = parent;
-                    } else {
-                        break;
+        return this.keyUpListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, event),
+                listener -> listener.accept(event),
+                () -> {
+                    if (this.focusedComponent != null) {
+                        Component current = this.focusedComponent;
+                        while (true) {
+                            if (current.onKeyUp(event)) return true;
+                            if (current.parent() instanceof Component parent) {
+                                current = parent;
+                            } else {
+                                break;
+                            }
+                        }
                     }
+                    return false;
                 }
-            }
-            return false;
-        });
+        );
     }
 
     public boolean onCharTyped(final CharEvent event) {
-        return this.charTypedListener.call(l -> l.test(event), () -> {
-            if (this.focusedComponent != null) {
-                Component current = this.focusedComponent;
-                while (true) {
-                    if (current.onCharTyped(event)) return true;
-                    if (current.parent() instanceof Component parent) {
-                        current = parent;
-                    } else {
-                        break;
+        return this.charTypedListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, event),
+                listener -> listener.accept(event),
+                () -> {
+                    if (this.focusedComponent != null) {
+                        Component current = this.focusedComponent;
+                        while (true) {
+                            if (current.onCharTyped(event)) return true;
+                            if (current.parent() instanceof Component parent) {
+                                current = parent;
+                            } else {
+                                break;
+                            }
+                        }
                     }
+                    return false;
                 }
-            }
-            return false;
-        });
+        );
     }
 
     public boolean onMouseDown(final MouseButtonEvent event) {
@@ -241,11 +259,15 @@ public final class Rivet {
         this.lastMouseY = event.y();
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
-        return this.mouseDownListener.call(l -> l.test(event), () -> {
-            float x = this.scale.scale(event.x());
-            float y = this.scale.scale(event.y());
-            return this.mouseHandler.onMouseDown(this, event.withX(x).withY(y), this.scaledSize()).handled();
-        });
+        return this.mouseDownListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, event),
+                listener -> listener.accept(event),
+                () -> {
+                    float x = this.scale.scale(event.x());
+                    float y = this.scale.scale(event.y());
+                    return this.mouseHandler.onMouseDown(this, event.withX(x).withY(y), this.scaledSize()).handled();
+                }
+        );
     }
 
     public boolean onMouseUp(final MouseButtonEvent event) {
@@ -255,27 +277,35 @@ public final class Rivet {
             if (event.x() < 0 || event.x() >= this.size.width()) return false;
             if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
-        return this.mouseUpListener.call(l -> l.test(event), () -> {
-            float x = this.scale.scale(event.x());
-            float y = this.scale.scale(event.y());
-            MouseButtonEvent translatedEvent = event.withX(x).withY(y);
-            boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, this.layers::interactableLayers);
-            boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, this.scaledSize()).handled();
-            return dragHandled || mouseHandled;
-        });
+        return this.mouseUpListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, event),
+                listener -> listener.accept(event),
+                () -> {
+                    float x = this.scale.scale(event.x());
+                    float y = this.scale.scale(event.y());
+                    MouseButtonEvent translatedEvent = event.withX(x).withY(y);
+                    boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, this.layers::interactableLayers);
+                    boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, this.scaledSize()).handled();
+                    return dragHandled || mouseHandled;
+                }
+        );
     }
 
     public boolean onMouseMove(final MouseMoveEvent event) {
-        return this.mouseMoveListener.call(l -> l.test(event), () -> {
-            this.lastMouseX = event.x();
-            this.lastMouseY = event.y();
-            float x = this.scale.scale(event.x());
-            float y = this.scale.scale(event.y());
-            MouseMoveEvent translatedEvent = event.withX(x).withY(y);
-            boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, this.layers::interactableLayers);
-            boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, this.scaledSize()).handled();
-            return dragHandled || mouseHandled;
-        });
+        return this.mouseMoveListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, event),
+                listener -> listener.accept(event),
+                () -> {
+                    this.lastMouseX = event.x();
+                    this.lastMouseY = event.y();
+                    float x = this.scale.scale(event.x());
+                    float y = this.scale.scale(event.y());
+                    MouseMoveEvent translatedEvent = event.withX(x).withY(y);
+                    boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, this.layers::interactableLayers);
+                    boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, this.scaledSize()).handled();
+                    return dragHandled || mouseHandled;
+                }
+        );
     }
 
     public boolean onMouseScroll(final MouseScrollEvent event) {
@@ -283,17 +313,21 @@ public final class Rivet {
         this.lastMouseY = event.y();
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
-        return this.mouseScrollListener.call(l -> l.test(event), () -> {
-            float x = this.scale.scale(event.x());
-            float y = this.scale.scale(event.y());
-            return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), this.scaledSize()).handled();
-        });
+        return this.mouseScrollListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, event),
+                listener -> listener.accept(event),
+                () -> {
+                    float x = this.scale.scale(event.x());
+                    float y = this.scale.scale(event.y());
+                    return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), this.scaledSize()).handled();
+                }
+        );
     }
 
     public <R extends Renderer> R render(final R renderer) {
         Runnable task;
         while ((task = this.tasks.poll()) != null) task.run();
-        this.renderListener.callVoid(Runnable::run);
+        this.renderListener.call(Runnable::run);
 
         Size scaledSize = this.scaledSize();
         renderer.scale(this.scale.scaleFactor(), () -> {

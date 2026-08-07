@@ -11,7 +11,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -307,7 +307,7 @@ public class Slider extends Component {
                 this.tooltip.text(this.formatValue(this.value));
                 this.updateComponentPosition(this.absoluteBounds());
             }
-            this.valueChangeListener.callVoid(c -> c.accept(this.value));
+            this.valueChangeListener.call(c -> c.accept(this.value));
         }
     }
 

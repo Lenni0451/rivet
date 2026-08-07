@@ -5,10 +5,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.dragdrop.DragOverEvent;
 import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -71,7 +71,7 @@ public class ReorderableContainer extends Container {
     @Override
     protected boolean onComponentDrop(final DropEvent event, final Size size) {
         if (this.currentTarget != null && this.isAccepted(event.dragData())) {
-            this.reorderListener.callVoid(listener -> listener.onReorder(event.dragData(), this.currentTarget.insertIndex()));
+            this.reorderListener.call(listener -> listener.onReorder(event.dragData(), this.currentTarget.insertIndex()));
             this.currentTarget = null;
             return true;
         }

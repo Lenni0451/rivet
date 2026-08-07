@@ -61,16 +61,15 @@ public class DragBetweenTest extends TestBase {
         });
 
         SolidColor fallbackDragHandler = new SolidColor();
-        fallbackDragHandler.dropListener().add((event, size) -> {
+        fallbackDragHandler.dropListener().add((ctx, event, _) -> {
             if (event.dragData().getFirst() instanceof DraggableLabel) {
                 String text = ((DraggableLabel) event.dragData().getFirst()).text();
                 if (otherList.contains(text)) {
                     otherList.remove(text);
                     list.add(text);
-                    return true;
+                    ctx.cancel(true);
                 }
             }
-            return false;
         });
         return new DecoratedContainer(fallbackDragHandler, listView);
     }

@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.Container;
+import net.lenni0451.rivet.event.listener.BiReturnableListener;
+import net.lenni0451.rivet.event.listener.NullaryVoidListener;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
@@ -15,8 +17,6 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
-import java.util.function.BiPredicate;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -24,18 +24,9 @@ public class Tooltip {
 
     private final Component component;
     private final Supplier<Component> tooltip;
-    private final BooleanSupplier mouseEnterListener = () -> {
-        this.onMouseEnter();
-        return false;
-    };
-    private final BooleanSupplier mouseLeaveListener = () -> {
-        this.onMouseLeave();
-        return false;
-    };
-    private final BiPredicate<MouseMoveEvent, Size> mouseMoveListener = (event, size) -> {
-        this.onMouseMove(event);
-        return false;
-    };
+    private final NullaryVoidListener mouseEnterListener = ctx -> this.onMouseEnter();
+    private final NullaryVoidListener mouseLeaveListener = ctx -> this.onMouseLeave();
+    private final BiReturnableListener<Boolean, MouseMoveEvent, Size> mouseMoveListener = (ctx, event, size) -> this.onMouseMove(event);
     private final Runnable removedListener = this::onRemoved;
     private final Runnable renderListener = this::onRenderTick;
 

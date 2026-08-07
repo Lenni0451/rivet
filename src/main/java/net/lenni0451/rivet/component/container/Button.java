@@ -8,9 +8,9 @@ import net.lenni0451.rivet.animation.Interpolator;
 import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -34,7 +34,7 @@ public class Button extends Component implements Parent {
     @Getter
     private final Set<MouseButton> handledButtons = EnumSet.of(MouseButton.LEFT);
     @Getter
-    private final ListenerList<ClickListener> clickListener;
+    private final ListenerList<ClickListener> clickListener = new ListenerList<>();
     @Getter
     private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.Button.CORNER_RADIUS);
     @Getter
@@ -99,7 +99,6 @@ public class Button extends Component implements Parent {
     public <C extends Component> Button(final C child, final Consumer<C> initializer, final ClickListener clickListener) {
         this.child = child;
         initializer.accept(child);
-        this.clickListener = new ListenerList<>();
         this.clickListener.add(clickListener);
     }
 
@@ -194,7 +193,7 @@ public class Button extends Component implements Parent {
         if (this.handledButtons.contains(event.button())) {
             this.pressed.add(event.button());
             if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
-                this.clickListener.callVoid(listener -> listener.onClick(event));
+                this.clickListener.call(listener -> listener.onClick(event));
             }
         }
         return true;
@@ -204,7 +203,7 @@ public class Button extends Component implements Parent {
     protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
         this.pressed.remove(event.button());
         if (this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
-            this.clickListener.callVoid(listener -> listener.onClick(event));
+            this.clickListener.call(listener -> listener.onClick(event));
         }
         return true;
     }

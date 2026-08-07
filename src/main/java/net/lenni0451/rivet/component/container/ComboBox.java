@@ -5,10 +5,10 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.component.impl.Arrow;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.layout.grid.GridAnchor;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
@@ -99,11 +99,11 @@ public class ComboBox extends ParentContainer {
     }
 
     public final ListenerList<Runnable> openListener() {
-        return this.popup.openListener();
+        return this.popup.openedListener();
     }
 
     public final ListenerList<Runnable> closeListener() {
-        return this.popup.closeListener();
+        return this.popup.closedListener();
     }
 
     @Override

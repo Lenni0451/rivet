@@ -11,7 +11,7 @@ import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.animation.Transition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -115,7 +115,7 @@ public class ToggleSwitch extends Component {
     public final ToggleSwitch toggled(final boolean toggled) {
         if (this.toggled != toggled) {
             this.toggled = toggled;
-            this.toggleListener.callVoid(c -> c.accept(this.toggled));
+            this.toggleListener.call(c -> c.accept(this.toggled));
         }
         return this;
     }

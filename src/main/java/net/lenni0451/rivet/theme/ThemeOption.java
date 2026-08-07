@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
+import net.lenni0451.rivet.event.ListenerList;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -72,7 +72,7 @@ public final class ThemeOption<T> {
         } catch (IllegalStateException ignored) {
         }
         final T finalValue = currentValue;
-        this.initListener.callVoid(c -> c.accept(finalValue));
+        this.initListener.call(c -> c.accept(finalValue));
     }
 
     private void fireChangeListener() {
@@ -83,9 +83,9 @@ public final class ThemeOption<T> {
         }
         final T finalValue = currentValue;
         if (this.component.rivet() != null) {
-            this.initListener.callVoid(c -> c.accept(finalValue));
+            this.initListener.call(c -> c.accept(finalValue));
         }
-        this.changeListener.callVoid(c -> c.accept(finalValue));
+        this.changeListener.call(c -> c.accept(finalValue));
     }
 
 }

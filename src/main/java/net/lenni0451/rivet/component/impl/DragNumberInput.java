@@ -10,9 +10,9 @@ import net.lenni0451.rivet.animation.Interpolator;
 import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.ListenerList;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.ParentContainer;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -142,7 +142,7 @@ public class DragNumberInput extends ParentContainer {
             if (this.updatedLabel != null) {
                 this.updatedLabel.update(this.value);
             }
-            this.valueChangeListener.callVoid(c -> c.accept(this.value));
+            this.valueChangeListener.call(c -> c.accept(this.value));
         }
         return this;
     }

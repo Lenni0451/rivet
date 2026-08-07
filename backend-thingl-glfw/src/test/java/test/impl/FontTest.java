@@ -25,7 +25,7 @@ public class FontTest extends TestBase {
         Label label = new Label("Hello World").font(rivet.backend().font());
 
         slider.valueChangeListener().add(value -> label.font(label.font().derive(value.intValue())));
-        textField.keyDownListener().add(event -> {
+        textField.keyDownListener().add((ctx, event) -> {
             if (event.key().isEquivalent(Key.ENTER)) {
                 try (FileInputStream fis = new FileInputStream(textField.text())) {
                     ThinGLFont font = new ThinGLFont(createFont((int) slider.value(), fis));
@@ -35,9 +35,8 @@ public class FontTest extends TestBase {
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
-                return true;
+                ctx.cancel(true);
             }
-            return false;
         });
 
         rivet.root().addChild(new Container(new VerticalListLayout(5, true))
