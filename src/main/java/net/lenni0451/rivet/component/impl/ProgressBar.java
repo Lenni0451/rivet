@@ -7,17 +7,23 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
+import java.util.function.Consumer;
+
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ProgressBar extends Component {
 
     @Getter
     private float progress;
+    @Getter
+    private final ListenerList<Consumer<Float>> progressChangeListener = new ListenerList<>();
+
     @Getter
     private final ThemeOption<String> textFormat = new ThemeOption<>(this, Theme.ProgressBar.TEXT_FORMAT);
     @Getter
@@ -68,7 +74,11 @@ public class ProgressBar extends Component {
     }
 
     public final ProgressBar progress(final float progress) {
-        this.progress = MathUtils.clamp(progress, 0, 1);
+        float newProgress = MathUtils.clamp(progress, 0, 1);
+        if (this.progress != newProgress) {
+            this.progress = newProgress;
+            this.progressChangeListener.call(c -> c.accept(progress));
+        }
         return this;
     }
 
