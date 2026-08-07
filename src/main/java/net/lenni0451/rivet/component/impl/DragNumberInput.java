@@ -136,13 +136,19 @@ public class DragNumberInput extends ParentContainer {
     }
 
     public final DragNumberInput value(final double value) {
+        return this.value(value, true);
+    }
+
+    public final DragNumberInput value(final double value, final boolean fireListeners) {
         double newValue = MathUtils.clamp(value, this.min, this.max);
         if (this.value != newValue) {
             this.value = newValue;
             if (this.updatedLabel != null) {
                 this.updatedLabel.update(this.value);
             }
-            this.valueChangeListener.call(c -> c.accept(this.value));
+            if (fireListeners) {
+                this.valueChangeListener.call(c -> c.accept(this.value));
+            }
         }
         return this;
     }

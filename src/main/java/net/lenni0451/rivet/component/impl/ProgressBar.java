@@ -74,10 +74,16 @@ public class ProgressBar extends Component {
     }
 
     public final ProgressBar progress(final float progress) {
+        return this.progress(progress, true);
+    }
+
+    public final ProgressBar progress(final float progress, final boolean fireListeners) {
         float newProgress = MathUtils.clamp(progress, 0, 1);
         if (this.progress != newProgress) {
             this.progress = newProgress;
-            this.progressChangeListener.call(c -> c.accept(progress));
+            if (fireListeners) {
+                this.progressChangeListener.call(c -> c.accept(this.progress));
+            }
         }
         return this;
     }

@@ -130,6 +130,10 @@ public class TextField extends Component {
     }
 
     public final TextField text(final String text) {
+        return this.text(text, true);
+    }
+
+    public final TextField text(final String text, final boolean fireListeners) {
         this.text.setLength(0);
         this.text.append(text);
         this.cursor = Math.min(this.cursor, this.text.length());
@@ -137,7 +141,7 @@ public class TextField extends Component {
         if (this.rivet() != null) {
             this.updateShapedText();
         }
-        this.onTextChange();
+        this.onTextChange(fireListeners);
         return this;
     }
 
@@ -325,7 +329,7 @@ public class TextField extends Component {
                 this.cursor--;
                 this.selection = this.cursor;
                 this.updateShapedText();
-                this.onTextChange();
+                this.onTextChange(true);
             }
         } else if (event.key().isEquivalent(Key.DELETE)) {
             if (this.cursor != this.selection) {
@@ -336,7 +340,7 @@ public class TextField extends Component {
             } else if (this.cursor < this.text.length()) {
                 this.text.deleteCharAt(this.cursor);
                 this.updateShapedText();
-                this.onTextChange();
+                this.onTextChange(true);
             }
         } else if (ctrl && event.key().isEquivalent(Key.A)) {
             this.selection = 0;
@@ -368,7 +372,7 @@ public class TextField extends Component {
         this.selection = this.cursor;
         this.cursorAnimation.reset().start();
         this.updateShapedText();
-        this.onTextChange();
+        this.onTextChange(true);
         return true;
     }
 
@@ -489,7 +493,7 @@ public class TextField extends Component {
         this.cursor = start;
         this.selection = start;
         this.updateShapedText();
-        this.onTextChange();
+        this.onTextChange(true);
     }
 
     private void copy() {
@@ -507,7 +511,7 @@ public class TextField extends Component {
         this.cursor += clipboard.length();
         this.selection = this.cursor;
         this.updateShapedText();
-        this.onTextChange();
+        this.onTextChange(true);
     }
 
     private int findWordStart(int from) {
@@ -524,9 +528,11 @@ public class TextField extends Component {
         return i;
     }
 
-    private void onTextChange() {
+    private void onTextChange(final boolean fireListeners) {
         this.validate();
-        this.valueChangeListener.call(c -> c.accept(this.text()));
+        if (fireListeners) {
+            this.valueChangeListener.call(c -> c.accept(this.text()));
+        }
     }
 
     private void validate() {

@@ -113,9 +113,15 @@ public class ToggleSwitch extends Component {
     }
 
     public final ToggleSwitch toggled(final boolean toggled) {
+        return this.toggled(toggled, true);
+    }
+
+    public final ToggleSwitch toggled(final boolean toggled, final boolean fireListeners) {
         if (this.toggled != toggled) {
             this.toggled = toggled;
-            this.toggleListener.call(c -> c.accept(this.toggled));
+            if (fireListeners) {
+                this.toggleListener.call(c -> c.accept(this.toggled));
+            }
         }
         return this;
     }

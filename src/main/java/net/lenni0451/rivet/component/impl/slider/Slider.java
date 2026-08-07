@@ -125,7 +125,11 @@ public class Slider extends Component {
     }
 
     public final Slider value(final double value) {
-        this.updateValue(value);
+        return this.value(value, true);
+    }
+
+    public final Slider value(final double value, final boolean fireListeners) {
+        this.updateValue(value, fireListeners);
         return this;
     }
 
@@ -297,17 +301,19 @@ public class Slider extends Component {
         progress = MathUtils.clamp(progress, 0, 1);
         double newValue = this.min + progress * (this.max - this.min);
         newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.min, this.max, this.step);
-        this.updateValue(newValue);
+        this.updateValue(newValue, true);
     }
 
-    private void updateValue(final double newValue) {
+    private void updateValue(final double newValue, final boolean fireListeners) {
         if (this.value != newValue) {
             this.value = newValue;
             if (this.tooltip != null) {
                 this.tooltip.text(this.formatValue(this.value));
                 this.updateComponentPosition(this.absoluteBounds());
             }
-            this.valueChangeListener.call(c -> c.accept(this.value));
+            if (fireListeners) {
+                this.valueChangeListener.call(c -> c.accept(this.value));
+            }
         }
     }
 

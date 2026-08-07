@@ -95,9 +95,15 @@ public class Checkbox extends Component {
     }
 
     public final Checkbox checked(final boolean checked) {
+        return this.checked(checked, true);
+    }
+
+    public final Checkbox checked(final boolean checked, final boolean fireListeners) {
         if (this.checked != checked) {
             this.checked = checked;
-            this.toggleListener.call(c -> c.accept(this.checked));
+            if (fireListeners) {
+                this.toggleListener.call(c -> c.accept(this.checked));
+            }
         }
         return this;
     }

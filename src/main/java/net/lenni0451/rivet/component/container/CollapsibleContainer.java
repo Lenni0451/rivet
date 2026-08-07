@@ -86,6 +86,10 @@ public class CollapsibleContainer extends ParentContainer {
     }
 
     public final CollapsibleContainer collapsed(final boolean collapsed) {
+        return this.collapsed(collapsed, true);
+    }
+
+    public final CollapsibleContainer collapsed(final boolean collapsed, final boolean fireListeners) {
         if (this.collapsed != collapsed) {
             this.collapsed = collapsed;
             if (collapsed) {
@@ -94,7 +98,9 @@ public class CollapsibleContainer extends ParentContainer {
             if (this.collapseAnimation != null) {
                 this.collapseAnimation.runInDirection(collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS);
             }
-            this.collapseChangeListener.call(l -> l.accept(collapsed));
+            if (fireListeners) {
+                this.collapseChangeListener.call(l -> l.accept(collapsed));
+            }
             this.requestLayoutRecalculation();
         }
         return this;

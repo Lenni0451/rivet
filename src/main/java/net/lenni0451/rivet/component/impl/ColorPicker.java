@@ -72,10 +72,16 @@ public class ColorPicker extends Component {
     }
 
     public final ColorPicker color(final Color color) {
+        return this.color(color, true);
+    }
+
+    public final ColorPicker color(final Color color, final boolean fireListeners) {
         if (!color.equals(this.color)) {
             this.color = color;
             this.updateHSB();
-            this.colorChangeListener.call(c -> c.accept(this.color));
+            if (fireListeners) {
+                this.colorChangeListener.call(c -> c.accept(this.color));
+            }
         }
         return this;
     }
