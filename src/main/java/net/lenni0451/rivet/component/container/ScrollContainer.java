@@ -540,7 +540,7 @@ public class ScrollContainer extends ParentContainer {
 
     @Override
     public void computeLayout(final Size size) {
-        float previousMaxScrollX = this.childSize.width() - this.visibleWidth(size);
+        // float previousMaxScrollX = this.childSize.width() - this.visibleWidth(size);
         float previousMaxScrollY = this.childSize.height() - this.visibleHeight(size);
 
         this.hScrollVisible = false;

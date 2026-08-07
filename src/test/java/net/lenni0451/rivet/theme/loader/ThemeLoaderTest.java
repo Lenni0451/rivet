@@ -49,7 +49,7 @@ class ThemeLoaderTest {
 
     @Test
     void allThemeKeyTypesImplemented() throws Throwable {
-        Field parsersField = ThemeLoader.class.getDeclaredField("parsers");
+        Field parsersField = ThemeLoader.class.getDeclaredField("PARSERS");
         parsersField.setAccessible(true);
         Map<Class<?>, Parser<?>> parsers = (Map<Class<?>, Parser<?>>) parsersField.get(null);
 
@@ -75,8 +75,8 @@ class ThemeLoaderTest {
         check(Theme.TextField.PASSWORD_CHAR, "*", '*');
 
         // Integer // Currently disabled because there is no key using it
-//        check(Theme.BUTTON_ANIMATION_DURATION, "123", 123);
-//        check(Theme.BUTTON_ANIMATION_DURATION, "-123", -123);
+        // check(Theme.BUTTON_ANIMATION_DURATION, "123", 123);
+        // check(Theme.BUTTON_ANIMATION_DURATION, "-123", -123);
 
         // Long
         check(Theme.ScrollContainer.NESTED_SCROLL_TIMEOUT, "999999999999", 999_999_999_999L);

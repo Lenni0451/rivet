@@ -14,11 +14,11 @@ import java.util.SequencedMap;
 
 public abstract class TestBase extends GLFWApplication {
 
-//    static {
-//        if (System.getProperty("os.name").contains("Linux")) {
-//            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
-//        }
-//    }
+    // static {
+    //     if (System.getProperty("os.name").contains("Linux")) {
+    //         GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
+    //     }
+    // }
 
     public static FontInstanceSet createFont(final int size, final InputStream... streams) throws IOException {
         SequencedMap<FontInstance, GlyphPredicate> fonts = new LinkedHashMap<>();

@@ -21,7 +21,7 @@ import java.util.Properties;
 @UtilityClass
 public class ThemeLoader {
 
-    private static final Map<Class<?>, Parser<?>> parsers = new HashMap<>();
+    private static final Map<Class<?>, Parser<?>> PARSERS = new HashMap<>();
 
     static {
         registerParser(Color.class, new ColorParser());
@@ -41,7 +41,7 @@ public class ThemeLoader {
     }
 
     public static <T> void registerParser(final Class<T> type, final Parser<T> parser) {
-        parsers.put(type, parser);
+        PARSERS.put(type, parser);
     }
 
     public static void load(@WillNotClose final InputStream is, final Theme.Values values, final ExceptionHandler errorHandler) throws IOException {
@@ -68,7 +68,7 @@ public class ThemeLoader {
         if (themeKey.type().isEnum()) {
             parser = new EnumParser(themeKey.type());
         } else {
-            parser = parsers.get(themeKey.type());
+            parser = PARSERS.get(themeKey.type());
         }
         if (parser == null) {
             throw new UnsupportedOperationException("Unsupported theme value type: " + themeKey.type());
@@ -88,7 +88,7 @@ public class ThemeLoader {
         Properties properties = new Properties();
         for (ThemeKey<?> key : Theme.registeredKeys()) {
             Object value = theme.get(key);
-            Parser parser = parsers.get(key.type());
+            Parser parser = PARSERS.get(key.type());
             if (parser != null) {
                 properties.put(key.name(), parser.toString(value));
             }
