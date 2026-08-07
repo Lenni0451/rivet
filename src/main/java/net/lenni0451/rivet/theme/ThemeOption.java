@@ -18,17 +18,15 @@ public final class ThemeOption<T> {
     @Getter
     private final ThemeKey<T> key;
     @Getter
-    private final ListenerList<Consumer<T>> initListener;
+    private final ListenerList<Consumer<T>> initListener = new ListenerList<>();
     @Getter
-    private final ListenerList<Consumer<T>> changeListener;
+    private final ListenerList<Consumer<T>> changeListener = new ListenerList<>();
     @Nullable
     private Supplier<T> value;
 
     public ThemeOption(final Component component, final ThemeKey<T> key) {
         this.component = component;
         this.key = key;
-        this.initListener = new ListenerList<>();
-        this.changeListener = new ListenerList<>();
 
         component.addedListener().add(this::fireInitListener);
         component.themeChangedListener().add(this::fireInitListener);
