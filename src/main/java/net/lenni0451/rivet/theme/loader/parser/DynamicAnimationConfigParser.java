@@ -3,6 +3,8 @@ package net.lenni0451.rivet.theme.loader.parser;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 
+import java.util.Objects;
+
 public class DynamicAnimationConfigParser implements Parser<DynamicAnimationConfig> {
 
     private final EasingFunctionParser easingFunctionParser = new EasingFunctionParser();
@@ -15,8 +17,8 @@ public class DynamicAnimationConfigParser implements Parser<DynamicAnimationConf
             throw new IllegalArgumentException("Expected format: <easing function> <easing mode> <duration>");
         }
         return new DynamicAnimationConfig(
-                this.easingFunctionParser.parse(parts[0]),
-                this.easingModeParser.parse(parts[1]),
+                Objects.requireNonNull(this.easingFunctionParser.parse(parts[0]), "Unknown easing function: " + parts[0]),
+                Objects.requireNonNull(this.easingModeParser.parse(parts[1]), "Unknown easing mode: " + parts[1]),
                 Long.parseLong(parts[2])
         );
     }

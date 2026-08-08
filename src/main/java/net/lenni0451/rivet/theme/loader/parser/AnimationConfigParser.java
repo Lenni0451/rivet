@@ -10,6 +10,7 @@ import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public final class AnimationConfigParser implements Parser<AnimationConfig> {
 
@@ -35,7 +36,10 @@ public final class AnimationConfigParser implements Parser<AnimationConfig> {
         for (int i = 1; i < lines.size(); i++) {
             frames.add(this.parseFrame(lines.get(i)));
         }
-        return new AnimationConfig(mode, frames);
+        return new AnimationConfig(
+                Objects.requireNonNull(mode, "Unknown animation mode: " + lines.get(0)),
+                frames
+        );
     }
 
     private AnimationFrameConfig parseFrame(final String s) {
