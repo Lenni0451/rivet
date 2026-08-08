@@ -56,7 +56,8 @@ public class TextWrapper {
             currentLine.addAll(word.sections);
             ShapedText shapedLine = font.shapeText(new TextLine(currentLine));
             if (shapedLine.visualBounds().width() > maxWidth) {
-                for (TextSection ignored : word.sections) {
+                List<TextSection> sections = word.sections;
+                for (int j = 0; j < sections.size(); j++) {
                     currentLine.remove(currentLine.size() - 1);
                 }
                 if (currentLine.isEmpty()) {
