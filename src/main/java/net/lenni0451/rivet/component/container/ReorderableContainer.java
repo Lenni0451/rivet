@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.component.container;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
@@ -13,8 +14,11 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ReorderableContainer extends Container {
@@ -102,6 +106,39 @@ public class ReorderableContainer extends Container {
         default void onReorder(final List<Object> dragData, final int insertIndex) {
             if (dragData.size() == 1) {
                 this.onReorder(dragData.get(0), insertIndex);
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class ListReorderListener<E> implements ReorderListener {
+        private final Supplier<List<E>> listSupplier;
+        @Nullable
+        private final Runnable onReorder;
+
+        public ListReorderListener(final Supplier<List<E>> listSupplier) {
+            this(listSupplier, null);
+        }
+
+        @Override
+        public void onReorder(final List<Object> dragData, final int insertIndex) {
+            List<E> list = this.listSupplier.get();
+            List<E> toMove = new ArrayList<>(dragData.size());
+            int index = insertIndex;
+            for (Object o : dragData) {
+                if (!list.contains(o)) continue;
+
+                E element = (E) o;
+                toMove.add(element);
+                if (list.indexOf(element) < index) {
+                    index--;
+                }
+                list.remove(element);
+            }
+            list.addAll(index, toMove);
+
+            if (this.onReorder != null) {
+                this.onReorder.run();
             }
         }
     }

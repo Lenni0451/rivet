@@ -38,31 +38,10 @@ public class SelectionAndOrderingTest extends TestBase {
                 DropMarkerStrategy.vertical(5, 3),
                 dragData -> dragData instanceof SelectableLabel
         );
-        container.reorderListener().add((dragData, insertIndex) -> {
-            List<SelectableLabel> toMove = new ArrayList<>();
-            for (Object data : dragData) {
-                if (data instanceof SelectableLabel label) {
-                    toMove.add(label);
-                }
-            }
-            toMove.sort(Comparator.comparingInt(labels::indexOf));
-
-            SelectableLabel targetItem = null;
-            for (int i = insertIndex; i < labels.size(); i++) {
-                SelectableLabel item = labels.get(i);
-                if (!toMove.contains(item)) {
-                    targetItem = item;
-                    break;
-                }
-            }
-
-            labels.removeAll(toMove);
-
-            int newInsertIndex = targetItem == null ? labels.size() : labels.indexOf(targetItem);
-            labels.addAll(newInsertIndex, toMove);
-
-            container.sortChildren(Comparator.comparingInt(labels::indexOf));
-        });
+        container.reorderListener().add(new ReorderableContainer.ListReorderListener<>(
+                () -> labels,
+                () -> container.sortChildren(Comparator.comparingInt(labels::indexOf))
+        ));
         for (int i = 0; i < 10; i++) {
             SelectableLabel label = new SelectableLabel("Test " + i, selectionModel);
             container.addChild(label);
