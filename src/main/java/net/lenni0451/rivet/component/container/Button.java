@@ -217,23 +217,22 @@ public class Button extends Component implements Parent {
             renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColorTransition.value());
         }
 
-        float width = size.width() - this.innerPadding.value().horizontal();
-        float height = size.height() - this.innerPadding.value().vertical();
+        Size innerSize = size.minus(this.innerPadding.value()).clamp(this.child);
         renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
-            renderer.componentBounds(0, 0, width, height, () -> {
-                this.child.render(renderer, new Size(width, height));
+            renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), () -> {
+                this.child.render(renderer, innerSize);
             });
         });
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.innerPadding.value())).plus(this.innerPadding.value());
+        return this.child.computeIdealSize(constraints.minus(this.innerPadding.value())).clamp(this.child).plus(this.innerPadding.value());
     }
 
     @Override
     public void computeLayout(final Size size) {
-        this.child.computeLayout(size.minus(this.innerPadding.value()));
+        this.child.computeLayout(size.minus(this.innerPadding.value()).clamp(this.child));
         this.updateChildPositions();
     }
 
@@ -261,12 +260,12 @@ public class Button extends Component implements Parent {
     @Override
     public Rectangle childBounds(final Component component) {
         if (this.child == component) {
-            Rectangle bounds = this.relativeBounds();
+            Size containerSize = this.relativeBounds().size();
+            Size innerSize = containerSize.minus(this.innerPadding.value()).clamp(this.child);
             return new Rectangle(
                     this.innerPadding.value().left(),
                     this.innerPadding.value().top(),
-                    bounds.width() - this.innerPadding.value().horizontal(),
-                    bounds.height() - this.innerPadding.value().vertical()
+                    innerSize
             );
         }
         return Rectangle.EMPTY;

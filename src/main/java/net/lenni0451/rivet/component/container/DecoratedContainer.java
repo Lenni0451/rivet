@@ -41,26 +41,26 @@ public class DecoratedContainer extends ParentContainer {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        this.background.render(renderer, size);
+        Size backgroundSize = size.clamp(this.background);
+        this.background.render(renderer, backgroundSize);
 
-        float width = size.width() - this.innerPadding.horizontal();
-        float height = size.height() - this.innerPadding.vertical();
+        Size innerSize = size.minus(this.innerPadding).clamp(this.child);
         renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
-            renderer.componentBounds(0, 0, width, height, () -> {
-                this.child.render(renderer, new Size(width, height));
+            renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), () -> {
+                this.child.render(renderer, innerSize);
             });
         });
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.innerPadding)).plus(this.innerPadding);
+        return this.child.computeIdealSize(constraints.minus(this.innerPadding)).clamp(this.child).plus(this.innerPadding);
     }
 
     @Override
     public void computeLayout(final Size size) {
-        this.background.computeLayout(size);
-        this.child.computeLayout(size.minus(this.innerPadding));
+        this.background.computeLayout(size.clamp(this.background));
+        this.child.computeLayout(size.minus(this.innerPadding).clamp(this.child));
         this.updateChildPositions();
     }
 
@@ -82,14 +82,13 @@ public class DecoratedContainer extends ParentContainer {
 
     @Override
     public Rectangle childBounds(final Component component) {
-        Rectangle bounds = this.relativeBounds();
+        Size containerSize = this.relativeBounds().size();
         if (component == this.background) {
-            return new Rectangle(bounds.size());
+            return new Rectangle(containerSize.clamp(this.background));
         } else if (component == this.child) {
             return new Rectangle(
                     this.innerPadding.left(), this.innerPadding.top(),
-                    bounds.width() - this.innerPadding.horizontal(),
-                    bounds.height() - this.innerPadding.vertical()
+                    containerSize.minus(this.innerPadding).clamp(this.child)
             );
         }
         return Rectangle.EMPTY;

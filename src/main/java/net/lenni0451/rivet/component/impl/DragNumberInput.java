@@ -304,10 +304,9 @@ public class DragNumberInput extends ParentContainer {
         }
 
         renderer.translate(padding.left(), padding.top(), () -> {
-            float width = size.width() - padding.horizontal();
-            float height = size.height() - padding.vertical();
-            renderer.componentBounds(0, 0, width, height, () -> {
-                this.child.render(renderer, new Size(width, height));
+            Size innerSize = size.minus(padding).clamp(this.child);
+            renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), () -> {
+                this.child.render(renderer, innerSize);
             });
         });
     }
@@ -315,13 +314,13 @@ public class DragNumberInput extends ParentContainer {
     @Override
     public Size computeIdealSize(final Size constraints) {
         Padding padding = this.innerPadding.value();
-        return this.child.computeIdealSize(constraints.minus(padding)).plus(padding);
+        return this.child.computeIdealSize(constraints.minus(padding)).clamp(this.child).plus(padding);
     }
 
     @Override
     public void computeLayout(final Size size) {
         Padding padding = this.innerPadding.value();
-        this.child.computeLayout(size.minus(padding));
+        this.child.computeLayout(size.minus(padding).clamp(this.child));
         this.updateChildPositions();
     }
 
@@ -344,12 +343,12 @@ public class DragNumberInput extends ParentContainer {
     @Override
     public Rectangle childBounds(final Component component) {
         if (component == this.child) {
-            Rectangle bounds = this.relativeBounds();
+            Size containerSize = this.relativeBounds().size();
             Padding padding = this.innerPadding.value();
+            Size innerSize = containerSize.minus(padding).clamp(this.child);
             return new Rectangle(
                     padding.left(), padding.top(),
-                    bounds.width() - padding.horizontal(),
-                    bounds.height() - padding.vertical()
+                    innerSize
             );
         }
         return Rectangle.EMPTY;

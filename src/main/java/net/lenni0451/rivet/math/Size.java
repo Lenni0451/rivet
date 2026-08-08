@@ -2,6 +2,8 @@ package net.lenni0451.rivet.math;
 
 import lombok.With;
 import lombok.experimental.WithBy;
+import net.lenni0451.commons.math.MathUtils;
+import net.lenni0451.rivet.component.Component;
 
 @With
 @WithBy
@@ -45,6 +47,17 @@ public record Size(float width, float height) {
 
     public Size min(final float width, final float height) {
         return new Size(Math.min(this.width, width), Math.min(this.height, height));
+    }
+
+    public Size clamp(final Size min, final Size max) {
+        return new Size(
+                MathUtils.clamp(this.width, min.width(), max.width()),
+                MathUtils.clamp(this.height, min.height(), max.height())
+        );
+    }
+
+    public Size clamp(final Component component) {
+        return this.clamp(component.minSize(), component.maxSize());
     }
 
 }

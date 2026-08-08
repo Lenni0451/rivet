@@ -48,12 +48,11 @@ public class PaddedContainer extends ParentContainer {
 
     @Override
     public void render(final Renderer renderer, final Size size) {
-        float width = size.width() - this.padding.horizontal();
-        float height = size.height() - this.padding.vertical();
+        Size innerSize = size.minus(this.padding).clamp(this.child);
         renderer.translate(this.padding.left(), this.padding.top(), () -> {
-            Runnable renderChild = () -> this.child.render(renderer, new Size(width, height));
+            Runnable renderChild = () -> this.child.render(renderer, innerSize);
             if (this.cropChild) {
-                renderer.componentBounds(0, 0, width, height, renderChild);
+                renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), renderChild);
             } else {
                 renderChild.run();
             }
@@ -62,12 +61,12 @@ public class PaddedContainer extends ParentContainer {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.padding)).plus(this.padding);
+        return this.child.computeIdealSize(constraints.minus(this.padding)).clamp(this.child).plus(this.padding);
     }
 
     @Override
     public void computeLayout(final Size size) {
-        this.child.computeLayout(size.minus(this.padding));
+        this.child.computeLayout(size.minus(this.padding).clamp(this.child));
         this.updateChildPositions();
     }
 
@@ -91,12 +90,9 @@ public class PaddedContainer extends ParentContainer {
     @Override
     public Rectangle childBounds(final Component component) {
         if (component == this.child) {
-            Rectangle bounds = this.relativeBounds();
-            return new Rectangle(
-                    this.padding.left(), this.padding.top(),
-                    bounds.width() - this.padding.horizontal(),
-                    bounds.height() - this.padding.vertical()
-            );
+            Size containerSize = this.relativeBounds().size();
+            Size innerSize = containerSize.minus(this.padding).clamp(this.child);
+            return new Rectangle(this.padding.left(), this.padding.top(), innerSize);
         }
         return Rectangle.EMPTY;
     }

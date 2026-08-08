@@ -155,8 +155,8 @@ public class TabContainer extends ParentContainer {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        Size tabSize = this.tabContainer.computeIdealSize(constraints);
-        Size contentSize = this.contentContainer.computeIdealSize(constraints.withHeight(constraints.height() - tabSize.height()));
+        Size tabSize = this.tabContainer.computeIdealSize(constraints).clamp(this.tabContainer);
+        Size contentSize = this.contentContainer.computeIdealSize(constraints.withHeight(constraints.height() - tabSize.height())).clamp(this.contentContainer);
         return new Size(
                 Math.max(tabSize.width(), contentSize.width()),
                 tabSize.height() + contentSize.height()
@@ -165,8 +165,8 @@ public class TabContainer extends ParentContainer {
 
     @Override
     public void computeLayout(final Size size) {
-        this.tabSize = this.tabContainer.computeIdealSize(size).withWidth(size.width());
-        this.contentSize = new Size(size.width(), size.height() - this.tabSize.height());
+        this.tabSize = this.tabContainer.computeIdealSize(size).withWidth(size.width()).clamp(this.tabContainer);
+        this.contentSize = new Size(size.width(), size.height() - this.tabSize.height()).clamp(this.contentContainer);
         this.tabContainer.computeLayout(this.tabSize);
         this.contentContainer.computeLayout(this.contentSize);
         this.updateChildPositions();

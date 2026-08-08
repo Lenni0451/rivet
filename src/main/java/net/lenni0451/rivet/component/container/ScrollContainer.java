@@ -540,7 +540,7 @@ public class ScrollContainer extends ParentContainer {
         return this.child.computeIdealSize(new Size(
                 this.horizontalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : constraints.width(),
                 this.verticalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : constraints.height()
-        ));
+        )).clamp(this.child);
     }
 
     @Override

@@ -138,12 +138,12 @@ public class CollapsibleContainer extends ParentContainer {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        Size idealHeaderSize = this.clickableHeader.computeIdealSize(constraints);
+        Size idealHeaderSize = this.clickableHeader.computeIdealSize(constraints).clamp(this.clickableHeader);
         if (this.collapseProgress <= 0) {
             return idealHeaderSize;
         } else {
             Size contentConstraints = constraints.minus(0, idealHeaderSize.height());
-            Size contentIdealSize = this.content.computeIdealSize(contentConstraints);
+            Size contentIdealSize = this.content.computeIdealSize(contentConstraints).clamp(this.content);
             return new Size(
                     Math.max(idealHeaderSize.width(), contentIdealSize.width()),
                     idealHeaderSize.height() + contentIdealSize.height() * this.collapseProgress
@@ -153,14 +153,14 @@ public class CollapsibleContainer extends ParentContainer {
 
     @Override
     public void computeLayout(final Size size) {
-        Size idealHeaderSize = this.clickableHeader.computeIdealSize(size);
-        this.headerSize = new Size(size.width(), idealHeaderSize.height());
+        Size idealHeaderSize = this.clickableHeader.computeIdealSize(size).clamp(this.clickableHeader);
+        this.headerSize = new Size(size.width(), idealHeaderSize.height()).clamp(this.clickableHeader);
         this.clickableHeader.computeLayout(this.headerSize);
         if (this.collapseProgress > 0) {
-            float remainingHeight = Math.max(0, size.height() - idealHeaderSize.height());
-            this.contentSize = new Size(size.width(), remainingHeight);
+            float remainingHeight = Math.max(0, size.height() - this.headerSize.height());
+            this.contentSize = new Size(size.width(), remainingHeight).clamp(this.content);
         } else {
-            this.contentSize = new Size(size.width(), 0);
+            this.contentSize = new Size(size.width(), 0).clamp(this.content);
         }
         this.content.computeLayout(this.contentSize);
         this.updateChildPositions();
