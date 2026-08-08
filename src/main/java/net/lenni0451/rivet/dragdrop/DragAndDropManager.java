@@ -75,12 +75,11 @@ public final class DragAndDropManager {
     }
 
     public void startDrag(final List<Object> dragData, final List<Component> ghostComponents, final float ghostOffsetX, final float ghostOffsetY) {
+        this.cancelDrag();
+
         this.dragging = true;
         this.dragData = List.copyOf(dragData);
-        if (ghostComponents.isEmpty()) {
-            this.cancelDrag();
-            return;
-        }
+        if (ghostComponents.isEmpty()) return;
 
         this.ghostOffsetX = ghostOffsetX;
         this.ghostOffsetY = ghostOffsetY;
