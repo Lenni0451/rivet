@@ -6,6 +6,16 @@ import net.lenni0451.rivet.math.Corners;
 @UtilityClass
 public class MathUtils {
 
+    public static final float EPSILON = 0.001F;
+
+    public static boolean isGreaterThan(final float a, final float b) {
+        return a - b > EPSILON;
+    }
+
+    public static boolean isGreaterThan(final float a, final float b, final float epsilon) {
+        return a - b > epsilon;
+    }
+
     public static float roundMin(final float value, final float min) {
         return Math.max(Math.round(value), min);
     }

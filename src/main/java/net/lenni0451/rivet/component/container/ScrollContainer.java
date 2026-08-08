@@ -28,6 +28,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+import static net.lenni0451.rivet.utils.MathUtils.EPSILON;
+import static net.lenni0451.rivet.utils.MathUtils.isGreaterThan;
+
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ScrollContainer extends ParentContainer {
 
@@ -138,11 +141,13 @@ public class ScrollContainer extends ParentContainer {
     }
 
     public final float maxScrollX() {
-        return Math.max(0, this.childSize.width() - this.visibleWidth(this.relativeBounds().size()));
+        float maxScroll = this.childSize.width() - this.visibleWidth(this.relativeBounds().size());
+        return maxScroll <= EPSILON ? 0 : maxScroll;
     }
 
     public final float maxScrollY() {
-        return Math.max(0, this.childSize.height() - this.visibleHeight(this.relativeBounds().size()));
+        float maxScroll = this.childSize.height() - this.visibleHeight(this.relativeBounds().size());
+        return maxScroll <= EPSILON ? 0 : maxScroll;
     }
 
     public final ScrollContainer scrollX(final float scrollX) {
@@ -368,7 +373,7 @@ public class ScrollContainer extends ParentContainer {
                         float contentWidth = this.childSize.width();
                         float visibleWidth = this.visibleWidth(size);
                         float maxScroll = Math.max(0, contentWidth - visibleWidth);
-                        if (maxScroll > 0) {
+                        if (maxScroll > EPSILON) {
                             float scrollAmount = event.scrollX() == 0 ? event.scrollY() : event.scrollX();
                             this.targetScrollX = MathUtils.clamp(this.targetScrollX - scrollAmount * this.scrollSpeed.value(), 0, maxScroll);
                             return true;
@@ -378,7 +383,7 @@ public class ScrollContainer extends ParentContainer {
                         float contentHeight = this.childSize.height();
                         float visibleHeight = this.visibleHeight(size);
                         float maxScroll = Math.max(0, contentHeight - visibleHeight);
-                        if (maxScroll > 0) {
+                        if (maxScroll > EPSILON) {
                             this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
                             return true;
                         }
@@ -584,14 +589,14 @@ public class ScrollContainer extends ParentContainer {
             this.childSize = childSize;
 
             if (this.barType.value() == ScrollBarType.NORMAL) {
-                boolean newHScrollVisible = this.horizontalScrolling && this.childSize.width() > availableWidth;
-                boolean newVScrollVisible = this.verticalScrolling && this.childSize.height() > availableHeight;
+                boolean newHScrollVisible = this.horizontalScrolling && isGreaterThan(this.childSize.width(), availableWidth);
+                boolean newVScrollVisible = this.verticalScrolling && isGreaterThan(this.childSize.height(), availableHeight);
 
                 if (newHScrollVisible && !newVScrollVisible) {
-                    newVScrollVisible = this.verticalScrolling && this.childSize.height() > (availableHeight - this.barWidth.value());
+                    newVScrollVisible = this.verticalScrolling && isGreaterThan(this.childSize.height(), availableHeight - this.barWidth.value());
                 }
                 if (newVScrollVisible && !newHScrollVisible) {
-                    newHScrollVisible = this.horizontalScrolling && this.childSize.width() > (availableWidth - this.barWidth.value());
+                    newHScrollVisible = this.horizontalScrolling && isGreaterThan(this.childSize.width(), availableWidth - this.barWidth.value());
                 }
 
                 if (newHScrollVisible != this.hScrollVisible || newVScrollVisible != this.vScrollVisible) {
@@ -607,18 +612,20 @@ public class ScrollContainer extends ParentContainer {
         { // Horizontal scroll bar
             float contentWidth = this.childSize.width();
             if (this.barType.value() == ScrollBarType.FLOATING) {
-                this.hScrollVisible = this.horizontalScrolling && contentWidth > availableWidth;
+                this.hScrollVisible = this.horizontalScrolling && isGreaterThan(contentWidth, availableWidth);
             }
             float maxScrollX = Math.max(0, contentWidth - availableWidth);
+            if (maxScrollX <= EPSILON) maxScrollX = 0;
             this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
             this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
         }
         { // Vertical scroll bar
             float contentHeight = this.childSize.height();
             if (this.barType.value() == ScrollBarType.FLOATING) {
-                this.vScrollVisible = this.verticalScrolling && contentHeight > availableHeight;
+                this.vScrollVisible = this.verticalScrolling && isGreaterThan(contentHeight, availableHeight);
             }
             float maxScrollY = Math.max(0, contentHeight - availableHeight);
+            if (maxScrollY <= EPSILON) maxScrollY = 0;
             if (this.autoScroll && previousMaxScrollY - this.targetScrollY <= availableHeight * this.autoScrollThreshold) {
                 this.targetScrollY = maxScrollY;
             } else {
