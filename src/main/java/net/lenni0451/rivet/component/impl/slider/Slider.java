@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 public class Slider extends Component {
 
     private static final int TICK_OFFSET = 2;
+    private static final int DEFAULT_STEP_COUNT = 100;
 
     @Getter
     private Font font;
@@ -114,7 +115,7 @@ public class Slider extends Component {
     private StateTransition<Color, State> thumbOutlineColorTransition;
 
     public Slider(final double min, final double max, final double value) {
-        this(min, max, 1, value);
+        this(min, max, (max - min) / DEFAULT_STEP_COUNT, value);
     }
 
     public Slider(final double min, final double max, final double step, final double value) {
