@@ -107,6 +107,8 @@ public class Slider extends Component {
     private final ThemeOption<AnimationConfig> hoverAnimationConfig = new ThemeOption<>(this, Theme.Slider.HOVER_ANIMATION);
     @Getter
     private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.Slider.CLICK_ANIMATION);
+    @Getter
+    private final ThemeOption<Boolean> ensureValuesReachable = new ThemeOption<>(this, Theme.Slider.ENSURE_VALUES_REACHABLE);
 
     private StateTransition<Color, State> thumbColorTransition;
     private StateTransition<Color, State> thumbOutlineColorTransition;
@@ -453,7 +455,16 @@ public class Slider extends Component {
         } else {
             height = this.thumbHeight.value() + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.usedFont().height() / 2F;
         }
-        return new Size(this.usedFont().height() * 10, height);
+        float width;
+        if (this.ensureValuesReachable.value()) {
+            width = (float) ((this.max - this.min) / this.step) + this.thumbWidth.value();
+        } else {
+            width = 0;
+        }
+        return new Size(
+                Math.max(width, this.usedFont().height() * 10),
+                height
+        );
     }
 
     private float barWidth(final Size size) {
