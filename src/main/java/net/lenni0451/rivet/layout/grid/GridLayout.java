@@ -148,25 +148,51 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         }
 
         // 2nd pass: spanning columns
+        final List<Component> spanningComponents = new ArrayList<>();
         for (final Component component : components) {
             final GridOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
             if (options.columnSpan() > 1) {
-                final Size idealSize = component.computeIdealSize(constraints);
-                float width = this.widthOf(component, idealSize) + options.padding().horizontal();
+                spanningComponents.add(component);
+            }
+        }
+        spanningComponents.sort(Comparator.comparingInt(c -> compressed.getVirtualOptions(this.getSafeOptions(c)).columnSpan()));
 
-                float currentWidth = this.sumRange(columnWidths, options.column(), options.columnSpan()) + this.getGaps(options.columnSpan(), this.horizontalGap);
-                float currentWeight = this.sumRange(columnWeights, options.column(), options.columnSpan());
+        for (final Component component : spanningComponents) {
+            final GridOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
 
-                if (width > currentWidth) {
-                    final float diff = width - currentWidth;
+            float currentWeight = this.sumRange(columnWeights, options.column(), options.columnSpan());
+            if (options.weightX() > currentWeight) {
+                final float diffWeight = options.weightX() - currentWeight;
+                if (currentWeight > 0) {
                     for (int i = 0; i < options.columnSpan(); i++) {
-                        columnWidths[options.column() + i] += diff / options.columnSpan();
+                        columnWeights[options.column() + i] += diffWeight * (columnWeights[options.column() + i] / currentWeight);
                     }
+                } else {
+                    columnWeights[options.column() + options.columnSpan() - 1] += diffWeight;
                 }
-                if (options.weightX() > currentWeight) {
-                    final float diff = options.weightX() - currentWeight;
+                currentWeight = this.sumRange(columnWeights, options.column(), options.columnSpan());
+            }
+
+            final Size idealSize = component.computeIdealSize(constraints);
+            float width = this.widthOf(component, idealSize) + options.padding().horizontal();
+            float currentWidth = this.sumRange(columnWidths, options.column(), options.columnSpan()) + this.getGaps(options.columnSpan(), this.horizontalGap);
+
+            if (width > currentWidth) {
+                final float diff = width - currentWidth;
+                if (currentWeight > 0) {
                     for (int i = 0; i < options.columnSpan(); i++) {
-                        columnWeights[options.column() + i] += diff / options.columnSpan();
+                        columnWidths[options.column() + i] += diff * (columnWeights[options.column() + i] / currentWeight);
+                    }
+                } else {
+                    float currentWidthsSum = this.sumRange(columnWidths, options.column(), options.columnSpan());
+                    if (currentWidthsSum > 0) {
+                        for (int i = 0; i < options.columnSpan(); i++) {
+                            columnWidths[options.column() + i] += diff * (columnWidths[options.column() + i] / currentWidthsSum);
+                        }
+                    } else {
+                        for (int i = 0; i < options.columnSpan(); i++) {
+                            columnWidths[options.column() + i] += diff / options.columnSpan();
+                        }
                     }
                 }
             }
@@ -206,24 +232,50 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         }
 
         // 2nd pass: spanning rows
+        final List<Component> spanningComponents = new ArrayList<>();
         for (final Component component : components) {
             final GridOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
             if (options.rowSpan() > 1) {
-                final float height = componentHeights.get(component);
+                spanningComponents.add(component);
+            }
+        }
+        spanningComponents.sort(Comparator.comparingInt(c -> compressed.getVirtualOptions(this.getSafeOptions(c)).rowSpan()));
 
-                float currentHeight = this.sumRange(rowHeights, options.row(), options.rowSpan()) + this.getGaps(options.rowSpan(), this.verticalGap);
-                float currentWeight = this.sumRange(rowWeights, options.row(), options.rowSpan());
+        for (final Component component : spanningComponents) {
+            final GridOptions options = compressed.getVirtualOptions(this.getSafeOptions(component));
 
-                if (height > currentHeight) {
-                    final float diff = height - currentHeight;
+            float currentWeight = this.sumRange(rowWeights, options.row(), options.rowSpan());
+            if (options.weightY() > currentWeight) {
+                final float diffWeight = options.weightY() - currentWeight;
+                if (currentWeight > 0) {
                     for (int i = 0; i < options.rowSpan(); i++) {
-                        rowHeights[options.row() + i] += diff / options.rowSpan();
+                        rowWeights[options.row() + i] += diffWeight * (rowWeights[options.row() + i] / currentWeight);
                     }
+                } else {
+                    rowWeights[options.row() + options.rowSpan() - 1] += diffWeight;
                 }
-                if (options.weightY() > currentWeight) {
-                    final float diff = options.weightY() - currentWeight;
+                currentWeight = this.sumRange(rowWeights, options.row(), options.rowSpan());
+            }
+
+            final float height = componentHeights.get(component);
+            float currentHeight = this.sumRange(rowHeights, options.row(), options.rowSpan()) + this.getGaps(options.rowSpan(), this.verticalGap);
+
+            if (height > currentHeight) {
+                final float diff = height - currentHeight;
+                if (currentWeight > 0) {
                     for (int i = 0; i < options.rowSpan(); i++) {
-                        rowWeights[options.row() + i] += diff / options.rowSpan();
+                        rowHeights[options.row() + i] += diff * (rowWeights[options.row() + i] / currentWeight);
+                    }
+                } else {
+                    float currentHeightsSum = this.sumRange(rowHeights, options.row(), options.rowSpan());
+                    if (currentHeightsSum > 0) {
+                        for (int i = 0; i < options.rowSpan(); i++) {
+                            rowHeights[options.row() + i] += diff * (rowHeights[options.row() + i] / currentHeightsSum);
+                        }
+                    } else {
+                        for (int i = 0; i < options.rowSpan(); i++) {
+                            rowHeights[options.row() + i] += diff / options.rowSpan();
+                        }
                     }
                 }
             }

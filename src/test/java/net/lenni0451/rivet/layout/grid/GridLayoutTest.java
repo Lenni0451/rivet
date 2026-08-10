@@ -273,6 +273,54 @@ class GridLayoutTest {
         assertRectangleEquals(new Rectangle(0, 100, 100, 100), bounds.get(c2), 1e-4f);
     }
 
+    @Test
+    void testSpanningComponentExpandsWeightedColumn() {
+        final GridLayout layout = new GridLayout(5, 5);
+
+        final Component topTextField = new TestComponent(new Size(100, 20));
+        topTextField.layoutOptions(new GridOptions(1, 0).withWeightX(1.0f).withFill(GridFill.HORIZONTAL));
+
+        final Component bottomSizer = new TestComponent(new Size(500, 20));
+        bottomSizer.layoutOptions(new GridOptions(0, 1).withWeightX(1.0f).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+
+        final List<Component> components = List.of(topTextField, bottomSizer);
+        final Size ideal = layout.computeIdealSize(new Size(800, 600), components);
+
+        assertEquals(500, ideal.width(), 1e-4f);
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(ideal, components, bounds::put);
+
+        assertRectangleEquals(new Rectangle(5, 0, 495, 20), bounds.get(topTextField), 1e-4f);
+        assertRectangleEquals(new Rectangle(0, 25, 500, 20), bounds.get(bottomSizer), 1e-4f);
+    }
+
+    @Test
+    void testSpanningComponentDoesNotExpandUnweightedLabelColumn() {
+        final GridLayout layout = new GridLayout(5, 5);
+
+        final Component label = new TestComponent(new Size(40, 20));
+        label.layoutOptions(new GridOptions(0, 1).withAnchor(GridAnchor.LEFT));
+
+        final Component textField = new TestComponent(new Size(100, 20));
+        textField.layoutOptions(new GridOptions(1, 1).withAnchor(GridAnchor.LEFT));
+
+        final Component sizer = new TestComponent(new Size(500, 20));
+        sizer.layoutOptions(new GridOptions(0, 0).withWeightX(1.0f).withFill(GridFill.HORIZONTAL).withColumnSpan(2));
+
+        final List<Component> components = List.of(label, textField, sizer);
+        final Size ideal = layout.computeIdealSize(new Size(800, 600), components);
+
+        assertEquals(500, ideal.width(), 1e-4f);
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(ideal, components, bounds::put);
+
+        assertRectangleEquals(new Rectangle(0, 25, 40, 20), bounds.get(label), 1e-4f);
+        assertRectangleEquals(new Rectangle(45, 25, 100, 20), bounds.get(textField), 1e-4f);
+        assertRectangleEquals(new Rectangle(0, 0, 500, 20), bounds.get(sizer), 1e-4f);
+    }
+
     private static class TestComponent extends Component {
         private final Size idealSize;
 
