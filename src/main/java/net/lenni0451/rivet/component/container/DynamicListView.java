@@ -1,6 +1,5 @@
 package net.lenni0451.rivet.component.container;
 
-import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
 import net.lenni0451.rivet.layout.Layout;
@@ -20,6 +19,7 @@ public class DynamicListView<E> extends ReorderableContainer {
     private final Function<E, Component> componentFactory;
     private final IdentityHashMap<E, Component> componentCache = new IdentityHashMap<>();
     private final List<E> lastSeenList = new ArrayList<>();
+    private final Runnable updateListener;
 
     private final IdentityHashMap<Component, Integer> orderMap = new IdentityHashMap<>();
     private final Comparator<Component> orderComparator = Comparator.comparingInt(c -> this.orderMap.getOrDefault(c, 0));
@@ -40,6 +40,12 @@ public class DynamicListView<E> extends ReorderableContainer {
         super(layout, strategy, dropFilter);
         this.listSupplier = listSupplier;
         this.componentFactory = componentFactory;
+        this.updateListener = () -> {
+            List<E> currentList = this.listSupplier.get();
+            if (!this.isSame(currentList, this.lastSeenList)) {
+                this.requestLayoutRecalculation();
+            }
+        };
     }
 
     public final DynamicListView<E> recreate(final E item) {
@@ -59,12 +65,15 @@ public class DynamicListView<E> extends ReorderableContainer {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
-        List<E> currentList = this.listSupplier.get();
-        if (!this.isSame(currentList, this.lastSeenList)) {
-            this.requestLayoutRecalculation();
-        }
-        super.render(renderer, size);
+    protected void onComponentAdded() {
+        super.onComponentAdded();
+        this.rivet().renderListener().add(this.updateListener);
+    }
+
+    @Override
+    protected void onComponentRemoved() {
+        super.onComponentRemoved();
+        this.rivet().renderListener().remove(this.updateListener);
     }
 
     @Override
