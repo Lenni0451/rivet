@@ -13,6 +13,10 @@ public record Padding(float left, float top, float right, float bottom) {
         this(all, all, all, all);
     }
 
+    public Padding(final float horizontal, final float vertical) {
+        this(horizontal, vertical, horizontal, vertical);
+    }
+
     public Padding {
         left = Math.max(0, left);
         top = Math.max(0, top);
