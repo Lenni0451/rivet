@@ -122,23 +122,27 @@ public class Container extends ParentContainer {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         Size screenSize = this.rivet().scaledSize();
         for (Child child : this.children) {
             float childX = child.bounds.x() + renderer.xOffset();
             float childY = child.bounds.y() + renderer.yOffset();
+            boolean skip = false;
             if ((childX < 0 && childX + child.bounds.width() < 0) || childX > screenSize.width()) {
-                continue;
+                skip = true;
             }
             if ((childY < 0 && childY + child.bounds.height() < 0) || childY > screenSize.height()) {
-                continue;
+                skip = true;
             }
-
-            renderer.translate(child.bounds.x(), child.bounds.y(), () -> {
-                renderer.componentBounds(0, 0, child.bounds.width(), child.bounds.height(), () -> {
-                    child.component.render(renderer, child.bounds.size());
+            if (skip) {
+                child.component.updatePosition(childX, childY, child.bounds.width(), child.bounds.height());
+            } else {
+                renderer.translate(child.bounds.x(), child.bounds.y(), () -> {
+                    renderer.componentBounds(0, 0, child.bounds.width(), child.bounds.height(), () -> {
+                        child.component.render(renderer, child.bounds.size());
+                    });
                 });
-            });
+            }
         }
     }
 
@@ -178,7 +182,6 @@ public class Container extends ParentContainer {
             );
         }
         this.contentSize = contentSize;
-        this.updateChildPositions();
     }
 
 

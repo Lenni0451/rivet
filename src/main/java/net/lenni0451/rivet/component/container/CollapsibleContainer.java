@@ -107,7 +107,7 @@ public class CollapsibleContainer extends ParentContainer {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         renderer.componentBounds(0, 0, this.headerSize.width(), this.headerSize.height(), () -> {
             this.clickableHeader.render(renderer, this.headerSize);
         });
@@ -163,7 +163,6 @@ public class CollapsibleContainer extends ParentContainer {
             this.contentSize = new Size(size.width(), 0).clamp(this.content);
         }
         this.content.computeLayout(this.contentSize);
-        this.updateChildPositions();
     }
 
     @Override

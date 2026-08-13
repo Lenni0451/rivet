@@ -89,7 +89,7 @@ public class ProgressBar extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         this.renderTrack(renderer, size);
         Runnable drawIndicatorAndStripes = () -> {
             this.renderIndicator(renderer, size, this.indicatorColor.value());

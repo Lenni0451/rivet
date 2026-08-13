@@ -90,9 +90,9 @@ public final class DragAndDropManager {
         this.ghostContainer.layoutOptions(new AbsoluteOptions(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY));
         Container dragContainer = new Container(AbsoluteLayout.INSTANCE) {
             @Override
-            public void render(final Renderer renderer, final Size size) {
+            protected void renderComponent(final Renderer renderer, final Size size) {
                 if (DragAndDropManager.this.mouseX != -Float.MAX_VALUE) {
-                    super.render(renderer, size);
+                    super.renderComponent(renderer, size);
                 }
             }
         };

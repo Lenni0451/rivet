@@ -333,7 +333,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         float thumbWidth = this.thumbWidth.value();
         float thumbHeight = this.thumbHeight.value();
         float barHeight = this.barHeight.value();

@@ -291,7 +291,7 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         Padding padding = this.innerPadding.value();
         Color background = this.backgroundColorTransition.value();
         Color outline = this.outlineColorTransition.value();
@@ -321,7 +321,6 @@ public class DragNumberInput extends ParentContainer {
     public void computeLayout(final Size size) {
         Padding padding = this.innerPadding.value();
         this.child.computeLayout(size.minus(padding).clamp(this.child));
-        this.updateChildPositions();
     }
 
     @Override

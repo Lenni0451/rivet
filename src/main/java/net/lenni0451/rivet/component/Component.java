@@ -395,17 +395,27 @@ public abstract class Component {
     protected void onComponentDragLeave() {
     }
 
-    public final void updatePosition(final Rectangle absoluteBounds) {
-        if (absoluteBounds.equals(this.lastAbsoluteBounds)) return;
-        this.lastAbsoluteBounds = absoluteBounds;
-        this.positionUpdateListener.call(l -> l.accept(absoluteBounds));
-        this.updateComponentPosition(absoluteBounds);
+    public final void updatePosition(final float x, final float y, final float width, final float height) {
+        if (this.lastAbsoluteBounds != null) {
+            Rectangle absoluteBounds = this.lastAbsoluteBounds;
+            if (absoluteBounds.x() == x && absoluteBounds.y() == y && absoluteBounds.width() == width && absoluteBounds.height() == height) {
+                return;
+            }
+        }
+        this.lastAbsoluteBounds = new Rectangle(x, y, width, height);
+        this.positionUpdateListener.call(l -> l.accept(this.lastAbsoluteBounds));
+        this.updateComponentPosition(this.lastAbsoluteBounds);
     }
 
     protected void updateComponentPosition(final Rectangle absoluteBounds) {
     }
 
-    public void render(final Renderer renderer, final Size size) {
+    public final void render(final Renderer renderer, final Size size) {
+        this.updatePosition(renderer.xOffset(), renderer.yOffset(), size.width(), size.height());
+        this.renderComponent(renderer, size);
+    }
+
+    protected void renderComponent(final Renderer renderer, final Size size) {
     }
 
     public abstract Size computeIdealSize(final Size constraints);

@@ -84,8 +84,8 @@ public class ReorderableContainer extends Container {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
-        super.render(renderer, size);
+    protected void renderComponent(final Renderer renderer, final Size size) {
+        super.renderComponent(renderer, size);
         if (this.currentTarget != null && this.currentTarget.markerBounds() != null) {
             Rectangle markerBounds = this.currentTarget.markerBounds();
             renderer.fillRect(markerBounds.x(), markerBounds.y(), markerBounds.width(), markerBounds.height(), this.markerColor);

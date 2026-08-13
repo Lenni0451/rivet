@@ -109,11 +109,11 @@ public class DragBetweenTest extends TestBase {
         }
 
         @Override
-        public void render(final Renderer renderer, final Size size) {
+        protected void renderComponent(final Renderer renderer, final Size size) {
             if (this.hovered) {
                 renderer.fillRect(0, 0, size.width(), size.height(), HOVERED_COLOR);
             }
-            super.render(renderer, size);
+            super.renderComponent(renderer, size);
         }
     }
 

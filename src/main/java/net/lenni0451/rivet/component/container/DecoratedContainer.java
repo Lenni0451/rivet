@@ -40,7 +40,7 @@ public class DecoratedContainer extends ParentContainer {
 
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         Size backgroundSize = size.clamp(this.background);
         this.background.render(renderer, backgroundSize);
 
@@ -61,7 +61,6 @@ public class DecoratedContainer extends ParentContainer {
     public void computeLayout(final Size size) {
         this.background.computeLayout(size.clamp(this.background));
         this.child.computeLayout(size.minus(this.innerPadding).clamp(this.child));
-        this.updateChildPositions();
     }
 
     @Override

@@ -177,7 +177,7 @@ public class FormattedLabel extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         float x = this.horizontalOrigin.position(size.width() / this.scale);
         float y = this.verticalOrigin.position(size.height() / this.scale);
         renderer.scale(this.scale, () -> {

@@ -130,7 +130,7 @@ public class TabContainer extends ParentContainer {
 
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         Color headerColor = this.headerBackgroundColor.value();
         if (!headerColor.equals(Color.TRANSPARENT)) {
             renderer.fillRect(0, 0, size.width(), this.tabSize.height(), headerColor);
@@ -169,7 +169,6 @@ public class TabContainer extends ParentContainer {
         this.contentSize = new Size(size.width(), size.height() - this.tabSize.height()).clamp(this.contentContainer);
         this.tabContainer.computeLayout(this.tabSize);
         this.contentContainer.computeLayout(this.contentSize);
-        this.updateChildPositions();
     }
 
 

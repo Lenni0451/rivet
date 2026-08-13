@@ -209,7 +209,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
@@ -233,7 +233,6 @@ public class Button extends Component implements Parent {
     @Override
     public void computeLayout(final Size size) {
         this.child.computeLayout(size.minus(this.innerPadding.value()).clamp(this.child));
-        this.updateChildPositions();
     }
 
     @Override

@@ -145,7 +145,7 @@ public class Label extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
             if (this.shapedTextBlock == null) {
                 this.computeLayout(size);

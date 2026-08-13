@@ -114,7 +114,7 @@ public class SliderTooltip extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         float triangleSize = this.triangleSize.value();
         Color backgroundColor = this.backgroundColor.value();
         float cornerRadius = this.cornerRadius.value();

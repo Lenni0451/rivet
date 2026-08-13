@@ -430,7 +430,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         float visibleWidth = size.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
         float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;

@@ -142,7 +142,7 @@ public class TabBackground extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         Corners corners = this.cornerRadius.value();
         renderer.fillRoundedRect(
                 0, 0, size.width(), size.height(),

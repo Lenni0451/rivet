@@ -210,7 +210,7 @@ public class Checkbox extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         float boxSize = size.height() * 0.8F;
         float offset = (size.height() - boxSize) / 2F;
 

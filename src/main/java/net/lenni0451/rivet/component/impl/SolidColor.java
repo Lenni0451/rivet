@@ -51,7 +51,7 @@ public class SolidColor extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         if (this.color.getAlpha() > 0) {
             renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.topLeft(), this.cornerRadius.bottomLeft(), this.cornerRadius.bottomRight(), this.cornerRadius.topRight(), this.color);
         }

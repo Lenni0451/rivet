@@ -265,7 +265,7 @@ public class ToggleSwitch extends Component {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         float cornerRadius = this.cornerRadius.value();
         float outlineWidth = this.outlineWidth.value();
         boolean encased = this.thumbEncased.value();

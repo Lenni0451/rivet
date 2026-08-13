@@ -107,7 +107,7 @@ public class ComboBox extends ParentContainer {
     }
 
     @Override
-    public void render(final Renderer renderer, final Size size) {
+    protected void renderComponent(final Renderer renderer, final Size size) {
         this.button.render(renderer, size);
     }
 
@@ -119,7 +119,6 @@ public class ComboBox extends ParentContainer {
     @Override
     public void computeLayout(final Size size) {
         this.button.computeLayout(size.clamp(this.button));
-        this.updateChildPositions();
     }
 
     @Override

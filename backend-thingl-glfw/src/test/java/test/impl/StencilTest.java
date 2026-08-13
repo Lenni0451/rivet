@@ -22,7 +22,7 @@ public class StencilTest extends TestBase {
 
     private static class StencilTestComponent extends Component {
         @Override
-        public void render(final Renderer renderer, final Size size) {
+        protected void renderComponent(final Renderer renderer, final Size size) {
             renderer.stencil(s -> {
                 s.fillCircle(size.width() / 2, size.height() / 2, System.currentTimeMillis() / 20 % 200, Color.WHITE);
             }, () -> {
