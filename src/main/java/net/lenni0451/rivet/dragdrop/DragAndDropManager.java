@@ -85,18 +85,18 @@ public final class DragAndDropManager {
         this.ghostOffsetY = ghostOffsetY;
         this.ghostContainer = new GhostContainer();
         for (int i = Math.min(ghostComponents.size(), STACK_SIZE) - 1; i >= 0; i--) {
-            this.ghostContainer.addChild(ghostComponents.get(i));
+            this.ghostContainer.add(ghostComponents.get(i));
         }
         this.ghostContainer.layoutOptions(new AbsoluteOptions(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY));
         Container dragContainer = new Container(AbsoluteLayout.INSTANCE) {
             @Override
-            protected void renderComponent(final Renderer renderer, final Size size) {
+            protected void renderInternal(final Renderer renderer, final Size size) {
                 if (DragAndDropManager.this.mouseX != -Float.MAX_VALUE) {
-                    super.renderComponent(renderer, size);
+                    super.renderInternal(renderer, size);
                 }
             }
         };
-        dragContainer.addChild(this.ghostContainer);
+        dragContainer.add(this.ghostContainer);
         this.dragLayer = new Layer(dragContainer, LayerBucket.DRAG);
         this.rivet.addLayer(this.dragLayer);
     }

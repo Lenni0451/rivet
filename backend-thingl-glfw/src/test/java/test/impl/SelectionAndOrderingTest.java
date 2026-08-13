@@ -40,14 +40,14 @@ public class SelectionAndOrderingTest extends TestBase {
         );
         container.reorderListener().add(new ReorderableContainer.ListReorderListener<>(
                 () -> labels,
-                () -> container.sortChildren(Comparator.comparingInt(labels::indexOf))
+                () -> container.sort(Comparator.comparingInt(labels::indexOf))
         ));
         for (int i = 0; i < 10; i++) {
             SelectableLabel label = new SelectableLabel("Test " + i, selectionModel);
-            container.addChild(label);
+            container.add(label);
             labels.add(label);
         }
-        rivet.root().addChild(container);
+        rivet.root().add(container);
     }
 
 
@@ -67,19 +67,19 @@ public class SelectionAndOrderingTest extends TestBase {
         }
 
         @Override
-        protected void onComponentMouseEnter() {
+        protected void onMouseEnterInternal() {
             this.hovered = true;
         }
 
         @Override
-        protected void onComponentMouseLeave() {
+        protected void onMouseLeaveInternal() {
             this.hovered = false;
             this.mouseDown = false;
             this.selectionDeferred = false;
         }
 
         @Override
-        protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+        protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
             if (event.button().equals(MouseButton.LEFT)) {
                 if (this.selectionModel.isSelected(this) && !event.modifiers().contains(ModifierKey.CONTROL) && !event.modifiers().contains(ModifierKey.SHIFT)) {
                     this.selectionDeferred = true;
@@ -90,11 +90,11 @@ public class SelectionAndOrderingTest extends TestBase {
                 this.mouseDown = true;
                 return true;
             }
-            return super.onComponentMouseDown(event, size);
+            return super.onMouseDownInternal(event, size);
         }
 
         @Override
-        protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+        protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
             if (event.button().equals(MouseButton.LEFT)) {
                 if (this.selectionDeferred) {
                     this.selectionModel.select(this, event.modifiers());
@@ -103,11 +103,11 @@ public class SelectionAndOrderingTest extends TestBase {
                 this.mouseDown = false;
                 return true;
             }
-            return super.onComponentMouseUp(event, size);
+            return super.onMouseUpInternal(event, size);
         }
 
         @Override
-        protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+        protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
             if (this.mouseDown && !this.rivet().dragAndDropManager().isDragging()) {
                 this.selectionDeferred = false;
                 List<SelectableLabel> dragged;
@@ -125,14 +125,14 @@ public class SelectionAndOrderingTest extends TestBase {
         }
 
         @Override
-        protected void renderComponent(final Renderer renderer, final Size size) {
+        protected void renderInternal(final Renderer renderer, final Size size) {
             if (this.selectionModel.isSelected(this)) {
                 renderer.fillRect(0, 0, size.width(), size.height(), SELECTED_COLOR);
             }
             if (this.hovered) {
                 renderer.fillRect(0, 0, size.width(), size.height(), HOVERED_COLOR);
             }
-            super.renderComponent(renderer, size);
+            super.renderInternal(renderer, size);
         }
     }
 

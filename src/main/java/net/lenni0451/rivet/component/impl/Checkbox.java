@@ -138,7 +138,7 @@ public class Checkbox extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.shapeText();
         this.backgroundColorTransition = new Transition<>(
                 this,
@@ -169,40 +169,40 @@ public class Checkbox extends Component {
     }
 
     @Override
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
         this.hovered = false;
     }
 
     @Override
-    protected void onComponentDisabled() {
-        this.onComponentRemoved();
+    protected void onDisabledInternal() {
+        this.onRemovedInternal();
         this.shapeText();
     }
 
     @Override
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
         this.shapeText();
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         if (this.rivet() != null) {
             this.shapeText();
         }
     }
 
     @Override
-    protected void onComponentMouseEnter() {
+    protected void onMouseEnterInternal() {
         this.hovered = true;
     }
 
     @Override
-    protected void onComponentMouseLeave() {
+    protected void onMouseLeaveInternal() {
         this.hovered = false;
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (this.hovered && event.button().equals(MouseButton.LEFT)) {
             this.checked(!this.checked);
         }
@@ -210,7 +210,7 @@ public class Checkbox extends Component {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float boxSize = size.height() * 0.8F;
         float offset = (size.height() - boxSize) / 2F;
 

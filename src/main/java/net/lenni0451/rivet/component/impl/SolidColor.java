@@ -44,14 +44,14 @@ public class SolidColor extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         if (this.outlineWidth == -1) {
             this.outlineWidth = this.rivet().backend().font().height() / 8F;
         }
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         if (this.color.getAlpha() > 0) {
             renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.topLeft(), this.cornerRadius.bottomLeft(), this.cornerRadius.bottomRight(), this.cornerRadius.topRight(), this.color);
         }

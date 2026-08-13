@@ -20,17 +20,17 @@ public class FormattedLabelWrappingTest extends TestBase {
     @Override
     protected void init(final Rivet rivet) {
         Container container = new Container(new GridLayout(10, 10));
-        container.addChild(new FormattedLabel("<color=red italic bold underlined>Hello this is a really cool test string how are you doing lol\n<color=blue> <color=red>a\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), label -> {
+        container.add(new FormattedLabel("<color=red italic bold underlined>Hello this is a really cool test string how are you doing lol\n<color=blue> <color=red>a\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), label -> {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);
             label.layoutOptions(new GridOptions(0, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
-        container.addChild(new Button("Testing Testing Testing Testing", () -> {
+        container.add(new Button("Testing Testing Testing Testing", () -> {
             System.out.println("click");
         }), button -> {
             button.clickOn().set(ClickOn.BOTH);
             button.layoutOptions(new GridOptions(0, 1).withFill(GridFill.HORIZONTAL).withWeightX(1));
         });
-        rivet.root().addChild(container);
+        rivet.root().add(container);
     }
 
 }

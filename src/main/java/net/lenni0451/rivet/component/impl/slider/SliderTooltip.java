@@ -43,7 +43,7 @@ public class SliderTooltip extends Component {
         this.text = text;
 
         Container container = new Container(AbsoluteLayout.INSTANCE);
-        container.addChild(this);
+        container.add(this);
         this.layer = new Layer(container, LayerBucket.TOOLTIP);
     }
 
@@ -102,19 +102,19 @@ public class SliderTooltip extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.text(this.text);
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         if (this.rivet() != null) {
             this.text(this.text);
         }
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float triangleSize = this.triangleSize.value();
         Color backgroundColor = this.backgroundColor.value();
         float cornerRadius = this.cornerRadius.value();

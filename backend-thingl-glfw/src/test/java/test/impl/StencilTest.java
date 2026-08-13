@@ -16,13 +16,13 @@ public class StencilTest extends TestBase {
 
     @Override
     protected void init(final Rivet rivet) {
-        rivet.root().addChild(new StencilTestComponent());
+        rivet.root().add(new StencilTestComponent());
     }
 
 
     private static class StencilTestComponent extends Component {
         @Override
-        protected void renderComponent(final Renderer renderer, final Size size) {
+        protected void renderInternal(final Renderer renderer, final Size size) {
             renderer.stencil(s -> {
                 s.fillCircle(size.width() / 2, size.height() / 2, System.currentTimeMillis() / 20 % 200, Color.WHITE);
             }, () -> {

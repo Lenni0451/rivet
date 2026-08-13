@@ -183,7 +183,7 @@ public final class Rivet {
         this.unfocus();
         for (Layer layer : this.layers.get()) {
             if (layer.bucket().equals(LayerBucket.BASE)) {
-                layer.container().clearChildren();
+                layer.container().clear();
             } else {
                 this.removeLayer(layer);
             }

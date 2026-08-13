@@ -131,7 +131,7 @@ public class ToggleSwitch extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.backgroundColorTransition = new StateTransition<>(
                 this,
                 this::visualState,
@@ -221,28 +221,28 @@ public class ToggleSwitch extends Component {
     }
 
     @Override
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
         this.hovered = false;
         this.pressed = false;
     }
 
     @Override
-    protected void onComponentDisabled() {
-        this.onComponentRemoved();
+    protected void onDisabledInternal() {
+        this.onRemovedInternal();
     }
 
     @Override
-    protected void onComponentMouseEnter() {
+    protected void onMouseEnterInternal() {
         this.hovered = true;
     }
 
     @Override
-    protected void onComponentMouseLeave() {
+    protected void onMouseLeaveInternal() {
         this.hovered = false;
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.pressed = true;
             if (this.toggleOn.value().equals(ClickOn.DOWN) || this.toggleOn.value().equals(ClickOn.BOTH)) {
@@ -253,7 +253,7 @@ public class ToggleSwitch extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             boolean wasPressed = this.pressed;
             this.pressed = false;
@@ -265,7 +265,7 @@ public class ToggleSwitch extends Component {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float cornerRadius = this.cornerRadius.value();
         float outlineWidth = this.outlineWidth.value();
         boolean encased = this.thumbEncased.value();

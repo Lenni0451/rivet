@@ -24,69 +24,69 @@ public abstract class ParentContainer extends Component implements Parent {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.children().forEach(c -> c.setRivet(this.rivet(), this));
     }
 
     @Override
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
         this.children().forEach(c -> c.setRivet(null, null));
         this.mouseHandler().unsafeClear();
     }
 
     @Override
-    protected void onComponentDisabled() {
+    protected void onDisabledInternal() {
         this.children().forEach(c -> c.disabled(true));
         this.mouseHandler().unsafeClear();
     }
 
     @Override
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
         this.children().forEach(c -> c.disabled(false));
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         this.children().forEach(Component::onThemeChanged);
     }
 
     @Override
-    protected void onComponentMouseLeave() {
+    protected void onMouseLeaveInternal() {
         this.mouseHandler().onMouseLeave();
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         return this.mouseHandler().onMouseDown(this.rivet(), event, size).handled();
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         return this.mouseHandler().onMouseUp(this.rivet(), event, size).handled();
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         return this.mouseHandler().onMouseMove(event, size).handled();
     }
 
     @Override
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
+    protected boolean onMouseScrollInternal(final MouseScrollEvent event, final Size size) {
         return this.mouseHandler().onMouseScroll(event, size).handled();
     }
 
     @Override
-    protected boolean onComponentDrop(final DropEvent event, final Size size) {
+    protected boolean onDropInternal(final DropEvent event, final Size size) {
         return this.mouseHandler().onDrop(event, size).handled();
     }
 
     @Override
-    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
+    protected boolean onDragOverInternal(final DragOverEvent event, final Size size) {
         return this.mouseHandler().onDragOver(event, size).handled();
     }
 
     @Override
-    protected void onComponentDragLeave() {
+    protected void onDragLeaveInternal() {
         this.mouseHandler().onDragLeave();
     }
 

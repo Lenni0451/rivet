@@ -236,7 +236,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.updateShapedText();
         this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
         this.outlineColorTransition = new Transition<>(
@@ -253,7 +253,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
         this.selection = this.cursor;
         this.focused = false;
         this.selecting = false;
@@ -261,40 +261,40 @@ public class TextField extends Component {
     }
 
     @Override
-    protected void onComponentDisabled() {
-        this.onComponentRemoved();
+    protected void onDisabledInternal() {
+        this.onRemovedInternal();
         if (this.rivet() != null) {
             this.updateShapedText();
         }
     }
 
     @Override
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
         this.updateShapedText();
     }
 
     @Override
-    protected void onComponentFocusGained() {
+    protected void onFocusGainedInternal() {
         this.focused = true;
         this.rivet().backend().textInput().start();
-        this.updateComponentPosition(this.absoluteBounds());
+        this.updatePositionInternal(this.absoluteBounds());
     }
 
     @Override
-    protected void onComponentFocusLost() {
+    protected void onFocusLostInternal() {
         this.selection = this.cursor;
         this.focused = false;
         this.rivet().backend().textInput().stop();
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
         this.updateShapedText();
     }
 
     @Override
-    protected boolean onComponentKeyDown(final KeyEvent event) {
+    protected boolean onKeyDownInternal(final KeyEvent event) {
         boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
         boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
 
@@ -360,7 +360,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected boolean onComponentCharTyped(final CharEvent event) {
+    protected boolean onCharTypedInternal(final CharEvent event) {
         if (event.codePoint() < 32 || event.codePoint() == 127) return false;
         this.deleteSelection();
         if (Character.isBmpCodePoint(event.codePoint())) {
@@ -377,7 +377,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             long now = System.currentTimeMillis();
             if (now - this.lastClick < 250) {
@@ -407,7 +407,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.selecting = false;
         }
@@ -415,7 +415,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         if (this.selecting) {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
         }
@@ -423,14 +423,14 @@ public class TextField extends Component {
     }
 
     @Override
-    protected void updateComponentPosition(final Rectangle absoluteBounds) {
+    protected void updatePositionInternal(final Rectangle absoluteBounds) {
         if (this.focused) {
             this.rivet().backend().textInput().area(absoluteBounds);
         }
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float visibleWidth = size.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
         float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;

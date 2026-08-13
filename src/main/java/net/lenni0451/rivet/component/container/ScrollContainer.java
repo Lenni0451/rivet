@@ -206,15 +206,15 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    protected void onComponentAdded() {
-        super.onComponentAdded();
+    protected void onAddedInternal() {
+        super.onAddedInternal();
         this.scrollXAnimation = this.animationConfig.value().create(this.scrollX);
         this.scrollYAnimation = this.animationConfig.value().create(this.scrollY);
     }
 
     @Override
-    protected void onComponentRemoved() {
-        super.onComponentRemoved();
+    protected void onRemovedInternal() {
+        super.onRemovedInternal();
         this.hBarHovered = false;
         this.hBarPressed = false;
         this.hRailHovered = false;
@@ -226,8 +226,8 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    protected void onComponentDisabled() {
-        super.onComponentDisabled();
+    protected void onDisabledInternal() {
+        super.onDisabledInternal();
         this.hBarHovered = false;
         this.hBarPressed = false;
         this.hRailHovered = false;
@@ -239,15 +239,15 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    protected void onComponentThemeChanged() {
-        super.onComponentThemeChanged();
+    protected void onThemeChangedInternal() {
+        super.onThemeChangedInternal();
         this.scrollXAnimation = this.animationConfig.value().create(this.scrollXAnimation.getValue());
         this.scrollYAnimation = this.animationConfig.value().create(this.scrollYAnimation.getValue());
     }
 
     @Override
-    protected void onComponentMouseLeave() {
-        super.onComponentMouseLeave();
+    protected void onMouseLeaveInternal() {
+        super.onMouseLeaveInternal();
         this.hBarHovered = false;
         this.hRailHovered = false;
         this.vBarHovered = false;
@@ -255,7 +255,7 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             Rectangle hThumb = this.getHThumbBounds(size);
             Rectangle hRail = this.getHScrollArea(size);
@@ -305,11 +305,11 @@ public class ScrollContainer extends ParentContainer {
                 return true;
             }
         }
-        return super.onComponentMouseDown(event, size);
+        return super.onMouseDownInternal(event, size);
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         Rectangle hThumb = this.getHThumbBounds(size);
         Rectangle hRail = this.getHScrollArea(size);
         Rectangle vThumb = this.getVThumbBounds(size);
@@ -328,11 +328,11 @@ public class ScrollContainer extends ParentContainer {
         if (hThumbHovered || hRailHovered || vThumbHovered || vRailHovered || wasPressed) {
             return true;
         }
-        return super.onComponentMouseUp(event, size);
+        return super.onMouseUpInternal(event, size);
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         Rectangle hThumb = this.getHThumbBounds(size);
         Rectangle hRail = this.getHScrollArea(size);
         Rectangle vThumb = this.getVThumbBounds(size);
@@ -362,11 +362,11 @@ public class ScrollContainer extends ParentContainer {
             this.targetScrollY = MathUtils.clamp(this.initialScrollY + (dragDelta / scrollableHeight) * maxScroll, 0, maxScroll);
             return true;
         }
-        return super.onComponentMouseMove(event, size);
+        return super.onMouseMoveInternal(event, size);
     }
 
     @Override
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
+    protected boolean onMouseScrollInternal(final MouseScrollEvent event, final Size size) {
         return this.nestedScrollCoordinator.handleScrolling(
                 () -> {
                     if (this.hScrollVisible && (event.scrollX() != 0 || (!this.vScrollVisible && event.scrollY() != 0)) && !this.hBarPressed) {
@@ -398,7 +398,7 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         this.updateAnimation();
         renderer.scissor(0, 0, this.visibleWidth(size), this.visibleHeight(size), () -> {
             renderer.translate(-this.scrollX, -this.scrollY, () -> {

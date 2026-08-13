@@ -100,19 +100,19 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
         this.draggingPicker = false;
         this.draggingHue = false;
         this.draggingAlpha = false;
     }
 
     @Override
-    protected void onComponentDisabled() {
-        this.onComponentRemoved();
+    protected void onDisabledInternal() {
+        this.onRemovedInternal();
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             LayoutInfo layout = new LayoutInfo(size);
 
@@ -131,7 +131,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         this.draggingPicker = false;
         this.draggingHue = false;
         this.draggingAlpha = false;
@@ -139,7 +139,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         if (this.draggingPicker || this.draggingHue || this.draggingAlpha) {
             LayoutInfo layout = new LayoutInfo(size);
 
@@ -155,7 +155,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
+    protected boolean onMouseScrollInternal(final MouseScrollEvent event, final Size size) {
         if (this.rivet().backend().isKeyDown(ModifierKey.SHIFT)) {
             this.alpha = MathUtils.clamp(this.alpha + event.scrollY() / 20, 0, 1);
             this.updateColor();
@@ -185,7 +185,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         LayoutInfo layout = new LayoutInfo(size);
 
         this.renderSaturationValue(renderer, layout);

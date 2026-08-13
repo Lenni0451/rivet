@@ -48,9 +48,9 @@ public class TabContainer extends ParentContainer {
     private final ThemeOption<Float> tabGap = new ThemeOption<>(this, Theme.Tab.TAB_GAP);
 
     public TabContainer() {
-        this.tabContainer.addChild(this.leftTabContainer.layoutOptions(BorderPosition.LEFT));
-        this.tabContainer.addChild(new ScrollContainer(this.centerTabContainer.layoutOptions(BorderPosition.CENTER), true, false));
-        this.tabContainer.addChild(this.rightTabContainer.layoutOptions(BorderPosition.RIGHT));
+        this.tabContainer.add(this.leftTabContainer.layoutOptions(BorderPosition.LEFT));
+        this.tabContainer.add(new ScrollContainer(this.centerTabContainer.layoutOptions(BorderPosition.CENTER), true, false));
+        this.tabContainer.add(this.rightTabContainer.layoutOptions(BorderPosition.RIGHT));
 
         this.tabAlignment.initListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).alignment = val;
@@ -75,29 +75,29 @@ public class TabContainer extends ParentContainer {
     }
 
     public final TabContainer addLeftComponent(final Component component) {
-        this.leftTabContainer.addChild(component);
+        this.leftTabContainer.add(component);
         return this;
     }
 
     public final TabContainer removeLeftComponent(final Component component) {
-        this.leftTabContainer.removeChild(component);
+        this.leftTabContainer.remove(component);
         return this;
     }
 
     public final TabContainer addRightComponent(final Component component) {
-        this.rightTabContainer.addChild(component);
+        this.rightTabContainer.add(component);
         return this;
     }
 
     public final TabContainer removeRightComponent(final Component component) {
-        this.rightTabContainer.removeChild(component);
+        this.rightTabContainer.remove(component);
         return this;
     }
 
     public final Tab addTab(final Component header, final Component content) {
         Tab tab = new Tab(header, this::selectTab, content);
         this.tabs.add(tab);
-        this.centerTabContainer.addChild(tab.button());
+        this.centerTabContainer.add(tab.button());
         if (this.centerTabContainer.children().size() == 1) {
             this.selectTab(tab);
         }
@@ -111,11 +111,11 @@ public class TabContainer extends ParentContainer {
             if (this.tabs.size() > 1) {
                 this.selectTab(this.tabs.get(tabIndex >= this.tabs.size() - 1 ? tabIndex - 1 : tabIndex + 1));
             } else {
-                this.contentContainer.clearChildren();
+                this.contentContainer.clear();
             }
         }
         this.tabs.remove(tab);
-        this.centerTabContainer.removeChild(tab.button());
+        this.centerTabContainer.remove(tab.button());
         return this;
     }
 
@@ -123,14 +123,14 @@ public class TabContainer extends ParentContainer {
         if (!this.tabs.contains(tab)) throw new IllegalArgumentException("Tab is not part of this TabContainer");
         this.tabs.forEach(t -> t.headerBackground().deactivate());
         tab.headerBackground().activate();
-        this.contentContainer.clearChildren();
-        this.contentContainer.addChild(tab.content());
+        this.contentContainer.clear();
+        this.contentContainer.add(tab.content());
         return this;
     }
 
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         Color headerColor = this.headerBackgroundColor.value();
         if (!headerColor.equals(Color.TRANSPARENT)) {
             renderer.fillRect(0, 0, size.width(), this.tabSize.height(), headerColor);

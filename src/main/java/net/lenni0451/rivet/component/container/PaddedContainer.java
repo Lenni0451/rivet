@@ -47,7 +47,7 @@ public class PaddedContainer extends ParentContainer {
 
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         Size innerSize = size.minus(this.padding).clamp(this.child);
         renderer.translate(this.padding.left(), this.padding.top(), () -> {
             Runnable renderChild = () -> this.child.render(renderer, innerSize);

@@ -21,29 +21,29 @@ public class AnchorLayoutTest extends TestBase {
     @Override
     protected void init(final Rivet rivet) {
         Container container = new Container(AnchorLayout.INSTANCE);
-        container.addChild(new SolidColor(), c -> {
+        container.add(new SolidColor(), c -> {
             c.color(Color.RED);
             c.layoutOptions(AnchorOptions.EMPTY.from(0, 0.7F).to(1, 1));
         });
-        container.addChild(new SolidColor(), c -> {
+        container.add(new SolidColor(), c -> {
             c.color(Color.GREEN);
             c.layoutOptions(AnchorOptions.EMPTY.from(0, 0).to(0.2F, 0.7F));
         });
-        container.addChild(new ScrollContainer(new Container(new VerticalListLayout(5, true)), c -> {
+        container.add(new ScrollContainer(new Container(new VerticalListLayout(5, true)), c -> {
             for (int i = 0; i < 10; i++) {
                 if (i == 5) {
-                    c.addChild(new Separator());
+                    c.add(new Separator());
                 }
-                c.addChild(new Button("Button " + i, () -> {}));
+                c.add(new Button("Button " + i, () -> {}));
             }
         }), c -> {
             c.layoutOptions(AnchorOptions.EMPTY.from(0.7F, 0).to(1, 0.7F));
         });
-        container.addChild(new SolidColor(), c -> {
+        container.add(new SolidColor(), c -> {
             c.color(Color.BLUE);
             c.layoutOptions(AnchorOptions.EMPTY.from(0.2F, 0).to(0.7F, 0.7F));
         });
-        rivet.root().addChild(container);
+        rivet.root().add(container);
     }
 
 }

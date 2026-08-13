@@ -139,45 +139,45 @@ public class FormattedLabel extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         if (this.text != null) {
             this.line = null;
         }
     }
 
     @Override
-    protected void onComponentDisabled() {
+    protected void onDisabledInternal() {
         if (this.text != null) {
             this.line = null;
         }
     }
 
     @Override
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
         if (this.text != null) {
             this.line = null;
         }
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         if (this.text != null) {
             this.line = null;
         }
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         return false;
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         return false;
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float x = this.horizontalOrigin.position(size.width() / this.scale);
         float y = this.verticalOrigin.position(size.height() / this.scale);
         renderer.scale(this.scale, () -> {

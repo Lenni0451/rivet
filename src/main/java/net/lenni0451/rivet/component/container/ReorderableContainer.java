@@ -52,40 +52,40 @@ public class ReorderableContainer extends Container {
     }
 
     @Override
-    protected void onComponentDisabled() {
+    protected void onDisabledInternal() {
         this.currentTarget = null;
-        super.onComponentDisabled();
+        super.onDisabledInternal();
     }
 
     @Override
-    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
+    protected boolean onDragOverInternal(final DragOverEvent event, final Size size) {
         if (this.isAccepted(event.dragData())) {
             this.currentTarget = this.strategy.resolve(this, event.x(), event.y());
             return true;
         }
-        return super.onComponentDragOver(event, size);
+        return super.onDragOverInternal(event, size);
     }
 
     @Override
-    protected void onComponentDragLeave() {
+    protected void onDragLeaveInternal() {
         this.currentTarget = null;
-        super.onComponentDragLeave();
+        super.onDragLeaveInternal();
     }
 
     @Override
-    protected boolean onComponentDrop(final DropEvent event, final Size size) {
+    protected boolean onDropInternal(final DropEvent event, final Size size) {
         if (this.currentTarget != null && this.isAccepted(event.dragData())) {
             this.reorderListener.call(listener -> listener.onReorder(event.dragData(), this.currentTarget.insertIndex()));
             this.currentTarget = null;
             return true;
         }
         this.currentTarget = null;
-        return super.onComponentDrop(event, size);
+        return super.onDropInternal(event, size);
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
-        super.renderComponent(renderer, size);
+    protected void renderInternal(final Renderer renderer, final Size size) {
+        super.renderInternal(renderer, size);
         if (this.currentTarget != null && this.currentTarget.markerBounds() != null) {
             Rectangle markerBounds = this.currentTarget.markerBounds();
             renderer.fillRect(markerBounds.x(), markerBounds.y(), markerBounds.width(), markerBounds.height(), this.markerColor);

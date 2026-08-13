@@ -21,7 +21,7 @@ public class Image extends Component {
     private Color color = Color.WHITE;
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         renderer.image(this.texture, 0, 0, size.width(), size.height(), this.color);
     }
 

@@ -72,7 +72,7 @@ public class TabBackground extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.backgroundColor = new StateTransition<>(
                 this,
                 this::state,
@@ -110,17 +110,17 @@ public class TabBackground extends Component {
     }
 
     @Override
-    protected void onComponentMouseEnter() {
+    protected void onMouseEnterInternal() {
         this.hovered = true;
     }
 
     @Override
-    protected void onComponentMouseLeave() {
+    protected void onMouseLeaveInternal() {
         this.hovered = false;
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (!this.active && event.button().equals(MouseButton.LEFT)) {
             if (this.selectOn.value().equals(ClickOn.DOWN) || this.selectOn.value().equals(ClickOn.BOTH)) {
                 this.clickListener.run();
@@ -131,7 +131,7 @@ public class TabBackground extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (!this.active && this.hovered && event.button().equals(MouseButton.LEFT)) {
             if (this.selectOn.value().equals(ClickOn.UP) || this.selectOn.value().equals(ClickOn.BOTH)) {
                 this.clickListener.run();
@@ -142,7 +142,7 @@ public class TabBackground extends Component {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         Corners corners = this.cornerRadius.value();
         renderer.fillRoundedRect(
                 0, 0, size.width(), size.height(),

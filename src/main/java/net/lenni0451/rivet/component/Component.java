@@ -100,7 +100,7 @@ public abstract class Component {
                 this.rivet.focusedComponent(null);
             }
             this.removedListener.call(Runnable::run);
-            this.onComponentRemoved();
+            this.onRemovedInternal();
             this.rivet = null;
             this.parent = null;
         } else {
@@ -113,7 +113,7 @@ public abstract class Component {
             this.rivet = rivet;
             this.parent = parent;
             this.addedListener.call(Runnable::run);
-            this.onComponentAdded();
+            this.onAddedInternal();
         }
     }
 
@@ -168,6 +168,11 @@ public abstract class Component {
         return this;
     }
 
+    public final Component capabilities(final Consumer<Capabilities> capabilities) {
+        capabilities.accept(this.capabilities);
+        return this;
+    }
+
     public final Component disabled(final boolean disabled) {
         if (this.disabled == disabled) return this;
         this.disabled = disabled;
@@ -176,10 +181,10 @@ public abstract class Component {
                 this.rivet.focusedComponent(null);
             }
             this.disabledListener.call(Runnable::run);
-            this.onComponentDisabled();
+            this.onDisabledInternal();
         } else {
             this.enabledListener.call(Runnable::run);
-            this.onComponentEnabled();
+            this.onEnabledInternal();
         }
         return this;
     }
@@ -211,37 +216,37 @@ public abstract class Component {
     }
 
 
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
     }
 
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
     }
 
-    protected void onComponentDisabled() {
+    protected void onDisabledInternal() {
     }
 
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
     }
 
     public final void onThemeChanged() {
-        this.themeChangedListener.call(Runnable::run, Runnable::run, this::onComponentThemeChanged);
+        this.themeChangedListener.call(Runnable::run, Runnable::run, this::onThemeChangedInternal);
     }
 
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
     }
 
     public final void onFocusGained() {
-        this.focusGainedListener.callVoid(NullaryVoidListener::accept, Runnable::run, this::onComponentFocusGained);
+        this.focusGainedListener.callVoid(NullaryVoidListener::accept, Runnable::run, this::onFocusGainedInternal);
     }
 
-    protected void onComponentFocusGained() {
+    protected void onFocusGainedInternal() {
     }
 
     public final void onFocusLost() {
-        this.focusLostListener.callVoid(NullaryVoidListener::accept, Runnable::run, this::onComponentFocusLost);
+        this.focusLostListener.callVoid(NullaryVoidListener::accept, Runnable::run, this::onFocusLostInternal);
     }
 
-    protected void onComponentFocusLost() {
+    protected void onFocusLostInternal() {
     }
 
     public final boolean onKeyDown(final KeyEvent event) {
@@ -250,11 +255,11 @@ public abstract class Component {
         return this.keyDownListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event),
                 listener -> listener.accept(event),
-                () -> this.onComponentKeyDown(event)
+                () -> this.onKeyDownInternal(event)
         );
     }
 
-    protected boolean onComponentKeyDown(final KeyEvent event) {
+    protected boolean onKeyDownInternal(final KeyEvent event) {
         return false;
     }
 
@@ -264,11 +269,11 @@ public abstract class Component {
         return this.keyUpListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event),
                 listener -> listener.accept(event),
-                () -> this.onComponentKeyUp(event)
+                () -> this.onKeyUpInternal(event)
         );
     }
 
-    protected boolean onComponentKeyUp(final KeyEvent event) {
+    protected boolean onKeyUpInternal(final KeyEvent event) {
         return false;
     }
 
@@ -278,30 +283,30 @@ public abstract class Component {
         return this.charTypedListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event),
                 listener -> listener.accept(event),
-                () -> this.onComponentCharTyped(event)
+                () -> this.onCharTypedInternal(event)
         );
     }
 
-    protected boolean onComponentCharTyped(final CharEvent event) {
+    protected boolean onCharTypedInternal(final CharEvent event) {
         return false;
     }
 
     public final void onMouseEnter() {
         if (!this.capabilities.mouseHover) return;
         if (this.disabled) return;
-        this.mouseEnterListener.callVoid(NullaryVoidListener::accept, this::onComponentMouseEnter);
+        this.mouseEnterListener.callVoid(NullaryVoidListener::accept, this::onMouseEnterInternal);
     }
 
-    protected void onComponentMouseEnter() {
+    protected void onMouseEnterInternal() {
     }
 
     public final void onMouseLeave() {
         if (!this.capabilities.mouseHover) return;
         if (this.disabled) return;
-        this.mouseLeaveListener.callVoid(NullaryVoidListener::accept, this::onComponentMouseLeave);
+        this.mouseLeaveListener.callVoid(NullaryVoidListener::accept, this::onMouseLeaveInternal);
     }
 
-    protected void onComponentMouseLeave() {
+    protected void onMouseLeaveInternal() {
     }
 
     public final boolean onMouseDown(final MouseButtonEvent event, final Size size) {
@@ -310,11 +315,11 @@ public abstract class Component {
         return this.mouseDownListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
-                () -> this.onComponentMouseDown(event, size)
+                () -> this.onMouseDownInternal(event, size)
         );
     }
 
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         return true;
     }
 
@@ -324,11 +329,11 @@ public abstract class Component {
         return this.mouseUpListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
-                () -> this.onComponentMouseUp(event, size)
+                () -> this.onMouseUpInternal(event, size)
         );
     }
 
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         return true;
     }
 
@@ -338,11 +343,11 @@ public abstract class Component {
         return this.mouseMoveListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
-                () -> this.onComponentMouseMove(event, size)
+                () -> this.onMouseMoveInternal(event, size)
         );
     }
 
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         return true;
     }
 
@@ -352,11 +357,11 @@ public abstract class Component {
         return this.mouseScrollListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
-                () -> this.onComponentMouseScroll(event, size)
+                () -> this.onMouseScrollInternal(event, size)
         );
     }
 
-    protected boolean onComponentMouseScroll(final MouseScrollEvent event, final Size size) {
+    protected boolean onMouseScrollInternal(final MouseScrollEvent event, final Size size) {
         return false;
     }
 
@@ -365,11 +370,11 @@ public abstract class Component {
         if (this.disabled) return false;
         return this.dropListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
-                () -> this.onComponentDrop(event, size)
+                () -> this.onDropInternal(event, size)
         );
     }
 
-    protected boolean onComponentDrop(final DropEvent event, final Size size) {
+    protected boolean onDropInternal(final DropEvent event, final Size size) {
         return false;
     }
 
@@ -378,21 +383,21 @@ public abstract class Component {
         if (this.disabled) return false;
         return this.dragOverListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
-                () -> this.onComponentDragOver(event, size)
+                () -> this.onDragOverInternal(event, size)
         );
     }
 
-    protected boolean onComponentDragOver(final DragOverEvent event, final Size size) {
+    protected boolean onDragOverInternal(final DragOverEvent event, final Size size) {
         return false;
     }
 
     public final void onDragLeave() {
         if (!this.capabilities.dragAndDrop) return;
         if (this.disabled) return;
-        this.dragLeaveListener.callVoid(NullaryVoidListener::accept, this::onComponentDragLeave);
+        this.dragLeaveListener.callVoid(NullaryVoidListener::accept, this::onDragLeaveInternal);
     }
 
-    protected void onComponentDragLeave() {
+    protected void onDragLeaveInternal() {
     }
 
     public final void updatePosition(final float x, final float y, final float width, final float height) {
@@ -404,18 +409,18 @@ public abstract class Component {
         }
         this.lastAbsoluteBounds = new Rectangle(x, y, width, height);
         this.positionUpdateListener.call(l -> l.accept(this.lastAbsoluteBounds));
-        this.updateComponentPosition(this.lastAbsoluteBounds);
+        this.updatePositionInternal(this.lastAbsoluteBounds);
     }
 
-    protected void updateComponentPosition(final Rectangle absoluteBounds) {
+    protected void updatePositionInternal(final Rectangle absoluteBounds) {
     }
 
     public final void render(final Renderer renderer, final Size size) {
         this.updatePosition(renderer.xOffset(), renderer.yOffset(), size.width(), size.height());
-        this.renderComponent(renderer, size);
+        this.renderInternal(renderer, size);
     }
 
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
     }
 
     public abstract Size computeIdealSize(final Size constraints);

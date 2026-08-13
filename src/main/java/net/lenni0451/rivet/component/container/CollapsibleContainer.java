@@ -107,7 +107,7 @@ public class CollapsibleContainer extends ParentContainer {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         renderer.componentBounds(0, 0, this.headerSize.width(), this.headerSize.height(), () -> {
             this.clickableHeader.render(renderer, this.headerSize);
         });
@@ -204,8 +204,8 @@ public class CollapsibleContainer extends ParentContainer {
             CollapsibleContainer.this.arrowLineWidth.initListener().add(arrow.lineWidth()::set);
             CollapsibleContainer.this.arrowSize.initListener().add(arrow.size()::set);
 
-            this.addChild(arrow.layoutOptions(GridOptions.EMPTY.at(0, 0).withAnchor(GridAnchor.LEFT)));
-            this.addChild(header.layoutOptions(GridOptions.EMPTY.at(1, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+            this.add(arrow.layoutOptions(GridOptions.EMPTY.at(0, 0).withAnchor(GridAnchor.LEFT)));
+            this.add(header.layoutOptions(GridOptions.EMPTY.at(1, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
 
             CollapsibleContainer.this.arrowPosition.initListener().add(position -> {
                 int arrowPosition;
@@ -224,18 +224,18 @@ public class CollapsibleContainer extends ParentContainer {
         }
 
         @Override
-        protected void onComponentMouseEnter() {
+        protected void onMouseEnterInternal() {
             this.hovered = true;
         }
 
         @Override
-        protected void onComponentMouseLeave() {
+        protected void onMouseLeaveInternal() {
             this.hovered = false;
         }
 
         @Override
-        protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
-            if (!super.onComponentMouseDown(event, size)) {
+        protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
+            if (!super.onMouseDownInternal(event, size)) {
                 if (event.button().equals(MouseButton.LEFT)) {
                     if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.DOWN) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
                         CollapsibleContainer.this.collapsed(!CollapsibleContainer.this.collapsed);
@@ -246,8 +246,8 @@ public class CollapsibleContainer extends ParentContainer {
         }
 
         @Override
-        protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
-            if (!super.onComponentMouseUp(event, size)) {
+        protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
+            if (!super.onMouseUpInternal(event, size)) {
                 if (this.hovered && event.button().equals(MouseButton.LEFT)) {
                     if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.UP) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
                         CollapsibleContainer.this.collapsed(!CollapsibleContainer.this.collapsed);
@@ -258,8 +258,8 @@ public class CollapsibleContainer extends ParentContainer {
         }
 
         @Override
-        protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
-            super.onComponentMouseMove(event, size);
+        protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
+            super.onMouseMoveInternal(event, size);
             return true;
         }
     }

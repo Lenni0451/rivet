@@ -28,7 +28,7 @@ public class Separator extends Component {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         Color color = this.color.value();
         float thickness = this.thickness.value();
         switch (this.orientation) {

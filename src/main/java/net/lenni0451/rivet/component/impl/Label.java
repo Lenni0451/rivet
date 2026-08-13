@@ -115,37 +115,37 @@ public class Label extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.reshape = true;
     }
 
     @Override
-    protected void onComponentDisabled() {
+    protected void onDisabledInternal() {
         this.reshape = true;
     }
 
     @Override
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
         this.reshape = true;
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         this.reshape = true;
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         return false;
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         return false;
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
             if (this.shapedTextBlock == null) {
                 this.computeLayout(size);

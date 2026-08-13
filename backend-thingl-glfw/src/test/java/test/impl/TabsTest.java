@@ -43,13 +43,13 @@ public class TabsTest extends TestBase {
             tabContainer.addTab(this.newTabHeader(tabContainer, "Tab " + this.nextTabId), this.newTabContent());
             this.nextTabId++;
         }
-        rivet.root().addChild(tabContainer);
+        rivet.root().add(tabContainer);
     }
 
     private Component newTabHeader(final TabContainer tabContainer, final String name) {
         Container container = new Container(new GridLayout(10, 10));
-        container.addChild(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL)));
-        container.addChild(new Button(new Label("x").scale(0.75F).horizontalOrigin(TextOrigin.Horizontal.VISUAL_CENTER).verticalOrigin(TextOrigin.Vertical.VISUAL_CENTER), () -> {
+        container.add(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+        container.add(new Button(new Label("x").scale(0.75F).horizontalOrigin(TextOrigin.Horizontal.VISUAL_CENTER).verticalOrigin(TextOrigin.Vertical.VISUAL_CENTER), () -> {
             for (Tab tab : tabContainer.tabs()) {
                 Label label = (Label) ((Container) tab.header()).children().get(0);
                 if (label.text().equals(name)) {

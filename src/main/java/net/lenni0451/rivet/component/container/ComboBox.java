@@ -63,8 +63,8 @@ public class ComboBox extends ParentContainer {
     public <T extends Component, C extends Component> ComboBox(final T text, final BiConsumer<ComboBox, T> textInitializer, final C child, final BiConsumer<ComboBox, C> initializer) {
         this.arrow = new Arrow(() -> this.isOpen() ? 1F : 0F);
         this.button = new Button(new Container(GridLayout.DEFAULT), buttonContent -> {
-            buttonContent.addChild(text.layoutOptions(GridOptions.EMPTY.at(0, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
-            buttonContent.addChild(this.arrow.layoutOptions(GridOptions.EMPTY.at(1, 0).withAnchor(GridAnchor.RIGHT)));
+            buttonContent.add(text.layoutOptions(GridOptions.EMPTY.at(0, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+            buttonContent.add(this.arrow.layoutOptions(GridOptions.EMPTY.at(1, 0).withAnchor(GridAnchor.RIGHT)));
         }, () -> {
             if (this.isOpen()) {
                 this.close();
@@ -107,7 +107,7 @@ public class ComboBox extends ParentContainer {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         this.button.render(renderer, size);
     }
 

@@ -83,7 +83,7 @@ public class Tooltip {
             }
 
             this.currentTooltip = this.tooltip.get();
-            this.layer = new Layer(new Container(AbsoluteLayout.INSTANCE).addChild(this.currentTooltip), LayerBucket.TOOLTIP);
+            this.layer = new Layer(new Container(AbsoluteLayout.INSTANCE).add(this.currentTooltip), LayerBucket.TOOLTIP);
             this.component.rivet().addLayer(this.layer);
         }
     }

@@ -24,26 +24,26 @@ public class SliderStyleTest extends TestBase {
     protected void init(final Rivet rivet) {
         Container container = new Container(new VerticalListLayout(5, true));
         Slider slider = new Slider(0, 100, 50);
-        container.addChild(this.colorOption(rivet, "Bar Color", slider.barColor()));
-        container.addChild(this.colorOption(rivet, "Bar Fill Color", slider.barFillColor()));
-        container.addChild(this.colorOption(rivet, "Thumb Color", slider.thumbColor()));
-        container.addChild(this.colorOption(rivet, "Thumb Click Color", slider.thumbClickColor()));
-        container.addChild(this.colorOption(rivet, "Thumb Outline Color", slider.thumbOutlineColor()));
-        container.addChild(this.colorOption(rivet, "Thumb Click Outline Color", slider.thumbClickOutlineColor()));
-        container.addChild(this.colorOption(rivet, "Tick Color", slider.tickColor()));
-        container.addChild(this.floatOption(rivet, "Bar Height", slider.barHeight()));
-        container.addChild(this.floatOption(rivet, "Thumb Width", slider.thumbWidth()));
-        container.addChild(this.floatOption(rivet, "Thumb Height", slider.thumbHeight()));
-        container.addChild(this.floatOption(rivet, "Bar Corner Radius", slider.barCornerRadius()));
-        container.addChild(this.floatOption(rivet, "Thumb Corner Radius", slider.thumbCornerRadius()));
-        container.addChild(this.floatOption(rivet, "Thumb Outline Width", slider.thumbOutlineWidth()));
-        container.addChild(this.booleanOption(rivet, "Thumb Encased", slider.thumbEncased()));
-        container.addChild(this.enumOption(rivet, "Thumb Shape", slider.thumbShape()));
-        container.addChild(this.booleanOption(rivet, "Show Tooltip", slider.showTooltip()));
-        container.addChild(this.stringOption(rivet, "Tooltip Format", slider.tooltipFormat()));
-        container.addChild(slider);
-        container.addChild(new SolidColor().fixedSize(1, 500));
-        rivet.root().addChild(new ScrollContainer(container));
+        container.add(this.colorOption(rivet, "Bar Color", slider.barColor()));
+        container.add(this.colorOption(rivet, "Bar Fill Color", slider.barFillColor()));
+        container.add(this.colorOption(rivet, "Thumb Color", slider.thumbColor()));
+        container.add(this.colorOption(rivet, "Thumb Click Color", slider.thumbClickColor()));
+        container.add(this.colorOption(rivet, "Thumb Outline Color", slider.thumbOutlineColor()));
+        container.add(this.colorOption(rivet, "Thumb Click Outline Color", slider.thumbClickOutlineColor()));
+        container.add(this.colorOption(rivet, "Tick Color", slider.tickColor()));
+        container.add(this.floatOption(rivet, "Bar Height", slider.barHeight()));
+        container.add(this.floatOption(rivet, "Thumb Width", slider.thumbWidth()));
+        container.add(this.floatOption(rivet, "Thumb Height", slider.thumbHeight()));
+        container.add(this.floatOption(rivet, "Bar Corner Radius", slider.barCornerRadius()));
+        container.add(this.floatOption(rivet, "Thumb Corner Radius", slider.thumbCornerRadius()));
+        container.add(this.floatOption(rivet, "Thumb Outline Width", slider.thumbOutlineWidth()));
+        container.add(this.booleanOption(rivet, "Thumb Encased", slider.thumbEncased()));
+        container.add(this.enumOption(rivet, "Thumb Shape", slider.thumbShape()));
+        container.add(this.booleanOption(rivet, "Show Tooltip", slider.showTooltip()));
+        container.add(this.stringOption(rivet, "Tooltip Format", slider.tooltipFormat()));
+        container.add(slider);
+        container.add(new SolidColor().fixedSize(1, 500));
+        rivet.root().add(new ScrollContainer(container));
     }
 
     private Component colorOption(final Rivet rivet, final String name, final ThemeOption<Color> option) {
@@ -61,15 +61,15 @@ public class SliderStyleTest extends TestBase {
     private Component floatOption(final Rivet rivet, final String name, final ThemeOption<Float> option) {
         Label currentValue = new Label(String.format("%,.1f", rivet.theme().get(option.key())));
         return new Container(new GridLayout(5, 5))
-                .addChild(new Label(name).layoutOptions(new GridOptions(0, 0)))
-                .addChild(new Slider(0, 50, 0.1F, rivet.theme().get(option.key())), slider -> {
+                .add(new Label(name).layoutOptions(new GridOptions(0, 0)))
+                .add(new Slider(0, 50, 0.1F, rivet.theme().get(option.key())), slider -> {
                     slider.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
                     slider.valueChangeListener().add(d -> {
                         option.set(d.floatValue());
                         currentValue.text(String.format("%,.1f", d.floatValue()));
                     });
                 })
-                .addChild(currentValue.layoutOptions(new GridOptions(2, 0)));
+                .add(currentValue.layoutOptions(new GridOptions(2, 0)));
     }
 
     private Component booleanOption(final Rivet rivet, final String name, final ThemeOption<Boolean> option) {
@@ -87,7 +87,7 @@ public class SliderStyleTest extends TestBase {
                         new Container(new HorizontalFlowLayout(5, 5)),
                         container -> {
                             for (Enum val : rivet.theme().get(option.key()).getClass().getEnumConstants()) {
-                                container.addChild(new Button(val.toString(), () -> {
+                                container.add(new Button(val.toString(), () -> {
                                     option.set((E) val);
                                 }));
                             }
@@ -98,8 +98,8 @@ public class SliderStyleTest extends TestBase {
 
     private Component stringOption(final Rivet rivet, final String name, final ThemeOption<String> option) {
         return new Container(new GridLayout(5, 5))
-                .addChild(new Label(name).layoutOptions(new GridOptions(0, 0)))
-                .addChild(new TextField(rivet.theme().get(option.key())), textField -> {
+                .add(new Label(name).layoutOptions(new GridOptions(0, 0)))
+                .add(new TextField(rivet.theme().get(option.key())), textField -> {
                     textField.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
                     textField.valueChangeListener().add(option::set);
                 });

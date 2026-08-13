@@ -39,9 +39,9 @@ public class DragBetweenTest extends TestBase {
         rightLabels.add("E");
 
         Container container = new Container(new TileLayout(2, 1));
-        container.addChild(this.newListView(leftLabels, rightLabels));
-        container.addChild(this.newListView(rightLabels, leftLabels));
-        rivet.root().addChild(container);
+        container.add(this.newListView(leftLabels, rightLabels));
+        container.add(this.newListView(rightLabels, leftLabels));
+        rivet.root().add(container);
     }
 
     private Component newListView(final List<String> list, final List<String> otherList) {
@@ -86,22 +86,22 @@ public class DragBetweenTest extends TestBase {
         }
 
         @Override
-        protected void onComponentMouseEnter() {
+        protected void onMouseEnterInternal() {
             this.hovered = true;
         }
 
         @Override
-        protected void onComponentMouseLeave() {
+        protected void onMouseLeaveInternal() {
             this.hovered = false;
         }
 
         @Override
-        protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+        protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
             return true;
         }
 
         @Override
-        protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+        protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
             if (event.buttons().contains(MouseButton.LEFT) && !this.rivet().dragAndDropManager().isDragging()) {
                 this.rivet().dragAndDropManager().startDrag(this, new Label(this.text()));
             }
@@ -109,11 +109,11 @@ public class DragBetweenTest extends TestBase {
         }
 
         @Override
-        protected void renderComponent(final Renderer renderer, final Size size) {
+        protected void renderInternal(final Renderer renderer, final Size size) {
             if (this.hovered) {
                 renderer.fillRect(0, 0, size.width(), size.height(), HOVERED_COLOR);
             }
-            super.renderComponent(renderer, size);
+            super.renderInternal(renderer, size);
         }
     }
 

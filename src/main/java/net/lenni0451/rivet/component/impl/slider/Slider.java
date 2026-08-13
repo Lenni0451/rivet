@@ -186,7 +186,7 @@ public class Slider extends Component {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.thumbColorTransition = new StateTransition<>(
                 this,
                 this::state,
@@ -226,7 +226,7 @@ public class Slider extends Component {
     }
 
     @Override
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
         if (this.tooltip != null) {
             this.tooltip.remove();
             this.tooltip = null;
@@ -237,40 +237,40 @@ public class Slider extends Component {
     }
 
     @Override
-    protected void onComponentDisabled() {
-        this.onComponentRemoved();
+    protected void onDisabledInternal() {
+        this.onRemovedInternal();
         this.tickLabels.clear();
     }
 
     @Override
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
         this.tickLabels.clear();
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         this.tickLabels.clear();
     }
 
     @Override
-    protected void onComponentMouseEnter() {
+    protected void onMouseEnterInternal() {
         this.hovered = true;
     }
 
     @Override
-    protected void onComponentMouseLeave() {
+    protected void onMouseLeaveInternal() {
         this.hovered = false;
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = true;
             if (this.showTooltip.value()) {
                 this.tooltip = new SliderTooltip(this.formatValue(this.value));
                 this.tooltip.add(this.rivet());
                 this.tooltip.font(this.font);
-                this.updateComponentPosition(this.absoluteBounds());
+                this.updatePositionInternal(this.absoluteBounds());
             }
             this.updateValue(event.x(), size);
         }
@@ -278,7 +278,7 @@ public class Slider extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragged = false;
             if (this.tooltip != null) {
@@ -290,7 +290,7 @@ public class Slider extends Component {
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         if (this.dragged) {
             this.updateValue(event.x(), size);
         }
@@ -312,7 +312,7 @@ public class Slider extends Component {
             this.value = newValue;
             if (this.tooltip != null) {
                 this.tooltip.text(this.formatValue(this.value));
-                this.updateComponentPosition(this.absoluteBounds());
+                this.updatePositionInternal(this.absoluteBounds());
             }
             if (fireListeners) {
                 this.valueChangeListener.call(c -> c.accept(this.value));
@@ -321,7 +321,7 @@ public class Slider extends Component {
     }
 
     @Override
-    protected void updateComponentPosition(final Rectangle absoluteBounds) {
+    protected void updatePositionInternal(final Rectangle absoluteBounds) {
         if (this.tooltip != null) {
             float thumbWidth = this.thumbWidth.value();
             float barWidth = this.barWidth(absoluteBounds.size());
@@ -333,7 +333,7 @@ public class Slider extends Component {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float thumbWidth = this.thumbWidth.value();
         float thumbHeight = this.thumbHeight.value();
         float barHeight = this.barHeight.value();

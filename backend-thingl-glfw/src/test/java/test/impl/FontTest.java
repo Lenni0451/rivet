@@ -39,10 +39,10 @@ public class FontTest extends TestBase {
             }
         });
 
-        rivet.root().addChild(new Container(new VerticalListLayout(5, true))
-                .addChild(slider)
-                .addChild(textField)
-                .addChild(label));
+        rivet.root().add(new Container(new VerticalListLayout(5, true))
+                .add(slider)
+                .add(textField)
+                .add(label));
     }
 
 }

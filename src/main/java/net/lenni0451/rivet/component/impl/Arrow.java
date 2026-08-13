@@ -40,7 +40,7 @@ public class Arrow extends Component {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float width = size.width() / 2;
         float height = size.height() / 4;
         float widthGap = (size.width() - width) / 2F;

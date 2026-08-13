@@ -177,8 +177,8 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    protected void onComponentAdded() {
-        super.onComponentAdded();
+    protected void onAddedInternal() {
+        super.onAddedInternal();
         if (this.updatedLabel != null) {
             this.updatedLabel.update(this.value);
         }
@@ -222,41 +222,41 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    protected void onComponentRemoved() {
-        super.onComponentRemoved();
+    protected void onRemovedInternal() {
+        super.onRemovedInternal();
         this.dragging = false;
         this.hovered = false;
     }
 
     @Override
-    protected void onComponentDisabled() {
-        super.onComponentDisabled();
+    protected void onDisabledInternal() {
+        super.onDisabledInternal();
         this.dragging = false;
         this.hovered = false;
     }
 
     @Override
-    protected void onComponentThemeChanged() {
-        super.onComponentThemeChanged();
+    protected void onThemeChangedInternal() {
+        super.onThemeChangedInternal();
         if (this.updatedLabel != null) {
             this.updatedLabel.cachedFormatString = null;
         }
     }
 
     @Override
-    protected void onComponentMouseEnter() {
+    protected void onMouseEnterInternal() {
         this.hovered = true;
     }
 
     @Override
-    protected void onComponentMouseLeave() {
-        super.onComponentMouseLeave();
+    protected void onMouseLeaveInternal() {
+        super.onMouseLeaveInternal();
         this.hovered = false;
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
-        if (!super.onComponentMouseDown(event, size)) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
+        if (!super.onMouseDownInternal(event, size)) {
             if (event.button().equals(MouseButton.LEFT)) {
                 this.dragging = true;
                 this.mouseDownX = event.x();
@@ -268,8 +268,8 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
-        super.onComponentMouseUp(event, size);
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
+        super.onMouseUpInternal(event, size);
         if (event.button().equals(MouseButton.LEFT)) {
             this.dragging = false;
         }
@@ -277,8 +277,8 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
-        super.onComponentMouseMove(event, size);
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
+        super.onMouseMoveInternal(event, size);
         if (this.dragging) {
             float deltaX = event.x() - this.mouseDownX;
             float deltaY = event.y() - this.mouseDownY;
@@ -291,7 +291,7 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         Padding padding = this.innerPadding.value();
         Color background = this.backgroundColorTransition.value();
         Color outline = this.outlineColorTransition.value();

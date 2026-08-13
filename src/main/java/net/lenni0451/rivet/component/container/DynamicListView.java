@@ -51,28 +51,28 @@ public class DynamicListView<E> extends ReorderableContainer {
     public final DynamicListView<E> recreate(final E item) {
         Component oldComponent = this.componentCache.remove(item);
         if (oldComponent != null) {
-            this.removeChild(oldComponent);
+            this.remove(oldComponent);
             Integer index = this.orderMap.remove(oldComponent);
             Component newComponent = this.componentFactory.apply(item);
             this.componentCache.put(item, newComponent);
-            this.addChild(newComponent);
+            this.add(newComponent);
             if (index != null) {
                 this.orderMap.put(newComponent, index);
             }
-            this.sortChildren(this.orderComparator);
+            this.sort(this.orderComparator);
         }
         return this;
     }
 
     @Override
-    protected void onComponentAdded() {
-        super.onComponentAdded();
+    protected void onAddedInternal() {
+        super.onAddedInternal();
         this.rivet().renderListener().add(this.updateListener);
     }
 
     @Override
-    protected void onComponentRemoved() {
-        super.onComponentRemoved();
+    protected void onRemovedInternal() {
+        super.onRemovedInternal();
         this.rivet().renderListener().remove(this.updateListener);
     }
 
@@ -108,7 +108,7 @@ public class DynamicListView<E> extends ReorderableContainer {
             if (!currentList.contains(item)) {
                 Component comp = this.componentCache.remove(item);
                 if (comp != null) {
-                    this.removeChild(comp);
+                    this.remove(comp);
                 }
             }
         }
@@ -118,12 +118,12 @@ public class DynamicListView<E> extends ReorderableContainer {
             E item = currentList.get(i);
             Component component = this.componentCache.computeIfAbsent(item, itm -> {
                 Component c = this.componentFactory.apply(itm);
-                this.addChild(c);
+                this.add(c);
                 return c;
             });
             this.orderMap.put(component, i);
         }
-        this.sortChildren(this.orderComparator);
+        this.sort(this.orderComparator);
 
         this.lastSeenList.clear();
         this.lastSeenList.addAll(currentList);

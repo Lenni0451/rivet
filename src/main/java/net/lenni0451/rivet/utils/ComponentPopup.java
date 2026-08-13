@@ -81,9 +81,9 @@ public class ComponentPopup {
                 this.close();
             });
             clickInterceptor.mouseMoveListener().add((ctx, event, size) -> ctx.cancel(true));
-            container.addChild(clickInterceptor.layoutOptions(new AbsoluteOptions(0, 0, -1F, -1F)));
+            container.add(clickInterceptor.layoutOptions(new AbsoluteOptions(0, 0, -1F, -1F)));
         }
-        container.addChild(this.child);
+        container.add(this.child);
         this.layer = new Layer(container, LayerBucket.OVERLAY);
         rivet.addLayer(this.layer);
         this.updatePopupPosition(this.owner.absoluteBounds());

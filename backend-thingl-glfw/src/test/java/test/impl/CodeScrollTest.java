@@ -24,22 +24,22 @@ public class CodeScrollTest extends TestBase {
         Container labelContainer = new Container(new VerticalListLayout());
         ScrollContainer sc = new ScrollContainer(labelContainer);
         Container buttonContainer = new Container(new HorizontalFlowLayout());
-        buttonContainer.addChild(new Button("print", () -> {
+        buttonContainer.add(new Button("print", () -> {
             System.out.println("scrollX: " + sc.scrollX() + ", scrollY: " + sc.scrollY() + ", maxScrollX: " + sc.maxScrollX() + ", maxScrollY: " + sc.maxScrollY());
         }));
         boolean[] instant = {false};
-        buttonContainer.addChild(new Button("0%", () -> sc.scrollY(0, instant[0])));
-        buttonContainer.addChild(new Button("25%", () -> sc.scrollY(sc.maxScrollY() * 0.25F, instant[0])));
-        buttonContainer.addChild(new Button("50%", () -> sc.scrollY(sc.maxScrollY() * 0.5F, instant[0])));
-        buttonContainer.addChild(new Button("75%", () -> sc.scrollY(sc.maxScrollY() * 0.75F, instant[0])));
-        buttonContainer.addChild(new Button("100%", () -> sc.scrollY(sc.maxScrollY(), instant[0])));
-        buttonContainer.addChild(new Checkbox("instant", instant[0]), cb -> cb.toggleListener().add(s -> instant[0] = s));
-        container.addChild(buttonContainer.layoutOptions(BorderPosition.TOP));
+        buttonContainer.add(new Button("0%", () -> sc.scrollY(0, instant[0])));
+        buttonContainer.add(new Button("25%", () -> sc.scrollY(sc.maxScrollY() * 0.25F, instant[0])));
+        buttonContainer.add(new Button("50%", () -> sc.scrollY(sc.maxScrollY() * 0.5F, instant[0])));
+        buttonContainer.add(new Button("75%", () -> sc.scrollY(sc.maxScrollY() * 0.75F, instant[0])));
+        buttonContainer.add(new Button("100%", () -> sc.scrollY(sc.maxScrollY(), instant[0])));
+        buttonContainer.add(new Checkbox("instant", instant[0]), cb -> cb.toggleListener().add(s -> instant[0] = s));
+        container.add(buttonContainer.layoutOptions(BorderPosition.TOP));
         for (int i = 0; i < 100; i++) {
-            labelContainer.addChild(new Label("Label " + i));
+            labelContainer.add(new Label("Label " + i));
         }
-        container.addChild(sc.layoutOptions(BorderPosition.CENTER));
-        rivet.root().addChild(container);
+        container.add(sc.layoutOptions(BorderPosition.CENTER));
+        rivet.root().add(container);
     }
 
 }

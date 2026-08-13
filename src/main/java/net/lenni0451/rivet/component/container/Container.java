@@ -36,14 +36,14 @@ public class Container extends ParentContainer {
     @Getter
     private Size contentSize = Size.EMPTY;
 
-    public final Container addChild(final Component component) {
-        return this.addChild(component, c -> {});
+    public final Container add(final Component component) {
+        return this.add(component, c -> {});
     }
 
-    public final <E extends Component> Container addChild(final E component, final Consumer<E> initializer) {
+    public final <E extends Component> Container add(final E component, final Consumer<E> initializer) {
         initializer.accept(component);
         this.addChildListener.callVoid((l, c) -> l.accept(c, component), () -> {
-            this.removeChild(component);
+            this.remove(component);
             this.children.add(new Child(component));
             if (this.rivet() != null) {
                 component.setRivet(this.rivet(), this);
@@ -54,7 +54,7 @@ public class Container extends ParentContainer {
         return this;
     }
 
-    public final Container sortChildren(final Comparator<Component> comparator) {
+    public final Container sort(final Comparator<Component> comparator) {
         this.children.sort((child1, child2) -> comparator.compare(child1.component, child2.component));
         if (this.rivet() != null) this.rivet().recalculateNextFrame();
         return this;
@@ -76,7 +76,7 @@ public class Container extends ParentContainer {
         return Rectangle.EMPTY;
     }
 
-    public final boolean removeChild(final Component component) {
+    public final boolean remove(final Component component) {
         for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
             Child child = it.next();
             if (child.component == component) {
@@ -97,7 +97,7 @@ public class Container extends ParentContainer {
         return false;
     }
 
-    public final Container clearChildren() {
+    public final Container clear() {
         this.mouseHandler.clear();
         if (this.rivet() != null) {
             for (Child child : this.children) {
@@ -122,7 +122,7 @@ public class Container extends ParentContainer {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         Size screenSize = this.rivet().scaledSize();
         for (Child child : this.children) {
             float childX = child.bounds.x() + renderer.xOffset();

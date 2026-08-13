@@ -113,7 +113,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected void onComponentAdded() {
+    protected void onAddedInternal() {
         this.child.setRivet(this.rivet(), this);
 
         this.backgroundColorTransition = new StateTransition<>(
@@ -155,41 +155,41 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected void onComponentRemoved() {
+    protected void onRemovedInternal() {
         this.child.setRivet(null, null);
         this.hovered = false;
         this.pressed.clear();
     }
 
     @Override
-    protected void onComponentDisabled() {
+    protected void onDisabledInternal() {
         this.child.disabled(true);
         this.hovered = false;
         this.pressed.clear();
     }
 
     @Override
-    protected void onComponentEnabled() {
+    protected void onEnabledInternal() {
         this.child.disabled(false);
     }
 
     @Override
-    protected void onComponentThemeChanged() {
+    protected void onThemeChangedInternal() {
         this.child.onThemeChanged();
     }
 
     @Override
-    protected void onComponentMouseEnter() {
+    protected void onMouseEnterInternal() {
         this.hovered = true;
     }
 
     @Override
-    protected void onComponentMouseLeave() {
+    protected void onMouseLeaveInternal() {
         this.hovered = false;
     }
 
     @Override
-    protected boolean onComponentMouseDown(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (this.handledButtons.contains(event.button())) {
             this.pressed.add(event.button());
             if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
@@ -200,7 +200,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected boolean onComponentMouseUp(final MouseButtonEvent event, final Size size) {
+    protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         this.pressed.remove(event.button());
         if (this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
             this.clickListener.call(listener -> listener.onClick(event));
@@ -209,7 +209,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected void renderComponent(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size) {
         float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
         float outlineWidth = this.outlineWidth.value();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
