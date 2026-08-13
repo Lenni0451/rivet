@@ -20,4 +20,12 @@ public record Corners(float topLeft, float bottomLeft, float bottomRight, float 
         topRight = Math.max(0, topRight);
     }
 
+    public float min() {
+        return Math.min(Math.min(this.topLeft, this.bottomLeft), Math.min(this.bottomRight, this.topRight));
+    }
+
+    public float max() {
+        return Math.max(Math.max(this.topLeft, this.bottomLeft), Math.max(this.bottomRight, this.topRight));
+    }
+
 }

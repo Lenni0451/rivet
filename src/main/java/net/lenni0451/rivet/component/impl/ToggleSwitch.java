@@ -15,6 +15,7 @@ import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -32,7 +33,7 @@ public class ToggleSwitch extends Component {
     private boolean pressed = false;
 
     @Getter
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.ToggleSwitch.CORNER_RADIUS);
+    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.ToggleSwitch.CORNER_RADIUS);
     @Getter
     private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.ToggleSwitch.OUTLINE_WIDTH);
     @Getter
@@ -266,7 +267,7 @@ public class ToggleSwitch extends Component {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size) {
-        float cornerRadius = this.cornerRadius.value();
+        Corners cornerRadius = this.cornerRadius.value();
         float outlineWidth = this.outlineWidth.value();
         boolean encased = this.thumbEncased.value();
 

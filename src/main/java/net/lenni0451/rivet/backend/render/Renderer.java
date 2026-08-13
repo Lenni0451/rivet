@@ -60,6 +60,10 @@ public interface Renderer {
 
     void outlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color);
 
+    default void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final Corners corners, final Color color) {
+        this.optimizedFillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
+    }
+
     default void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
         if (width > 0 && height > 0 && color.getAlpha() > 0) {
             float maxRadius = Math.min(width, height) / 2F;
@@ -89,6 +93,10 @@ public interface Renderer {
                 }
             }
         }
+    }
+
+    default void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final Corners corners, final float outlineWidth, final Color color) {
+        this.optimizedOutlineRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), outlineWidth, color);
     }
 
     default void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {

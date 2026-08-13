@@ -15,6 +15,7 @@ import net.lenni0451.rivet.layout.grid.GridAnchor;
 import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridOptions;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import test.TestBase;
@@ -61,7 +62,7 @@ public class TabsTest extends TestBase {
             button.fixedSize(40, 40);
             button.layoutOptions(new GridOptions(1, 0).withAnchor(GridAnchor.RIGHT));
             button.innerPadding().set(Padding.EMPTY);
-            button.cornerRadius().set(Float.MAX_VALUE);
+            button.cornerRadius().set(new Corners(Float.MAX_VALUE));
             button.outlineWidth().set(0F);
             button.backgroundColor().set(Color.TRANSPARENT);
             button.hoverBackgroundColor().set(Color.RED.darker().darker().darker());

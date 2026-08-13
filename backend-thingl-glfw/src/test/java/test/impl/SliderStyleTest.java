@@ -11,6 +11,7 @@ import net.lenni0451.rivet.layout.grid.GridFill;
 import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.theme.ThemeOption;
 import test.TestBase;
 
@@ -34,8 +35,8 @@ public class SliderStyleTest extends TestBase {
         container.add(this.floatOption(rivet, "Bar Height", slider.barHeight()));
         container.add(this.floatOption(rivet, "Thumb Width", slider.thumbWidth()));
         container.add(this.floatOption(rivet, "Thumb Height", slider.thumbHeight()));
-        container.add(this.floatOption(rivet, "Bar Corner Radius", slider.barCornerRadius()));
-        container.add(this.floatOption(rivet, "Thumb Corner Radius", slider.thumbCornerRadius()));
+        container.add(this.cornersOption(rivet, "Bar Corner Radius", slider.barCornerRadius()));
+        container.add(this.cornersOption(rivet, "Thumb Corner Radius", slider.thumbCornerRadius()));
         container.add(this.floatOption(rivet, "Thumb Outline Width", slider.thumbOutlineWidth()));
         container.add(this.booleanOption(rivet, "Thumb Encased", slider.thumbEncased()));
         container.add(this.enumOption(rivet, "Thumb Shape", slider.thumbShape()));
@@ -71,6 +72,21 @@ public class SliderStyleTest extends TestBase {
                 })
                 .add(currentValue.layoutOptions(new GridOptions(2, 0)));
     }
+
+    private Component cornersOption(final Rivet rivet, final String name, final ThemeOption<Corners> option) {
+        Label currentValue = new Label(String.format("%,.1f", rivet.theme().get(option.key()).topLeft()));
+        return new Container(new GridLayout(5, 5))
+                .add(new Label(name).layoutOptions(new GridOptions(0, 0)))
+                .add(new Slider(0, 50, 0.1F, rivet.theme().get(option.key()).topLeft()), slider -> {
+                    slider.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
+                    slider.valueChangeListener().add(d -> {
+                        option.set(new Corners(d.floatValue()));
+                        currentValue.text(String.format("%,.1f", d.floatValue()));
+                    });
+                })
+                .add(currentValue.layoutOptions(new GridOptions(2, 0)));
+    }
+
 
     private Component booleanOption(final Rivet rivet, final String name, final ThemeOption<Boolean> option) {
         Checkbox checkbox = new Checkbox(name, rivet.theme().get(option.key()));

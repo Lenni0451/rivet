@@ -53,10 +53,10 @@ public class SolidColor extends Component {
     @Override
     protected void renderInternal(final Renderer renderer, final Size size) {
         if (this.color.getAlpha() > 0) {
-            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.topLeft(), this.cornerRadius.bottomLeft(), this.cornerRadius.bottomRight(), this.cornerRadius.topRight(), this.color);
+            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius, this.color);
         }
         if (this.outlineColor.getAlpha() > 0 && this.outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.topLeft(), this.cornerRadius.bottomLeft(), this.cornerRadius.bottomRight(), this.cornerRadius.topRight(), this.outlineWidth, this.outlineColor);
+            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius, this.outlineWidth, this.outlineColor);
         }
     }
 

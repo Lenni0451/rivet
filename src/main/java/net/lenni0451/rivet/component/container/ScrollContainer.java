@@ -16,6 +16,7 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
@@ -59,7 +60,7 @@ public class ScrollContainer extends ParentContainer {
     @Getter
     private final ThemeOption<Float> barWidth = new ThemeOption<>(this, Theme.ScrollContainer.BAR_WIDTH);
     @Getter
-    private final ThemeOption<Float> barCornerRadius = new ThemeOption<>(this, Theme.ScrollContainer.BAR_CORNER_RADIUS);
+    private final ThemeOption<Corners> barCornerRadius = new ThemeOption<>(this, Theme.ScrollContainer.BAR_CORNER_RADIUS);
     @Getter
     private final ThemeOption<Float> barOutlineWidth = new ThemeOption<>(this, Theme.ScrollContainer.BAR_OUTLINE_WIDTH);
     @Getter

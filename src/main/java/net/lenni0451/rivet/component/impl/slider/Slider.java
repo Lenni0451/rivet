@@ -15,6 +15,7 @@ import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -73,9 +74,9 @@ public class Slider extends Component {
     @Getter
     private final ThemeOption<Float> thumbHeight = new ThemeOption<>(this, Theme.Slider.THUMB_HEIGHT);
     @Getter
-    private final ThemeOption<Float> barCornerRadius = new ThemeOption<>(this, Theme.Slider.BAR_CORNER_RADIUS);
+    private final ThemeOption<Corners> barCornerRadius = new ThemeOption<>(this, Theme.Slider.BAR_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> thumbCornerRadius = new ThemeOption<>(this, Theme.Slider.THUMB_CORNER_RADIUS);
+    private final ThemeOption<Corners> thumbCornerRadius = new ThemeOption<>(this, Theme.Slider.THUMB_CORNER_RADIUS);
     @Getter
     private final ThemeOption<Boolean> thumbEncased = new ThemeOption<>(this, Theme.Slider.THUMB_ENCASED);
     @Getter
@@ -374,7 +375,7 @@ public class Slider extends Component {
         Color color = this.thumbColorTransition.value();
         Color outlineColor = this.thumbOutlineColorTransition.value();
         float outlineWidth = this.thumbOutlineWidth.value();
-        float cornerRadius = this.thumbCornerRadius.value();
+        Corners cornerRadius = this.thumbCornerRadius.value();
 
         switch (this.thumbShape.value()) {
             case CIRCLE -> {

@@ -90,7 +90,7 @@ public abstract class Theme {
 
     public static class Button {
         // Geometry & Layout
-        public static final ThemeKey<Float> CORNER_RADIUS = register("button.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 10F, 0));
+        public static final ThemeKey<Corners> CORNER_RADIUS = register("button.corner_radius", Corners.class, r -> new Corners(roundMin(r.backend().font().height() / 10F, 0)));
         public static final ThemeKey<Float> OUTLINE_WIDTH = register("button.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
         public static final ThemeKey<Padding> INNER_PADDING = register("button.inner_padding", Padding.class, r -> {
             float textHeight = r.backend().font().height();
@@ -124,12 +124,12 @@ public abstract class Theme {
     public static class Slider {
         // Geometry & Layout
         public static final ThemeKey<Float> BAR_HEIGHT = register("slider.bar_height", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1));
-        public static final ThemeKey<Float> BAR_CORNER_RADIUS = register("slider.bar_corner_radius", Float.class, r -> Float.MAX_VALUE);
+        public static final ThemeKey<Corners> BAR_CORNER_RADIUS = register("slider.bar_corner_radius", Corners.class, r -> new Corners(Float.MAX_VALUE));
         public static final ThemeKey<Float> THUMB_WIDTH = register("slider.thumb_width", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1) * 2F);
         public static final ThemeKey<Float> THUMB_HEIGHT = register("slider.thumb_height", Float.class, r -> roundMin(r.backend().font().height() / 3F, 1) * 2F);
-        public static final ThemeKey<Float> THUMB_CORNER_RADIUS = register("slider.thumb_corner_radius", Float.class, r -> Float.MAX_VALUE);
+        public static final ThemeKey<Corners> THUMB_CORNER_RADIUS = register("slider.thumb_corner_radius", Corners.class, r -> new Corners(Float.MAX_VALUE));
         public static final ThemeKey<Float> THUMB_OUTLINE_WIDTH = register("slider.thumb_outline_width", Float.class, r -> 0F);
-        public static final ThemeKey<Float> TOOLTIP_CORNER_RADIUS = register("slider.tooltip_corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 10F, 0));
+        public static final ThemeKey<Corners> TOOLTIP_CORNER_RADIUS = register("slider.tooltip_corner_radius", Corners.class, r -> new Corners(roundMin(r.backend().font().height() / 10F, 0)));
         public static final ThemeKey<Float> TOOLTIP_TRIANGLE_SIZE = register("slider.tooltip_triangle_size", Float.class, r -> roundMin(r.backend().font().height() / 4F, 1));
         public static final ThemeKey<Padding> TOOLTIP_PADDING = register("slider.tooltip_padding", Padding.class, r -> {
             float textHeight = r.backend().font().height();
@@ -173,7 +173,7 @@ public abstract class Theme {
     public static class ScrollContainer {
         // Geometry & Layout
         public static final ThemeKey<Float> BAR_WIDTH = register("scroll_container.bar_width", Float.class, r -> roundMin(r.backend().font().height() / 7F, 1));
-        public static final ThemeKey<Float> BAR_CORNER_RADIUS = register("scroll_container.bar_corner_radius", Float.class, r -> Float.MAX_VALUE);
+        public static final ThemeKey<Corners> BAR_CORNER_RADIUS = register("scroll_container.bar_corner_radius", Corners.class, r -> new Corners(Float.MAX_VALUE));
         public static final ThemeKey<Float> BAR_OUTLINE_WIDTH = register("scroll_container.bar_outline_width", Float.class, r -> 0F);
         public static final ThemeKey<Float> RAIL_OUTLINE_WIDTH = register("scroll_container.rail_outline_width", Float.class, r -> 0F);
 
@@ -208,7 +208,7 @@ public abstract class Theme {
         // Geometry & Layout
         public static final ThemeKey<Float> CURSOR_WIDTH = register("text_field.cursor_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
         public static final ThemeKey<Float> OUTLINE_WIDTH = register("text_field.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
-        public static final ThemeKey<Float> CORNER_RADIUS = register("text_field.corner_radius", Float.class, r -> 0F);
+        public static final ThemeKey<Corners> CORNER_RADIUS = register("text_field.corner_radius", Corners.class, r -> new Corners(0F));
         public static final ThemeKey<Padding> INNER_PADDING = register("text_field.inner_padding", Padding.class, r -> {
             float textHeight = r.backend().font().height();
             return new Padding(roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 10F, 0));
@@ -249,7 +249,7 @@ public abstract class Theme {
 
     public static class Checkbox {
         // Geometry & Layout
-        public static final ThemeKey<Float> CORNER_RADIUS = register("checkbox.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
+        public static final ThemeKey<Corners> CORNER_RADIUS = register("checkbox.corner_radius", Corners.class, r -> new Corners(roundMin(r.backend().font().height() / 25F, 1)));
         public static final ThemeKey<Float> OUTLINE_WIDTH = register("checkbox.outline_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
         public static final ThemeKey<Float> CHECK_WIDTH = register("checkbox.check_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
         public static final ThemeKey<Float> TEXT_GAP = register("checkbox.text_gap", Float.class, r -> 0F);
@@ -354,8 +354,8 @@ public abstract class Theme {
     public static class ProgressBar {
         // Geometry & Layout
         public static final ThemeKey<Float> BORDER_WIDTH = register("progress_bar.border_width", Float.class, r -> 0F);
-        public static final ThemeKey<Float> TRACK_CORNER_RADIUS = register("progress_bar.track_corner_radius", Float.class, r -> 0F);
-        public static final ThemeKey<Float> INDICATOR_CORNER_RADIUS = register("progress_bar.indicator_corner_radius", Float.class, r -> 0F);
+        public static final ThemeKey<Corners> TRACK_CORNER_RADIUS = register("progress_bar.track_corner_radius", Corners.class, r -> new Corners(0F));
+        public static final ThemeKey<Corners> INDICATOR_CORNER_RADIUS = register("progress_bar.indicator_corner_radius", Corners.class, r -> new Corners(0F));
         public static final ThemeKey<Float> TEXT_PADDING = register("progress_bar.text_padding", Float.class, r -> 5F);
         public static final ThemeKey<Float> STRIPE_WIDTH = register("progress_bar.stripe_width", Float.class, r -> roundMin(r.backend().font().height() * 0.75F, 1));
         public static final ThemeKey<Float> STRIPE_GAP = register("progress_bar.stripe_gap", Float.class, r -> roundMin(r.backend().font().height() * 0.75F, 1));
@@ -403,7 +403,7 @@ public abstract class Theme {
     public static class DragNumberInput {
         // Geometry & Layout
         public static final ThemeKey<Float> OUTLINE_WIDTH = register("drag_number_input.outline_width", Float.class, r -> 1F);
-        public static final ThemeKey<Float> CORNER_RADIUS = register("drag_number_input.corner_radius", Float.class, r -> roundMin(r.backend().font().height() / 4F, 0));
+        public static final ThemeKey<Corners> CORNER_RADIUS = register("drag_number_input.corner_radius", Corners.class, r -> new Corners(roundMin(r.backend().font().height() / 4F, 0)));
         public static final ThemeKey<Padding> INNER_PADDING = register("drag_number_input.inner_padding", Padding.class, r -> {
             float textHeight = r.backend().font().height();
             return new Padding(roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0), roundMin(textHeight / 3F, 0), roundMin(textHeight / 10F, 0));
@@ -433,7 +433,7 @@ public abstract class Theme {
 
     public static class ToggleSwitch {
         // Geometry & Layout
-        public static final ThemeKey<Float> CORNER_RADIUS = register("toggle_switch.corner_radius", Float.class, r -> Float.MAX_VALUE);
+        public static final ThemeKey<Corners> CORNER_RADIUS = register("toggle_switch.corner_radius", Corners.class, r -> new Corners(Float.MAX_VALUE));
         public static final ThemeKey<Float> OUTLINE_WIDTH = register("toggle_switch.outline_width", Float.class, r -> 0F);
         public static final ThemeKey<Float> THUMB_OUTLINE_WIDTH = register("toggle_switch.thumb_outline_width", Float.class, r -> 0F);
         public static final ThemeKey<Float> THUMB_RATIO = register("toggle_switch.thumb_ratio", Float.class, r -> 0.9F);

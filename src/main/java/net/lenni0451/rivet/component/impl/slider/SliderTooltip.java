@@ -15,6 +15,7 @@ import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layer.LayerBucket;
 import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
 import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -30,7 +31,7 @@ public class SliderTooltip extends Component {
 
     private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.Slider.TOOLTIP_BACKGROUND_COLOR);
     private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.Slider.TOOLTIP_TEXT_COLOR);
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.Slider.TOOLTIP_CORNER_RADIUS);
+    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.Slider.TOOLTIP_CORNER_RADIUS);
     private final ThemeOption<Float> triangleSize = new ThemeOption<>(this, Theme.Slider.TOOLTIP_TRIANGLE_SIZE);
     private final ThemeOption<Padding> padding = new ThemeOption<>(this, Theme.Slider.TOOLTIP_PADDING);
     private String text;
@@ -117,7 +118,7 @@ public class SliderTooltip extends Component {
     protected void renderInternal(final Renderer renderer, final Size size) {
         float triangleSize = this.triangleSize.value();
         Color backgroundColor = this.backgroundColor.value();
-        float cornerRadius = this.cornerRadius.value();
+        Corners cornerRadius = this.cornerRadius.value();
         Padding padding = this.padding.value();
 
         switch (this.position) {

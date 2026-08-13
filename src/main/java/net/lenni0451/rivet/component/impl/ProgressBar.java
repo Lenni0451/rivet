@@ -8,6 +8,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.event.ListenerList;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -31,9 +32,9 @@ public class ProgressBar extends Component {
     @Getter
     private final ThemeOption<Float> textPadding = new ThemeOption<>(this, Theme.ProgressBar.TEXT_PADDING);
     @Getter
-    private final ThemeOption<Float> trackCornerRadius = new ThemeOption<>(this, Theme.ProgressBar.TRACK_CORNER_RADIUS);
+    private final ThemeOption<Corners> trackCornerRadius = new ThemeOption<>(this, Theme.ProgressBar.TRACK_CORNER_RADIUS);
     @Getter
-    private final ThemeOption<Float> indicatorCornerRadius = new ThemeOption<>(this, Theme.ProgressBar.INDICATOR_CORNER_RADIUS);
+    private final ThemeOption<Corners> indicatorCornerRadius = new ThemeOption<>(this, Theme.ProgressBar.INDICATOR_CORNER_RADIUS);
     @Getter
     private final ThemeOption<Color> trackColor = new ThemeOption<>(this, Theme.ProgressBar.TRACK_COLOR);
     @Getter
@@ -100,7 +101,7 @@ public class ProgressBar extends Component {
                 );
             }
         };
-        if (this.trackCornerRadius.value() < this.indicatorCornerRadius.value()) {
+        if (this.trackCornerRadius.value().max() < this.indicatorCornerRadius.value().max()) {
             drawIndicatorAndStripes.run();
         } else {
             renderer.stencil(maskRenderer -> {

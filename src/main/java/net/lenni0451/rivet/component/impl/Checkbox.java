@@ -13,6 +13,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -36,7 +37,7 @@ public class Checkbox extends Component {
     private boolean hovered = false;
 
     @Getter
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.Checkbox.CORNER_RADIUS);
+    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.Checkbox.CORNER_RADIUS);
     @Getter
     private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.Checkbox.OUTLINE_WIDTH);
     @Getter

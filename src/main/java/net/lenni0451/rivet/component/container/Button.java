@@ -14,6 +14,7 @@ import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -36,7 +37,7 @@ public class Button extends Component implements Parent {
     @Getter
     private final ListenerList<ClickListener> clickListener = new ListenerList<>();
     @Getter
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.Button.CORNER_RADIUS);
+    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.Button.CORNER_RADIUS);
     @Getter
     private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.Button.OUTLINE_WIDTH);
     @Getter
@@ -210,7 +211,7 @@ public class Button extends Component implements Parent {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size) {
-        float cornerRadius = Math.min(this.cornerRadius.value(), Math.min(size.width(), size.height()) / 2F);
+        Corners cornerRadius = this.cornerRadius.value();
         float outlineWidth = this.outlineWidth.value();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
         if (outlineWidth > 0) {

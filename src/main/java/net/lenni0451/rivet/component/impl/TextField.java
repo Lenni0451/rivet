@@ -20,6 +20,7 @@ import net.lenni0451.rivet.input.keyboard.ModifierKey;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -86,7 +87,7 @@ public class TextField extends Component {
     @Getter
     private final ThemeOption<Float> outlineWidth = new ThemeOption<>(this, Theme.TextField.OUTLINE_WIDTH);
     @Getter
-    private final ThemeOption<Float> cornerRadius = new ThemeOption<>(this, Theme.TextField.CORNER_RADIUS);
+    private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.TextField.CORNER_RADIUS);
     @Getter
     private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TextField.INNER_PADDING);
     @Getter
