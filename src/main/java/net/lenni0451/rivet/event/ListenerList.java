@@ -10,6 +10,10 @@ public final class ListenerList<I> {
 
     private final List<I> listeners = new ArrayList<>();
 
+    public boolean isEmpty() {
+        return this.listeners.isEmpty();
+    }
+
     public ListenerList<I> add(final I listener) {
         this.listeners.add(listener);
         return this;
@@ -21,12 +25,19 @@ public final class ListenerList<I> {
     }
 
     public void call(final Consumer<I> invoker) {
+        if (this.isEmpty()) return;
+
         for (I listener : this.listeners) {
             invoker.accept(listener);
         }
     }
 
     public void callVoid(final BiConsumer<I, VoidMethodContext> invoker, final Runnable code) {
+        if (this.isEmpty()) {
+            code.run();
+            return;
+        }
+
         VoidMethodContext context = new VoidMethodContext();
         for (I listener : this.listeners) {
             invoker.accept(listener, context);
@@ -40,6 +51,8 @@ public final class ListenerList<I> {
     }
 
     public <R> R callWithReturnValue(final BiConsumer<I, ReturnableMethodContext<R>> invoker, final Supplier<R> code) {
+        if (this.isEmpty()) return code.get();
+
         ReturnableMethodContext<R> context = new ReturnableMethodContext<>();
         for (I listener : this.listeners) {
             invoker.accept(listener, context);

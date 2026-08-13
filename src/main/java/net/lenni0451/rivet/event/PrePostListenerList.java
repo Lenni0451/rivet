@@ -11,6 +11,10 @@ public final class PrePostListenerList<PRE, POST> {
     private final List<PRE> preListeners = new ArrayList<>();
     private final List<POST> postListeners = new ArrayList<>();
 
+    public boolean isEmpty() {
+        return this.preListeners.isEmpty() && this.postListeners.isEmpty();
+    }
+
     public PrePostListenerList<PRE, POST> add(final PRE listener) {
         return this.addPre(listener);
     }
@@ -40,6 +44,11 @@ public final class PrePostListenerList<PRE, POST> {
     }
 
     public void call(final Consumer<PRE> preInvoker, final Consumer<POST> postInvoker, final Runnable code) {
+        if (this.isEmpty()) {
+            code.run();
+            return;
+        }
+
         for (PRE listener : this.preListeners) {
             preInvoker.accept(listener);
         }
@@ -50,6 +59,11 @@ public final class PrePostListenerList<PRE, POST> {
     }
 
     public void callVoid(final BiConsumer<PRE, VoidMethodContext> preInvoker, final Consumer<POST> postInvoker, final Runnable code) {
+        if (this.isEmpty()) {
+            code.run();
+            return;
+        }
+
         VoidMethodContext context = new VoidMethodContext();
         for (PRE preListener : this.preListeners) {
             preInvoker.accept(preListener, context);
@@ -66,6 +80,10 @@ public final class PrePostListenerList<PRE, POST> {
     }
 
     public <R> R callWithReturnValue(final BiConsumer<PRE, ReturnableMethodContext<R>> preInvoker, final Consumer<POST> postInvoker, final Supplier<R> code) {
+        if (this.isEmpty()) {
+            return code.get();
+        }
+
         ReturnableMethodContext<R> context = new ReturnableMethodContext<>();
         for (PRE preListener : this.preListeners) {
             preInvoker.accept(preListener, context);
