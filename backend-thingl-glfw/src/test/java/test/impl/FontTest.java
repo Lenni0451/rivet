@@ -1,7 +1,7 @@
 package test.impl;
 
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.TextField;
@@ -28,7 +28,7 @@ public class FontTest extends TestBase {
         textField.keyDownListener().add((ctx, event) -> {
             if (event.key().isEquivalent(Key.ENTER)) {
                 try (FileInputStream fis = new FileInputStream(textField.text())) {
-                    ThinGLFont font = new ThinGLFont(createFont((int) slider.value(), fis));
+                    Font font = rivet.backend().assetLoader().loadFont(fis, (int) slider.value());
                     slider.font(font.derive(40));
                     textField.font(font.derive(40));
                     label.font(font);

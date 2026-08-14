@@ -1,7 +1,8 @@
 package net.lenni0451.rivet.backend.thingl;
 
+import net.lenni0451.rivet.backend.AssetLoader;
 import net.lenni0451.rivet.backend.TextInput;
-import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.utils.SDLMapper;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.raphimc.thingl.implementation.util.sdl.SdlException;
@@ -16,8 +17,8 @@ public class SDLBackend extends ThinGLBackend {
 
     private final SDLTextInput textInput;
 
-    public SDLBackend(final long window, final ThinGLFont font) {
-        super(window, font);
+    public SDLBackend(final long window, final Font font, final AssetLoader assetLoader) {
+        super(window, font, assetLoader);
         this.textInput = new SDLTextInput(window);
     }
 

@@ -6,9 +6,9 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.render.deferred.DeferredRenderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.render.batched.BatchedRenderListExecutor;
-import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -20,7 +20,6 @@ import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -32,7 +31,6 @@ import java.util.Set;
 public abstract class GLFWApplication extends GLFWApplicationRunner {
 
     private final ThinGLRenderer renderer = new ThinGLRenderer();
-    private FontInstanceSet fontInstanceSet;
     private GLFWBackend backend;
     private Rivet rivet;
     private final Set<MouseButton> heldMouseButtons = EnumSet.noneOf(MouseButton.class);
@@ -51,8 +49,8 @@ public abstract class GLFWApplication extends GLFWApplicationRunner {
         super.init();
         this.setupCallbacks();
 
-        this.fontInstanceSet = this.createFont();
-        this.backend = new GLFWBackend(this.window, new ThinGLFont(this.fontInstanceSet));
+        ThinGLAssetLoader assetLoader = new ThinGLAssetLoader();
+        this.backend = new GLFWBackend(this.window, this.createFont(assetLoader), assetLoader);
         this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
         ThinGL.windowInterface().addFramebufferResizeCallback((width, height) -> this.rivet.size(new Size(width, height)));
 
@@ -62,7 +60,7 @@ public abstract class GLFWApplication extends GLFWApplicationRunner {
         this.init(this.rivet);
     }
 
-    protected abstract FontInstanceSet createFont() throws Exception;
+    protected abstract Font createFont(final ThinGLAssetLoader assetLoader) throws Exception;
 
     protected abstract void init(final Rivet rivet);
 

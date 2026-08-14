@@ -1,12 +1,13 @@
-package net.lenni0451.rivet.backend.thingl;
+package net.lenni0451.rivet.backend.thingl.texture;
 
 import net.lenni0451.rivet.backend.Texture;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
 import org.joml.primitives.Rectanglei;
 
-public record ThinGLTexture(Texture2D texture, Rectanglei view) implements Texture {
+public record ThinGLGPUTexture(Texture2D texture, Rectanglei view) implements Texture {
 
-    public ThinGLTexture(final Texture2D texture) {
+    public ThinGLGPUTexture(final Texture2D texture) {
         this(texture, new Rectanglei(0, 0, texture.getWidth(), texture.getHeight()));
     }
 
@@ -24,7 +25,7 @@ public record ThinGLTexture(Texture2D texture, Rectanglei view) implements Textu
 
     @Override
     public Texture subTexture(final int x, final int y, final int width, final int height) {
-        return new ThinGLTexture(
+        return new ThinGLGPUTexture(
                 this.texture,
                 new Rectanglei(
                         this.view.minX + x,
@@ -33,6 +34,11 @@ public record ThinGLTexture(Texture2D texture, Rectanglei view) implements Textu
                         this.view.maxY - (this.view.lengthY() - (y + height))
                 )
         );
+    }
+
+    @Override
+    public void close() {
+        ThinGL.get().runOnRenderThread(this.texture::free);
     }
 
 }

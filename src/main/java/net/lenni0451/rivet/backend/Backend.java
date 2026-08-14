@@ -30,4 +30,6 @@ public interface Backend {
         return TextInput.NOOP;
     }
 
+    AssetLoader assetLoader();
+
 }

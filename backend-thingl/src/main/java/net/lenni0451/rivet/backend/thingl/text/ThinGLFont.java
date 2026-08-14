@@ -1,22 +1,30 @@
 package net.lenni0451.rivet.backend.thingl.text;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.text.model.TextSection;
+import net.raphimc.thingl.resource.font.face.FontFace;
 import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import net.raphimc.thingl.text.TextStyle;
 import net.raphimc.thingl.text.shaping.ShapedTextLine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
-@RequiredArgsConstructor
 @Accessors(fluent = true, chain = true)
 public class ThinGLFont implements Font {
 
     private final FontInstanceSet fontInstanceSet;
+    private final List<FontFace> fontFaces;
+
+    public ThinGLFont(final FontInstanceSet fontInstanceSet, final List<FontFace> fontFaces) {
+        this.fontInstanceSet = fontInstanceSet;
+        this.fontFaces = new ArrayList<>(fontFaces);
+    }
 
     @Override
     public int size() {
@@ -30,7 +38,7 @@ public class ThinGLFont implements Font {
 
     @Override
     public Font derive(final int size) {
-        return new ThinGLFont(this.fontInstanceSet.getScaledInstanceSet(size));
+        return new ThinGLFont(this.fontInstanceSet.getScaledInstanceSet(size), this.fontFaces);
     }
 
     @Override
@@ -43,6 +51,13 @@ public class ThinGLFont implements Font {
     @Override
     public ShapedText shapeText(final net.lenni0451.rivet.text.model.TextLine line) {
         return new ThinGLShapedText(this.toThinGL(line).shape());
+    }
+
+    @Override
+    public void close() {
+        this.fontFaces.forEach(FontFace::free);
+        this.fontFaces.clear();
+        this.fontInstanceSet.free();
     }
 
     private net.raphimc.thingl.text.TextLine toThinGL(final net.lenni0451.rivet.text.model.TextLine line) {

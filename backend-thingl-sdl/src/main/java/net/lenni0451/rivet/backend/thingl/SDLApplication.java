@@ -6,9 +6,9 @@ import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.render.deferred.DeferredRenderer;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.render.batched.BatchedRenderListExecutor;
-import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
 import net.lenni0451.rivet.backend.thingl.utils.SDLMapper;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -53,8 +53,8 @@ public abstract class SDLApplication extends SDLApplicationRunner {
     protected void init() {
         super.init();
 
-        this.fontInstanceSet = this.createFont();
-        this.backend = new SDLBackend(this.window, new ThinGLFont(this.fontInstanceSet));
+        ThinGLAssetLoader assetLoader = new ThinGLAssetLoader();
+        this.backend = new SDLBackend(this.window, this.createFont(assetLoader), assetLoader);
         this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
         ThinGL.windowInterface().addFramebufferResizeCallback((width, height) -> this.rivet.size(new Size(width, height)));
 
@@ -132,7 +132,7 @@ public abstract class SDLApplication extends SDLApplicationRunner {
         }
     }
 
-    protected abstract FontInstanceSet createFont() throws Exception;
+    protected abstract Font createFont(final ThinGLAssetLoader assetLoader) throws Exception;
 
     protected abstract void init(final Rivet rivet);
 

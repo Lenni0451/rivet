@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.backend.thingl;
 
-import net.lenni0451.rivet.backend.thingl.text.ThinGLFont;
+import net.lenni0451.rivet.backend.AssetLoader;
+import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.Key;
 import org.lwjgl.glfw.GLFW;
@@ -11,8 +12,8 @@ import java.nio.ByteBuffer;
 
 public class GLFWBackend extends ThinGLBackend {
 
-    public GLFWBackend(final long window, final ThinGLFont font) {
-        super(window, font);
+    public GLFWBackend(final long window, final Font font, final AssetLoader assetLoader) {
+        super(window, font, assetLoader);
     }
 
     @Override

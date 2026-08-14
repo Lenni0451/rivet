@@ -8,4 +8,7 @@ public interface Texture {
 
     Texture subTexture(final int x, final int y, final int width, final int height);
 
+    default void close() {
+    }
+
 }

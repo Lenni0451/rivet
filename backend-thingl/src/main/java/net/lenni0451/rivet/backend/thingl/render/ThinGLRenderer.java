@@ -11,8 +11,9 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.render.deferred.ModifierCommand;
 import net.lenni0451.rivet.backend.render.deferred.RenderCommand;
 import net.lenni0451.rivet.backend.text.ShapedText;
-import net.lenni0451.rivet.backend.thingl.ThinGLTexture;
 import net.lenni0451.rivet.backend.thingl.text.ThinGLShapedText;
+import net.lenni0451.rivet.backend.thingl.texture.ThinGLCPUTexture;
+import net.lenni0451.rivet.backend.thingl.texture.ThinGLGPUTexture;
 import net.lenni0451.rivet.backend.thingl.util.MathUtil;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -188,7 +189,11 @@ public class ThinGLRenderer extends CheckedRenderer {
 
     @Override
     public void doImage(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
-        ThinGLTexture thinGLTexture = (ThinGLTexture) texture;
+        ThinGLGPUTexture thinGLTexture = switch (texture) {
+            case ThinGLCPUTexture cpuTexture -> cpuTexture.uploadIfNeeded();
+            case ThinGLGPUTexture gpuTexture -> gpuTexture;
+            default -> throw new UnsupportedOperationException("Unsupported texture type: " + texture.getClass().getName());
+        };
         if (color.equals(Color.WHITE)) {
             ThinGL.renderer2D().texture(this.positionMatrix, thinGLTexture.texture(), x, y, width, height, thinGLTexture.view().minX, thinGLTexture.view().minY, thinGLTexture.view().lengthX(), thinGLTexture.view().lengthY());
         } else {

@@ -32,4 +32,7 @@ public interface Font {
         return new ShapedTextBlock(lines);
     }
 
+    default void close() {
+    }
+
 }
