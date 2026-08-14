@@ -1,6 +1,5 @@
 plugins {
-    id "project.defaults"
-    id "idea.exclude_run_dir"
+    id "project.defaults_and_publish"
 }
 
 dependencies {

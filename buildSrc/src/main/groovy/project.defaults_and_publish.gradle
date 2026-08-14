@@ -1,0 +1,5 @@
+plugins {
+    id "project.defaults"
+    id "base.maven_publish"
+    id "publishing.aggregating_publisher"
+}

@@ -1,0 +1,17 @@
+plugins {
+    id "project.defaults"
+    id "configuration.include"
+}
+
+dependencies {
+    include project(":backend-thingl-glfw")
+    include project(":backend-thingl-sdl")
+    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
+        include(variantOf(libs.lwjgl) { classifier(natives) })
+        include(variantOf(libs.lwjgl.opengl) { classifier(natives) })
+        include(variantOf(libs.lwjgl.stb) { classifier(natives) })
+        include(variantOf(libs.lwjgl.freetype) { classifier(natives) })
+        include(variantOf(libs.lwjgl.glfw) { classifier(natives) })
+        include(variantOf(libs.lwjgl.sdl) { classifier(natives) })
+    }
+}

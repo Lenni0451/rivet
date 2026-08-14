@@ -1,16 +1,8 @@
 plugins {
-    id "project.defaults"
+    id "project.defaults_and_publish"
 }
 
 dependencies {
     api project(":backend-thingl")
     api libs.lwjgl.sdl
-
-    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
-        testImplementation(variantOf(libs.lwjgl) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.opengl) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.stb) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.freetype) { classifier(natives) })
-        testImplementation(variantOf(libs.lwjgl.sdl) { classifier(natives) })
-    }
 }

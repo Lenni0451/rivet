@@ -3,8 +3,6 @@ plugins {
     id "base.java"
     id "base.checkstyle"
     id "base.junit"
-    id "base.maven_publish"
-    id "publishing.aggregating_publisher"
 }
 
 repositories {
