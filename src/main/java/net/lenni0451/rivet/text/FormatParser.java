@@ -14,6 +14,18 @@ final class FormatParser {
     private static final char TAG_END = '>';
     private static final char CLOSE_OPTION_PREFIX = '/';
 
+    public static String quote(final String text) {
+        StringBuilder quoted = new StringBuilder(text.length() * 2);
+        for (char c : text.toCharArray()) {
+            if (c == ESCAPE_CHAR || c == TAG_START || c == KEY_VALUE_SEPARATOR || c == OPTION_SEPARATOR || c == TAG_END || c == CLOSE_OPTION_PREFIX) {
+                quoted.append(ESCAPE_CHAR);
+            }
+            quoted.append(c);
+        }
+        return quoted.toString();
+    }
+
+
     private final char[] chars;
     private int index = 0;
 

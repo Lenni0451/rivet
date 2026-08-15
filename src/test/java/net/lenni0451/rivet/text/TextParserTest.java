@@ -12,6 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class TextParserTest {
 
     @Test
+    void quote() {
+        assertThrows(IllegalStateException.class, () -> TextParser.parse("<italic>Test <<"));
+        assertDoesNotThrow(() -> TextParser.parse("<italic>" + TextParser.quote("Test <<")));
+        assertEquals("Test <<", TextParser.parse("<italic>" + TextParser.quote("Test <<")).sections().get(0).text());
+    }
+
+    @Test
     void basicFormats() {
         List<TextSection> sections = TextParser.parse("<italic bold underlined strikethrough>Test").sections();
         assertEquals(1, sections.size());

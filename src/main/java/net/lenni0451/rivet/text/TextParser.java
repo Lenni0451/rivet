@@ -98,6 +98,10 @@ import java.util.function.Function;
 @UtilityClass
 public class TextParser {
 
+    public static String quote(final String text) {
+        return FormatParser.quote(text);
+    }
+
     public static TextLine parse(final String text) {
         return parse(text, TextFormat.DEFAULT);
     }
