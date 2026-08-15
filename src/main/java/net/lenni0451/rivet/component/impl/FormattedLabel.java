@@ -5,21 +5,20 @@ import net.lenni0451.rivet.text.TextParser;
 import net.lenni0451.rivet.text.model.TextFormat;
 import net.lenni0451.rivet.text.model.TextLine;
 
-import javax.annotation.Nonnull;
-import java.util.Objects;
+import javax.annotation.Nullable;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class FormattedLabel extends Label {
 
-    public FormattedLabel(@Nonnull final String text) {
+    public FormattedLabel(final String text) {
         super(text);
     }
 
-    public FormattedLabel(@Nonnull final String text, @Nonnull final TextFormat format) {
-        super(text, Objects.requireNonNullElse(format, TextFormat.DEFAULT));
+    public FormattedLabel(final String text, @Nullable final TextFormat format) {
+        super(text, format);
     }
 
-    public FormattedLabel(@Nonnull final TextLine line) {
+    public FormattedLabel(final TextLine line) {
         super(line);
     }
 

@@ -53,10 +53,10 @@ public class Label extends Component {
     private float scale = 1F;
 
     public Label(final String text) {
-        this(text, TextFormat.DEFAULT);
+        this(text, null);
     }
 
-    public Label(final String text, final TextFormat format) {
+    public Label(final String text, @Nullable final TextFormat format) {
         this(new StringText(text, format));
     }
 
@@ -117,8 +117,8 @@ public class Label extends Component {
         return this;
     }
 
-    public final Label text(final String text, final TextFormat textFormat) {
-        if (!(this.text instanceof StringText stringText) || !stringText.text.equals(text) || !stringText.format.equals(textFormat)) {
+    public final Label text(final String text, @Nullable final TextFormat textFormat) {
+        if (!(this.text instanceof StringText stringText) || !stringText.text.equals(text) || !Objects.equals(stringText.format, textFormat)) {
             this.text = new StringText(text, textFormat);
             this.markReshape();
         }
@@ -143,7 +143,7 @@ public class Label extends Component {
 
     public final Label textFormat(final TextFormat textFormat) {
         if (this.text instanceof StringText stringText) {
-            if (!stringText.format.equals(textFormat)) {
+            if (!Objects.equals(stringText.format, textFormat)) {
                 this.text = new StringText(stringText.text, textFormat);
                 this.markReshape();
             }
@@ -291,6 +291,7 @@ public class Label extends Component {
     @AllArgsConstructor
     private static final class StringText implements Text {
         public String text;
+        @Nullable
         public TextFormat format;
     }
 
