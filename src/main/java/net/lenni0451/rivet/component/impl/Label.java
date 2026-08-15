@@ -30,6 +30,8 @@ public class Label extends Component {
     private Font font;
     @Getter
     private String text;
+    @Getter
+    private TextFormat textFormat;
     private ShapedText shapedText;
     private ShapedTextBlock shapedTextBlock;
     private boolean reshape;
@@ -52,7 +54,12 @@ public class Label extends Component {
     private float scale = 1F;
 
     public Label(final String text) {
+        this(text, TextFormat.DEFAULT);
+    }
+
+    public Label(final String text, final TextFormat textFormat) {
         this.text = text;
+        this.textFormat = textFormat;
 
         this.textColor.changeListener().add(c -> this.reshape = true);
         this.disabledTextColor.changeListener().add(c -> this.reshape = true);
@@ -86,6 +93,23 @@ public class Label extends Component {
         return this;
     }
 
+    public final Label text(final String text, final TextFormat textFormat) {
+        this.text(text);
+        this.textFormat(textFormat);
+        return this;
+    }
+
+    public final Label textFormat(final TextFormat textFormat) {
+        if (!this.textFormat.equals(textFormat)) {
+            this.textFormat = textFormat;
+            this.reshape = true;
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
+            }
+        }
+        return this;
+    }
+
     public final Label scale(final float scale) {
         if (this.scale != scale) {
             this.scale = scale;
@@ -98,16 +122,26 @@ public class Label extends Component {
 
     private void shapeText() {
         if (this.reshape) {
-            Color textColor = this.disabled() ? this.disabledTextColor.value() : this.textColor.value();
-            this.shapedText = this.usedFont().shapeText(this.text, textColor);
+            this.shapedText = this.usedFont().shapeText(this.createTextLine());
             this.reshape = false;
         }
     }
 
     private TextLine createTextLine() {
-        Color textColor = this.disabled() ? this.disabledTextColor.value() : this.textColor.value();
-        TextFormat format = TextFormat.DEFAULT.withColor(textColor);
-        return new TextLine(new TextSection(this.text, format));
+        TextFormat format;
+        Color color;
+        if (this.textFormat != null) {
+            format = this.textFormat;
+            if (this.disabled() && this.textFormat.color().equals(this.textColor.value())) {
+                color = this.disabledTextColor.value();
+            } else {
+                color = this.textFormat.color();
+            }
+        } else {
+            format = TextFormat.DEFAULT;
+            color = this.disabled() ? this.disabledTextColor.value() : this.textColor.value();
+        }
+        return new TextLine(new TextSection(this.text, format.withColor(color)));
     }
 
     protected final Font usedFont() {
