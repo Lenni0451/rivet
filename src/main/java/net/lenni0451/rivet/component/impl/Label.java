@@ -187,10 +187,14 @@ public class Label extends Component {
             Color color;
             if (stringText.format != null) {
                 format = stringText.format;
-                if (this.disabled() && stringText.format.color().equals(this.textColor.value())) {
-                    color = this.disabledTextColor.value();
+                if (format.color().equals(Color.TRANSPARENT)) {
+                    color = this.disabled() ? this.disabledTextColor.value() : this.textColor.value();
                 } else {
-                    color = stringText.format.color();
+                    if (this.disabled() && format.color().equals(this.textColor.value())) {
+                        color = this.disabledTextColor.value();
+                    } else {
+                        color = format.color();
+                    }
                 }
             } else {
                 format = TextFormat.DEFAULT;
