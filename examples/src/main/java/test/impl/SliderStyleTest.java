@@ -28,10 +28,17 @@ public class SliderStyleTest extends TestBase {
         container.add(this.colorOption(rivet, "Bar Color", slider.barColor()));
         container.add(this.colorOption(rivet, "Bar Fill Color", slider.barFillColor()));
         container.add(this.colorOption(rivet, "Thumb Color", slider.thumbColor()));
+        container.add(this.colorOption(rivet, "Thumb Hover Color", slider.thumbHoverColor()));
         container.add(this.colorOption(rivet, "Thumb Click Color", slider.thumbClickColor()));
         container.add(this.colorOption(rivet, "Thumb Outline Color", slider.thumbOutlineColor()));
+        container.add(this.colorOption(rivet, "Thumb Hover Outline Color", slider.thumbHoverOutlineColor()));
         container.add(this.colorOption(rivet, "Thumb Click Outline Color", slider.thumbClickOutlineColor()));
         container.add(this.colorOption(rivet, "Tick Color", slider.tickColor()));
+        container.add(this.colorOption(rivet, "Disabled Bar Color", slider.disabledBarColor()));
+        container.add(this.colorOption(rivet, "Disabled Bar Fill Color", slider.disabledBarFillColor()));
+        container.add(this.colorOption(rivet, "Disabled Thumb Color", slider.disabledThumbColor()));
+        container.add(this.colorOption(rivet, "Disabled Thumb Outline Color", slider.disabledThumbOutlineColor()));
+        container.add(this.colorOption(rivet, "Disabled Tick Color", slider.disabledTickColor()));
         container.add(this.floatOption(rivet, "Bar Height", slider.barHeight()));
         container.add(this.floatOption(rivet, "Thumb Width", slider.thumbWidth()));
         container.add(this.floatOption(rivet, "Thumb Height", slider.thumbHeight()));
@@ -42,6 +49,7 @@ public class SliderStyleTest extends TestBase {
         container.add(this.enumOption(rivet, "Thumb Shape", slider.thumbShape()));
         container.add(this.booleanOption(rivet, "Show Tooltip", slider.showTooltip()));
         container.add(this.stringOption(rivet, "Tooltip Format", slider.tooltipFormat()));
+        container.add(this.booleanOption(rivet, "Ensure Values Reachable", slider.ensureValuesReachable()));
         container.add(slider);
         container.add(new SolidColor().fixedSize(1, 500));
         rivet.root().add(new ScrollContainer(container));

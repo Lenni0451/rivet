@@ -15,7 +15,7 @@ import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.Label.OverflowBehavior;
 import net.lenni0451.rivet.component.impl.ProgressBar.TextPosition;
 import net.lenni0451.rivet.component.impl.ScrollBar.ScrollBarType;
-import net.lenni0451.rivet.component.impl.slider.Slider.ThumbShape;
+import net.lenni0451.rivet.component.impl.slider.AbstractSlider.ThumbShape;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
