@@ -11,10 +11,10 @@ import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.component.container.CollapsibleContainer.ArrowPosition;
-import net.lenni0451.rivet.component.container.ScrollContainer.ScrollBarType;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.Label.OverflowBehavior;
 import net.lenni0451.rivet.component.impl.ProgressBar.TextPosition;
+import net.lenni0451.rivet.component.impl.ScrollBar.ScrollBarType;
 import net.lenni0451.rivet.component.impl.slider.Slider.ThumbShape;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
@@ -170,29 +170,35 @@ public abstract class Theme {
         public static final ThemeKey<Boolean> ENSURE_VALUES_REACHABLE = register("slider.ensure_values_reachable", Boolean.class, r -> false);
     }
 
-    public static class ScrollContainer {
+    public static class ScrollBar {
         // Geometry & Layout
-        public static final ThemeKey<Float> BAR_WIDTH = register("scroll_container.bar_width", Float.class, r -> roundMin(r.backend().font().height() / 7F, 1));
-        public static final ThemeKey<Corners> BAR_CORNER_RADIUS = register("scroll_container.bar_corner_radius", Corners.class, r -> new Corners(Float.MAX_VALUE));
-        public static final ThemeKey<Float> BAR_OUTLINE_WIDTH = register("scroll_container.bar_outline_width", Float.class, r -> 0F);
-        public static final ThemeKey<Float> RAIL_OUTLINE_WIDTH = register("scroll_container.rail_outline_width", Float.class, r -> 0F);
+        public static final ThemeKey<Float> BAR_WIDTH = register("scroll_bar.bar_width", Float.class, r -> roundMin(r.backend().font().height() / 7F, 1));
+        public static final ThemeKey<Corners> BAR_CORNER_RADIUS = register("scroll_bar.bar_corner_radius", Corners.class, r -> new Corners(Float.MAX_VALUE));
+        public static final ThemeKey<Float> BAR_OUTLINE_WIDTH = register("scroll_bar.bar_outline_width", Float.class, r -> 0F);
+        public static final ThemeKey<Float> RAIL_OUTLINE_WIDTH = register("scroll_bar.rail_outline_width", Float.class, r -> 0F);
 
         // Colors - Base / Inactive
-        public static final ThemeKey<Color> BAR_COLOR = register("scroll_container.bar_color", Color.class, r -> Color.fromRGBA(120, 120, 125, 100));
-        public static final ThemeKey<Color> BAR_OUTLINE_COLOR = register("scroll_container.bar_outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
-        public static final ThemeKey<Color> RAIL_COLOR = register("scroll_container.rail_color", Color.class, r -> Color.fromRGB(37, 37, 38));
-        public static final ThemeKey<Color> RAIL_OUTLINE_COLOR = register("scroll_container.rail_outline_color", Color.class, r -> Color.fromRGB(51, 51, 52));
+        public static final ThemeKey<Color> BAR_COLOR = register("scroll_bar.bar_color", Color.class, r -> Color.fromRGBA(120, 120, 125, 100));
+        public static final ThemeKey<Color> BAR_OUTLINE_COLOR = register("scroll_bar.bar_outline_color", Color.class, r -> Color.fromRGB(65, 65, 70));
+        public static final ThemeKey<Color> RAIL_COLOR = register("scroll_bar.rail_color", Color.class, r -> Color.fromRGB(37, 37, 38));
+        public static final ThemeKey<Color> RAIL_OUTLINE_COLOR = register("scroll_bar.rail_outline_color", Color.class, r -> Color.fromRGB(51, 51, 52));
 
         // Colors - States
-        public static final ThemeKey<Color> BAR_HOVER_COLOR = register("scroll_container.bar_hover_color", Color.class, r -> Color.fromRGBA(140, 140, 145, 150));
-        public static final ThemeKey<Color> BAR_CLICK_COLOR = register("scroll_container.bar_click_color", Color.class, r -> Color.fromRGBA(100, 100, 105, 200));
+        public static final ThemeKey<Color> BAR_HOVER_COLOR = register("scroll_bar.bar_hover_color", Color.class, r -> Color.fromRGBA(140, 140, 145, 150));
+        public static final ThemeKey<Color> BAR_CLICK_COLOR = register("scroll_bar.bar_click_color", Color.class, r -> Color.fromRGBA(100, 100, 105, 200));
 
         // Colors - Disabled
-        public static final ThemeKey<Color> BAR_DISABLED_COLOR = register("scroll_container.bar_disabled_color", Color.class, r -> Color.fromRGBA(100, 100, 105, 50));
-        public static final ThemeKey<Color> BAR_DISABLED_OUTLINE_COLOR = register("scroll_container.bar_disabled_outline_color", Color.class, r -> Color.fromRGBA(65, 65, 70, 50));
-        public static final ThemeKey<Color> RAIL_DISABLED_COLOR = register("scroll_container.rail_disabled_color", Color.class, r -> Color.fromRGBA(37, 37, 38, 100));
-        public static final ThemeKey<Color> RAIL_DISABLED_OUTLINE_COLOR = register("scroll_container.rail_disabled_outline_color", Color.class, r -> Color.fromRGBA(51, 51, 52, 100));
+        public static final ThemeKey<Color> BAR_DISABLED_COLOR = register("scroll_bar.bar_disabled_color", Color.class, r -> Color.fromRGBA(100, 100, 105, 50));
+        public static final ThemeKey<Color> BAR_DISABLED_OUTLINE_COLOR = register("scroll_bar.bar_disabled_outline_color", Color.class, r -> Color.fromRGBA(65, 65, 70, 50));
+        public static final ThemeKey<Color> RAIL_DISABLED_COLOR = register("scroll_bar.rail_disabled_color", Color.class, r -> Color.fromRGBA(37, 37, 38, 100));
+        public static final ThemeKey<Color> RAIL_DISABLED_OUTLINE_COLOR = register("scroll_bar.rail_disabled_outline_color", Color.class, r -> Color.fromRGBA(51, 51, 52, 100));
 
+        // Behaviors & Settings
+        public static final ThemeKey<ScrollBarType> BAR_TYPE = register("scroll_bar.bar_type", ScrollBarType.class, r -> ScrollBarType.FLOATING);
+        public static final ThemeKey<Boolean> RAIL_CLICK_JUMP = register("scroll_bar.rail_click_jump", Boolean.class, r -> true);
+    }
+
+    public static class ScrollContainer {
         // Animations
         public static final ThemeKey<DynamicAnimationConfig> ANIMATION = register("scroll_container.animation", DynamicAnimationConfig.class, r -> new DynamicAnimationConfig(EasingFunction.SINE, EasingMode.EASE_OUT, 100));
 
@@ -200,8 +206,6 @@ public abstract class Theme {
         public static final ThemeKey<Float> SPEED = register("scroll_container.speed", Float.class, r -> roundMin(r.backend().font().height() * 4, 1));
         public static final ThemeKey<Boolean> SMOOTH = register("scroll_container.smooth", Boolean.class, r -> true);
         public static final ThemeKey<Long> NESTED_SCROLL_TIMEOUT = register("scroll_container.nested_scroll_timeout", Long.class, r -> 150L);
-        public static final ThemeKey<ScrollBarType> BAR_TYPE = register("scroll_container.bar_type", ScrollBarType.class, r -> ScrollBarType.FLOATING);
-        public static final ThemeKey<Boolean> RAIL_CLICK_JUMP = register("scroll_container.rail_click_jump", Boolean.class, r -> true);
     }
 
     public static class TextField {

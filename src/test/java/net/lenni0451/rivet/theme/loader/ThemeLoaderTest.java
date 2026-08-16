@@ -9,10 +9,10 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
-import net.lenni0451.rivet.component.container.ScrollContainer;
 import net.lenni0451.rivet.component.container.tabcontainer.TabAlignment;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.ProgressBar;
+import net.lenni0451.rivet.component.impl.ScrollBar;
 import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
@@ -83,8 +83,8 @@ class ThemeLoaderTest {
         check(Theme.ScrollContainer.NESTED_SCROLL_TIMEOUT, "-999999999999", -999_999_999_999L);
 
         // Float
-        check(Theme.ScrollContainer.BAR_WIDTH, "0.12", 0.12F);
-        check(Theme.ScrollContainer.BAR_WIDTH, "-9.12", -9.12F);
+        check(Theme.ScrollBar.BAR_WIDTH, "0.12", 0.12F);
+        check(Theme.ScrollBar.BAR_WIDTH, "-9.12", -9.12F);
 
         // String
         check(Theme.Slider.TOOLTIP_FORMAT, "abc", "abc");
@@ -120,9 +120,9 @@ class ThemeLoaderTest {
             check(Theme.Slider.THUMB_SHAPE, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
-        // ScrollContainer.ScrollBarType
-        for (ScrollContainer.ScrollBarType value : ScrollContainer.ScrollBarType.values()) {
-            check(Theme.ScrollContainer.BAR_TYPE, value.toString().toLowerCase(Locale.ROOT), value);
+        // ScrollBar.ScrollBarType
+        for (ScrollBar.ScrollBarType value : ScrollBar.ScrollBarType.values()) {
+            check(Theme.ScrollBar.BAR_TYPE, value.toString().toLowerCase(Locale.ROOT), value);
         }
 
         // TabAlignment
