@@ -57,7 +57,13 @@ public class RangeSlider extends AbstractSlider<RangeSlider> {
         return this.range(lowerValue, upperValue, true);
     }
 
-    public final RangeSlider range(final double lowerValue, final double upperValue, final boolean fireListeners) {
+    public final RangeSlider range(double lowerValue, double upperValue, final boolean fireListeners) {
+        if (lowerValue > upperValue) {
+            double temp = lowerValue;
+            lowerValue = upperValue;
+            upperValue = temp;
+        }
+
         boolean changed = false;
         if (this.lowerThumb.value() != lowerValue) {
             this.lowerThumb.value(lowerValue);
@@ -69,7 +75,9 @@ public class RangeSlider extends AbstractSlider<RangeSlider> {
         }
 
         if (changed && fireListeners) {
-            this.rangeChangeListener.call(c -> c.accept(lowerValue, upperValue));
+            final double finalLowerValue = lowerValue;
+            final double finalUpperValue = upperValue;
+            this.rangeChangeListener.call(c -> c.accept(finalLowerValue, finalUpperValue));
         }
         return this;
     }
