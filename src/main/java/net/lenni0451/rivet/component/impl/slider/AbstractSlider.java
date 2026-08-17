@@ -104,6 +104,8 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     private final ThemeOption<AnimationConfig> clickAnimationConfig = new ThemeOption<>(this, Theme.Slider.CLICK_ANIMATION);
     @Getter
     private final ThemeOption<Boolean> ensureValuesReachable = new ThemeOption<>(this, Theme.Slider.ENSURE_VALUES_REACHABLE);
+    @Getter
+    private final ThemeOption<Boolean> clickableRail = new ThemeOption<>(this, Theme.Slider.CLICKABLE_RAIL);
 
     public AbstractSlider(final double min, final double max) {
         this(min, max, (max - min) / DEFAULT_STEP_COUNT);
@@ -257,7 +259,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         for (SliderThumb thumb : this.thumbs) {
             float thumbX = this.thumbX(thumb.value(), thumbWidth, barWidth);
             double distance = Math.abs(mouseX - thumbX);
-            if (distance < minDistance) {
+            if (distance < minDistance && (this.clickableRail.value() || distance < thumbWidth / 2)) {
                 closest = thumb;
                 minDistance = distance;
             }

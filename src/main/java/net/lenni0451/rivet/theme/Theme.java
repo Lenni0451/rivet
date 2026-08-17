@@ -168,6 +168,7 @@ public abstract class Theme {
         public static final ThemeKey<Boolean> SHOW_TOOLTIP = register("slider.show_tooltip", Boolean.class, r -> true);
         public static final ThemeKey<String> TOOLTIP_FORMAT = register("slider.tooltip_format", String.class, r -> "%,f");
         public static final ThemeKey<Boolean> ENSURE_VALUES_REACHABLE = register("slider.ensure_values_reachable", Boolean.class, r -> false);
+        public static final ThemeKey<Boolean> CLICKABLE_RAIL = register("slider.clickable_rail", Boolean.class, r -> true);
     }
 
     public static class ScrollBar {
