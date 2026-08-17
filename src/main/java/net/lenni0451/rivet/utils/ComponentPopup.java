@@ -47,6 +47,10 @@ public class ComponentPopup {
 
     private Layer layer;
 
+    public ComponentPopup(final Component owner, final Component child, final Size maxSize, final boolean interceptOutsideClicks) {
+        this(owner, child, () -> maxSize, () -> interceptOutsideClicks);
+    }
+
     public ComponentPopup(final Component owner, final Component child, final Supplier<Size> maxSize, final Supplier<Boolean> interceptOutsideClicks) {
         this.owner = owner;
         this.child = child;

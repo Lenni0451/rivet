@@ -12,7 +12,7 @@ import net.lenni0451.rivet.math.Size;
 import javax.annotation.Nullable;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
-public class SliderThumb {
+public final class SliderThumb {
 
     private final AbstractSlider<?> slider;
 
@@ -32,7 +32,7 @@ public class SliderThumb {
         this.value = initialValue;
     }
 
-    protected void initTransitions() {
+    void initTransitions() {
         this.thumbColorTransition = new StateTransition<>(
                 this.slider,
                 this::state,
@@ -81,7 +81,7 @@ public class SliderThumb {
         }
     }
 
-    protected void value(final double newValue) {
+    public void value(final double newValue) {
         if (this.value != newValue) {
             this.value = newValue;
             if (this.tooltip != null) {
@@ -91,13 +91,13 @@ public class SliderThumb {
         }
     }
 
-    protected void updateValue(final float mouseX, final Size size) {
+    public void updateValue(final float mouseX, final Size size) {
         double newValue = this.slider.valueAtX(mouseX, size);
         newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.slider.min(), this.slider.max(), this.slider.step());
         this.slider.onThumbDrag(this, newValue);
     }
 
-    protected void render(final Renderer renderer, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float thumbX) {
+    void render(final Renderer renderer, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float thumbX) {
         Color color = this.thumbColorTransition.value();
         Color outlineColor = this.thumbOutlineColorTransition.value();
         float outlineWidth = this.slider.thumbOutlineWidth().value();
