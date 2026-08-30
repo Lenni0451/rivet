@@ -1,11 +1,10 @@
-package net.lenni0451.rivet.backend.awt;
+package net.lenni0451.rivet.backend.awt.render;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.threading.ThreadUtils;
 import net.lenni0451.rivet.Rivet;
-import net.lenni0451.rivet.backend.awt.render.AWTRenderer;
 
 import java.awt.*;
 import java.awt.event.HierarchyEvent;

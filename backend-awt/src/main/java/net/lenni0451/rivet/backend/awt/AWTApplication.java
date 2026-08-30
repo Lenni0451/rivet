@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.awt.render.RivetCanvas;
 import net.lenni0451.rivet.backend.awt.utils.AWTMapper;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
@@ -43,6 +44,9 @@ public abstract class AWTApplication {
 
     protected void initFrame(final String title, final int width, final int height) {
         RivetCanvas canvas = new RivetCanvas(this.rivet);
+        canvas.setFocusable(true);
+        canvas.setFocusTraversalKeysEnabled(false);
+
         JFrame frame = new JFrame(title);
         frame.setLayout(new BorderLayout());
         frame.add(canvas);
@@ -53,12 +57,14 @@ public abstract class AWTApplication {
         this.initWindowEvents(frame);
         this.initFrame(frame);
         frame.setVisible(true);
+        canvas.requestFocusInWindow();
     }
 
     protected void initComponentEvents(final Component component) {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(final MouseEvent e) {
+                component.requestFocusInWindow();
                 MouseButtonEvent event = AWTMapper.mapMouseButton(e.getX(), e.getY(), e.getButton(), e.getModifiersEx());
                 if (event != null) {
                     AWTApplication.this.heldMouseButtons.add(event.button());
@@ -108,15 +114,18 @@ public abstract class AWTApplication {
                 if (event != null) {
                     AWTApplication.this.backend.heldKeys().add(event.key());
                     AWTApplication.this.rivet.onKeyDown(event);
+                    e.consume();
                 }
             }
 
             @Override
             public void keyReleased(final KeyEvent e) {
                 net.lenni0451.rivet.input.keyboard.KeyEvent event = AWTMapper.mapKeycode(e.getExtendedKeyCode(), e.getModifiersEx());
+                e.consume();
                 if (event != null) {
                     AWTApplication.this.backend.heldKeys().remove(event.key());
                     AWTApplication.this.rivet.onKeyUp(event);
+                    e.consume();
                 }
             }
 
@@ -125,6 +134,7 @@ public abstract class AWTApplication {
                 char keyChar = e.getKeyChar();
                 if (keyChar != KeyEvent.CHAR_UNDEFINED && !Character.isISOControl(keyChar)) {
                     AWTApplication.this.rivet.onCharTyped(new CharEvent(keyChar));
+                    e.consume();
                 }
             }
         });
