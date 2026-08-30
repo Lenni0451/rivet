@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    include project(":backend-awt")
     include project(":backend-thingl-glfw")
     include project(":backend-thingl-sdl")
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
