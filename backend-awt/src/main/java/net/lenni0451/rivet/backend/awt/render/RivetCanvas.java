@@ -10,6 +10,15 @@ import java.awt.*;
 import java.awt.event.HierarchyEvent;
 import java.awt.image.BufferStrategy;
 
+/**
+ * AWT Canvas can be quite slow, so you might need to toy around with JVM arguments to get the best performance.<br>
+ * Try playing around with the following arguments:<br>
+ * <ul>
+ *     <li>-Dsun.java2d.opengl=false</li>
+ *     <li>-Dsun.java2d.d3d=false</li>
+ *     <li>-Dsun.java2d.xrender=false</li>
+ * </ul>
+ */
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class RivetCanvas extends Canvas implements Runnable {
 
@@ -88,7 +97,7 @@ public class RivetCanvas extends Canvas implements Runnable {
 
     protected void configureGraphics2D(final Graphics2D graphics) {
         // General
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); // AntiAliasing is great, but SUPER slow in AWT (software rendering)
         graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         graphics.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
         graphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
