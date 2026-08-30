@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.component;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.Rivet;
@@ -23,6 +24,7 @@ import net.lenni0451.rivet.math.Size;
 
 import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -40,7 +42,6 @@ public abstract class Component {
     @Getter
     private LayoutOptions layoutOptions;
     @Getter
-    @Setter
     private Capabilities capabilities = new Capabilities();
     @Getter
     private boolean disabled = false;
@@ -84,11 +85,9 @@ public abstract class Component {
     @Getter
     private final ListenerList<NullaryVoidListener> dragLeaveListener = new ListenerList<>();
     @Getter
-    private final ListenerList<Consumer<Rectangle>> positionUpdateListener = new ListenerList<>();
-    private Rectangle lastAbsoluteBounds;
+    private final ListenerList<PositionUpdateListener> positionUpdateListener = new ListenerList<>();
 
     public final void setRivet(@Nullable final Rivet rivet, @Nullable final Parent parent) {
-        this.lastAbsoluteBounds = null;
         if (rivet == null) {
             if (parent != null) {
                 throw new IllegalArgumentException("Parent must be null when detaching from Rivet");
@@ -103,6 +102,9 @@ public abstract class Component {
             this.onRemovedInternal();
             this.rivet = null;
             this.parent = null;
+            for (PositionUpdateListener listener : this.positionUpdateListener.listeners()) {
+                listener.lastPosition = null;
+            }
         } else {
             if (parent == null) {
                 throw new IllegalArgumentException("Parent must not be null when attaching to Rivet");
@@ -112,6 +114,9 @@ public abstract class Component {
             }
             this.rivet = rivet;
             this.parent = parent;
+            for (PositionUpdateListener listener : this.positionUpdateListener.listeners()) {
+                listener.lastPosition = null;
+            }
             this.addedListener.call(Runnable::run);
             this.onAddedInternal();
         }
@@ -168,6 +173,11 @@ public abstract class Component {
         return this;
     }
 
+    public final Component capabilities(final Capabilities capabilities) {
+        this.capabilities = capabilities;
+        return this;
+    }
+
     public final Component capabilities(final Consumer<Capabilities> capabilities) {
         capabilities.accept(this.capabilities);
         return this;
@@ -195,7 +205,6 @@ public abstract class Component {
     }
 
     public final Rectangle absoluteBounds() {
-        if (this.lastAbsoluteBounds != null) return this.lastAbsoluteBounds;
         if (this.parent == null) return Rectangle.EMPTY;
         Rectangle parentBounds = this.parent.absoluteBounds();
         Rectangle relative = this.relativeBounds();
@@ -400,27 +409,24 @@ public abstract class Component {
     protected void onDragLeaveInternal() {
     }
 
-    public final void updatePosition(final float x, final float y, final float width, final float height) {
-        if (this.lastAbsoluteBounds != null) {
-            Rectangle absoluteBounds = this.lastAbsoluteBounds;
-            if (absoluteBounds.x() == x && absoluteBounds.y() == y && absoluteBounds.width() == width && absoluteBounds.height() == height) {
-                return;
+    public final void updatePosition() {
+        if (!this.positionUpdateListener.isEmpty()) {
+            Rectangle absoluteBounds = null;
+            for (PositionUpdateListener listener : this.positionUpdateListener.listeners()) {
+                if (listener.trackPosition.getAsBoolean()) {
+                    if (absoluteBounds == null) absoluteBounds = this.absoluteBounds();
+                    listener.check(absoluteBounds);
+                }
             }
         }
-        this.lastAbsoluteBounds = new Rectangle(x, y, width, height);
-        this.positionUpdateListener.call(l -> l.accept(this.lastAbsoluteBounds));
-        this.updatePositionInternal(this.lastAbsoluteBounds);
     }
 
-    protected void updatePositionInternal(final Rectangle absoluteBounds) {
+    public final void render(final Renderer renderer, final Size size, final Rectangle visibleArea) {
+        this.updatePosition();
+        this.renderInternal(renderer, size, visibleArea);
     }
 
-    public final void render(final Renderer renderer, final Size size) {
-        this.updatePosition(renderer.xOffset(), renderer.yOffset(), size.width(), size.height());
-        this.renderInternal(renderer, size);
-    }
-
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
     }
 
     public abstract Size computeIdealSize(final Size constraints);
@@ -432,7 +438,7 @@ public abstract class Component {
     @Getter
     @Setter
     @Accessors(fluent = true, chain = true, makeFinal = true)
-    public static class Capabilities {
+    public static final class Capabilities {
         private boolean keyboardInput = true;
         private boolean mouseInput = true;
         private boolean mouseHover = true;
@@ -448,6 +454,25 @@ public abstract class Component {
             this.mouseHover = value;
             this.dragAndDrop = value;
             return this;
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static final class PositionUpdateListener {
+        private final BooleanSupplier trackPosition;
+        private final Consumer<Rectangle> updatePosition;
+        private Rectangle lastPosition;
+
+        public PositionUpdateListener(final Consumer<Rectangle> updatePosition) {
+            this.trackPosition = () -> true;
+            this.updatePosition = updatePosition;
+        }
+
+        private void check(final Rectangle absoluteBounds) {
+            if (this.lastPosition == null || !this.lastPosition.equals(absoluteBounds)) {
+                this.lastPosition = absoluteBounds;
+                this.updatePosition.accept(absoluteBounds);
+            }
         }
     }
 

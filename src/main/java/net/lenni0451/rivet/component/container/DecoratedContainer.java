@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component.container;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
@@ -10,6 +9,7 @@ import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,7 +22,6 @@ public class DecoratedContainer extends ParentContainer {
     @Getter
     private final Component child;
     @Getter
-    @Setter
     private Padding innerPadding;
 
     public DecoratedContainer(final Component background, final Component child) {
@@ -38,16 +37,29 @@ public class DecoratedContainer extends ParentContainer {
         this.innerPadding = Padding.EMPTY;
     }
 
+    public final DecoratedContainer innerPadding(final Padding padding) {
+        this.innerPadding = padding;
+        return this;
+    }
+
+    public final DecoratedContainer innerPadding(final float padding) {
+        this.innerPadding = new Padding(padding);
+        return this;
+    }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Size backgroundSize = size.clamp(this.background);
-        this.background.render(renderer, backgroundSize);
+        this.background.render(renderer, backgroundSize, visibleArea);
 
         Size innerSize = size.minus(this.innerPadding).clamp(this.child);
         renderer.translate(this.innerPadding.left(), this.innerPadding.top(), () -> {
             renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), () -> {
-                this.child.render(renderer, innerSize);
+                this.child.render(
+                        renderer,
+                        innerSize,
+                        MathUtils.relativizeVisibleArea(visibleArea, this.innerPadding.left(), this.innerPadding.top(), innerSize)
+                );
             });
         });
     }

@@ -2,6 +2,8 @@ package net.lenni0451.rivet.utils;
 
 import lombok.experimental.UtilityClass;
 import net.lenni0451.rivet.math.Corners;
+import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Size;
 
 @UtilityClass
 public class MathUtils {
@@ -51,6 +53,20 @@ public class MathUtils {
             snapped = v2;
         }
         return Math.max(min, Math.min(max, snapped));
+    }
+
+    public static Rectangle relativizeVisibleArea(final Rectangle visibleArea, final Rectangle bounds) {
+        return relativizeVisibleArea(visibleArea, bounds.x(), bounds.y(), bounds.width(), bounds.height());
+    }
+
+    public static Rectangle relativizeVisibleArea(final Rectangle visibleArea, final float x, final float y, final Size size) {
+        return relativizeVisibleArea(visibleArea, x, y, size.width(), size.height());
+    }
+
+    public static Rectangle relativizeVisibleArea(final Rectangle visibleArea, final float x, final float y, final float width, final float height) {
+        Rectangle intersection = visibleArea.intersection(new Rectangle(x, y, width, height));
+        if (intersection.equals(Rectangle.EMPTY)) return Rectangle.EMPTY;
+        return new Rectangle(intersection.x() - x, intersection.y() - y, intersection.width(), intersection.height());
     }
 
 }

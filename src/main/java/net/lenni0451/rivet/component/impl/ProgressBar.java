@@ -10,6 +10,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -90,7 +91,7 @@ public class ProgressBar extends Component {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         this.renderTrack(renderer, size);
         Runnable drawIndicatorAndStripes = () -> {
             this.renderIndicator(renderer, size, this.indicatorColor.value());

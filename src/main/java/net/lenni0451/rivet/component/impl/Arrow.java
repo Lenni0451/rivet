@@ -7,6 +7,7 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Point;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -40,7 +41,7 @@ public class Arrow extends Component {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         float width = size.width() / 2;
         float height = size.height() / 4;
         float widthGap = (size.width() - width) / 2F;

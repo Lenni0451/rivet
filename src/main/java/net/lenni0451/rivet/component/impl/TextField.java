@@ -111,6 +111,8 @@ public class TextField extends Component {
 
     public TextField(final String text) {
         this.text(text);
+
+        this.positionUpdateListener().add(new PositionUpdateListener(() -> this.focused, this::updateInputPosition));
     }
 
     public final TextField font(final Font font) {
@@ -236,6 +238,12 @@ public class TextField extends Component {
         }
     }
 
+    private void updateInputPosition(final Rectangle absoluteBounds) {
+        if (this.focused) {
+            this.rivet().backend().textInput().area(absoluteBounds);
+        }
+    }
+
     @Override
     protected void onAddedInternal() {
         this.updateShapedText();
@@ -278,7 +286,7 @@ public class TextField extends Component {
     protected void onFocusGainedInternal() {
         this.focused = true;
         this.rivet().backend().textInput().start();
-        this.updatePositionInternal(this.absoluteBounds());
+        this.updateInputPosition(this.absoluteBounds());
     }
 
     @Override
@@ -424,14 +432,7 @@ public class TextField extends Component {
     }
 
     @Override
-    protected void updatePositionInternal(final Rectangle absoluteBounds) {
-        if (this.focused) {
-            this.rivet().backend().textInput().area(absoluteBounds);
-        }
-    }
-
-    @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         float visibleWidth = size.width() - this.innerPadding.value().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
         float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;

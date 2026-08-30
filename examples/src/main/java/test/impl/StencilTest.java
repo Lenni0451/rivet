@@ -4,6 +4,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import test.TestBase;
@@ -22,7 +23,7 @@ public class StencilTest extends TestBase {
 
     private static class StencilTestComponent extends Component {
         @Override
-        protected void renderInternal(final Renderer renderer, final Size size) {
+        protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
             renderer.stencil(s -> {
                 s.fillCircle(size.width() / 2, size.height() / 2, System.currentTimeMillis() / 20 % 200, Color.WHITE);
             }, () -> {

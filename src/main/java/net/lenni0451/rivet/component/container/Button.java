@@ -20,6 +20,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -210,7 +211,7 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Corners cornerRadius = this.cornerRadius.value();
         float outlineWidth = this.outlineWidth.value();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
@@ -218,10 +219,15 @@ public class Button extends Component implements Parent {
             renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColorTransition.value());
         }
 
-        Size innerSize = size.minus(this.innerPadding.value()).clamp(this.child);
-        renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top(), () -> {
+        Padding innerPadding = this.innerPadding.value();
+        Size innerSize = size.minus(innerPadding).clamp(this.child);
+        renderer.translate(innerPadding.left(), innerPadding.top(), () -> {
             renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), () -> {
-                this.child.render(renderer, innerSize);
+                this.child.render(
+                        renderer,
+                        innerSize,
+                        MathUtils.relativizeVisibleArea(visibleArea, innerPadding.left(), innerPadding.top(), innerSize)
+                );
             });
         });
     }

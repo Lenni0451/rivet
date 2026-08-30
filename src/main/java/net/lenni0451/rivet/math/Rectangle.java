@@ -51,4 +51,19 @@ public record Rectangle(float x, float y, float width, float height) {
         return new Rectangle(this.x + padding.left(), this.y + padding.top(), this.width - padding.horizontal(), this.height - padding.vertical());
     }
 
+    public Rectangle intersection(final Rectangle other) {
+        float newX = Math.max(this.x, other.x);
+        float newY = Math.max(this.y, other.y);
+        float newMaxX = Math.min(this.maxX(), other.maxX());
+        float newMaxY = Math.min(this.maxY(), other.maxY());
+        if (newX >= newMaxX || newY >= newMaxY) {
+            return EMPTY;
+        }
+        return new Rectangle(newX, newY, newMaxX - newX, newMaxY - newY);
+    }
+
+    public boolean equals(final float x, final float y, final float width, final float height) {
+        return this.x == x && this.y == y && this.width == width && this.height == height;
+    }
+
 }

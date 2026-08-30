@@ -41,16 +41,6 @@ public class ThinGLRenderer extends CheckedRenderer {
     }
 
     @Override
-    public float xOffset() {
-        return this.positionMatrix.m30();
-    }
-
-    @Override
-    public float yOffset() {
-        return this.positionMatrix.m31();
-    }
-
-    @Override
     public void doTranslate(final float x, final float y, final Runnable renderer) {
         this.positionMatrix.pushMatrix();
         this.positionMatrix.translate(x, y, 0F);

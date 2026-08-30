@@ -15,6 +15,7 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
@@ -211,7 +212,7 @@ public class Checkbox extends Component {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         float boxSize = size.height() * 0.8F;
         float offset = (size.height() - boxSize) / 2F;
 

@@ -15,10 +15,6 @@ import java.util.function.Consumer;
 
 public interface Renderer {
 
-    float xOffset();
-
-    float yOffset();
-
     void translate(final float x, final float y, final Runnable renderer);
 
     void componentBounds(final float x, final float y, final float width, final float height, final Runnable renderer);

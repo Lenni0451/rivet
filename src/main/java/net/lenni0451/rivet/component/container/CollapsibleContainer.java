@@ -24,6 +24,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -107,9 +108,13 @@ public class CollapsibleContainer extends ParentContainer {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         renderer.componentBounds(0, 0, this.headerSize.width(), this.headerSize.height(), () -> {
-            this.clickableHeader.render(renderer, this.headerSize);
+            this.clickableHeader.render(
+                    renderer,
+                    this.headerSize,
+                    MathUtils.relativizeVisibleArea(visibleArea, 0, 0, this.headerSize.width(), this.headerSize.height())
+            );
         });
 
         if (this.collapseProgress > 0) {
@@ -119,7 +124,11 @@ public class CollapsibleContainer extends ParentContainer {
             float contentHeight = Math.min(this.contentSize.height(), size.height() - this.headerSize.height());
             renderer.translate(contentX, contentY, () -> {
                 Runnable render = () -> {
-                    this.content.render(renderer, new Size(contentWidth, contentHeight));
+                    this.content.render(
+                            renderer,
+                            new Size(contentWidth, contentHeight),
+                            MathUtils.relativizeVisibleArea(visibleArea, contentX, contentY, contentWidth, contentHeight)
+                    );
                 };
                 if (this.collapseProgress < 1) {
                     renderer.scissor(0, 0, contentWidth, contentHeight, render);

@@ -185,7 +185,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         LayoutInfo layout = new LayoutInfo(size);
 
         this.renderSaturationValue(renderer, layout);

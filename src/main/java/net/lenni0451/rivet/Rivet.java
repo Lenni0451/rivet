@@ -339,7 +339,7 @@ public final class Rivet {
                     this.updateMouseState();
                 }
                 if (layer.container().rivet() == null) continue;
-                layer.container().render(renderer, scaledSize);
+                layer.container().render(renderer, scaledSize, new Rectangle(scaledSize));
             }
         });
         return renderer;

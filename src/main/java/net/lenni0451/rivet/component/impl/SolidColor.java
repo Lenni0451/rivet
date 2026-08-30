@@ -7,6 +7,7 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Corners;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
 import java.util.function.Consumer;
@@ -51,7 +52,7 @@ public class SolidColor extends Component {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         if (this.color.getAlpha() > 0) {
             renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius, this.color);
         }

@@ -10,6 +10,10 @@ public final class ListenerList<I> {
 
     private final List<I> listeners = new ArrayList<>();
 
+    public List<I> listeners() {
+        return List.copyOf(this.listeners);
+    }
+
     public boolean isEmpty() {
         return this.listeners.isEmpty();
     }

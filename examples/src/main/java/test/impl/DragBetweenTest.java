@@ -15,6 +15,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.layout.tile.TileLayout;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import test.TestBase;
@@ -109,11 +110,11 @@ public class DragBetweenTest extends TestBase {
         }
 
         @Override
-        protected void renderInternal(final Renderer renderer, final Size size) {
+        protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
             if (this.hovered) {
                 renderer.fillRect(0, 0, size.width(), size.height(), HOVERED_COLOR);
             }
-            super.renderInternal(renderer, size);
+            super.renderInternal(renderer, size, visibleArea);
         }
     }
 

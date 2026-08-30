@@ -13,6 +13,7 @@ import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -122,24 +123,14 @@ public class Container extends ParentContainer {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
-        Size screenSize = this.rivet().scaledSize();
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         for (Child child : this.children) {
-            float childX = child.bounds.x() + renderer.xOffset();
-            float childY = child.bounds.y() + renderer.yOffset();
-            boolean skip = false;
-            if ((childX < 0 && childX + child.bounds.width() < 0) || childX > screenSize.width()) {
-                skip = true;
-            }
-            if ((childY < 0 && childY + child.bounds.height() < 0) || childY > screenSize.height()) {
-                skip = true;
-            }
-            if (skip) {
-                child.component.updatePosition(childX, childY, child.bounds.width(), child.bounds.height());
+            if (child.bounds.maxX() <= visibleArea.x() || child.bounds.x() >= visibleArea.maxX() || child.bounds.maxY() <= visibleArea.y() || child.bounds.y() >= visibleArea.maxY()) {
+                child.component.updatePosition();
             } else {
                 renderer.translate(child.bounds.x(), child.bounds.y(), () -> {
                     renderer.componentBounds(0, 0, child.bounds.width(), child.bounds.height(), () -> {
-                        child.component.render(renderer, child.bounds.size());
+                        child.component.render(renderer, child.bounds.size(), MathUtils.relativizeVisibleArea(visibleArea, child.bounds));
                     });
                 });
             }

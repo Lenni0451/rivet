@@ -59,11 +59,7 @@ public class ComponentPopup {
 
         this.owner.removedListener().add(this::close);
         this.owner.disabledListener().add(this::close);
-        this.owner.positionUpdateListener().add(absoluteBounds -> {
-            if (this.isOpen()) {
-                this.updatePopupPosition(absoluteBounds);
-            }
-        });
+        this.owner.positionUpdateListener().add(new Component.PositionUpdateListener(this::isOpen, this::updatePopupPosition));
     }
 
     public final boolean isOpen() {

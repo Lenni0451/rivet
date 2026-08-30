@@ -116,6 +116,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         this.max = max;
         this.step = step;
 
+        this.positionUpdateListener().add(new PositionUpdateListener(this::updateTooltipPositions));
         this.tooltipFormat.initListener().add(f -> this.cachedFormatString = null);
     }
 
@@ -244,7 +245,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
                 this.draggedThumb.tooltip = new SliderTooltip(this.formatValue(this.draggedThumb.value()));
                 this.draggedThumb.tooltip.add(this.rivet());
                 this.draggedThumb.tooltip.font(this.font);
-                this.updatePositionInternal(this.absoluteBounds());
+                this.updateTooltipPositions(this.absoluteBounds());
             }
         }
     }
@@ -283,6 +284,17 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     protected abstract void onThumbDrag(final SliderThumb thumb, final double newValue);
+
+    protected void updateTooltipPositions(final Rectangle absoluteBounds) {
+        float thumbWidth = this.effectiveThumbWidth();
+        float barWidth = this.barWidth(absoluteBounds.size());
+        for (SliderThumb thumb : this.thumbs) {
+            if (thumb.tooltip != null) {
+                float thumbX = this.thumbX(thumb.value(), thumbWidth, barWidth);
+                thumb.tooltip.position(absoluteBounds.x() + thumbX, absoluteBounds.y(), absoluteBounds.height());
+            }
+        }
+    }
 
     @Override
     protected void onAddedInternal() {
@@ -362,19 +374,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     @Override
-    protected void updatePositionInternal(final Rectangle absoluteBounds) {
-        float thumbWidth = this.effectiveThumbWidth();
-        float barWidth = this.barWidth(absoluteBounds.size());
-        for (SliderThumb thumb : this.thumbs) {
-            if (thumb.tooltip != null) {
-                float thumbX = this.thumbX(thumb.value(), thumbWidth, barWidth);
-                thumb.tooltip.position(absoluteBounds.x() + thumbX, absoluteBounds.y(), absoluteBounds.height());
-            }
-        }
-    }
-
-    @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         float thumbWidth = this.effectiveThumbWidth();
         float thumbHeight = this.effectiveThumbHeight();
         float barHeight = this.barHeight.value();

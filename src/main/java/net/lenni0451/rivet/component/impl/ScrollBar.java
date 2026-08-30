@@ -218,7 +218,7 @@ public class ScrollBar extends Component {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Rectangle rail = this.getRailBounds(size);
         if (rail != null) {
             if (this.barType.value() == ScrollBarType.NORMAL) {

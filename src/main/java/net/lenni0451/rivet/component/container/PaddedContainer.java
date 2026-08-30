@@ -10,6 +10,7 @@ import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -47,10 +48,14 @@ public class PaddedContainer extends ParentContainer {
 
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Size innerSize = size.minus(this.padding).clamp(this.child);
         renderer.translate(this.padding.left(), this.padding.top(), () -> {
-            Runnable renderChild = () -> this.child.render(renderer, innerSize);
+            Runnable renderChild = () -> this.child.render(
+                    renderer,
+                    innerSize,
+                    MathUtils.relativizeVisibleArea(visibleArea, this.padding.left(), this.padding.top(), innerSize)
+            );
             if (this.cropChild) {
                 renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), renderChild);
             } else {

@@ -218,18 +218,27 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         this.updateAnimation();
         renderer.scissor(0, 0, this.visibleWidth(size), this.visibleHeight(size), () -> {
             renderer.translate(-this.scrollX, -this.scrollY, () -> {
-                this.child.render(renderer, this.childSize);
+                Rectangle childVisibleArea = visibleArea.intersection(new Rectangle(0, 0, this.visibleWidth(size), this.visibleHeight(size)));
+                this.child.render(
+                        renderer,
+                        this.childSize,
+                        net.lenni0451.rivet.utils.MathUtils.relativizeVisibleArea(childVisibleArea, -this.scrollX, -this.scrollY, this.childSize)
+                );
             });
         });
         if (this.hScrollVisible) {
             Rectangle area = this.getHScrollArea(size);
             if (area != null) {
                 renderer.translate(area.x(), area.y(), () -> {
-                    this.hScrollBar.render(renderer, area.size());
+                    this.hScrollBar.render(
+                            renderer,
+                            area.size(),
+                            net.lenni0451.rivet.utils.MathUtils.relativizeVisibleArea(visibleArea, area)
+                    );
                 });
             }
         }
@@ -237,7 +246,11 @@ public class ScrollContainer extends ParentContainer {
             Rectangle area = this.getVScrollArea(size);
             if (area != null) {
                 renderer.translate(area.x(), area.y(), () -> {
-                    this.vScrollBar.render(renderer, area.size());
+                    this.vScrollBar.render(
+                            renderer,
+                            area.size(),
+                            net.lenni0451.rivet.utils.MathUtils.relativizeVisibleArea(visibleArea, area)
+                    );
                 });
             }
         }

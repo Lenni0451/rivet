@@ -16,6 +16,7 @@ import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -130,14 +131,18 @@ public class TabContainer extends ParentContainer {
 
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Color headerColor = this.headerBackgroundColor.value();
         if (!headerColor.equals(Color.TRANSPARENT)) {
             renderer.fillRect(0, 0, size.width(), this.tabSize.height(), headerColor);
         }
 
         renderer.componentBounds(0, 0, size.width(), this.tabSize.height(), () -> {
-            this.tabContainer.render(renderer, new Size(size.width(), this.tabSize.height()));
+            this.tabContainer.render(
+                    renderer,
+                    new Size(size.width(), this.tabSize.height()),
+                    MathUtils.relativizeVisibleArea(visibleArea, 0, 0, size.width(), this.tabSize.height())
+            );
         });
 
         float separatorThickness = this.separatorThickness.value();
@@ -148,7 +153,11 @@ public class TabContainer extends ParentContainer {
 
         renderer.translate(0, this.tabSize.height(), () -> {
             renderer.componentBounds(0, 0, size.width(), this.contentSize.height(), () -> {
-                this.contentContainer.render(renderer, new Size(size.width(), this.contentSize.height()));
+                this.contentContainer.render(
+                        renderer,
+                        new Size(size.width(), this.contentSize.height()),
+                        MathUtils.relativizeVisibleArea(visibleArea, 0, this.tabSize.height(), size.width(), this.contentSize.height())
+                );
             });
         });
     }

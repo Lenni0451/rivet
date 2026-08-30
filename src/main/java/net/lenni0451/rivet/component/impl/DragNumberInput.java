@@ -292,7 +292,7 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Padding padding = this.innerPadding.value();
         Color background = this.backgroundColorTransition.value();
         Color outline = this.outlineColorTransition.value();
@@ -307,7 +307,11 @@ public class DragNumberInput extends ParentContainer {
         renderer.translate(padding.left(), padding.top(), () -> {
             Size innerSize = size.minus(padding).clamp(this.child);
             renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), () -> {
-                this.child.render(renderer, innerSize);
+                this.child.render(
+                        renderer,
+                        innerSize,
+                        net.lenni0451.rivet.utils.MathUtils.relativizeVisibleArea(visibleArea, padding.left(), padding.top(), innerSize)
+                );
             });
         });
     }

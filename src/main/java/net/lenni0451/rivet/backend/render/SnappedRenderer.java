@@ -1,5 +1,7 @@
 package net.lenni0451.rivet.backend.render;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -15,47 +17,48 @@ import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.function.Consumer;
 
-@Getter
 @RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class SnappedRenderer<R extends Renderer> implements Renderer {
 
+    @Getter
     private final R delegate;
+    private float xOffset = 0;
+    private float yOffset = 0;
+    private float xScale = 1;
+    private float yScale = 1;
 
     private float snapX(final float x) {
-        float offset = this.xOffset();
-        return Math.round(offset + x) - offset;
+        if (this.xScale == 0) return x;
+        return (Math.round(this.xOffset + x * this.xScale) - this.xOffset) / this.xScale;
     }
 
     private float snapY(final float y) {
-        float offset = this.yOffset();
-        return Math.round(offset + y) - offset;
+        if (this.yScale == 0) return y;
+        return (Math.round(this.yOffset + y * this.yScale) - this.yOffset) / this.yScale;
     }
 
     private float snapWidth(final float x, final float width) {
-        float offset = this.xOffset();
-        return Math.round(offset + x + width) - Math.round(offset + x);
+        if (this.xScale == 0) return width;
+        return (Math.round(this.xOffset + (x + width) * this.xScale) - Math.round(this.xOffset + x * this.xScale)) / this.xScale;
     }
 
     private float snapHeight(final float y, final float height) {
-        float offset = this.yOffset();
-        return Math.round(offset + y + height) - Math.round(offset + y);
+        if (this.yScale == 0) return height;
+        return (Math.round(this.yOffset + (y + height) * this.yScale) - Math.round(this.yOffset + y * this.yScale)) / this.yScale;
     }
 
-
-    @Override
-    public float xOffset() {
-        return this.delegate.xOffset();
-    }
-
-    @Override
-    public float yOffset() {
-        return this.delegate.yOffset();
-    }
 
     @Override
     public void translate(final float x, final float y, final Runnable renderer) {
+        float previousXOffset = this.xOffset;
+        float previousYOffset = this.yOffset;
+        this.xOffset += x * this.xScale;
+        this.yOffset += y * this.yScale;
         this.delegate.translate(x, y, renderer);
+        this.xOffset = previousXOffset;
+        this.yOffset = previousYOffset;
     }
 
     @Override
@@ -70,17 +73,23 @@ public class SnappedRenderer<R extends Renderer> implements Renderer {
 
     @Override
     public void scale(final float x, final float y, final Runnable renderer) {
+        float previousXScale = this.xScale;
+        float previousYScale = this.yScale;
+        this.xScale *= x;
+        this.yScale *= y;
         this.delegate.scale(x, y, renderer);
+        this.xScale = previousXScale;
+        this.yScale = previousYScale;
     }
 
     @Override
     public void stencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
-        this.delegate.stencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr)), renderer);
+        this.delegate.stencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr, this.xOffset, this.yOffset, this.xScale, this.yScale)), renderer);
     }
 
     @Override
     public void inverseStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
-        this.delegate.inverseStencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr)), renderer);
+        this.delegate.inverseStencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr, this.xOffset, this.yOffset, this.xScale, this.yScale)), renderer);
     }
 
     @Override

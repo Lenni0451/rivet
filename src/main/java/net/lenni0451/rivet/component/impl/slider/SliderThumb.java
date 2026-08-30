@@ -86,7 +86,7 @@ public final class SliderThumb {
             this.value = newValue;
             if (this.tooltip != null) {
                 this.tooltip.text(this.slider.formatValue(this.value));
-                this.slider.updatePositionInternal(this.slider.absoluteBounds());
+                this.slider.updateTooltipPositions(this.slider.absoluteBounds());
             }
         }
     }

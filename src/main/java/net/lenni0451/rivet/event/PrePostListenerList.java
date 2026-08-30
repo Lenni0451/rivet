@@ -11,6 +11,14 @@ public final class PrePostListenerList<PRE, POST> {
     private final List<PRE> preListeners = new ArrayList<>();
     private final List<POST> postListeners = new ArrayList<>();
 
+    public List<PRE> preListeners() {
+        return List.copyOf(this.preListeners);
+    }
+
+    public List<POST> postListeners() {
+        return List.copyOf(this.postListeners);
+    }
+
     public boolean isEmpty() {
         return this.preListeners.isEmpty() && this.postListeners.isEmpty();
     }

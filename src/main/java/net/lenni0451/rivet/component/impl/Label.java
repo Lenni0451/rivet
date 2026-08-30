@@ -13,6 +13,7 @@ import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.text.TextWrapper;
 import net.lenni0451.rivet.text.model.TextFormat;
@@ -243,7 +244,7 @@ public class Label extends Component {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         this.shapeText(size);
         if (this.shaped instanceof ShapedTextBlock shapedTextBlock) {
             float x = this.horizontalOrigin.position(size.width() / this.scale);

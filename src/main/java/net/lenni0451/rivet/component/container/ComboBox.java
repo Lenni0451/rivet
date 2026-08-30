@@ -107,8 +107,8 @@ public class ComboBox extends ParentContainer {
     }
 
     @Override
-    protected void renderInternal(final Renderer renderer, final Size size) {
-        this.button.render(renderer, size);
+    protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
+        this.button.render(renderer, size, visibleArea);
     }
 
     @Override
