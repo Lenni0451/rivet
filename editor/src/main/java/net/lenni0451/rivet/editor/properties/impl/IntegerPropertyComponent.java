@@ -23,9 +23,9 @@ public class IntegerPropertyComponent extends Container {
             setter.accept(value.intValue());
         });
 
-        this.addChild(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1)));
-        this.addChild(valueLabel.layoutOptions(new GridOptions(1, 0).withAnchor(GridAnchor.RIGHT)));
-        this.addChild(slider.layoutOptions(new GridOptions(0, 1).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
+        this.add(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1)));
+        this.add(valueLabel.layoutOptions(new GridOptions(1, 0).withAnchor(GridAnchor.RIGHT)));
+        this.add(slider.layoutOptions(new GridOptions(0, 1).withWeightX(1).withFill(GridFill.HORIZONTAL).withColumnSpan(2)));
     }
 
 }

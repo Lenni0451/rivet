@@ -12,7 +12,7 @@ public class LayoutEditor extends Container {
     public LayoutEditor() {
         super(BorderLayout.DEFAULT);
 
-        this.addChild(new ComponentField().addChild(new Button("Test 1")).addChild(new Label("Test 2")).layoutOptions(BorderPosition.CENTER));
+        this.add(new ComponentField().add(new Button("Test 1")).add(new Label("Test 2")).layoutOptions(BorderPosition.CENTER));
     }
 
 }

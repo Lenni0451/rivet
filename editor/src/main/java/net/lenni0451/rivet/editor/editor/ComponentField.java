@@ -12,13 +12,13 @@ public class ComponentField extends Container {
     }
 
     @Override
-    protected void onComponentMouseLeave() {
-        super.onComponentMouseLeave();
+    protected void onMouseLeaveInternal() {
+        super.onMouseLeaveInternal();
     }
 
     @Override
-    protected boolean onComponentMouseMove(final MouseMoveEvent event, final Size size) {
-        return super.onComponentMouseMove(event, size);
+    protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
+        return super.onMouseMoveInternal(event, size);
     }
 
 }

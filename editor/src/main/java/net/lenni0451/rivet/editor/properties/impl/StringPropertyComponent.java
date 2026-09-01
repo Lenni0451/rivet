@@ -19,8 +19,8 @@ public class StringPropertyComponent extends Container {
         TextField textField = new TextField(getter.get());
         textField.valueChangeListener().add(setter);
 
-        this.addChild(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT)));
-        this.addChild(textField.layoutOptions(new GridOptions(0, 1).withWeightX(1).withFill(GridFill.HORIZONTAL)));
+        this.add(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT)));
+        this.add(textField.layoutOptions(new GridOptions(0, 1).withWeightX(1).withFill(GridFill.HORIZONTAL)));
     }
 
 }

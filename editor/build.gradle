@@ -1,5 +1,5 @@
 plugins {
-    id "project.defaults"
+    id "project.defaults_and_publish"
 }
 
 dependencies {

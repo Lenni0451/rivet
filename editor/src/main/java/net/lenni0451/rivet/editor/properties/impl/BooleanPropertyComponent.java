@@ -18,8 +18,8 @@ public class BooleanPropertyComponent extends Container {
         ToggleSwitch toggleSwitch = new ToggleSwitch(getter.get());
         toggleSwitch.toggleListener().add(setter);
 
-        this.addChild(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1)));
-        this.addChild(toggleSwitch.layoutOptions(new GridOptions(1, 0).withAnchor(GridAnchor.RIGHT)));
+        this.add(new Label(name).layoutOptions(new GridOptions(0, 0).withAnchor(GridAnchor.LEFT).withWeightX(1)));
+        this.add(toggleSwitch.layoutOptions(new GridOptions(1, 0).withAnchor(GridAnchor.RIGHT)));
     }
 
 }

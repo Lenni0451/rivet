@@ -16,8 +16,8 @@ public class ColorPropertyComponent extends ComboBox {
     public ColorPropertyComponent(final String name, final Supplier<Color> getter, final Consumer<Color> setter) {
         super(
                 new Container(FullSizeLayout.INSTANCE)
-                        .addChild(new SolidColor(getter.get()))
-                        .addChild(new Label(name)),
+                        .add(new SolidColor(getter.get()))
+                        .add(new Label(name)),
                 new ColorPicker(getter.get())
         );
 
