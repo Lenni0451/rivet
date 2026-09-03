@@ -30,10 +30,15 @@ public class SliderTooltip extends Component {
     @Getter
     private Font font;
 
+    @Getter
     private final ThemeOption<Color> backgroundColor = new ThemeOption<>(this, Theme.Slider.TOOLTIP_BACKGROUND_COLOR);
+    @Getter
     private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.Slider.TOOLTIP_TEXT_COLOR);
+    @Getter
     private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.Slider.TOOLTIP_CORNER_RADIUS);
+    @Getter
     private final ThemeOption<Float> triangleSize = new ThemeOption<>(this, Theme.Slider.TOOLTIP_TRIANGLE_SIZE);
+    @Getter
     private final ThemeOption<Padding> padding = new ThemeOption<>(this, Theme.Slider.TOOLTIP_PADDING);
     private String text;
     private ShapedText shapedText;
