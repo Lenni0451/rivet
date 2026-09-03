@@ -1,7 +1,8 @@
-package net.lenni0451.rivet.theme.loader.parser;
+package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
+import net.lenni0451.rivet.parser.Parser;
 
 import java.util.Objects;
 

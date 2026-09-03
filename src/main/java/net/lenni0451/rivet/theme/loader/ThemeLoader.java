@@ -2,46 +2,23 @@ package net.lenni0451.rivet.theme.loader;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.animation.AnimationConfig;
-import net.lenni0451.rivet.animation.DynamicAnimationConfig;
-import net.lenni0451.rivet.math.Corners;
-import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.ParserRegistry;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
-import net.lenni0451.rivet.theme.loader.parser.*;
 
 import javax.annotation.WillNotClose;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 @UtilityClass
 public class ThemeLoader {
 
-    private static final Map<Class<?>, Parser<?>> PARSERS = new HashMap<>();
-
-    static {
-        registerParser(Color.class, new ColorParser());
-        registerParser(Boolean.class, new BooleanParser());
-        registerParser(Character.class, new CharacterParser());
-        registerParser(Byte.class, new NumberParser<>(Byte::valueOf));
-        registerParser(Short.class, new NumberParser<>(Short::valueOf));
-        registerParser(Integer.class, new NumberParser<>(Integer::valueOf));
-        registerParser(Long.class, new NumberParser<>(Long::valueOf));
-        registerParser(Float.class, new NumberParser<>(Float::valueOf));
-        registerParser(Double.class, new NumberParser<>(Double::valueOf));
-        registerParser(String.class, new StringParser());
-        registerParser(Padding.class, new PaddingParser());
-        registerParser(Corners.class, new CornersParser());
-        registerParser(AnimationConfig.class, new AnimationConfigParser());
-        registerParser(DynamicAnimationConfig.class, new DynamicAnimationConfigParser());
-    }
+    private static final ParserRegistry PARSERS = ParserRegistry.standard();
 
     public static <T> void registerParser(final Class<T> type, final Parser<T> parser) {
-        PARSERS.put(type, parser);
+        PARSERS.register(type, parser);
     }
 
     public static void load(@WillNotClose final InputStream is, final Theme.Values values, final ExceptionHandler errorHandler) throws IOException {
@@ -64,33 +41,15 @@ public class ThemeLoader {
             throw new IllegalArgumentException("Unknown key: " + key);
         }
 
-        Parser<?> parser;
-        if (themeKey.type().isEnum()) {
-            parser = new EnumParser(themeKey.type());
-        } else {
-            parser = PARSERS.get(themeKey.type());
-        }
-        if (parser == null) {
-            throw new UnsupportedOperationException("Unsupported theme value type: " + themeKey.type());
-        }
-
-        Object parsedValue = parser.parse(value);
-        if (parsedValue == null) {
-            throw new IllegalStateException("Unable to parse theme value: " + value);
-        } else if (!themeKey.type().isAssignableFrom(parsedValue.getClass())) {
-            throw new IllegalStateException("Parsed value type does not match expected type for key " + key + ": expected " + themeKey.type() + " but got " + parsedValue.getClass());
-        }
-
-        values.put(themeKey, parsedValue);
+        values.put(themeKey, PARSERS.parse(themeKey.type(), value));
     }
 
     public static void save(@WillNotClose final OutputStream os, final Theme theme) throws IOException {
         Properties properties = new Properties();
-        for (ThemeKey<?> key : Theme.registeredKeys()) {
-            Object value = theme.get(key);
-            Parser parser = PARSERS.get(key.type());
-            if (parser != null) {
-                properties.put(key.name(), parser.toString(value));
+        for (ThemeKey key : Theme.registeredKeys()) {
+            if (PARSERS.supports(key.type())) {
+                String formatted = PARSERS.format(key.type(), theme.get(key));
+                properties.put(key.name(), formatted);
             }
         }
         properties.store(new OutputStreamWriter(os, StandardCharsets.UTF_8), "Automatically generated theme file");

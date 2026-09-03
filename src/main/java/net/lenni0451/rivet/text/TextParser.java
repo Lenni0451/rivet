@@ -2,7 +2,7 @@ package net.lenni0451.rivet.text;
 
 import lombok.experimental.UtilityClass;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.text.format.ColorFormat;
+import net.lenni0451.rivet.parser.impl.color.ColorFormat;
 import net.lenni0451.rivet.text.model.TextFormat;
 import net.lenni0451.rivet.text.model.TextLine;
 import net.lenni0451.rivet.text.model.TextSection;

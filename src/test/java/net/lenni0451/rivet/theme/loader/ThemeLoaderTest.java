@@ -17,9 +17,9 @@ import net.lenni0451.rivet.component.impl.slider.Slider;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.parser.ParserRegistry;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
-import net.lenni0451.rivet.theme.loader.parser.Parser;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -51,10 +51,10 @@ class ThemeLoaderTest {
     void allThemeKeyTypesImplemented() throws Throwable {
         Field parsersField = ThemeLoader.class.getDeclaredField("PARSERS");
         parsersField.setAccessible(true);
-        Map<Class<?>, Parser<?>> parsers = (Map<Class<?>, Parser<?>>) parsersField.get(null);
+        ParserRegistry parsers = (ParserRegistry) parsersField.get(null);
 
         for (ThemeKey<?> key : Theme.registeredKeys()) {
-            if (!parsers.containsKey(key.type()) && !key.type().isEnum()) {
+            if (!parsers.supports(key.type())) {
                 fail("No parser implemented for theme key type: " + key.type());
             }
         }

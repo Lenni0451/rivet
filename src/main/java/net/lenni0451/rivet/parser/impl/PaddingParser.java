@@ -1,6 +1,7 @@
-package net.lenni0451.rivet.theme.loader.parser;
+package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.parser.Parser;
 
 import javax.annotation.Nullable;
 import java.util.Locale;

@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.theme.loader.parser;
+package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.commons.animation.AnimationMode;
 import net.lenni0451.commons.animation.EasingBehavior;
@@ -6,6 +6,7 @@ import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
+import net.lenni0451.rivet.parser.Parser;
 
 import java.util.ArrayList;
 import java.util.List;

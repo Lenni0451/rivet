@@ -1,4 +1,6 @@
-package net.lenni0451.rivet.theme.loader.parser;
+package net.lenni0451.rivet.parser.impl;
+
+import net.lenni0451.rivet.parser.Parser;
 
 public class CharacterParser implements Parser<Character> {
 

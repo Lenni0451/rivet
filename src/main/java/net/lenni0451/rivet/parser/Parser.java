@@ -1,4 +1,4 @@
-package net.lenni0451.rivet.theme.loader.parser;
+package net.lenni0451.rivet.parser;
 
 import javax.annotation.Nullable;
 
