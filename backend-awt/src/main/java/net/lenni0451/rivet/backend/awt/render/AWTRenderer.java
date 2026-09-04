@@ -29,6 +29,7 @@ public class AWTRenderer extends CheckedRenderer {
     public static final float SHADOW_OFFSET_FACTOR = 0.075F;
     public static final float SHADOW_COLOR_MULTIPLIER = 0.25F;
     public static final float OUTLINE_WIDTH_FACTOR = 0.125F;
+    public static final float KAPPA = (float) (4 * (Math.sqrt(2) - 1) / 3); // 0.5522847498307934
 
     private final Graphics2D graphics;
 
@@ -136,25 +137,56 @@ public class AWTRenderer extends CheckedRenderer {
 
     @Override
     public void doFillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
-        RoundRectangle2D rectangle = new RoundRectangle2D.Float(x, y, width, height, rtl + rtr, rbl + rbr); // TODO: Does this look good?
+        Path2D path = new Path2D.Float();
+        this.addRoundedRect(path, x, y, width, height, rtl, rbl, rbr, rtr);
         this.graphics.setColor(color.toAWT());
-        this.graphics.fill(rectangle);
+        this.graphics.fill(path);
     }
 
     @Override
     public void doOutlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
-        float halfOutline = outlineWidth / 2F;
-        RoundRectangle2D rectangle = new RoundRectangle2D.Float(
-                x + halfOutline,
-                y + halfOutline,
-                Math.max(0, width - outlineWidth),
-                Math.max(0, height - outlineWidth),
-                Math.max(0, rtl + rtr - outlineWidth),
-                Math.max(0, rbl + rbr - outlineWidth)
-        ); // TODO: Does this look good?
-        this.graphics.setStroke(new BasicStroke(outlineWidth));
+        Path2D path = new Path2D.Float(Path2D.WIND_EVEN_ODD);
+        this.addRoundedRect(path, x, y, width, height, rtl, rbl, rbr, rtr);
+        if (width > outlineWidth * 2 && height > outlineWidth * 2) {
+            this.addRoundedRect(
+                    path,
+                    x + outlineWidth,
+                    y + outlineWidth,
+                    width - outlineWidth * 2,
+                    height - outlineWidth * 2,
+                    Math.max(0, rtl - outlineWidth),
+                    Math.max(0, rbl - outlineWidth),
+                    Math.max(0, rbr - outlineWidth),
+                    Math.max(0, rtr - outlineWidth)
+            );
+        }
         this.graphics.setColor(color.toAWT());
-        this.graphics.draw(rectangle);
+        this.graphics.fill(path);
+    }
+
+    private void addRoundedRect(final Path2D path, final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr) {
+        path.moveTo(x + rtl, y);
+        path.lineTo(x + width - rtr, y);
+        if (rtr > 0) {
+            float cTr = rtr * KAPPA;
+            path.curveTo(x + width - rtr + cTr, y, x + width, y + rtr - cTr, x + width, y + rtr);
+        }
+        path.lineTo(x + width, y + height - rbr);
+        if (rbr > 0) {
+            float cBr = rbr * KAPPA;
+            path.curveTo(x + width, y + height - rbr + cBr, x + width - rbr + cBr, y + height, x + width - rbr, y + height);
+        }
+        path.lineTo(x + rbl, y + height);
+        if (rbl > 0) {
+            float cBl = rbl * KAPPA;
+            path.curveTo(x + rbl - cBl, y + height, x, y + height - rbl + cBl, x, y + height - rbl);
+        }
+        path.lineTo(x, y + rtl);
+        if (rtl > 0) {
+            float cTl = rtl * KAPPA;
+            path.curveTo(x, y + rtl - cTl, x + rtl - cTl, y, x + rtl, y);
+        }
+        path.closePath();
     }
 
     @Override
