@@ -18,6 +18,9 @@ import java.awt.*;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
+import java.awt.image.RescaleOp;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -287,14 +290,57 @@ public class AWTRenderer extends CheckedRenderer {
 
     @Override
     public void doImage(final Texture texture, final float x, final float y, final float width, final float height, final Color color) {
-        AWTTexture awtTexture = (AWTTexture) texture; // TODO: color
-        float scaleX = width / awtTexture.width();
-        float scaleY = height / awtTexture.height();
+        if (texture instanceof AWTTexture awtTexture) {
+            float scaleX = width / awtTexture.width();
+            float scaleY = height / awtTexture.height();
 
-        AffineTransform transform = new AffineTransform();
-        transform.translate(x, y);
-        transform.scale(scaleX, scaleY);
-        this.graphics.drawImage(awtTexture.image(), transform, null);
+            AffineTransform transform = new AffineTransform();
+            transform.translate(x, y);
+            transform.scale(scaleX, scaleY);
+            if (color.equals(Color.WHITE)) {
+                this.graphics.drawImage(awtTexture.image(), transform, null);
+            } else if (color.getRed() == 255 && color.getGreen() == 255 && color.getBlue() == 255) {
+                Composite previousComposite = this.graphics.getComposite();
+                if (previousComposite instanceof AlphaComposite alphaComposite) {
+                    this.graphics.setComposite(alphaComposite.derive(alphaComposite.getAlpha() * color.getAlphaF()));
+                } else {
+                    this.graphics.setComposite(AlphaComposite.SrcOver.derive(color.getAlphaF()));
+                }
+                this.graphics.drawImage(awtTexture.image(), transform, null);
+                this.graphics.setComposite(previousComposite);
+            } else {
+                BufferedImage image = awtTexture.image();
+                BufferedImage tintedImage = this.applyColor(image, color);
+                this.graphics.drawImage(tintedImage, transform, null);
+            }
+        } else {
+            throw new UnsupportedOperationException(texture.getClass().getName());
+        }
+    }
+
+    private BufferedImage applyColor(final BufferedImage image, final Color color) {
+        float r = color.getRedF();
+        float g = color.getGreenF();
+        float b = color.getBlueF();
+        float a = color.getAlphaF();
+
+        if (!(image.getColorModel() instanceof IndexColorModel)) {
+            int bandCount = image.getRaster().getNumBands();
+            if (bandCount >= 4) {
+                RescaleOp rescaleOp = new RescaleOp(new float[]{r, g, b, a}, new float[]{0F, 0F, 0F, 0F}, null);
+                return rescaleOp.filter(image, null);
+            } else if (bandCount == 3 && a == 1F) {
+                RescaleOp rescaleOp = new RescaleOp(new float[]{r, g, b}, new float[]{0F, 0F, 0F}, null);
+                return rescaleOp.filter(image, null);
+            }
+        }
+
+        BufferedImage converted = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = converted.createGraphics();
+        g2d.drawImage(image, 0, 0, null);
+        g2d.dispose();
+        RescaleOp rescaleOp = new RescaleOp(new float[]{r, g, b, a}, new float[]{0F, 0F, 0F, 0F}, null);
+        return rescaleOp.filter(converted, null);
     }
 
     @Override
