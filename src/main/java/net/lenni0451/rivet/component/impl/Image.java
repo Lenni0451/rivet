@@ -20,15 +20,47 @@ public class Image extends Component {
     @Getter
     @Setter
     private Color color = Color.WHITE;
+    @Getter
+    @Setter
+    private ScaleMode scaleMode = ScaleMode.STRETCH;
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        renderer.image(this.texture, 0, 0, size.width(), size.height(), this.color);
+        switch (this.scaleMode) {
+            case STRETCH -> renderer.image(this.texture, 0, 0, size.width(), size.height(), this.color);
+            case FIT -> {
+                float textureAspectRatio = (float) this.texture.width() / this.texture.height();
+                float componentAspectRatio = size.width() / size.height();
+                if (textureAspectRatio > componentAspectRatio) {
+                    float height = size.width() / textureAspectRatio;
+                    renderer.image(this.texture, 0, (size.height() - height) / 2F, size.width(), height, this.color);
+                } else {
+                    float width = size.height() * textureAspectRatio;
+                    renderer.image(this.texture, (size.width() - width) / 2F, 0, width, size.height(), this.color);
+                }
+            }
+            case FILL -> {
+                float textureAspectRatio = (float) this.texture.width() / this.texture.height();
+                float componentAspectRatio = size.width() / size.height();
+                if (textureAspectRatio > componentAspectRatio) {
+                    float width = size.height() * textureAspectRatio;
+                    renderer.image(this.texture, (size.width() - width) / 2F, 0, width, size.height(), this.color);
+                } else {
+                    float height = size.width() / textureAspectRatio;
+                    renderer.image(this.texture, 0, (size.height() - height) / 2F, size.width(), height, this.color);
+                }
+            }
+        }
     }
 
     @Override
     public Size computeIdealSize(final Size constraints) {
         return new Size(this.texture.width(), this.texture.height());
+    }
+
+
+    public enum ScaleMode {
+        STRETCH, FIT, FILL
     }
 
 }
