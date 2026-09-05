@@ -30,15 +30,16 @@ public class AWTRenderer extends CheckedRenderer {
     public static final float SHADOW_OFFSET_FACTOR = 0.075F;
     public static final float SHADOW_COLOR_MULTIPLIER = 0.25F;
     public static final float OUTLINE_WIDTH_FACTOR = 0.125F;
+    private static final float INVERSE_CLIP_SIZE = 100_000_000F;
 
     private final Graphics2D graphics;
 
     @Override
     public void doTranslate(final float x, final float y, final Runnable renderer) {
-        AffineTransform transform = new AffineTransform(this.graphics.getTransform());
+        AffineTransform previous = new AffineTransform(this.graphics.getTransform());
         this.graphics.translate(x, y);
         renderer.run();
-        this.graphics.setTransform(transform);
+        this.graphics.setTransform(previous);
     }
 
     @Override
@@ -54,20 +55,24 @@ public class AWTRenderer extends CheckedRenderer {
 
     @Override
     public void doScale(final float x, final float y, final Runnable renderer) {
-        AffineTransform transform = new AffineTransform(this.graphics.getTransform());
+        AffineTransform previous = new AffineTransform(this.graphics.getTransform());
         this.graphics.scale(x, y);
         renderer.run();
-        this.graphics.setTransform(transform);
+        this.graphics.setTransform(previous);
     }
 
     @Override
     public void doStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
-        // TODO
+        ShapeRenderer shapeRenderer = new ShapeRenderer();
+        maskRenderer.accept(shapeRenderer);
+        this.clip(shapeRenderer.shape(), renderer);
     }
 
     @Override
     public void doInverseStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
-        // TODO
+        ShapeRenderer shapeRenderer = new ShapeRenderer();
+        maskRenderer.accept(shapeRenderer);
+        this.inverseClip(shapeRenderer.shape(), renderer);
     }
 
     @Override
@@ -80,9 +85,23 @@ public class AWTRenderer extends CheckedRenderer {
             this.graphics.setClip(shape);
         } else {
             Area clipArea = new Area(clip);
-            clipArea.intersect(new Area(shape));
+            clipArea.intersect(shape instanceof Area area ? area : new Area(shape));
             this.graphics.setClip(clipArea);
         }
+        renderer.run();
+        this.graphics.setClip(clip);
+    }
+
+    private void inverseClip(final Shape shape, final Runnable renderer) {
+        Shape clip = this.graphics.getClip();
+        Area clipArea;
+        if (clip == null) {
+            clipArea = new Area(new Rectangle2D.Float(-INVERSE_CLIP_SIZE, -INVERSE_CLIP_SIZE, INVERSE_CLIP_SIZE, INVERSE_CLIP_SIZE));
+        } else {
+            clipArea = new Area(clip);
+        }
+        clipArea.subtract(shape instanceof Area area ? area : new Area(shape));
+        this.graphics.setClip(clipArea);
         renderer.run();
         this.graphics.setClip(clip);
     }
