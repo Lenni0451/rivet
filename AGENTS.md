@@ -5,17 +5,21 @@ This document outlines the project-specific engineering standards, architectural
 ## Core Technical Stack
 - **Language:** Java 17 (Targeted)
 - **Build System:** Gradle (9.x+)
-- **Project Structure:** Multi-module Gradle build with core in `src/main/java` and the active backend in `backend-thingl-glfw`
-- **Graphics Backend:** Interchangeable by the user
+- **Project Structure:** Multi-module Gradle build:
+    - Root (`rivet`): Core UI library in `src/main/java`
+    - `backend-thingl`: ThinGL (OpenGL) shared rendering implementation and batching pipeline
+    - `backend-thingl-glfw`: GLFW windowing & input integration for ThinGL
+    - `backend-thingl-sdl`: SDL windowing & input integration for ThinGL
+    - `backend-awt`: Java AWT / Swing backend and application runner
+    - `examples`: Demo applications and manual UI validation test runners
+- **Graphics Backend:** Interchangeable by the user (ThinGL OpenGL via GLFW/SDL, Java AWT)
 - **Boilerplate Reduction:** Project Lombok (Required)
 
-### Graphics Backend
-The graphics backend is designed to be interchangeable, allowing users to choose their preferred rendering technology (e.g. OpenGL, AWT).
-Currently, the library includes a default OpenGL backend, which uses the ThinGL library for abstracting OpenGL calls.
-The currently included backend module is `backend-thingl-glfw` (see `settings.gradle` and `backend-thingl-glfw/src/main/java/net/lenni0451/rivet/backend/thingl`).
-`backend-awt` is not currently included in the Gradle settings.
-For reference, the ThinGL library is cloned into the `ThinGL` directory at the root of the project.
-Do not modify the ThinGL under any circumstances, as it is a third-party library.
+### Graphics Backends
+The graphics backend is designed to be interchangeable, allowing users to choose their preferred rendering technology:
+- **ThinGL (OpenGL):** Abstracted through `backend-thingl` with platform integrations in `backend-thingl-glfw` (GLFW) and `backend-thingl-sdl` (SDL).
+- **AWT / Swing:** Implemented in `backend-awt` (`AWTBackend`, `AWTApplication`, `AWTRenderer`, `RivetCanvas`).
+- **ThinGL Reference Directory:** For reference, the ThinGL library is cloned into the `ThinGL` directory at the project root. **Do not modify the `ThinGL` directory under any circumstances**, as it is a third-party library.
 
 ## Engineering Standards
 
@@ -35,19 +39,19 @@ Do not modify the ThinGL under any circumstances, as it is a third-party library
 
 ### Architectural Patterns
 - **Component-Based UI:** Everything is a `Component`. The `Container` class is the primary way to group and layout components.
-- **Layout System:** Layouts (e.g., `Flow`, `Grid`, `Absolute`, `Anchor`, `Dock`, `Tile`) are separate from components and handle the positioning and sizing logic.
+- **Layout System:** Layouts (e.g., `FlowLayout`, `ListLayout`, `FlexLayout`, `GridLayout`, `TileLayout`, `DockLayout`, `BorderLayout`, `AnchorLayout`, `AbsoluteLayout`, `FullSizeLayout`) are decoupled from components and manage positioning and sizing.
 - **Layout Contract:** `Layout#layoutComponents` must provide bounds for every child; missing bounds trigger an `IllegalStateException` in `Container#computeLayout`.
-- **Layer System:** Rendering/input is layer-based via `LayerList`; use `LayerBucket` (`BASE`, `OVERLAY`, `TOOLTIP`, `DRAG`) when adding cross-cutting UI such as overlays and drag previews.
-- **Rendering:** The render system emits a RenderList, which is handled by the graphics backend. The render method may be called in a separate thread, so it should not modify any state that is not thread-safe.
-- **Theme System:** Styles are managed via `Theme` and `ThemeKey`. Components should query the current theme for colors, fonts, and other stylistic properties.
-- **Input Handling:** Input events (Keyboard, Mouse) are propagated through the component tree, often starting from the `Rivet` root context.
+- **Layer System:** Rendering and input propagation are layer-based via `LayerList`; use `LayerBucket` (`BASE`, `OVERLAY`, `TOOLTIP`, `DRAG`) when adding cross-cutting UI such as popups, dropdowns, overlays, and drag previews.
+- **Rendering Pipeline:** Rendering is abstracted through `Renderer` (and deferred rendering via `RenderList` / `DeferredRenderer` or batched executors). The render pass may run on a separate render thread, so render methods must not mutate state in a thread-unsafe manner.
+- **Theme & Parser System:** Visual styles are managed via `Theme`, `ThemeKey`, and `ThemeOption`, loaded dynamically with `ThemeLoader`. Value parsing is handled by `ParserRegistry` and modular `Parser` implementations.
+- **Input & Drag-and-Drop:** Input events (keyboard, mouse cursor, mouse buttons, scroll) propagate through the component hierarchy. Drag and drop interactions are orchestrated through `DragAndDropManager`.
 
 ## Development Workflow
-1. **Research:** Map the existing component hierarchy or layout logic before making changes.
-2. **Implementation:** Adhere strictly to the fluent API and Lombok patterns.
+1. **Research:** Map the existing component hierarchy, backend abstraction, or layout logic before making changes.
+2. **Implementation:** Adhere strictly to the fluent API, Lombok patterns, and `this.` field access conventions.
 3. **Verification:**
-    - Run `./gradlew clean build` to ensure the code compiles and is checkstyle compliant.
-    - GLFW demo-style tests live in `backend-thingl-glfw/src/test/java/test/impl` and are useful for manual UI validation/debugging.
+    - Run `./gradlew clean build` (or `./gradlew build`) to ensure the entire project compiles and passes Checkstyle verification.
+    - Demo and manual UI test runners are located in `examples/src/main/java/test/impl` (extending `TestBase`). Manual UI tests should never be triggered by the agent and should only ever be run by the user.
 
 ## Security & Integrity
 - **Credential Protection:** Never commit API keys or secrets.
