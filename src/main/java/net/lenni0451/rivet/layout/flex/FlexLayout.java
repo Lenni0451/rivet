@@ -67,7 +67,7 @@ public record FlexLayout(FlexDirection direction, FlexWrap wrap, FlexJustify jus
         for (int i = 0; i < lines.size(); i++) {
             lineCrossSizes[i] = lines.get(i).crossSize;
         }
-        if (lines.size() == 1) {
+        if (this.wrap.equals(FlexWrap.NO_WRAP)) {
             lineCrossSizes[0] = crossAvailable;
         } else if (this.alignContent.equals(FlexAlignContent.STRETCH)) {
             float used = sumWithGaps(lineCrossSizes, crossGap);
@@ -231,7 +231,7 @@ public record FlexLayout(FlexDirection direction, FlexWrap wrap, FlexJustify jus
             }
             case SPACE_BETWEEN -> {
                 if (count == 1) {
-                    offsets[0] = free / 2F;
+                    offsets[0] = 0;
                 } else {
                     float spacing = gap + free / (count - 1);
                     float pos = 0;
