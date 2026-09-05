@@ -3,6 +3,7 @@ package net.lenni0451.rivet.backend.awt.render;
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
+import net.lenni0451.rivet.backend.awt.shape.RoundedRect;
 import net.lenni0451.rivet.backend.awt.text.AWTShapedText;
 import net.lenni0451.rivet.backend.awt.texture.AWTTexture;
 import net.lenni0451.rivet.backend.render.CheckedRenderer;
@@ -29,7 +30,6 @@ public class AWTRenderer extends CheckedRenderer {
     public static final float SHADOW_OFFSET_FACTOR = 0.075F;
     public static final float SHADOW_COLOR_MULTIPLIER = 0.25F;
     public static final float OUTLINE_WIDTH_FACTOR = 0.125F;
-    public static final float KAPPA = (float) (4 * (Math.sqrt(2) - 1) / 3); // 0.5522847498307934
 
     private final Graphics2D graphics;
 
@@ -137,19 +137,16 @@ public class AWTRenderer extends CheckedRenderer {
 
     @Override
     public void doFillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
-        Path2D path = new Path2D.Float();
-        this.addRoundedRect(path, x, y, width, height, rtl, rbl, rbr, rtr);
+        RoundedRect rectangle = new RoundedRect(x, y, width, height, rtl, rbl, rbr, rtr);
         this.graphics.setColor(color.toAWT());
-        this.graphics.fill(path);
+        this.graphics.fill(rectangle);
     }
 
     @Override
     public void doOutlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
-        Path2D path = new Path2D.Float(Path2D.WIND_EVEN_ODD);
-        this.addRoundedRect(path, x, y, width, height, rtl, rbl, rbr, rtr);
+        RoundedRect rectangle = new RoundedRect(Path2D.WIND_EVEN_ODD, x, y, width, height, rtl, rbl, rbr, rtr);
         if (width > outlineWidth * 2 && height > outlineWidth * 2) {
-            this.addRoundedRect(
-                    path,
+            rectangle.add(
                     x + outlineWidth,
                     y + outlineWidth,
                     width - outlineWidth * 2,
@@ -161,32 +158,7 @@ public class AWTRenderer extends CheckedRenderer {
             );
         }
         this.graphics.setColor(color.toAWT());
-        this.graphics.fill(path);
-    }
-
-    private void addRoundedRect(final Path2D path, final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr) {
-        path.moveTo(x + rtl, y);
-        path.lineTo(x + width - rtr, y);
-        if (rtr > 0) {
-            float cTr = rtr * KAPPA;
-            path.curveTo(x + width - rtr + cTr, y, x + width, y + rtr - cTr, x + width, y + rtr);
-        }
-        path.lineTo(x + width, y + height - rbr);
-        if (rbr > 0) {
-            float cBr = rbr * KAPPA;
-            path.curveTo(x + width, y + height - rbr + cBr, x + width - rbr + cBr, y + height, x + width - rbr, y + height);
-        }
-        path.lineTo(x + rbl, y + height);
-        if (rbl > 0) {
-            float cBl = rbl * KAPPA;
-            path.curveTo(x + rbl - cBl, y + height, x, y + height - rbl + cBl, x, y + height - rbl);
-        }
-        path.lineTo(x, y + rtl);
-        if (rtl > 0) {
-            float cTl = rtl * KAPPA;
-            path.curveTo(x, y + rtl - cTl, x + rtl - cTl, y, x + rtl, y);
-        }
-        path.closePath();
+        this.graphics.fill(rectangle);
     }
 
     @Override
