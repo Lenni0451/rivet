@@ -16,6 +16,7 @@ import net.lenni0451.rivet.utils.ContainerMouseHandler;
 import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class Container extends ParentContainer {
 
     @Getter
     private final Layout layout;
-    private final List<Child> children = new ArrayList<>();
+    private final List<Child> children = new CopyOnWriteArrayList<>();
     private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
     private final ListenerList<VoidListener<Component>> addChildListener = new ListenerList<>();
@@ -41,7 +42,7 @@ public class Container extends ParentContainer {
         return this.add(component, c -> {});
     }
 
-    public final <E extends Component> Container add(final E component, final Consumer<E> initializer) {
+    public final synchronized <E extends Component> Container add(final E component, final Consumer<E> initializer) {
         initializer.accept(component);
         this.addChildListener.callVoid((l, c) -> l.accept(c, component), () -> {
             this.remove(component);
@@ -55,7 +56,7 @@ public class Container extends ParentContainer {
         return this;
     }
 
-    public final Container sort(final Comparator<Component> comparator) {
+    public final synchronized Container sort(final Comparator<Component> comparator) {
         this.children.sort((child1, child2) -> comparator.compare(child1.component, child2.component));
         if (this.rivet() != null) this.rivet().recalculateNextFrame();
         return this;
@@ -77,28 +78,25 @@ public class Container extends ParentContainer {
         return Rectangle.EMPTY;
     }
 
-    public final boolean remove(final Component component) {
-        for (Iterator<Child> it = this.children.iterator(); it.hasNext(); ) {
-            Child child = it.next();
-            if (child.component == component) {
-                it.remove();
-                this.mouseHandler.checkAndRemove(child);
-                if (this.rivet() != null && this.rivet().focusedComponent() == component) {
-                    this.rivet().focusedComponent(null);
-                }
-                if (this.rivet() != null) {
-                    component.setRivet(null, null);
-                    this.requestLayoutRecalculation();
-                }
-                this.removeChildListener.call(l -> l.accept(component));
-                this.childChangedListener.call(Runnable::run);
-                return true;
+    public final synchronized boolean remove(final Component component) {
+        Child toRemove = this.children.stream().filter(child -> child.component == component).findFirst().orElse(null);
+        if (toRemove != null && this.children.remove(toRemove)) {
+            this.mouseHandler.checkAndRemove(toRemove);
+            if (this.rivet() != null && this.rivet().focusedComponent() == component) {
+                this.rivet().focusedComponent(null);
             }
+            if (this.rivet() != null) {
+                component.setRivet(null, null);
+                this.requestLayoutRecalculation();
+            }
+            this.removeChildListener.call(l -> l.accept(component));
+            this.childChangedListener.call(Runnable::run);
+            return true;
         }
         return false;
     }
 
-    public final Container clear() {
+    public final synchronized Container clear() {
         this.mouseHandler.clear();
         if (this.rivet() != null) {
             for (Child child : this.children) {
@@ -144,14 +142,15 @@ public class Container extends ParentContainer {
 
     @Override
     public void computeLayout(final Size size) {
+        List<Child> children = List.copyOf(this.children);
         Map<Component, Rectangle> newBounds = new IdentityHashMap<>();
-        this.layout.layoutComponents(size, this.children.stream().map(child -> child.component).toList(), newBounds::put);
-        if (newBounds.size() != this.children.size()) {
-            throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for all children (" + newBounds.size() + " provided, but " + this.children.size() + " expected)");
+        this.layout.layoutComponents(size, children.stream().map(child -> child.component).toList(), newBounds::put);
+        if (newBounds.size() != children.size()) {
+            throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for all children (" + newBounds.size() + " provided, but " + children.size() + " expected)");
         }
 
         Size contentSize = Size.EMPTY;
-        for (Child child : this.children) {
+        for (Child child : children) {
             Rectangle newChildBounds = newBounds.get(child.component);
             if (newChildBounds == null) {
                 throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for child '" + child.component.getClass().getSimpleName() + "'");
@@ -196,9 +195,10 @@ public class Container extends ParentContainer {
         @Override
         protected List<Child> elementsAt(final float x, final float y, final Size containerBounds) {
             if (x < 0 || x >= containerBounds.width() || y < 0 || y >= containerBounds.height()) return List.of();
+            List<Child> children = List.copyOf(Container.this.children);
             List<Child> elements = new ArrayList<>();
-            for (int i = Container.this.children.size() - 1; i >= 0; i--) {
-                Child child = Container.this.children.get(i);
+            for (int i = children.size() - 1; i >= 0; i--) {
+                Child child = children.get(i);
                 if (child.bounds.contains(x, y)) {
                     elements.add(child);
                 }

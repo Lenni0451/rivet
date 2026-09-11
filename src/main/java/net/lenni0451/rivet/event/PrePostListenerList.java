@@ -1,15 +1,15 @@
 package net.lenni0451.rivet.event;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class PrePostListenerList<PRE, POST> {
 
-    private final List<PRE> preListeners = new ArrayList<>();
-    private final List<POST> postListeners = new ArrayList<>();
+    private final List<PRE> preListeners = new CopyOnWriteArrayList<>();
+    private final List<POST> postListeners = new CopyOnWriteArrayList<>();
 
     public List<PRE> preListeners() {
         return List.copyOf(this.preListeners);

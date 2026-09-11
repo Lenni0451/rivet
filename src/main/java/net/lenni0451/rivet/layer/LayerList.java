@@ -29,7 +29,7 @@ public final class LayerList {
         return Collections.unmodifiableList(this.allLayers);
     }
 
-    public List<Layer> interactableLayers() {
+    public synchronized List<Layer> interactableLayers() {
         List<Layer> layers = new ArrayList<>();
         for (int i = this.allLayers.size() - 1; i >= 0; i--) {
             Layer layer = this.allLayers.get(i);
@@ -40,7 +40,7 @@ public final class LayerList {
         return layers;
     }
 
-    public LayerList add(final Layer layer) {
+    public synchronized LayerList add(final Layer layer) {
         if (layer.bucket().equals(LayerBucket.BASE)) {
             throw new IllegalArgumentException("Cannot add a layer to the base bucket, base layer is already set");
         }
@@ -49,7 +49,7 @@ public final class LayerList {
         return this;
     }
 
-    public boolean remove(final Layer layer) {
+    public synchronized boolean remove(final Layer layer) {
         if (this.layers.get(layer.bucket()).remove(layer)) {
             this.updateAllLayers();
             return true;

@@ -20,14 +20,18 @@ import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 import static net.lenni0451.rivet.utils.MathUtils.roundMin;
 
 public abstract class Theme {
 
-    private static final List<ThemeKey<?>> REGISTERED_KEYS = new ArrayList<>();
+    private static final List<ThemeKey<?>> REGISTERED_KEYS = new CopyOnWriteArrayList<>();
 
     static {
         try {
@@ -51,7 +55,7 @@ public abstract class Theme {
 
 
     private Rivet rivet;
-    private final Map<ThemeKey<?>, Object> values = new HashMap<>();
+    private final Map<ThemeKey<?>, Object> values = new ConcurrentHashMap<>();
 
     public final void apply(final Rivet rivet) {
         if (this.rivet != null) {
