@@ -23,10 +23,7 @@ public class AutoScrollTest extends TestBase {
         Thread.ofVirtual().start(() -> {
             try {
                 for (int i = 0; i < 100; i++) {
-                    final int finalI = i;
-                    rivet.runSync(() -> {
-                        container.add(new Label("Label " + finalI).horizontalOrigin(TextOrigin.Horizontal.VISUAL_RIGHT));
-                    });
+                    container.add(new Label("Label " + i).horizontalOrigin(TextOrigin.Horizontal.VISUAL_RIGHT));
                     Thread.sleep(500);
                 }
             } catch (Throwable t) {

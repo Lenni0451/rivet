@@ -27,9 +27,7 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
 
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -49,7 +47,8 @@ public final class Rivet {
     private Component focusedComponent;
     @Getter
     private Theme theme;
-    private final Queue<Runnable> tasks = new LinkedBlockingQueue<>();
+    @Getter
+    private final Tasks tasks = new Tasks();
     private float lastMouseX = -Float.MAX_VALUE;
     private float lastMouseY = -Float.MAX_VALUE;
 
@@ -103,7 +102,7 @@ public final class Rivet {
         if (this.layers.remove(layer)) {
             this.mouseHandler.checkAndRemove(layer);
             layer.container().setRivet(null, null);
-            this.runSync(this::updateMouseState);
+            this.tasks.beforeNextFrame(this::updateMouseState);
             return true;
         }
         return false;
@@ -147,11 +146,6 @@ public final class Rivet {
                     }
                 }
         );
-        return this;
-    }
-
-    public Rivet runSync(final Runnable task) {
-        this.tasks.offer(task);
         return this;
     }
 
@@ -325,8 +319,7 @@ public final class Rivet {
     }
 
     public <R extends Renderer> R render(final R renderer) {
-        Runnable task;
-        while ((task = this.tasks.poll()) != null) task.run();
+        this.tasks.runTasks();
         this.renderListener.call(Runnable::run);
 
         Size scaledSize = this.scaledSize();
