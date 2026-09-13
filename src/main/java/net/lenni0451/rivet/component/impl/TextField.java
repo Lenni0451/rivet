@@ -209,13 +209,14 @@ public class TextField extends Component {
             }
             text = new String(chars);
         }
+        boolean disabled = this.disabled().get();
         Color textColor;
-        if (this.disabled()) textColor = this.disabledTextColor.value();
+        if (disabled) textColor = this.disabledTextColor.value();
         else if (!this.valid) textColor = this.invalidTextColor.value();
         else textColor = this.textColor.value();
         this.shapedText = this.usedFont().shapeText(text, textColor);
         if (this.hint != null && !this.hint.isEmpty()) {
-            Color hintColor = this.disabled() ? this.disabledTextColor.value() : this.hintColor.value();
+            Color hintColor = disabled ? this.disabledTextColor.value() : this.hintColor.value();
             this.shapedHintText = this.usedFont().shapeText(this.hint, hintColor);
         } else {
             this.shapedHintText = null;
@@ -227,7 +228,7 @@ public class TextField extends Component {
     }
 
     private State state() {
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             return State.DISABLED;
         } else if (!this.valid) {
             return State.INVALID;
@@ -438,7 +439,7 @@ public class TextField extends Component {
         float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;
         this.ensureCursorVisible(visibleWidth);
 
-        Color backgroundColor = this.disabled() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
+        Color backgroundColor = this.disabled().get() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), backgroundColor);
         renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColorTransition.value());
 

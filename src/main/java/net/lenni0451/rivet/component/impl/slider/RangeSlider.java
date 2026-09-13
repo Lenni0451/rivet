@@ -4,10 +4,9 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.math.Size;
 
-import java.util.function.BiConsumer;
+import net.lenni0451.rivet.property.DoubleProperty;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class RangeSlider extends AbstractSlider<RangeSlider> {
@@ -15,42 +14,42 @@ public class RangeSlider extends AbstractSlider<RangeSlider> {
     private final SliderThumb lowerThumb;
     private final SliderThumb upperThumb;
     @Getter
-    private final ListenerList<BiConsumer<Double, Double>> rangeChangeListener = new ListenerList<>();
+    private final DoubleProperty lowerValue;
+    @Getter
+    private final DoubleProperty upperValue;
 
     public RangeSlider(final double min, final double max, final double lowerValue, final double upperValue) {
         super(min, max);
         this.lowerThumb = this.addThumb(lowerValue);
         this.upperThumb = this.addThumb(upperValue);
+        this.lowerValue = new DoubleProperty(lowerValue);
+        this.upperValue = new DoubleProperty(upperValue);
+        this.init();
     }
 
     public RangeSlider(final double min, final double max, final double step, final double lowerValue, final double upperValue) {
         super(min, max, step);
         this.lowerThumb = this.addThumb(lowerValue);
         this.upperThumb = this.addThumb(upperValue);
+        this.lowerValue = new DoubleProperty(lowerValue);
+        this.upperValue = new DoubleProperty(upperValue);
+        this.init();
     }
 
-    public final double lowerValue() {
-        return this.lowerThumb.value();
-    }
+    private void init() {
+        this.lowerValue.updateListener().add(this.lowerThumb::value);
+        this.lowerValue.updateListener().add(v -> {
+            if (v > this.upperValue.get()) {
+                this.upperValue.set(v);
+            }
+        });
 
-    public final RangeSlider lowerValue(final double value) {
-        return this.lowerValue(value, true);
-    }
-
-    public final RangeSlider lowerValue(final double value, final boolean fireListeners) {
-        return this.range(value, this.upperThumb.value(), fireListeners);
-    }
-
-    public final double upperValue() {
-        return this.upperThumb.value();
-    }
-
-    public final RangeSlider upperValue(final double value) {
-        return this.upperValue(value, true);
-    }
-
-    public final RangeSlider upperValue(final double value, final boolean fireListeners) {
-        return this.range(this.lowerThumb.value(), value, fireListeners);
+        this.upperValue.updateListener().add(this.upperThumb::value);
+        this.upperValue.updateListener().add(v -> {
+            if (v < this.lowerValue.get()) {
+                this.lowerValue.set(v);
+            }
+        });
     }
 
     public final RangeSlider range(final double lowerValue, final double upperValue) {
@@ -64,20 +63,12 @@ public class RangeSlider extends AbstractSlider<RangeSlider> {
             upperValue = temp;
         }
 
-        boolean changed = false;
-        if (this.lowerThumb.value() != lowerValue) {
-            this.lowerThumb.value(lowerValue);
-            changed = true;
-        }
-        if (this.upperThumb.value() != upperValue) {
-            this.upperThumb.value(upperValue);
-            changed = true;
-        }
-
-        if (changed && fireListeners) {
-            final double finalLowerValue = lowerValue;
-            final double finalUpperValue = upperValue;
-            this.rangeChangeListener.call(c -> c.accept(finalLowerValue, finalUpperValue));
+        if (lowerValue > this.upperValue.get()) {
+            this.upperValue.set(upperValue, fireListeners);
+            this.lowerValue.set(lowerValue, fireListeners);
+        } else {
+            this.lowerValue.set(lowerValue, fireListeners);
+            this.upperValue.set(upperValue, fireListeners);
         }
         return this;
     }
@@ -89,14 +80,14 @@ public class RangeSlider extends AbstractSlider<RangeSlider> {
                 this.range(this.upperThumb.value(), newValue);
                 this.draggedThumb(this.upperThumb);
             } else {
-                this.lowerValue(newValue);
+                this.lowerValue.set(newValue);
             }
         } else if (thumb == this.upperThumb) {
             if (newValue < this.lowerThumb.value()) {
                 this.range(newValue, this.lowerThumb.value());
                 this.draggedThumb(this.lowerThumb);
             } else {
-                this.upperValue(newValue);
+                this.upperValue.set(newValue);
             }
         }
     }

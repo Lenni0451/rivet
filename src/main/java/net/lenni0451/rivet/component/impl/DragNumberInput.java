@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
@@ -12,7 +11,6 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.Parent;
 import net.lenni0451.rivet.component.ParentContainer;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
@@ -20,6 +18,7 @@ import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.DoubleProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.FormatUtils;
@@ -27,7 +26,6 @@ import net.lenni0451.rivet.utils.FormatUtils;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class DragNumberInput extends ParentContainer {
@@ -37,17 +35,13 @@ public class DragNumberInput extends ParentContainer {
     @Nullable
     private UpdatedLabel updatedLabel;
     @Getter
-    @Setter
-    private double min;
+    private final DoubleProperty min;
     @Getter
-    @Setter
-    private double max;
+    private final DoubleProperty max;
     @Getter
-    private double step;
+    private final DoubleProperty step;
     @Getter
-    private double value;
-    @Getter
-    private final ListenerList<Consumer<Double>> valueChangeListener = new ListenerList<>();
+    private final DoubleProperty value;
 
     private boolean dragging = false;
     private boolean hovered = false;
@@ -101,10 +95,25 @@ public class DragNumberInput extends ParentContainer {
 
     public DragNumberInput(final Component child, final double min, final double max, final double step, final double value) {
         this.child = child;
-        this.min = min;
-        this.max = max;
-        this.step = step;
-        this.value = value;
+        this.min = new DoubleProperty(min);
+        this.max = new DoubleProperty(max);
+        this.step = new DoubleProperty(step);
+        this.value = new DoubleProperty(value);
+
+        this.step.updateListener().add(v -> {
+            if (this.updatedLabel != null) {
+                this.updatedLabel.step = v;
+                this.updatedLabel.cachedFormatString = null;
+            }
+        });
+        this.value.addValidator(v -> MathUtils.clamp(v, this.min.get(), this.max.get()));
+        this.value.updateListener().add(v -> {
+            if (this.updatedLabel != null) {
+                this.updatedLabel.update(v);
+            }
+        });
+        this.min.updateListener().add(m -> this.value.revalidate());
+        this.max.updateListener().add(m -> this.value.revalidate());
 
         if (child instanceof UpdatedLabel label) {
             this.registerUpdatedLabel(label);
@@ -123,52 +132,25 @@ public class DragNumberInput extends ParentContainer {
 
     public <C extends Component> DragNumberInput(final C child, final BiConsumer<C, Double> valueUpdater, final double min, final double max, final double step, final double value) {
         this(child, min, max, step, value);
-        this.valueChangeListener.add(val -> valueUpdater.accept(child, val));
-        valueUpdater.accept(child, this.value);
-    }
-
-    public final DragNumberInput step(final double step) {
-        this.step = step;
-        if (this.updatedLabel != null) {
-            this.updatedLabel.step = step;
-            this.updatedLabel.cachedFormatString = null;
-        }
-        return this;
-    }
-
-    public final DragNumberInput value(final double value) {
-        return this.value(value, true);
-    }
-
-    public final DragNumberInput value(final double value, final boolean fireListeners) {
-        double newValue = MathUtils.clamp(value, this.min, this.max);
-        if (this.value != newValue) {
-            this.value = newValue;
-            if (this.updatedLabel != null) {
-                this.updatedLabel.update(this.value);
-            }
-            if (fireListeners) {
-                this.valueChangeListener.call(c -> c.accept(this.value));
-            }
-        }
-        return this;
+        this.value.changeListener().add(val -> valueUpdater.accept(child, val));
+        valueUpdater.accept(child, this.value.get());
     }
 
     public final DragNumberInput registerUpdatedLabel(@Nullable final UpdatedLabel updatedLabel) {
         this.updatedLabel = updatedLabel;
         if (updatedLabel != null) {
-            updatedLabel.step = this.step;
+            updatedLabel.step = this.step.get();
             if (this.rivet() != null) {
                 updatedLabel.valueFormat = this.valueFormat.value();
                 updatedLabel.cachedFormatString = null;
-                updatedLabel.update(this.value);
+                updatedLabel.update(this.value.get());
             }
         }
         return this;
     }
 
     private State state() {
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             return State.DISABLED;
         } else if (this.dragging) {
             return State.DRAGGED;
@@ -181,7 +163,7 @@ public class DragNumberInput extends ParentContainer {
     protected void onAddedInternal() {
         super.onAddedInternal();
         if (this.updatedLabel != null) {
-            this.updatedLabel.update(this.value);
+            this.updatedLabel.update(this.value.get());
         }
 
         this.backgroundColorTransition = new StateTransition<>(
@@ -258,11 +240,11 @@ public class DragNumberInput extends ParentContainer {
     @Override
     protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (!super.onMouseDownInternal(event, size)) {
-            if (event.button().equals(MouseButton.LEFT)) {
+            if (event.button().equals(MouseButton.LEFT) && !this.value.readOnly()) {
                 this.dragging = true;
                 this.mouseDownX = event.x();
                 this.mouseDownY = event.y();
-                this.dragStartValue = this.value;
+                this.dragStartValue = this.value.get();
             }
         }
         return true;
@@ -281,12 +263,13 @@ public class DragNumberInput extends ParentContainer {
     protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         super.onMouseMoveInternal(event, size);
         if (this.dragging) {
+            double step = this.step.get();
             float deltaX = event.x() - this.mouseDownX;
             float deltaY = event.y() - this.mouseDownY;
-            double deltaValue = (deltaX - deltaY) * this.step;
+            double deltaValue = (deltaX - deltaY) * step;
             double newValue = this.dragStartValue + deltaValue;
-            newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.min, this.max, this.step);
-            this.value(newValue);
+            newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.min.get(), this.max.get(), step);
+            this.value.set(newValue);
         }
         return true;
     }

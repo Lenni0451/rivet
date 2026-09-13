@@ -131,7 +131,7 @@ public final class Rivet {
     }
 
     public Rivet focusedComponent(final Component component) {
-        if (component != null && component.disabled()) return this;
+        if (component != null && component.disabled().get()) return this;
         if (this.focusedComponent == component) return this;
         this.focusChangeListener.callVoid(
                 (listener, ctx) -> listener.accept(ctx, this.focusedComponent, component),

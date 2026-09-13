@@ -72,7 +72,7 @@ public final class SliderThumb {
     }
 
     private AbstractSlider.State state() {
-        if (this.slider.disabled()) {
+        if (this.slider.disabled().get()) {
             return AbstractSlider.State.DISABLED;
         } else if (this.dragged) {
             return AbstractSlider.State.DRAGGED;
@@ -93,7 +93,7 @@ public final class SliderThumb {
 
     public void updateValue(final float mouseX, final Size size) {
         double newValue = this.slider.valueAtX(mouseX, size);
-        newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.slider.min(), this.slider.max(), this.slider.step());
+        newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.slider.min().get(), this.slider.max().get(), this.slider.step().get());
         this.slider.onThumbDrag(this, newValue);
     }
 

@@ -38,9 +38,9 @@ public class ProgressBarTest extends TestBase {
         }
         container.add(new Slider(0, 100, 0.01, 50), slider -> {
             slider.layoutOptions(new GridOptions(0, y.getAndIncrement()).withFill(GridFill.HORIZONTAL).withWeightX(1).withColumnSpan(2));
-            slider.valueChangeListener().add(value -> {
+            slider.value().changeListener().add(value -> {
                 for (ProgressBar bar : progressBars) {
-                    bar.progress(value.floatValue() / 100F);
+                    bar.progress().set((float) value / 100F);
                 }
             });
             slider.showTooltip().set(false);

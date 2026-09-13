@@ -6,7 +6,6 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -14,10 +13,10 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.ObjectProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ColorPicker extends Component {
@@ -26,9 +25,7 @@ public class ColorPicker extends Component {
     private static final Color DISABLED_OVERLAY_COLOR = Color.fromRGBA(30, 30, 30, 150);
 
     @Getter
-    private Color color;
-    @Getter
-    private final ListenerList<Consumer<Color>> colorChangeListener = new ListenerList<>();
+    private final ObjectProperty<Color> color;
 
     private float hue;
     private float saturation;
@@ -67,36 +64,28 @@ public class ColorPicker extends Component {
     private final ThemeOption<Float> sliderIndicatorInnerWidth = new ThemeOption<>(this, Theme.ColorPicker.SLIDER_INDICATOR_INNER_WIDTH);
 
     public ColorPicker(final Color color) {
-        this.color = color;
+        this.color = new ObjectProperty<>(color);
+        this.color.updateListener().add(c -> this.updateHSB());
         this.updateHSB();
     }
 
-    public final ColorPicker color(final Color color) {
-        return this.color(color, true);
-    }
-
-    public final ColorPicker color(final Color color, final boolean fireListeners) {
-        if (!color.equals(this.color)) {
-            this.color = color;
-            this.updateHSB();
-            if (fireListeners) {
-                this.colorChangeListener.call(c -> c.accept(this.color));
-            }
-        }
-        return this;
+    public ColorPicker(final ObjectProperty.Getter<Color> color) {
+        this.color = new ObjectProperty<>(color);
+        this.color.updateListener().add(c -> this.updateHSB());
+        this.updateHSB();
     }
 
     private void updateHSB() {
-        float[] hsb = this.color.toHSB();
+        Color color = this.color.get();
+        float[] hsb = color.toHSB();
         this.hue = hsb[0];
         this.saturation = hsb[1];
         this.brightness = hsb[2];
-        this.alpha = this.color.getAlpha() / 255F;
+        this.alpha = color.getAlpha() / 255F;
     }
 
     private void updateColor() {
-        this.color = Color.fromHSB(this.hue, this.saturation, this.brightness).withAlphaF(this.alpha);
-        this.colorChangeListener.call(c -> c.accept(this.color));
+        this.color.set(Color.fromHSB(this.hue, this.saturation, this.brightness).withAlphaF(this.alpha));
     }
 
     @Override
@@ -217,7 +206,7 @@ public class ColorPicker extends Component {
         renderer.outlineCircle(cursorX, cursorY, cursorHeight + cursorWidth, cursorWidth, Color.BLACK);
         renderer.outlineCircle(cursorX, cursorY, cursorHeight, cursorWidth, Color.WHITE);
 
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             renderer.fillRect(x, y, width, height, DISABLED_OVERLAY_COLOR);
         }
     }
@@ -246,7 +235,7 @@ public class ColorPicker extends Component {
         renderer.outlineRect(x - 2 * sWidth, cursorY - 2 * sWidth - halfInner, width + 4 * sWidth, 4 * sWidth + innerW, sWidth, Color.BLACK);
         renderer.outlineRect(x - sWidth, cursorY - sWidth - halfInner, width + 2 * sWidth, 2 * sWidth + innerW, sWidth, Color.WHITE);
 
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             renderer.fillRect(x, y, width, height, DISABLED_OVERLAY_COLOR);
         }
     }
@@ -278,7 +267,7 @@ public class ColorPicker extends Component {
         renderer.outlineRect(cursorX - 2 * cursorWidth - innerCursorWidth / 2F, y - 2 * cursorWidth, 4 * cursorWidth + innerCursorWidth, height + 4 * cursorWidth, cursorWidth, Color.BLACK);
         renderer.outlineRect(cursorX - cursorWidth - innerCursorWidth / 2F, y - cursorWidth, 2 * cursorWidth + innerCursorWidth, height + 2 * cursorWidth, cursorWidth, Color.WHITE);
 
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             renderer.fillRect(x, y, width, height, DISABLED_OVERLAY_COLOR);
         }
     }
@@ -293,9 +282,9 @@ public class ColorPicker extends Component {
         renderer.fillRect(x + width / 2F, y, width / 2F, height / 2F, Color.LIGHT_GRAY);
         renderer.fillRect(x + width / 2F, y + height / 2F, width / 2F, height / 2F, Color.WHITE);
         renderer.fillRect(x, y + height / 2F, width / 2F, height / 2F, Color.LIGHT_GRAY);
-        renderer.fillRect(x, y, width, height, this.color);
+        renderer.fillRect(x, y, width, height, this.color.get());
         renderer.outlineRect(x, y, width, height, this.outlineWidth.value(), this.outlineColor.value());
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             renderer.fillRect(x, y, width, height, DISABLED_OVERLAY_COLOR);
         }
     }

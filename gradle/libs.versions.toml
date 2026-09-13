@@ -27,3 +27,4 @@ commons = ["commons-core", "commons-animation"]
 lwjgl = ["lwjgl", "lwjgl-opengl", "lwjgl-stb", "lwjgl-freetype"]
 
 [plugins]
+templateProcessor = { id = "net.lenni0451.template-processor", version = "1.0.1" }

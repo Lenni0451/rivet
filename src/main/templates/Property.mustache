@@ -1,0 +1,249 @@
+{{#var "generic"}}{{#generic}}<{{type}}>{{/generic}}{{/var}}
+{{#var "empty_suffix"}}{{#generic}}<>{{/generic}}{{/var}}
+package net.lenni0451.rivet.property;
+
+import lombok.AllArgsConstructor;
+import lombok.experimental.Accessors;
+import net.lenni0451.rivet.event.ListenerList;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+@Accessors(fluent = true, chain = true, makeFinal = true)
+public final class {{prefix}}Property{{var "generic"}} {
+
+    @lombok.Getter
+    private volatile Store{{var "generic"}} store;
+    private final List<Updater{{var "generic"}}> validators = new CopyOnWriteArrayList<>();
+    @lombok.Getter
+    private final ListenerList<Setter{{var "generic"}}> updateListener = new ListenerList<>();
+    @lombok.Getter
+    private final ListenerList<Setter{{var "generic"}}> changeListener = new ListenerList<>();
+    private final Map<{{prefix}}Property{{var "generic"}}, Runnable> syncedProperties = Collections.synchronizedMap(new IdentityHashMap<>());
+
+    public {{prefix}}Property() {
+        this(new Internal{{var "empty_suffix"}}({{defaultValue}}));
+    }
+
+    public {{prefix}}Property(final {{type}} initialValue) {
+        this(new Internal{{var "empty_suffix"}}(initialValue));
+    }
+
+    public {{prefix}}Property(final Getter{{var "generic"}} getter) {
+        this(new External{{var "empty_suffix"}}(getter));
+    }
+
+    public {{prefix}}Property(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter) {
+        this(new External{{var "empty_suffix"}}(getter, setter));
+    }
+
+    public {{prefix}}Property(final Store{{var "generic"}} store) {
+        this.store = store;
+    }
+
+    public {{prefix}}Property{{var "generic"}} store(final Store{{var "generic"}} store) {
+        if (this.store == store) return this;
+        this.unregisterSync();
+        this.store = store;
+        this.revalidate();
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} addValidator(final Updater{{var "generic"}} validator) {
+        this.validators.add(validator);
+        this.revalidate();
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} removeValidator(final Updater{{var "generic"}} validator) {
+        this.validators.remove(validator);
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} revalidate() {
+        if (!this.readOnly()) {
+            this.set(this.get());
+        }
+        return this;
+    }
+
+    public boolean readOnly() {
+        return this.store.readOnly();
+    }
+
+    public {{type}} get() {
+        {{type}} value = this.store.get();
+        if (!this.validators.isEmpty()) {
+            for (Updater{{var "generic"}} validator : this.validators) {
+                value = validator.update(value);
+            }
+        }
+        return value;
+    }
+
+    public {{prefix}}Property{{var "generic"}} set(final {{type}} value) {
+        return this.set(value, true);
+    }
+
+    public {{prefix}}Property{{var "generic"}} set({{type}} value, final boolean fireChangeListener) {
+        if (this.readOnly()) return this;
+        if (!this.validators.isEmpty()) {
+            for (Updater{{var "generic"}} validator : this.validators) {
+                value = validator.update(value);
+            }
+        }
+        {{type}} previousValue = this.store.get();
+        if (this.notEqual(previousValue, value)) {
+            this.store.set(value);
+            {{type}} newValue = this.store.get(); // Custom store impls might change or reject a value
+            if (this.notEqual(previousValue, newValue)) {
+                this.updateListener.call(listener -> listener.set(newValue));
+                if (fireChangeListener) this.changeListener.call(listener -> listener.set(newValue));
+            }
+        }
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} update(final Updater{{var "generic"}} updater) {
+        return this.set(updater.update(this.get()));
+    }
+
+    public {{prefix}}Property{{var "generic"}} update(final Updater{{var "generic"}} updater, final boolean fireChangeListener) {
+        return this.set(updater.update(this.get()), fireChangeListener);
+    }
+
+    public {{prefix}}Property{{var "generic"}} registerSync(final {{prefix}}Property{{var "generic"}} property) {
+        if (property == this || this.syncedProperties.containsKey(property)) return this;
+        if (this.readOnly() || property.readOnly()) throw new IllegalArgumentException("Cannot sync read-only properties");
+
+        // Prevent infinite loops if validators change the value to something else
+        AtomicBoolean syncing = new AtomicBoolean(false);
+        Setter{{var "generic"}} thisListener = value -> {
+            if (!syncing.compareAndSet(false, true)) return;
+            try {
+                property.set(value);
+                if (this.notEqual(this.get(), property.get())) {
+                    this.set(property.get());
+                }
+            } finally {
+                syncing.set(false);
+            }
+        };
+        Setter{{var "generic"}} propertyListener = value -> {
+            if (!syncing.compareAndSet(false, true)) return;
+            try {
+                this.set(value);
+                if (this.notEqual(property.get(), this.get())) {
+                    property.set(this.get());
+                }
+            } finally {
+                syncing.set(false);
+            }
+        };
+        Runnable unregister = () -> {
+            this.updateListener.remove(thisListener);
+            property.updateListener.remove(propertyListener);
+            this.syncedProperties.remove(property);
+            property.syncedProperties.remove(this);
+        };
+
+        this.syncedProperties.put(property, unregister);
+        property.syncedProperties.put(this, unregister);
+        property.set(this.get());
+        this.updateListener.add(thisListener);
+        property.updateListener.add(propertyListener);
+
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} unregisterSync(final {{prefix}}Property{{var "generic"}} property) {
+        if (property == this || !this.syncedProperties.containsKey(property)) return this;
+
+        this.syncedProperties.get(property).run();
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} unregisterSync() {
+        synchronized (this.syncedProperties) {
+            for (Runnable unregister : List.copyOf(this.syncedProperties.values())) {
+                unregister.run();
+            }
+        }
+        return this;
+    }
+
+    private boolean notEqual(final {{type}} a, final {{type}} b) {
+        return {{equality}};
+    }
+
+
+    public interface Store{{var "generic"}} {
+        {{type}} get();
+
+        void set(final {{type}} value);
+
+        default boolean readOnly() {
+            return false;
+        }
+    }
+
+    @AllArgsConstructor
+    public static class Internal{{var "generic"}} implements Store{{var "generic"}} {
+        private volatile {{type}} value;
+
+        @Override
+        public {{type}} get() {
+            return this.value;
+        }
+
+        @Override
+        public void set(final {{type}} value) {
+            this.value = value;
+        }
+    }
+
+    @AllArgsConstructor
+    public static class External{{var "generic"}} implements Store{{var "generic"}} {
+        private final Getter{{var "generic"}} getter;
+        @Nullable
+        private final Setter{{var "generic"}} setter;
+
+        public External(final Getter{{var "generic"}} getter) {
+            this(getter, null);
+        }
+
+        @Override
+        public {{type}} get() {
+            return this.getter.get();
+        }
+
+        @Override
+        public void set(final {{type}} value) {
+            if (this.setter == null) return;
+            this.setter.set(value);
+        }
+
+        @Override
+        public boolean readOnly() {
+            return this.setter == null;
+        }
+    }
+
+    @FunctionalInterface
+    public interface Getter{{var "generic"}} {
+        {{type}} get();
+    }
+
+    @FunctionalInterface
+    public interface Setter{{var "generic"}} {
+        void set(final {{type}} value);
+    }
+
+    @FunctionalInterface
+    public interface Updater{{var "generic"}} {
+        {{type}} update(final {{type}} value);
+    }
+
+}

@@ -25,7 +25,7 @@ public class CodeScrollTest extends TestBase {
         ScrollContainer sc = new ScrollContainer(labelContainer);
         Container buttonContainer = new Container(new HorizontalFlowLayout());
         buttonContainer.add(new Button("print", () -> {
-            System.out.println("scrollX: " + sc.scrollX() + ", scrollY: " + sc.scrollY() + ", maxScrollX: " + sc.maxScrollX() + ", maxScrollY: " + sc.maxScrollY());
+            System.out.println("scrollX: " + sc.scrollX().get() + ", scrollY: " + sc.scrollY().get() + ", maxScrollX: " + sc.maxScrollX() + ", maxScrollY: " + sc.maxScrollY());
         }));
         boolean[] instant = {false};
         buttonContainer.add(new Button("0%", () -> sc.scrollY(0, instant[0])));
@@ -33,7 +33,7 @@ public class CodeScrollTest extends TestBase {
         buttonContainer.add(new Button("50%", () -> sc.scrollY(sc.maxScrollY() * 0.5F, instant[0])));
         buttonContainer.add(new Button("75%", () -> sc.scrollY(sc.maxScrollY() * 0.75F, instant[0])));
         buttonContainer.add(new Button("100%", () -> sc.scrollY(sc.maxScrollY(), instant[0])));
-        buttonContainer.add(new Checkbox("instant", instant[0]), cb -> cb.toggleListener().add(s -> instant[0] = s));
+        buttonContainer.add(new Checkbox("instant", instant[0]), cb -> cb.checked().changeListener().add(s -> instant[0] = s));
         container.add(buttonContainer.layoutOptions(BorderPosition.TOP));
         for (int i = 0; i < 100; i++) {
             labelContainer.add(new Label("Label " + i));

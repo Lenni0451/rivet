@@ -11,7 +11,6 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.component.impl.Arrow;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -22,6 +21,7 @@ import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.BooleanProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.MathUtils;
@@ -38,9 +38,7 @@ public class CollapsibleContainer extends ParentContainer {
     @Getter
     private final Component content;
     @Getter
-    private boolean collapsed = true;
-    @Getter
-    private final ListenerList<Consumer<Boolean>> collapseChangeListener = new ListenerList<>();
+    private final BooleanProperty collapsed = new BooleanProperty(true);
 
     @Getter
     private final ThemeOption<Color> arrowColor = new ThemeOption<>(this, Theme.Arrow.COLOR);
@@ -73,38 +71,26 @@ public class CollapsibleContainer extends ParentContainer {
         headerInitializer.accept(header);
         contentInitializer.accept(content);
 
+        this.collapsed.updateListener().add(collapsed -> {
+            if (this.collapseAnimation != null) {
+                this.collapseAnimation.runInDirection(collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS);
+            }
+            if (collapsed) {
+                this.mouseHandler().checkAndRemove(Sneaky.unsafeCast(this.content));
+            }
+            this.requestLayoutRecalculation();
+        });
         this.arrowSize.initListener().add(val -> this.requestLayoutRecalculation());
         this.arrowPosition.initListener().add(val -> this.requestLayoutRecalculation());
         this.collapseAnimationConfig.initListener().add(config -> {
             this.collapseAnimation = this.collapseAnimationConfig.value().create();
-            if (this.collapsed) {
+            if (this.collapsed.get()) {
                 this.collapseAnimation.finish(AnimationDirection.BACKWARDS);
             } else {
                 this.collapseAnimation.finish(AnimationDirection.FORWARDS);
             }
             this.collapseProgress = this.collapseAnimation.getValue();
         });
-    }
-
-    public final CollapsibleContainer collapsed(final boolean collapsed) {
-        return this.collapsed(collapsed, true);
-    }
-
-    public final CollapsibleContainer collapsed(final boolean collapsed, final boolean fireListeners) {
-        if (this.collapsed != collapsed) {
-            this.collapsed = collapsed;
-            if (collapsed) {
-                this.mouseHandler().checkAndRemove(Sneaky.unsafeCast(this.content));
-            }
-            if (this.collapseAnimation != null) {
-                this.collapseAnimation.runInDirection(collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS);
-            }
-            if (fireListeners) {
-                this.collapseChangeListener.call(l -> l.accept(collapsed));
-            }
-            this.requestLayoutRecalculation();
-        }
-        return this;
     }
 
     @Override
@@ -247,7 +233,7 @@ public class CollapsibleContainer extends ParentContainer {
             if (!super.onMouseDownInternal(event, size)) {
                 if (event.button().equals(MouseButton.LEFT)) {
                     if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.DOWN) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
-                        CollapsibleContainer.this.collapsed(!CollapsibleContainer.this.collapsed);
+                        CollapsibleContainer.this.collapsed.update(c -> !c);
                     }
                 }
             }
@@ -259,7 +245,7 @@ public class CollapsibleContainer extends ParentContainer {
             if (!super.onMouseUpInternal(event, size)) {
                 if (this.hovered && event.button().equals(MouseButton.LEFT)) {
                     if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.UP) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
-                        CollapsibleContainer.this.collapsed(!CollapsibleContainer.this.collapsed);
+                        CollapsibleContainer.this.collapsed.update(c -> !c);
                     }
                 }
             }

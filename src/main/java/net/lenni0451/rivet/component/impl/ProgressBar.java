@@ -7,24 +7,21 @@ import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.FloatProperty;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ProgressBar extends Component {
 
     @Getter
-    private float progress;
-    @Getter
-    private final ListenerList<Consumer<Float>> progressChangeListener = new ListenerList<>();
+    private final FloatProperty progress;
 
     @Getter
     private final ThemeOption<String> textFormat = new ThemeOption<>(this, Theme.ProgressBar.TEXT_FORMAT);
@@ -69,25 +66,18 @@ public class ProgressBar extends Component {
     }
 
     public ProgressBar(final float progress) {
-        this.progress = MathUtils.clamp(progress, 0, 1);
+        this.progress = new FloatProperty(progress);
+        this.progress.addValidator(p -> MathUtils.clamp(p, 0, 1));
+    }
 
+    public ProgressBar(final FloatProperty.Getter progress) {
+        this.progress = new FloatProperty(progress);
+        this.progress.addValidator(p -> MathUtils.clamp(p, 0, 1));
+    }
+
+    {
         this.textFormat.changeListener().add(f -> this.currentText = null);
         this.textColor.changeListener().add(c -> this.currentText = null);
-    }
-
-    public final ProgressBar progress(final float progress) {
-        return this.progress(progress, true);
-    }
-
-    public final ProgressBar progress(final float progress, final boolean fireListeners) {
-        float newProgress = MathUtils.clamp(progress, 0, 1);
-        if (this.progress != newProgress) {
-            this.progress = newProgress;
-            if (fireListeners) {
-                this.progressChangeListener.call(c -> c.accept(this.progress));
-            }
-        }
-        return this;
     }
 
     @Override
@@ -119,13 +109,13 @@ public class ProgressBar extends Component {
     }
 
     protected void renderIndicator(final Renderer renderer, final Size size, final Color color) {
-        renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress, size.height(), this.indicatorCornerRadius.value(), color);
+        renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress.get(), size.height(), this.indicatorCornerRadius.value(), color);
     }
 
     protected void renderStripes(final Renderer renderer, final Size size) {
         float width = size.width();
         float height = size.height();
-        float progressWidth = width * this.progress;
+        float progressWidth = width * this.progress.get();
         float stripeWidth = this.stripeWidth.value();
         float stripeGap = this.stripeGap.value();
         float period = stripeWidth + stripeGap;
@@ -155,7 +145,8 @@ public class ProgressBar extends Component {
 
     protected void renderText(final Renderer renderer, final Size size) {
         if (!this.textPosition.value().equals(TextPosition.NONE)) {
-            String text = String.format(this.textFormat.value(), this.progress * 100);
+            float progress = this.progress.get();
+            String text = String.format(this.textFormat.value(), progress * 100);
             if (!text.equals(this.currentText)) {
                 this.currentText = text;
                 this.currentShapedText = this.rivet().backend().font().shapeText(text, this.textColor.value());
@@ -179,22 +170,22 @@ public class ProgressBar extends Component {
                 );
                 case FOLLOW_LEFT -> renderer.text(
                         this.currentShapedText,
-                        Math.max(size.width() * this.progress - this.textPadding.value(), this.textPadding.value() + this.currentShapedText.visualBounds().width()), size.height() / 2F,
+                        Math.max(size.width() * progress - this.textPadding.value(), this.textPadding.value() + this.currentShapedText.visualBounds().width()), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_RIGHT, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case FOLLOW_CENTER -> renderer.text(
                         this.currentShapedText,
-                        MathUtils.clamp(size.width() * this.progress, this.textPadding.value() + this.currentShapedText.visualBounds().width() / 2F, size.width() - this.textPadding.value() - this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
+                        MathUtils.clamp(size.width() * progress, this.textPadding.value() + this.currentShapedText.visualBounds().width() / 2F, size.width() - this.textPadding.value() - this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case FOLLOW_RIGHT -> renderer.text(
                         this.currentShapedText,
-                        Math.min(size.width() * this.progress + this.textPadding.value(), size.width() - this.textPadding.value() - this.currentShapedText.visualBounds().width()), size.height() / 2F,
+                        Math.min(size.width() * progress + this.textPadding.value(), size.width() - this.textPadding.value() - this.currentShapedText.visualBounds().width()), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case PROGRESS_CENTER -> renderer.text(
                         this.currentShapedText,
-                        Math.max(size.width() * this.progress / 2, this.textPadding.value() + this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
+                        Math.max(size.width() * progress / 2, this.textPadding.value() + this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_CENTER
                 );
             }

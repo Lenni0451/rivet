@@ -62,7 +62,7 @@ public class SliderStyleTest extends TestBase {
                         new SolidColor(s -> s.color(Color.GRAY.withAlpha(150))),
                         c -> {},
                         new ColorPicker(rivet.theme().get(option.key())),
-                        picker -> picker.colorChangeListener().add(option::set)
+                        picker -> picker.color().changeListener().add(option::set)
                 ))
         );
     }
@@ -73,9 +73,9 @@ public class SliderStyleTest extends TestBase {
                 .add(new Label(name).layoutOptions(new GridOptions(0, 0)))
                 .add(new Slider(0, 50, 0.1F, rivet.theme().get(option.key())), slider -> {
                     slider.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
-                    slider.valueChangeListener().add(d -> {
-                        option.set(d.floatValue());
-                        currentValue.text(String.format("%,.1f", d.floatValue()));
+                    slider.value().changeListener().add(d -> {
+                        option.set((float) d);
+                        currentValue.text(String.format("%,.1f", (float) d));
                     });
                 })
                 .add(currentValue.layoutOptions(new GridOptions(2, 0)));
@@ -87,9 +87,9 @@ public class SliderStyleTest extends TestBase {
                 .add(new Label(name).layoutOptions(new GridOptions(0, 0)))
                 .add(new Slider(0, 50, 0.1F, rivet.theme().get(option.key()).topLeft()), slider -> {
                     slider.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
-                    slider.valueChangeListener().add(d -> {
-                        option.set(new Corners(d.floatValue()));
-                        currentValue.text(String.format("%,.1f", d.floatValue()));
+                    slider.value().changeListener().add(d -> {
+                        option.set(new Corners((float) d));
+                        currentValue.text(String.format("%,.1f", (float) d));
                     });
                 })
                 .add(currentValue.layoutOptions(new GridOptions(2, 0)));
@@ -98,7 +98,7 @@ public class SliderStyleTest extends TestBase {
 
     private Component booleanOption(final Rivet rivet, final String name, final ThemeOption<Boolean> option) {
         Checkbox checkbox = new Checkbox(name, rivet.theme().get(option.key()));
-        checkbox.toggleListener().add(option::set);
+        checkbox.checked().changeListener().add(option::set);
         return checkbox;
     }
 

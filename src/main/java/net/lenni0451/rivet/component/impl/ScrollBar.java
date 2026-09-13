@@ -7,18 +7,17 @@ import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.FloatProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
-import java.util.function.Consumer;
 
 import static net.lenni0451.rivet.utils.MathUtils.EPSILON;
 
@@ -29,14 +28,11 @@ public class ScrollBar extends Component {
     @Setter
     private Orientation orientation;
     @Getter
-    private float scroll;
+    private final FloatProperty scroll = new FloatProperty(0F);
     @Getter
     private float contentSize;
     @Getter
     private float visibleSize;
-
-    @Getter
-    private final ListenerList<Consumer<Float>> scrollListener = new ListenerList<>();
 
     @Getter
     private final ThemeOption<Color> barColor = new ThemeOption<>(this, Theme.ScrollBar.BAR_COLOR);
@@ -84,32 +80,19 @@ public class ScrollBar extends Component {
 
     public ScrollBar(final Orientation orientation) {
         this.orientation = orientation;
-    }
 
-    public final ScrollBar scroll(final float scroll) {
-        return this.scroll(scroll, true);
-    }
-
-    public final ScrollBar scroll(final float scroll, final boolean fireListeners) {
-        float newScroll = MathUtils.clamp(scroll, 0, this.maxScroll());
-        if (this.scroll != newScroll) {
-            this.scroll = newScroll;
-            if (fireListeners) {
-                this.scrollListener.call(c -> c.accept(this.scroll));
-            }
-        }
-        return this;
+        this.scroll.addValidator(s -> MathUtils.clamp(s, 0, this.maxScroll()));
     }
 
     public final ScrollBar contentSize(final float contentSize) {
         this.contentSize = contentSize;
-        this.scroll(this.scroll, false);
+        this.scroll.revalidate();
         return this;
     }
 
     public final ScrollBar visibleSize(final float visibleSize) {
         this.visibleSize = visibleSize;
-        this.scroll(this.scroll, false);
+        this.scroll.revalidate();
         return this;
     }
 
@@ -148,10 +131,11 @@ public class ScrollBar extends Component {
         if (event.button().equals(MouseButton.LEFT)) {
             Rectangle thumb = this.getThumbBounds(size);
             Rectangle rail = this.getRailBounds(size);
+            float scroll = this.scroll.get();
             if (thumb != null && thumb.contains(event.x(), event.y())) {
                 this.barPressed = true;
                 this.dragStartPos = this.orientation == Orientation.HORIZONTAL ? event.x() : event.y();
-                this.initialScroll = this.scroll;
+                this.initialScroll = scroll;
                 this.rivet().focusedComponent(this);
                 return true;
             } else if (rail != null && rail.contains(event.x(), event.y())) {
@@ -164,12 +148,12 @@ public class ScrollBar extends Component {
                     float scrollableSize = railSize - thumbSize;
                     float clickPos = (this.orientation == Orientation.HORIZONTAL ? event.x() - rail.x() : event.y() - rail.y()) - thumbSize / 2F;
                     float target = scrollableSize > 0 ? MathUtils.clamp((clickPos / scrollableSize) * maxScroll, 0, maxScroll) : 0;
-                    this.scroll(target, true);
+                    this.scroll.set(target);
                 } else {
                     float thumbPos = this.orientation == Orientation.HORIZONTAL ? thumb.x() : thumb.y();
                     float clickPos = this.orientation == Orientation.HORIZONTAL ? event.x() : event.y();
-                    if (clickPos < thumbPos) this.scroll(this.scroll - visible, true);
-                    else this.scroll(this.scroll + visible, true);
+                    if (clickPos < thumbPos) this.scroll.set(scroll - visible);
+                    else this.scroll.set(scroll + visible);
                 }
                 this.rivet().focusedComponent(this);
                 return true;
@@ -211,7 +195,7 @@ public class ScrollBar extends Component {
             float currentPos = this.orientation == Orientation.HORIZONTAL ? event.x() : event.y();
             float dragDelta = currentPos - this.dragStartPos;
             float target = scrollableSize > 0 ? MathUtils.clamp(this.initialScroll + (dragDelta / scrollableSize) * maxScroll, 0, maxScroll) : 0;
-            this.scroll(target, true);
+            this.scroll.set(target);
             return true;
         }
         return super.onMouseMoveInternal(event, size);
@@ -241,10 +225,11 @@ public class ScrollBar extends Component {
     }
 
     private void renderRail(final Renderer renderer, final Rectangle bounds) {
-        Color color = this.disabled() ? this.disabledRailColor.value() : this.railColor.value();
+        boolean disabled = this.disabled().get();
+        Color color = disabled ? this.disabledRailColor.value() : this.railColor.value();
         renderer.fillRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), color);
         if (this.railOutlineWidth.value() > 0) {
-            Color outlineColor = this.disabled() ? this.disabledRailOutlineColor.value() : this.railOutlineColor.value();
+            Color outlineColor = disabled ? this.disabledRailOutlineColor.value() : this.railOutlineColor.value();
             renderer.outlineRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.railOutlineWidth.value(), outlineColor);
         }
     }
@@ -252,7 +237,7 @@ public class ScrollBar extends Component {
     private void renderThumb(final Renderer renderer, final Rectangle bounds) {
         Color color;
         Color outlineColor;
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             color = this.disabledBarColor.value();
             outlineColor = this.disabledBarOutlineColor.value();
         } else {
@@ -280,13 +265,13 @@ public class ScrollBar extends Component {
         if (this.orientation == Orientation.HORIZONTAL) {
             float railWidth = rail.width();
             float thumbWidth = this.contentSize <= 0 ? railWidth : Math.max(20, (this.visibleSize / this.contentSize) * railWidth);
-            float scrollPercentage = maxScroll <= 0 ? 0 : MathUtils.clamp(this.scroll / maxScroll, 0, 1);
+            float scrollPercentage = maxScroll <= 0 ? 0 : MathUtils.clamp(this.scroll.get() / maxScroll, 0, 1);
             float thumbX = rail.x() + scrollPercentage * (railWidth - thumbWidth);
             return new Rectangle(thumbX, rail.y(), thumbWidth, rail.height());
         } else {
             float railHeight = rail.height();
             float thumbHeight = this.contentSize <= 0 ? railHeight : Math.max(20, (this.visibleSize / this.contentSize) * railHeight);
-            float scrollPercentage = maxScroll <= 0 ? 0 : MathUtils.clamp(this.scroll / maxScroll, 0, 1);
+            float scrollPercentage = maxScroll <= 0 ? 0 : MathUtils.clamp(this.scroll.get() / maxScroll, 0, 1);
             float thumbY = rail.y() + scrollPercentage * (railHeight - thumbHeight);
             return new Rectangle(rail.x(), thumbY, rail.width(), thumbHeight);
         }

@@ -9,16 +9,15 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.FloatProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
-
-import java.util.function.Supplier;
 
 @Getter
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class Arrow extends Component {
 
-    private Supplier<Float> progress;
+    private final FloatProperty progress;
 
     private final ThemeOption<Color> color = new ThemeOption<>(this, Theme.Arrow.COLOR);
     private final ThemeOption<Color> disabledColor = new ThemeOption<>(this, Theme.Arrow.DISABLED_COLOR);
@@ -26,18 +25,19 @@ public class Arrow extends Component {
     private final ThemeOption<Float> size = new ThemeOption<>(this, Theme.Arrow.SIZE);
 
     public Arrow() {
-        this(() -> 0F);
+        this.progress = new FloatProperty(0);
     }
 
-    public Arrow(final Supplier<Float> progressSupplier) {
-        this.progress = progressSupplier;
+    public Arrow(final float initialValue) {
+        this.progress = new FloatProperty(initialValue);
+    }
 
+    public Arrow(final FloatProperty.Getter progressSupplier) {
+        this.progress = new FloatProperty(progressSupplier);
+    }
+
+    {
         this.capabilities().mouseInput(false);
-    }
-
-    public final Arrow progress(final Supplier<Float> progressSupplier) {
-        this.progress = progressSupplier;
-        return this;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class Arrow extends Component {
         float height = size.height() / 4;
         float widthGap = (size.width() - width) / 2F;
         float heightGap = (size.height() - height) / 2F;
-        Color color = this.disabled() ? this.disabledColor.value() : this.color.value();
+        Color color = this.disabled().get() ? this.disabledColor.value() : this.color.value();
         float lineWidth = this.lineWidth.value();
         float progress = this.progress.get();
 

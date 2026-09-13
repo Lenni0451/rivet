@@ -1,7 +1,14 @@
 plugins {
     id "project.defaults_and_publish"
+    alias(libs.plugins.templateProcessor)
 }
 
 dependencies {
     api libs.bundles.commons
+}
+
+templateProcessor {
+    templateDir = project.file("src/main/templates")
+    outputDir = layout.buildDirectory.dir("generated/templates/main/java")
+    markAsSource(project.sourceSets.main)
 }

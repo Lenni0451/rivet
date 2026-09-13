@@ -189,9 +189,9 @@ public class Label extends Component {
             if (stringText.format != null) {
                 format = stringText.format;
                 if (format.color().equals(Color.TRANSPARENT)) {
-                    color = this.disabled() ? this.disabledTextColor.value() : this.textColor.value();
+                    color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
                 } else {
-                    if (this.disabled() && format.color().equals(this.textColor.value())) {
+                    if (this.disabled().get() && format.color().equals(this.textColor.value())) {
                         color = this.disabledTextColor.value();
                     } else {
                         color = format.color();
@@ -199,7 +199,7 @@ public class Label extends Component {
                 }
             } else {
                 format = TextFormat.DEFAULT;
-                color = this.disabled() ? this.disabledTextColor.value() : this.textColor.value();
+                color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
             }
             return this.createTextLine(stringText.text, format.withColor(color));
         } else if (this.text instanceof TextLineText textLineText) {

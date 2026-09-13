@@ -1,0 +1,43 @@
+{
+    "template": "Property.mustache",
+    "target": "net/lenni0451/rivet/property/{{prefix}}Property.java",
+    "variants": [
+        {
+            "prefix": "Boolean",
+            "type": "boolean",
+            "equality": "a != b",
+            "defaultValue": "false"
+        },
+        {
+            "prefix": "Integer",
+            "type": "int",
+            "equality": "a != b",
+            "defaultValue": "0"
+        },
+        {
+            "prefix": "Long",
+            "type": "long",
+            "equality": "a != b",
+            "defaultValue": "0L"
+        },
+        {
+            "prefix": "Float",
+            "type": "float",
+            "equality": "Float.compare(a, b) != 0",
+            "defaultValue": "0F"
+        },
+        {
+            "prefix": "Double",
+            "type": "double",
+            "equality": "Double.compare(a, b) != 0",
+            "defaultValue": "0D"
+        },
+        {
+            "prefix": "Object",
+            "type": "T",
+            "generic": true,
+            "equality": "!Objects.equals(a, b)",
+            "defaultValue": "null"
+        }
+    ]
+}

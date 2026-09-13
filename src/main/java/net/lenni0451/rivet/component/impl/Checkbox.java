@@ -10,18 +10,17 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.BooleanProperty;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class Checkbox extends Component {
@@ -29,9 +28,7 @@ public class Checkbox extends Component {
     @Getter
     private Font font;
     @Getter
-    private boolean checked;
-    @Getter
-    private final ListenerList<Consumer<Boolean>> toggleListener = new ListenerList<>();
+    private final BooleanProperty checked;
     @Getter
     private String text;
     private ShapedText shapedText;
@@ -79,7 +76,7 @@ public class Checkbox extends Component {
     }
 
     public Checkbox(final String text, final boolean checked) {
-        this.checked = checked;
+        this.checked = new BooleanProperty(checked);
         this.text = text;
     }
 
@@ -91,20 +88,6 @@ public class Checkbox extends Component {
                 if (this.parent() != null) {
                     this.parent().requestLayoutRecalculation();
                 }
-            }
-        }
-        return this;
-    }
-
-    public final Checkbox checked(final boolean checked) {
-        return this.checked(checked, true);
-    }
-
-    public final Checkbox checked(final boolean checked, final boolean fireListeners) {
-        if (this.checked != checked) {
-            this.checked = checked;
-            if (fireListeners) {
-                this.toggleListener.call(c -> c.accept(this.checked));
             }
         }
         return this;
@@ -124,13 +107,13 @@ public class Checkbox extends Component {
     private void shapeText() {
         if (this.rivet() != null) {
             Font font = this.font != null ? this.font : this.rivet().backend().font();
-            Color textColor = this.disabled() ? this.rivet().theme().get(Theme.General.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.General.TEXT_COLOR);
+            Color textColor = this.disabled().get() ? this.rivet().theme().get(Theme.General.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.General.TEXT_COLOR);
             this.shapedText = font.shapeText(this.text, textColor);
         }
     }
 
     private State state() {
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             return State.DISABLED;
         } else if (this.hovered) {
             return State.HOVERED;
@@ -164,7 +147,7 @@ public class Checkbox extends Component {
         );
         this.checkProgress = new Transition<>(
                 this,
-                () -> this.checked ? 1F : 0F,
+                () -> this.checked.get() ? 1F : 0F,
                 this.checkAnimationConfig::value,
                 Interpolator.FLOAT
         );
@@ -206,7 +189,7 @@ public class Checkbox extends Component {
     @Override
     protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (this.hovered && event.button().equals(MouseButton.LEFT)) {
-            this.checked(!this.checked);
+            this.checked.update(checked -> !checked);
         }
         return true;
     }
@@ -225,7 +208,7 @@ public class Checkbox extends Component {
         if (progress > 0) {
             float padding = boxSize * 0.2F;
             float checkWidth = this.checkWidth.value();
-            Color checkColor = this.disabled() ? this.disabledCheckColor.value() : this.checkColor.value();
+            Color checkColor = this.disabled().get() ? this.disabledCheckColor.value() : this.checkColor.value();
             checkColor = checkColor.withAlphaF(checkColor.getAlpha() / 255F * progress);
 
             renderer.polyLine(new Point[]{

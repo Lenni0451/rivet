@@ -21,7 +21,7 @@ public class ImageTintTest extends TestBase {
     protected void init(final Rivet rivet) {
         ColorPicker tintPicker = new ColorPicker(Color.WHITE);
         Image image = new Image(rivet.backend().assetLoader().loadTexture(ImageTintTest.class.getClassLoader().getResourceAsStream("image.jpg")));
-        tintPicker.colorChangeListener().add(image::color);
+        tintPicker.color().changeListener().add(image::color);
 
         Container container = new Container(BorderLayout.DEFAULT);
         container.add(tintPicker.layoutOptions(BorderPosition.TOP));

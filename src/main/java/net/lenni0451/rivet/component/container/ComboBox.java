@@ -15,6 +15,7 @@ import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.BooleanProperty;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -61,19 +62,13 @@ public class ComboBox extends ParentContainer {
     }
 
     public <T extends Component, C extends Component> ComboBox(final T text, final BiConsumer<ComboBox, T> textInitializer, final C child, final BiConsumer<ComboBox, C> initializer) {
+        this.child = child;
+        this.popup = new ComponentPopup(this, this.child, () -> new Size(Float.MAX_VALUE, this.maxPopupHeight.value()), this.interceptOutsideClicks::value);
         this.arrow = new Arrow(() -> this.isOpen() ? 1F : 0F);
         this.button = new Button(new Container(GridLayout.DEFAULT), buttonContent -> {
             buttonContent.add(text.layoutOptions(GridOptions.EMPTY.at(0, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
             buttonContent.add(this.arrow.layoutOptions(GridOptions.EMPTY.at(1, 0).withAnchor(GridAnchor.RIGHT)));
-        }, () -> {
-            if (this.isOpen()) {
-                this.close();
-            } else {
-                this.open();
-            }
-        });
-        this.child = child;
-        this.popup = new ComponentPopup(this, this.child, () -> new Size(Float.MAX_VALUE, this.maxPopupHeight.value()), this.interceptOutsideClicks::value);
+        }, () -> this.popup.open().update(open -> !open));
 
         this.arrowColor.initListener().add(this.arrow.color()::set);
         this.arrowDisabledColor.initListener().add(this.arrow.disabledColor()::set);
@@ -84,8 +79,12 @@ public class ComboBox extends ParentContainer {
         initializer.accept(this, child);
     }
 
-    public final ComboBox open() {
-        this.popup.open();
+    public final BooleanProperty open() {
+        return this.popup.open();
+    }
+
+    public final ComboBox open(final boolean open) {
+        this.popup.open(open);
         return this;
     }
 

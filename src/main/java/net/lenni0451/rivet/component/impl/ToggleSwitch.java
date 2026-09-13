@@ -11,25 +11,22 @@ import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.animation.Transition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.BooleanProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class ToggleSwitch extends Component {
 
     @Getter
-    private boolean toggled;
-    @Getter
-    private final ListenerList<Consumer<Boolean>> toggleListener = new ListenerList<>();
+    private final BooleanProperty toggled;
     private boolean hovered = false;
     private boolean pressed = false;
 
@@ -111,25 +108,11 @@ public class ToggleSwitch extends Component {
     }
 
     public ToggleSwitch(final boolean toggled) {
-        this.toggled = toggled;
-    }
-
-    public final ToggleSwitch toggled(final boolean toggled) {
-        return this.toggled(toggled, true);
-    }
-
-    public final ToggleSwitch toggled(final boolean toggled, final boolean fireListeners) {
-        if (this.toggled != toggled) {
-            this.toggled = toggled;
-            if (fireListeners) {
-                this.toggleListener.call(c -> c.accept(this.toggled));
-            }
-        }
-        return this;
+        this.toggled = new BooleanProperty(toggled);
     }
 
     private VisualState visualState() {
-        return VisualState.get(this.toggled, this.disabled(), this.hovered);
+        return VisualState.get(this.toggled.get(), this.disabled().get(), this.hovered);
     }
 
     @Override
@@ -216,7 +199,7 @@ public class ToggleSwitch extends Component {
         );
         this.toggleProgress = new Transition<>(
                 this,
-                () -> this.toggled ? 1F : 0F,
+                () -> this.toggled.get() ? 1F : 0F,
                 this.toggleAnimationConfig::value,
                 Interpolator.FLOAT
         );
@@ -248,7 +231,7 @@ public class ToggleSwitch extends Component {
         if (event.button().equals(MouseButton.LEFT)) {
             this.pressed = true;
             if (this.toggleOn.value().equals(ClickOn.DOWN) || this.toggleOn.value().equals(ClickOn.BOTH)) {
-                this.toggled(!this.toggled);
+                this.toggled.update(t -> !t);
             }
         }
         return true;
@@ -260,7 +243,7 @@ public class ToggleSwitch extends Component {
             boolean wasPressed = this.pressed;
             this.pressed = false;
             if (this.hovered && wasPressed && (this.toggleOn.value().equals(ClickOn.UP) || this.toggleOn.value().equals(ClickOn.BOTH))) {
-                this.toggled(!this.toggled);
+                this.toggled.update(t -> !t);
             }
         }
         return true;

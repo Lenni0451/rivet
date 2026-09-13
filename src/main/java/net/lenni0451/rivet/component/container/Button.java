@@ -105,7 +105,7 @@ public class Button extends Component implements Parent {
     }
 
     private State state() {
-        if (this.disabled()) {
+        if (this.disabled().get()) {
             return State.DISABLED;
         } else if (!this.pressed.isEmpty()) {
             return State.PRESSED;

@@ -15,6 +15,7 @@ import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.DoubleProperty;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -35,11 +36,11 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     @Getter
     protected Font font;
     @Getter
-    protected double min;
+    protected final DoubleProperty min;
     @Getter
-    protected double max;
+    protected final DoubleProperty max;
     @Getter
-    protected double step;
+    protected final DoubleProperty step;
     @Getter
     @Nullable
     protected SliderTicks ticks;
@@ -112,9 +113,13 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     public AbstractSlider(final double min, final double max, final double step) {
-        this.min = min;
-        this.max = max;
-        this.step = step;
+        this.min = new DoubleProperty(min);
+        this.max = new DoubleProperty(max);
+        this.step = new DoubleProperty(step);
+
+        this.min.updateListener().add(m -> this.tickLabels.clear());
+        this.max.updateListener().add(m -> this.tickLabels.clear());
+        this.step.updateListener().add(s -> this.cachedFormatString = null);
 
         this.positionUpdateListener().add(new PositionUpdateListener(this::updateTooltipPositions));
         this.tooltipFormat.initListener().add(f -> this.cachedFormatString = null);
@@ -131,24 +136,6 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         return (S) this;
     }
 
-    public final S min(final double min) {
-        this.min = min;
-        this.tickLabels.clear();
-        return (S) this;
-    }
-
-    public final S max(final double max) {
-        this.max = max;
-        this.tickLabels.clear();
-        return (S) this;
-    }
-
-    public final S step(final double step) {
-        this.step = step;
-        this.cachedFormatString = null;
-        return (S) this;
-    }
-
     public final S ticks(@Nullable final SliderTicks ticks) {
         this.ticks = ticks;
         this.tickLabels.clear();
@@ -160,7 +147,9 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     protected final float thumbX(final double value, final float thumbWidth, final float barWidth) {
-        double progress = MathUtils.clamp((value - this.min) / (this.max - this.min), 0, 1);
+        double min = this.min.get();
+        double max = this.max.get();
+        double progress = MathUtils.clamp((value - min) / (max - min), 0, 1);
         return (float) (thumbWidth / 2F + barWidth * progress);
     }
 
@@ -169,9 +158,11 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     protected final double valueAtX(final float mouseX, final float thumbWidth, final float barWidth) {
+        double min = this.min.get();
+        double max = this.max.get();
         double progress = (mouseX - thumbWidth / 2F) / barWidth;
         progress = MathUtils.clamp(progress, 0, 1);
-        return this.min + progress * (this.max - this.min);
+        return min + progress * (max - min);
     }
 
     protected final float effectiveThumbWidth() {
@@ -274,7 +265,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
 
     protected final String formatValue(final double value) {
         if (this.cachedFormatString == null) {
-            this.cachedFormatString = FormatUtils.formatDecimalString(this.tooltipFormat.value(), this.step);
+            this.cachedFormatString = FormatUtils.formatDecimalString(this.tooltipFormat.value(), this.step.get());
         }
         try {
             return String.format(this.cachedFormatString, value);
@@ -389,14 +380,15 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     protected void renderBar(final Renderer renderer, final Size size, final float sliderCenter, final float barHeight, final float thumbWidth) {
-        Color barColor = this.disabled() ? this.disabledBarColor.value() : this.barColor.value();
+        boolean disabled = this.disabled().get();
+        Color barColor = disabled ? this.disabledBarColor.value() : this.barColor.value();
         if (this.thumbEncased.value()) {
             renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), barColor);
         } else {
             renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.value(), barColor);
         }
 
-        Color barFillColor = this.disabled() ? this.disabledBarFillColor().value() : this.barFillColor().value();
+        Color barFillColor = disabled ? this.disabledBarFillColor().value() : this.barFillColor().value();
         this.renderFills(renderer, size, this.barWidth(size), barHeight, sliderCenter, thumbWidth, barFillColor);
     }
 
@@ -416,24 +408,27 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     protected void renderTicks(final Renderer renderer, final float sliderCenter, final float barHeight, final float thumbWidth, final float thumbHeight, final float barWidth) {
+        boolean disabled = this.disabled().get();
+        double min = this.min.get();
+        double max = this.max.get();
         float tickStartY = sliderCenter + thumbHeight / 2F + TICK_OFFSET;
         float majorTickLength = barHeight;
         float minorTickLength = barHeight / 2F;
-        Color color = this.disabled() ? this.disabledTickColor.value() : this.tickColor.value();
+        Color color = disabled ? this.disabledTickColor.value() : this.tickColor.value();
 
         if (this.ticks.majorTickSpacing() > 0) {
             for (double tick = 0; ; tick += this.ticks.majorTickSpacing()) {
                 boolean lastTick = false;
-                if (tick >= this.max - this.min) {
-                    tick = this.max - this.min;
+                if (tick >= max - min) {
+                    tick = max - min;
                     lastTick = true;
                 }
-                float tickX = this.thumbX(this.min + tick, thumbWidth, barWidth);
+                float tickX = this.thumbX(min + tick, thumbWidth, barWidth);
                 renderer.fillRect(tickX - 1, tickStartY, TICK_OFFSET, majorTickLength, color);
 
-                double tickValue = this.min + tick;
+                double tickValue = min + tick;
                 ShapedText text = this.tickLabels.computeIfAbsent(tickValue, v -> {
-                    Color textColor = this.disabled() ? this.rivet().theme().get(Theme.General.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.General.TEXT_COLOR);
+                    Color textColor = disabled ? this.rivet().theme().get(Theme.General.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.General.TEXT_COLOR);
                     return this.usedFont().shapeText(this.ticks.labelProvider().getLabel(v), textColor);
                 });
                 renderer.translate(tickX, tickStartY + majorTickLength + 2, () -> {
@@ -445,11 +440,11 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
             }
         }
         if (this.ticks.minorTickSpacing() > 0) {
-            for (double tick = 0; tick < this.max - this.min; tick += this.ticks.minorTickSpacing()) {
+            for (double tick = 0; tick < max - min; tick += this.ticks.minorTickSpacing()) {
                 if (this.ticks.majorTickSpacing() > 0 && Math.abs(tick % this.ticks.majorTickSpacing()) < 1e-6) {
                     continue;
                 }
-                float tickX = this.thumbX(this.min + tick, thumbWidth, barWidth);
+                float tickX = this.thumbX(min + tick, thumbWidth, barWidth);
                 renderer.fillRect(tickX, tickStartY, 1, minorTickLength, color);
             }
         }
@@ -465,7 +460,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         }
         float width;
         if (this.ensureValuesReachable.value()) {
-            width = (float) ((this.max - this.min) / this.step) + this.effectiveThumbWidth();
+            width = (float) ((this.max.get() - this.min.get()) / this.step.get()) + this.effectiveThumbWidth();
         } else {
             width = 0;
         }

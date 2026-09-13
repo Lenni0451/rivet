@@ -14,6 +14,7 @@ import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.layout.list.HorizontalListLayout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.ObjectProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.MathUtils;
@@ -21,6 +22,7 @@ import net.lenni0451.rivet.utils.MathUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class TabContainer extends ParentContainer {
@@ -33,6 +35,8 @@ public class TabContainer extends ParentContainer {
     private final Container contentContainer = new Container(FullSizeLayout.INSTANCE);
     private Size tabSize;
     private Size contentSize;
+    @Getter
+    private final ObjectProperty<Tab> selectedTab = new ObjectProperty<>();
     @Getter
     private final ThemeOption<Color> headerBackgroundColor = new ThemeOption<>(this, Theme.Tab.HEADER_BACKGROUND_COLOR);
     @Getter
@@ -53,6 +57,20 @@ public class TabContainer extends ParentContainer {
         this.tabContainer.add(new ScrollContainer(this.centerTabContainer.layoutOptions(BorderPosition.CENTER), true, false));
         this.tabContainer.add(this.rightTabContainer.layoutOptions(BorderPosition.RIGHT));
 
+        this.selectedTab.addValidator(tab -> {
+            if (tab != null && !this.tabs.contains(tab)) {
+                throw new IllegalArgumentException("Tab is not part of this TabContainer");
+            }
+            return tab;
+        });
+        this.selectedTab.updateListener().add(tab -> {
+            this.tabs.forEach(t -> t.headerBackground().deactivate());
+            this.contentContainer.clear();
+            if (tab != null) {
+                tab.headerBackground().activate();
+                this.contentContainer.add(tab.content());
+            }
+        });
         this.tabAlignment.initListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).alignment = val;
             this.requestLayoutRecalculation();
@@ -108,24 +126,21 @@ public class TabContainer extends ParentContainer {
     public final TabContainer removeTab(final Tab tab) {
         if (!this.tabs.contains(tab)) throw new IllegalArgumentException("Tab is not part of this TabContainer");
         int tabIndex = this.tabs.indexOf(tab);
-        if (tab.headerBackground().active()) {
-            if (this.tabs.size() > 1) {
-                this.selectTab(this.tabs.get(tabIndex >= this.tabs.size() - 1 ? tabIndex - 1 : tabIndex + 1));
-            } else {
-                this.contentContainer.clear();
-            }
-        }
+        boolean wasSelected = Objects.equals(this.selectedTab.get(), tab);
         this.tabs.remove(tab);
         this.centerTabContainer.remove(tab.button());
+        if (wasSelected) {
+            if (!this.tabs.isEmpty()) {
+                this.selectTab(this.tabs.get(tabIndex >= this.tabs.size() ? tabIndex - 1 : tabIndex));
+            } else {
+                this.selectedTab.set(null);
+            }
+        }
         return this;
     }
 
     public final TabContainer selectTab(final Tab tab) {
-        if (!this.tabs.contains(tab)) throw new IllegalArgumentException("Tab is not part of this TabContainer");
-        this.tabs.forEach(t -> t.headerBackground().deactivate());
-        tab.headerBackground().activate();
-        this.contentContainer.clear();
-        this.contentContainer.add(tab.content());
+        this.selectedTab.set(tab);
         return this;
     }
 

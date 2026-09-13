@@ -17,6 +17,7 @@ import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.FloatProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.ContainerMouseHandler;
@@ -69,9 +70,9 @@ public class ScrollContainer extends ParentContainer {
     @Getter
     private final ListenerList<ScrollListener> scrollListener = new ListenerList<>();
     @Getter
-    private float scrollX;
+    private final FloatProperty scrollX = new FloatProperty(0F);
     @Getter
-    private float scrollY;
+    private final FloatProperty scrollY = new FloatProperty(0F);
     private float targetScrollX;
     private float targetScrollY;
     private DynamicAnimation scrollXAnimation;
@@ -100,8 +101,10 @@ public class ScrollContainer extends ParentContainer {
         this.hScrollBar = new ScrollBar(ScrollBar.Orientation.HORIZONTAL);
         this.vScrollBar = new ScrollBar(ScrollBar.Orientation.VERTICAL);
 
-        this.hScrollBar.scrollListener().add(this::scrollX);
-        this.vScrollBar.scrollListener().add(this::scrollY);
+        this.scrollX.changeListener().add(val -> this.scrollX(val, true));
+        this.scrollY.changeListener().add(val -> this.scrollY(val, true));
+        this.hScrollBar.scroll().changeListener().add(this::scrollX);
+        this.vScrollBar.scroll().changeListener().add(this::scrollY);
     }
 
     public final float maxScrollX() {
@@ -127,14 +130,15 @@ public class ScrollContainer extends ParentContainer {
             }
         }
         if (immediate) {
-            float oldScrollX = this.scrollX;
-            this.scrollX = this.targetScrollX;
-            this.hScrollBar.scroll(this.scrollX, false);
-            if (oldScrollX != this.scrollX) {
+            float oldScrollX = this.scrollX.get();
+            this.scrollX.set(this.targetScrollX, false);
+            float currentScrollX = this.scrollX.get();
+            this.hScrollBar.scroll().set(currentScrollX, false);
+            if (oldScrollX != currentScrollX) {
                 if (this.rivet() != null) {
                     this.rivet().updateMouseState();
                 }
-                this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
+                this.scrollListener.call(c -> c.onScroll(currentScrollX, this.scrollY.get()));
             }
         }
         return this;
@@ -153,14 +157,15 @@ public class ScrollContainer extends ParentContainer {
             }
         }
         if (immediate) {
-            float oldScrollY = this.scrollY;
-            this.scrollY = this.targetScrollY;
-            this.vScrollBar.scroll(this.scrollY, false);
-            if (oldScrollY != this.scrollY) {
+            float oldScrollY = this.scrollY.get();
+            this.scrollY.set(this.targetScrollY, false);
+            float currentScrollY = this.scrollY.get();
+            this.vScrollBar.scroll().set(currentScrollY, false);
+            if (oldScrollY != currentScrollY) {
                 if (this.rivet() != null) {
                     this.rivet().updateMouseState();
                 }
-                this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
+                this.scrollListener.call(c -> c.onScroll(this.scrollX.get(), currentScrollY));
             }
         }
         return this;
@@ -174,8 +179,8 @@ public class ScrollContainer extends ParentContainer {
     @Override
     protected void onAddedInternal() {
         super.onAddedInternal();
-        this.scrollXAnimation = this.animationConfig.value().create(this.scrollX);
-        this.scrollYAnimation = this.animationConfig.value().create(this.scrollY);
+        this.scrollXAnimation = this.animationConfig.value().create(this.scrollX.get());
+        this.scrollYAnimation = this.animationConfig.value().create(this.scrollY.get());
     }
 
     @Override
@@ -211,7 +216,7 @@ public class ScrollContainer extends ParentContainer {
                     return false;
                 },
                 () -> this.child.onMouseScroll(
-                        event.withX(event.x() + this.scrollX).withY(event.y() + this.scrollY),
+                        event.withX(event.x() + this.scrollX.get()).withY(event.y() + this.scrollY.get()),
                         this.childSize
                 )
         );
@@ -220,13 +225,15 @@ public class ScrollContainer extends ParentContainer {
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         this.updateAnimation();
+        float scrollX = this.scrollX.get();
+        float scrollY = this.scrollY.get();
         renderer.scissor(0, 0, this.visibleWidth(size), this.visibleHeight(size), () -> {
-            renderer.translate(-this.scrollX, -this.scrollY, () -> {
+            renderer.translate(-scrollX, -scrollY, () -> {
                 Rectangle childVisibleArea = visibleArea.intersection(new Rectangle(0, 0, this.visibleWidth(size), this.visibleHeight(size)));
                 this.child.render(
                         renderer,
                         this.childSize,
-                        net.lenni0451.rivet.utils.MathUtils.relativizeVisibleArea(childVisibleArea, -this.scrollX, -this.scrollY, this.childSize)
+                        net.lenni0451.rivet.utils.MathUtils.relativizeVisibleArea(childVisibleArea, -scrollX, -scrollY, this.childSize)
                 );
             });
         });
@@ -265,23 +272,25 @@ public class ScrollContainer extends ParentContainer {
             this.scrollXAnimation.setTarget(this.targetScrollX).finish();
             this.scrollYAnimation.setTarget(this.targetScrollY).finish();
         }
-        float oldScrollX = this.scrollX;
-        float oldScrollY = this.scrollY;
-        this.scrollX = this.scrollXAnimation.getValue();
-        this.scrollY = this.scrollYAnimation.getValue();
-        this.hScrollBar.scroll(this.scrollX, false);
-        this.vScrollBar.scroll(this.scrollY, false);
-        if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
+        float oldScrollX = this.scrollX.get();
+        float oldScrollY = this.scrollY.get();
+        this.scrollX.set(this.scrollXAnimation.getValue(), false);
+        this.scrollY.set(this.scrollYAnimation.getValue(), false);
+        float currentScrollX = this.scrollX.get();
+        float currentScrollY = this.scrollY.get();
+        this.hScrollBar.scroll().set(currentScrollX, false);
+        this.vScrollBar.scroll().set(currentScrollY, false);
+        if (oldScrollX != currentScrollX || oldScrollY != currentScrollY) {
             if (this.rivet() != null) {
                 this.rivet().updateMouseState();
             }
-            this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
+            this.scrollListener.call(c -> c.onScroll(currentScrollX, currentScrollY));
         }
     }
 
     private void renderCorner(final Renderer renderer, final Size size) {
         if (this.vScrollVisible && this.hScrollVisible && this.vScrollBar.barType().value() == ScrollBarType.NORMAL && this.hScrollBar.barType().value() == ScrollBarType.NORMAL) {
-            Color color = this.disabled() ? this.vScrollBar.disabledRailColor().value() : this.vScrollBar.railColor().value();
+            Color color = this.disabled().get() ? this.vScrollBar.disabledRailColor().value() : this.vScrollBar.railColor().value();
             float vBarWidth = this.vScrollBar.barWidth().value();
             float hBarHeight = this.hScrollBar.barWidth().value();
             renderer.fillRect(size.width() - vBarWidth, size.height() - hBarHeight, vBarWidth, hBarHeight, color);
@@ -395,8 +404,8 @@ public class ScrollContainer extends ParentContainer {
             }
         } while (checkAgain && iterations < 3);
 
-        float oldScrollX = this.scrollX;
-        float oldScrollY = this.scrollY;
+        float oldScrollX = this.scrollX.get();
+        float oldScrollY = this.scrollY.get();
         { // Horizontal scroll bar
             float contentWidth = this.childSize.width();
             if (!hBarNormal) {
@@ -405,7 +414,7 @@ public class ScrollContainer extends ParentContainer {
             float maxScrollX = Math.max(0, contentWidth - availableWidth);
             if (maxScrollX <= EPSILON) maxScrollX = 0;
             this.targetScrollX = MathUtils.clamp(this.targetScrollX, 0, maxScrollX);
-            this.scrollX = MathUtils.clamp(this.scrollX, 0, maxScrollX);
+            this.scrollX.set(MathUtils.clamp(oldScrollX, 0, maxScrollX), false);
         }
         { // Vertical scroll bar
             float contentHeight = this.childSize.height();
@@ -419,12 +428,14 @@ public class ScrollContainer extends ParentContainer {
             } else {
                 this.targetScrollY = MathUtils.clamp(this.targetScrollY, 0, maxScrollY);
             }
-            this.scrollY = MathUtils.clamp(this.scrollY, 0, maxScrollY);
+            this.scrollY.set(MathUtils.clamp(oldScrollY, 0, maxScrollY), false);
         }
 
+        float currentScrollX = this.scrollX.get();
+        float currentScrollY = this.scrollY.get();
         this.hScrollBar.contentSize(this.childSize.width());
         this.hScrollBar.visibleSize(availableWidth);
-        this.hScrollBar.scroll(this.scrollX, false);
+        this.hScrollBar.scroll().set(currentScrollX, false);
         Rectangle hArea = this.getHScrollArea(size);
         if (hArea != null) {
             this.hScrollBar.computeLayout(hArea.size());
@@ -432,14 +443,14 @@ public class ScrollContainer extends ParentContainer {
 
         this.vScrollBar.contentSize(this.childSize.height());
         this.vScrollBar.visibleSize(availableHeight);
-        this.vScrollBar.scroll(this.scrollY, false);
+        this.vScrollBar.scroll().set(currentScrollY, false);
         Rectangle vArea = this.getVScrollArea(size);
         if (vArea != null) {
             this.vScrollBar.computeLayout(vArea.size());
         }
 
-        if (oldScrollX != this.scrollX || oldScrollY != this.scrollY) {
-            this.scrollListener.call(c -> c.onScroll(this.scrollX, this.scrollY));
+        if (oldScrollX != currentScrollX || oldScrollY != currentScrollY) {
+            this.scrollListener.call(c -> c.onScroll(currentScrollX, currentScrollY));
         }
     }
 
@@ -456,7 +467,7 @@ public class ScrollContainer extends ParentContainer {
     @Override
     public Rectangle childBounds(final Component component) {
         if (component == this.child) {
-            return new Rectangle(-this.scrollX, -this.scrollY, this.childSize);
+            return new Rectangle(-this.scrollX.get(), -this.scrollY.get(), this.childSize);
         } else if (component == this.hScrollBar && this.hScrollVisible) {
             Rectangle area = this.getHScrollArea(this.relativeBounds().size());
             return area != null ? area : Rectangle.EMPTY;
@@ -515,8 +526,8 @@ public class ScrollContainer extends ParentContainer {
         protected Rectangle relativeBounds(final Size containerBounds, final Component element) {
             if (element == ScrollContainer.this.child) {
                 return new Rectangle(
-                        -ScrollContainer.this.scrollX,
-                        -ScrollContainer.this.scrollY,
+                        -ScrollContainer.this.scrollX.get(),
+                        -ScrollContainer.this.scrollY.get(),
                         ScrollContainer.this.childSize.width(),
                         ScrollContainer.this.childSize.height()
                 );

@@ -21,6 +21,7 @@ import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.layout.LayoutOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.BooleanProperty;
 
 import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
@@ -44,7 +45,7 @@ public abstract class Component {
     @Getter
     private Capabilities capabilities = new Capabilities();
     @Getter
-    private boolean disabled = false;
+    private final BooleanProperty disabled = new BooleanProperty(false);
 
     @Getter
     private final ListenerList<Runnable> addedListener = new ListenerList<>();
@@ -86,6 +87,21 @@ public abstract class Component {
     private final ListenerList<NullaryVoidListener> dragLeaveListener = new ListenerList<>();
     @Getter
     private final ListenerList<PositionUpdateListener> positionUpdateListener = new ListenerList<>();
+
+    {
+        this.disabled.updateListener().add(disabled -> {
+            if (disabled) {
+                if (this.rivet != null && this.rivet.focusedComponent() == this) {
+                    this.rivet.focusedComponent(null);
+                }
+                this.disabledListener.call(Runnable::run);
+                this.onDisabledInternal();
+            } else {
+                this.enabledListener.call(Runnable::run);
+                this.onEnabledInternal();
+            }
+        });
+    }
 
     public final void setRivet(@Nullable final Rivet rivet, @Nullable final Parent parent) {
         if (rivet == null) {
@@ -183,19 +199,13 @@ public abstract class Component {
         return this;
     }
 
+    public final Component enabled(final boolean enabled) {
+        this.disabled.set(!enabled);
+        return this;
+    }
+
     public final Component disabled(final boolean disabled) {
-        if (this.disabled == disabled) return this;
-        this.disabled = disabled;
-        if (disabled) {
-            if (this.rivet != null && this.rivet.focusedComponent() == this) {
-                this.rivet.focusedComponent(null);
-            }
-            this.disabledListener.call(Runnable::run);
-            this.onDisabledInternal();
-        } else {
-            this.enabledListener.call(Runnable::run);
-            this.onEnabledInternal();
-        }
+        this.disabled.set(disabled);
         return this;
     }
 
@@ -260,7 +270,7 @@ public abstract class Component {
 
     public final boolean onKeyDown(final KeyEvent event) {
         if (!this.capabilities.keyboardInput) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.keyDownListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event),
                 listener -> listener.accept(event),
@@ -274,7 +284,7 @@ public abstract class Component {
 
     public final boolean onKeyUp(final KeyEvent event) {
         if (!this.capabilities.keyboardInput) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.keyUpListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event),
                 listener -> listener.accept(event),
@@ -288,7 +298,7 @@ public abstract class Component {
 
     public final boolean onCharTyped(final CharEvent event) {
         if (!this.capabilities.keyboardInput) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.charTypedListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event),
                 listener -> listener.accept(event),
@@ -302,7 +312,7 @@ public abstract class Component {
 
     public final void onMouseEnter() {
         if (!this.capabilities.mouseHover) return;
-        if (this.disabled) return;
+        if (this.disabled.get()) return;
         this.mouseEnterListener.callVoid(NullaryVoidListener::accept, this::onMouseEnterInternal);
     }
 
@@ -311,7 +321,7 @@ public abstract class Component {
 
     public final void onMouseLeave() {
         if (!this.capabilities.mouseHover) return;
-        if (this.disabled) return;
+        if (this.disabled.get()) return;
         this.mouseLeaveListener.callVoid(NullaryVoidListener::accept, this::onMouseLeaveInternal);
     }
 
@@ -320,7 +330,7 @@ public abstract class Component {
 
     public final boolean onMouseDown(final MouseButtonEvent event, final Size size) {
         if (!this.capabilities.mouseInput) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.mouseDownListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
@@ -334,7 +344,7 @@ public abstract class Component {
 
     public final boolean onMouseUp(final MouseButtonEvent event, final Size size) {
         if (!this.capabilities.mouseInput) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.mouseUpListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
@@ -348,7 +358,7 @@ public abstract class Component {
 
     public final boolean onMouseMove(final MouseMoveEvent event, final Size size) {
         if (!this.capabilities.mouseHover) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.mouseMoveListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
@@ -362,7 +372,7 @@ public abstract class Component {
 
     public final boolean onMouseScroll(final MouseScrollEvent event, final Size size) {
         if (!this.capabilities.mouseInput) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.mouseScrollListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 (listener) -> listener.accept(event, size),
@@ -376,7 +386,7 @@ public abstract class Component {
 
     public final boolean onDrop(final DropEvent event, final Size size) {
         if (!this.capabilities.dragAndDrop) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.dropListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 () -> this.onDropInternal(event, size)
@@ -389,7 +399,7 @@ public abstract class Component {
 
     public final boolean onDragOver(final DragOverEvent event, final Size size) {
         if (!this.capabilities.dragAndDrop) return false;
-        if (this.disabled) return false;
+        if (this.disabled.get()) return false;
         return this.dragOverListener.callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event, size),
                 () -> this.onDragOverInternal(event, size)
@@ -402,7 +412,7 @@ public abstract class Component {
 
     public final void onDragLeave() {
         if (!this.capabilities.dragAndDrop) return;
-        if (this.disabled) return;
+        if (this.disabled.get()) return;
         this.dragLeaveListener.callVoid(NullaryVoidListener::accept, this::onDragLeaveInternal);
     }
 

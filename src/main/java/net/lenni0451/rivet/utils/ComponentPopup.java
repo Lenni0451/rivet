@@ -16,6 +16,8 @@ import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 
+import net.lenni0451.rivet.property.BooleanProperty;
+
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -41,6 +43,8 @@ public class ComponentPopup {
     private boolean matchOwnerWidth = true;
 
     @Getter
+    private final BooleanProperty open = new BooleanProperty(false);
+    @Getter
     private final ListenerList<Runnable> openedListener = new ListenerList<>();
     @Getter
     private final ListenerList<Runnable> closedListener = new ListenerList<>();
@@ -60,14 +64,27 @@ public class ComponentPopup {
         this.owner.removedListener().add(this::close);
         this.owner.disabledListener().add(this::close);
         this.owner.positionUpdateListener().add(new Component.PositionUpdateListener(this::isOpen, this::updatePopupPosition));
+
+        this.open.updateListener().add(open -> {
+            if (open) {
+                this.doOpen();
+            } else {
+                this.doClose();
+            }
+        });
     }
 
     public final boolean isOpen() {
-        return this.layer != null;
+        return this.open.get();
     }
 
-    public final ComponentPopup open() {
-        if (this.isOpen()) return this;
+    public final ComponentPopup open(final boolean open) {
+        this.open.set(open);
+        return this;
+    }
+
+    private void doOpen() {
+        if (this.isOpen()) return;
         Rivet rivet = this.owner.rivet();
         if (rivet == null) {
             throw new IllegalStateException("Owner component must be attached to a Rivet instance to open a popup");
@@ -88,18 +105,20 @@ public class ComponentPopup {
         rivet.addLayer(this.layer);
         this.updatePopupPosition(this.owner.absoluteBounds());
         this.openedListener.call(Runnable::run);
-        return this;
     }
 
     public final ComponentPopup close() {
-        if (!this.isOpen()) return this;
+        return this.open(false);
+    }
+
+    private void doClose() {
+        if (!this.isOpen()) return;
         Rivet rivet = this.owner.rivet();
         if (rivet != null) {
             rivet.removeLayer(this.layer);
         }
         this.layer = null;
         this.closedListener.call(Runnable::run);
-        return this;
     }
 
     public final void updatePopupPosition(final Rectangle absoluteBounds) {
