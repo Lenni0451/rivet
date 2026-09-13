@@ -1,6 +1,5 @@
 package net.lenni0451.rivet.backend.render;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,15 +9,17 @@ import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.render.deferred.ModifierCommand;
 import net.lenni0451.rivet.backend.render.deferred.RenderCommand;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.function.Consumer;
 
+@AllArgsConstructor
 @RequiredArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class SnappedRenderer<R extends Renderer> implements Renderer {
 
@@ -28,6 +29,14 @@ public class SnappedRenderer<R extends Renderer> implements Renderer {
     private float yOffset = 0;
     private float xScale = 1;
     private float yScale = 1;
+
+    public SnappedRenderer(final R delegate, final Component baseComponent) {
+        this.delegate = delegate;
+
+        Rectangle absoluteBounds = baseComponent.absoluteBounds();
+        this.xOffset = absoluteBounds.x();
+        this.yOffset = absoluteBounds.y();
+    }
 
     private float snapX(final float x) {
         if (this.xScale == 0) return x;
