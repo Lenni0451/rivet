@@ -24,7 +24,7 @@ public class FontTest extends TestBase {
         TextField textField = new TextField();
         Label label = new Label("Hello World").font(rivet.backend().font());
 
-        slider.value().changeListener().add(value -> label.font(label.font().derive((int) value)));
+        slider.value().changeListener().add(value -> label.font(label.font().get().derive((int) value)));
         textField.keyDownListener().add((ctx, event) -> {
             if (event.key().isEquivalent(Key.ENTER)) {
                 try (FileInputStream fis = new FileInputStream(textField.text())) {

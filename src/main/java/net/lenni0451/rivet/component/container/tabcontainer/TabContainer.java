@@ -19,6 +19,7 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.MathUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -139,7 +140,7 @@ public class TabContainer extends ParentContainer {
         return this;
     }
 
-    public final TabContainer selectTab(final Tab tab) {
+    public final TabContainer selectTab(@Nullable final Tab tab) {
         this.selectedTab.set(tab);
         return this;
     }

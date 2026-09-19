@@ -21,11 +21,12 @@ public class ImageTintTest extends TestBase {
     protected void init(final Rivet rivet) {
         ColorPicker tintPicker = new ColorPicker(Color.WHITE);
         Image image = new Image(rivet.backend().assetLoader().loadTexture(ImageTintTest.class.getClassLoader().getResourceAsStream("image.jpg")));
-        tintPicker.color().changeListener().add(image::color);
+        image.scaleMode().set(Image.ScaleMode.FIT);
+        tintPicker.color().registerSync(image.color());
 
         Container container = new Container(BorderLayout.DEFAULT);
         container.add(tintPicker.layoutOptions(BorderPosition.TOP));
-        container.add(image.scaleMode(Image.ScaleMode.FIT).layoutOptions(BorderPosition.CENTER));
+        container.add(image.layoutOptions(BorderPosition.CENTER));
         rivet.root().add(container);
     }
 

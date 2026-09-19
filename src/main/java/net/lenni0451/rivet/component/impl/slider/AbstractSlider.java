@@ -136,6 +136,21 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         return (S) this;
     }
 
+    public final S min(final double min) {
+        this.min.set(min);
+        return (S) this;
+    }
+
+    public final S max(final double max) {
+        this.max.set(max);
+        return (S) this;
+    }
+
+    public final S step(final double step) {
+        this.step.set(step);
+        return (S) this;
+    }
+
     public final S ticks(@Nullable final SliderTicks ticks) {
         this.ticks = ticks;
         this.tickLabels.clear();

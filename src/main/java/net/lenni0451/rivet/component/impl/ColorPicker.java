@@ -14,6 +14,7 @@ import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.ObjectProperty;
+import net.lenni0451.rivet.property.SyncMode;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
@@ -63,16 +64,31 @@ public class ColorPicker extends Component {
     @Getter
     private final ThemeOption<Float> sliderIndicatorInnerWidth = new ThemeOption<>(this, Theme.ColorPicker.SLIDER_INDICATOR_INNER_WIDTH);
 
+    public ColorPicker() {
+        this(Color.WHITE);
+    }
+
     public ColorPicker(final Color color) {
         this.color = new ObjectProperty<>(color);
         this.color.updateListener().add(c -> this.updateHSB());
         this.updateHSB();
     }
 
-    public ColorPicker(final ObjectProperty.Getter<Color> color) {
-        this.color = new ObjectProperty<>(color);
+    public ColorPicker(final ObjectProperty.Getter<Color> color, final SyncMode syncMode) {
+        this.color = new ObjectProperty<>(color, syncMode);
         this.color.updateListener().add(c -> this.updateHSB());
         this.updateHSB();
+    }
+
+    public ColorPicker(final ObjectProperty.Getter<Color> color, final ObjectProperty.Setter<Color> colorSetter, final SyncMode syncMode) {
+        this.color = new ObjectProperty<>(color, colorSetter, syncMode);
+        this.color.updateListener().add(c -> this.updateHSB());
+        this.updateHSB();
+    }
+
+    public final ColorPicker color(final Color color) {
+        this.color.set(color);
+        return this;
     }
 
     private void updateHSB() {

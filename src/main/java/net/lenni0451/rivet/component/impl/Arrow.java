@@ -10,6 +10,7 @@ import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.FloatProperty;
+import net.lenni0451.rivet.property.SyncMode;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
@@ -32,12 +33,21 @@ public class Arrow extends Component {
         this.progress = new FloatProperty(initialValue);
     }
 
-    public Arrow(final FloatProperty.Getter progressSupplier) {
-        this.progress = new FloatProperty(progressSupplier);
+    public Arrow(final FloatProperty.Getter progressSupplier, final SyncMode syncMode) {
+        this.progress = new FloatProperty(progressSupplier, syncMode);
+    }
+
+    public Arrow(final FloatProperty.Getter progressSupplier, final FloatProperty.Setter progressSetter, final SyncMode syncMode) {
+        this.progress = new FloatProperty(progressSupplier, progressSetter, syncMode);
     }
 
     {
         this.capabilities().mouseInput(false);
+    }
+
+    public final Arrow progress(final float progress) {
+        this.progress.set(progress);
+        return this;
     }
 
     @Override

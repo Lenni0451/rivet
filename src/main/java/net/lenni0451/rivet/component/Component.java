@@ -138,6 +138,10 @@ public abstract class Component {
         }
     }
 
+    public final boolean attached() {
+        return this.rivet != null;
+    }
+
     public final Component minSize(final float width, final float height) {
         return this.minSize(new Size(width, height));
     }

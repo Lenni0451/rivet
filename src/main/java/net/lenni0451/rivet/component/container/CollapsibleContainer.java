@@ -22,6 +22,7 @@ import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.BooleanProperty;
+import net.lenni0451.rivet.property.SyncMode;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.MathUtils;
@@ -91,6 +92,11 @@ public class CollapsibleContainer extends ParentContainer {
             }
             this.collapseProgress = this.collapseAnimation.getValue();
         });
+    }
+
+    public final CollapsibleContainer collapsed(final boolean collapsed) {
+        this.collapsed.set(collapsed);
+        return this;
     }
 
     @Override
@@ -193,7 +199,7 @@ public class CollapsibleContainer extends ParentContainer {
         private ClickableHeader(final Component header) {
             super(GridLayout.DEFAULT);
 
-            Arrow arrow = new Arrow(() -> CollapsibleContainer.this.collapseProgress);
+            Arrow arrow = new Arrow(() -> CollapsibleContainer.this.collapseProgress, SyncMode.MANUAL);
             CollapsibleContainer.this.arrowColor.initListener().add(arrow.color()::set);
             CollapsibleContainer.this.arrowDisabledColor.initListener().add(arrow.disabledColor()::set);
             CollapsibleContainer.this.arrowLineWidth.initListener().add(arrow.lineWidth()::set);

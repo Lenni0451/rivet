@@ -52,6 +52,16 @@ public class RangeSlider extends AbstractSlider<RangeSlider> {
         });
     }
 
+    public final RangeSlider lowerValue(final double lowerValue) {
+        this.lowerValue.set(lowerValue);
+        return this;
+    }
+
+    public final RangeSlider upperValue(final double upperValue) {
+        this.upperValue.set(upperValue);
+        return this;
+    }
+
     public final RangeSlider range(final double lowerValue, final double upperValue) {
         return this.range(lowerValue, upperValue, true);
     }

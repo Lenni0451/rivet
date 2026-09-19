@@ -4,23 +4,26 @@ package net.lenni0451.rivet.property;
 
 import lombok.AllArgsConstructor;
 import lombok.experimental.Accessors;
+import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.event.ListenerList;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public final class {{prefix}}Property{{var "generic"}} {
 
     @lombok.Getter
     private volatile Store{{var "generic"}} store;
+    private volatile {{type}} lastValue;
     private final List<Updater{{var "generic"}}> validators = new CopyOnWriteArrayList<>();
     @lombok.Getter
-    private final ListenerList<Setter{{var "generic"}}> updateListener = new ListenerList<>();
+    private final ListenerList<Setter{{var "generic"}}> updateListener = new ListenerList<>(); // Same as changeListener but always called
     @lombok.Getter
-    private final ListenerList<Setter{{var "generic"}}> changeListener = new ListenerList<>();
+    private final ListenerList<Setter{{var "generic"}}> changeListener = new ListenerList<>(); // Not called if fireChangeListener is false in set()
     private final Map<{{prefix}}Property{{var "generic"}}, Runnable> syncedProperties = Collections.synchronizedMap(new IdentityHashMap<>());
 
     public {{prefix}}Property() {
@@ -31,23 +34,54 @@ public final class {{prefix}}Property{{var "generic"}} {
         this(new Internal{{var "empty_suffix"}}(initialValue));
     }
 
-    public {{prefix}}Property(final Getter{{var "generic"}} getter) {
-        this(new External{{var "empty_suffix"}}(getter));
+    public {{prefix}}Property(final Getter{{var "generic"}} getter, final SyncMode syncMode) {
+        this(new External{{var "empty_suffix"}}(getter, null, syncMode));
     }
 
-    public {{prefix}}Property(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter) {
-        this(new External{{var "empty_suffix"}}(getter, setter));
+    public {{prefix}}Property(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final SyncMode syncMode) {
+        this(new External{{var "empty_suffix"}}(getter, setter, syncMode));
+    }
+
+    public {{prefix}}Property(final Getter{{var "generic"}} getter, final Consumer<Runnable> listenerRegistrar) {
+        this(getter, null, listenerRegistrar);
+    }
+
+    public {{prefix}}Property(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final Consumer<Runnable> listenerRegistrar) {
+        this(new External{{var "empty_suffix"}}(getter, setter, SyncMode.MANUAL));
+        listenerRegistrar.accept(this::refresh);
     }
 
     public {{prefix}}Property(final Store{{var "generic"}} store) {
         this.store = store;
+        this.lastValue = this.getInternal();
     }
 
     public {{prefix}}Property{{var "generic"}} store(final Store{{var "generic"}} store) {
         if (this.store == store) return this;
-        this.unregisterSync();
         this.store = store;
         this.revalidate();
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} internalStore(final {{type}} value) {
+        return this.store(new Internal{{var "empty_suffix"}}(value));
+    }
+
+    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, final SyncMode syncMode) {
+        return this.store(new External{{var "empty_suffix"}}(getter, null, syncMode));
+    }
+
+    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final SyncMode syncMode) {
+        return this.store(new External{{var "empty_suffix"}}(getter, setter, syncMode));
+    }
+
+    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, final Consumer<Runnable> listenerRegistrar) {
+        return this.externalStore(getter, null, listenerRegistrar);
+    }
+
+    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final Consumer<Runnable> listenerRegistrar) {
+        this.store(new External{{var "empty_suffix"}}(getter, setter, SyncMode.MANUAL));
+        listenerRegistrar.accept(this::refresh);
         return this;
     }
 
@@ -65,6 +99,8 @@ public final class {{prefix}}Property{{var "generic"}} {
     public {{prefix}}Property{{var "generic"}} revalidate() {
         if (!this.readOnly()) {
             this.set(this.get());
+        } else {
+            this.refresh();
         }
         return this;
     }
@@ -73,7 +109,31 @@ public final class {{prefix}}Property{{var "generic"}} {
         return this.store.readOnly();
     }
 
+    public {{prefix}}Property{{var "generic"}} refresh() {
+        return this.refresh(true);
+    }
+
+    public {{prefix}}Property{{var "generic"}} refresh(final boolean fireChangeListener) {
+        {{type}} value = this.getInternal();
+        if (this.notEqual(this.lastValue, value)) {
+            this.lastValue = value;
+            this.updateListener.call(listener -> listener.set(value));
+            if (fireChangeListener) this.changeListener.call(listener -> listener.set(value));
+        }
+        return this;
+    }
+
     public {{type}} get() {
+        {{type}} value = this.getInternal();
+        if (SyncMode.POLL_ON_GET.equals(this.store.syncMode()) && this.notEqual(this.lastValue, value)) {
+            this.lastValue = value;
+            this.updateListener.call(listener -> listener.set(value));
+            this.changeListener.call(listener -> listener.set(value));
+        }
+        return value;
+    }
+
+    private {{type}} getInternal() {
         {{type}} value = this.store.get();
         if (!this.validators.isEmpty()) {
             for (Updater{{var "generic"}} validator : this.validators) {
@@ -82,7 +142,24 @@ public final class {{prefix}}Property{{var "generic"}} {
         }
         return value;
     }
+    {{#isEq prefix "Object"}}
 
+    public {{type}} getOrElse(final {{type}} fallback) {
+        {{type}} value = this.get();
+        return value != null ? value : fallback;
+    }
+    {{/isEq}}
+
+    {{#isEq prefix "Corners"}}
+    public {{prefix}}Property{{var "generic"}} set(final float allCorners) {
+        return this.set(new {{type}}(allCorners));
+    }
+
+    public {{prefix}}Property{{var "generic"}} set(final float topLeft, final float bottomLeft, final float bottomRight, final float topRight) {
+        return this.set(new {{type}}(topLeft, bottomLeft, bottomRight, topRight));
+    }
+
+    {{/isEq}}
     public {{prefix}}Property{{var "generic"}} set(final {{type}} value) {
         return this.set(value, true);
     }
@@ -99,9 +176,15 @@ public final class {{prefix}}Property{{var "generic"}} {
             this.store.set(value);
             {{type}} newValue = this.store.get(); // Custom store impls might change or reject a value
             if (this.notEqual(previousValue, newValue)) {
+                this.lastValue = newValue;
                 this.updateListener.call(listener -> listener.set(newValue));
                 if (fireChangeListener) this.changeListener.call(listener -> listener.set(newValue));
             }
+        } else if (this.notEqual(this.lastValue, value)) {
+            final {{type}} finalValue = value;
+            this.lastValue = finalValue;
+            this.updateListener.call(listener -> listener.set(finalValue));
+            if (fireChangeListener) this.changeListener.call(listener -> listener.set(finalValue));
         }
         return this;
     }
@@ -116,7 +199,6 @@ public final class {{prefix}}Property{{var "generic"}} {
 
     public {{prefix}}Property{{var "generic"}} registerSync(final {{prefix}}Property{{var "generic"}} property) {
         if (property == this || this.syncedProperties.containsKey(property)) return this;
-        if (this.readOnly() || property.readOnly()) throw new IllegalArgumentException("Cannot sync read-only properties");
 
         // Prevent infinite loops if validators change the value to something else
         AtomicBoolean syncing = new AtomicBoolean(false);
@@ -174,6 +256,25 @@ public final class {{prefix}}Property{{var "generic"}} {
         return this;
     }
 
+    public Runnable bindRefresh(final Component component) {
+        Runnable refresh = this::refresh;
+        Runnable add = () -> {
+            component.rivet().renderListener().add(refresh);
+            refresh.run();
+        };
+        Runnable remove = () -> component.rivet().renderListener().remove(refresh);
+
+        component.addedListener().add(add);
+        component.removedListener().add(remove);
+        if (component.attached()) add.run();
+
+        return () -> {
+            if (component.attached()) remove.run();
+            component.addedListener().remove(add);
+            component.removedListener().remove(remove);
+        };
+    }
+
     private boolean notEqual(final {{type}} a, final {{type}} b) {
         return {{equality}};
     }
@@ -186,6 +287,10 @@ public final class {{prefix}}Property{{var "generic"}} {
 
         default boolean readOnly() {
             return false;
+        }
+
+        default SyncMode syncMode() {
+            return SyncMode.MANUAL;
         }
     }
 
@@ -205,13 +310,16 @@ public final class {{prefix}}Property{{var "generic"}} {
     }
 
     @AllArgsConstructor
+    @Accessors(fluent = true, chain = true, makeFinal = true)
     public static class External{{var "generic"}} implements Store{{var "generic"}} {
         private final Getter{{var "generic"}} getter;
         @Nullable
         private final Setter{{var "generic"}} setter;
+        @lombok.Getter
+        private final SyncMode syncMode;
 
-        public External(final Getter{{var "generic"}} getter) {
-            this(getter, null);
+        public External(final Getter{{var "generic"}} getter, final SyncMode syncMode) {
+            this(getter, null, syncMode);
         }
 
         @Override

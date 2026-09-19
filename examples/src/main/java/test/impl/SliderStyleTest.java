@@ -59,7 +59,7 @@ public class SliderStyleTest extends TestBase {
         return new ComboBox(
                 name,
                 new ScrollContainer(new DecoratedContainer(
-                        new SolidColor(s -> s.color(Color.GRAY.withAlpha(150))),
+                        new SolidColor(s -> s.color().set(Color.GRAY.withAlpha(150))),
                         c -> {},
                         new ColorPicker(rivet.theme().get(option.key())),
                         picker -> picker.color().changeListener().add(option::set)
@@ -107,7 +107,7 @@ public class SliderStyleTest extends TestBase {
                 name,
                 new ScrollContainer(new DecoratedContainer(
                         new SolidColor(),
-                        s -> s.color(Color.GRAY.withAlpha(150)),
+                        s -> s.color().set(Color.GRAY.withAlpha(150)),
                         new Container(new HorizontalFlowLayout(5, 5)),
                         container -> {
                             for (Enum val : rivet.theme().get(option.key()).getClass().getEnumConstants()) {

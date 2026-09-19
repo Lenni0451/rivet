@@ -53,7 +53,7 @@ public class TabsTest extends TestBase {
         container.add(new Button(new Label("x").scale(0.75F).horizontalOrigin(TextOrigin.Horizontal.VISUAL_CENTER).verticalOrigin(TextOrigin.Vertical.VISUAL_CENTER), () -> {
             for (Tab tab : tabContainer.tabs()) {
                 Label label = (Label) ((Container) tab.header()).children().get(0);
-                if (label.text().equals(name)) {
+                if (label.text().get().equals(name)) {
                     tabContainer.removeTab(tab);
                     break;
                 }
@@ -71,7 +71,10 @@ public class TabsTest extends TestBase {
     }
 
     private Component newTabContent() {
-        DecoratedContainer container = new DecoratedContainer(new SolidColor().outlineColor(Color.RED).outlineWidth(5F), new Label("Tab Content"));
+        DecoratedContainer container = new DecoratedContainer(new SolidColor(background -> {
+            background.outlineColor().set(Color.RED);
+            background.outlineWidth().set(5);
+        }), new Label("Tab Content"));
         return container;
     }
 

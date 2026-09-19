@@ -48,7 +48,7 @@ public class DragBetweenTest extends TestBase {
     private Component newListView(final List<String> list, final List<String> otherList) {
         DynamicListView<String> listView = new DynamicListView<>(new VerticalListLayout(0, true), DropMarkerStrategy.vertical(0, 2), DraggableLabel.class::isInstance, () -> list, DraggableLabel::new);
         listView.reorderListener().add((dragData, insertIndex) -> {
-            String text = ((DraggableLabel) dragData.getFirst()).text();
+            String text = ((DraggableLabel) dragData.getFirst()).text().get();
             if (list.contains(text)) {
                 int sourceIndex = list.indexOf(text);
                 list.remove(sourceIndex);
@@ -64,7 +64,7 @@ public class DragBetweenTest extends TestBase {
         SolidColor fallbackDragHandler = new SolidColor();
         fallbackDragHandler.dropListener().add((ctx, event, _) -> {
             if (event.dragData().getFirst() instanceof DraggableLabel) {
-                String text = ((DraggableLabel) event.dragData().getFirst()).text();
+                String text = ((DraggableLabel) event.dragData().getFirst()).text().get();
                 if (otherList.contains(text)) {
                     otherList.remove(text);
                     list.add(text);
@@ -104,7 +104,7 @@ public class DragBetweenTest extends TestBase {
         @Override
         protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
             if (event.buttons().contains(MouseButton.LEFT) && !this.rivet().dragAndDropManager().isDragging()) {
-                this.rivet().dragAndDropManager().startDrag(this, new Label(this.text()));
+                this.rivet().dragAndDropManager().startDrag(this, new Label(this.text().get()));
             }
             return true;
         }

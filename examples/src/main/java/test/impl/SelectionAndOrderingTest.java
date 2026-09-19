@@ -119,7 +119,7 @@ public class SelectionAndOrderingTest extends TestBase {
                 }
                 this.rivet().dragAndDropManager().startDrag(
                         List.copyOf(dragged),
-                        data -> new DecoratedContainer(new SolidColor(Color.BLACK.withAlpha(170)), new Label(((SelectableLabel) data).text()))
+                        data -> new DecoratedContainer(new SolidColor(Color.BLACK.withAlpha(170)), new Label(((SelectableLabel) data).text().get()))
                 );
             }
             return true;

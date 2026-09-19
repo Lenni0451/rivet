@@ -1,8 +1,6 @@
 package net.lenni0451.rivet.component.impl;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
@@ -15,6 +13,8 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.property.FloatProperty;
+import net.lenni0451.rivet.property.ObjectProperty;
 import net.lenni0451.rivet.text.TextWrapper;
 import net.lenni0451.rivet.text.model.TextFormat;
 import net.lenni0451.rivet.text.model.TextLine;
@@ -24,145 +24,125 @@ import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class Label extends Component {
 
     @Getter
-    @Nullable
-    private Font font;
-    private Text text;
+    private final ObjectProperty<Font> font = new ObjectProperty<>();
+    @Getter
+    private final ObjectProperty<String> text;
+    @Getter
+    private final ObjectProperty<TextFormat> textFormat;
+    @Getter
+    private final ObjectProperty<TextLine> textLine;
+    @Getter
+    private final FloatProperty scale = new FloatProperty(1F);
+    @Getter
+    private final ObjectProperty<TextOrigin.Horizontal> horizontalOrigin = new ObjectProperty<>(TextOrigin.Horizontal.VISUAL_CENTER);
+    @Getter
+    private final ObjectProperty<TextOrigin.Vertical> verticalOrigin = new ObjectProperty<>(TextOrigin.Vertical.LOGICAL_CENTER);
+    @Getter
+    private final ObjectProperty<ShapedTextBlock.LineAlignment> lineAlignment = new ObjectProperty<>(ShapedTextBlock.LineAlignment.LEFT);
+
     private Shaped shaped;
     private boolean reshape;
+
     @Getter
     private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.General.TEXT_COLOR);
     @Getter
     private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.General.DISABLED_TEXT_COLOR);
     @Getter
     private final ThemeOption<OverflowBehavior> overflowBehavior = new ThemeOption<>(this, Theme.Label.OVERFLOW_BEHAVIOR);
-    @Getter
-    @Setter
-    private TextOrigin.Horizontal horizontalOrigin = TextOrigin.Horizontal.VISUAL_CENTER;
-    @Getter
-    @Setter
-    private TextOrigin.Vertical verticalOrigin = TextOrigin.Vertical.LOGICAL_CENTER;
-    @Getter
-    @Setter
-    private ShapedTextBlock.LineAlignment lineAlignment = ShapedTextBlock.LineAlignment.LEFT;
-    @Getter
-    private float scale = 1F;
 
     public Label(final String text) {
         this(text, null);
     }
 
     public Label(final String text, @Nullable final TextFormat format) {
-        this(new StringText(text, format));
+        this.text = new ObjectProperty<>(text);
+        this.textFormat = new ObjectProperty<>(format);
+        this.textLine = new ObjectProperty<>();
+        this.init();
     }
 
     public Label(final TextLine line) {
-        this(new TextLineText(line));
+        this.text = new ObjectProperty<>("");
+        this.textFormat = new ObjectProperty<>();
+        this.textLine = new ObjectProperty<>(line);
+        this.init();
     }
 
-    private Label(final Text text) {
-        this.text = text;
+    private void init() {
+        this.font.updateListener().add(f -> this.reshapeAndLayout());
+        this.text.updateListener().add(t -> {
+            if (this.textLine.get() != null) {
+                this.textLine.set(null);
+            }
+            this.reshapeAndLayout();
+        });
+        this.textFormat.updateListener().add(f -> this.reshapeAndLayout());
+        this.textLine.updateListener().add(l -> this.reshapeAndLayout());
+        this.scale.updateListener().add(s -> this.reshapeAndLayout());
 
         this.textColor.changeListener().add(c -> this.reshape = true);
         this.disabledTextColor.changeListener().add(c -> this.reshape = true);
-        this.overflowBehavior.changeListener().add(o -> {
-            this.reshape = true;
-            if (this.parent() != null) {
-                this.parent().requestLayoutRecalculation();
-            }
-        });
+        this.overflowBehavior.changeListener().add(o -> this.reshapeAndLayout());
     }
 
     public final Label font(@Nullable final Font font) {
-        if (!Objects.equals(this.font, font)) {
-            this.font = font;
-            this.reshape = true;
-            if (this.parent() != null) {
-                this.parent().requestLayoutRecalculation();
-            }
-        }
+        this.font.set(font);
         return this;
     }
 
-    @Nullable
-    public final String text() {
-        if (this.text instanceof StringText stringText) {
-            return stringText.text;
-        }
-        return null;
-    }
-
-    @Nullable
-    public final TextLine textLine() {
-        if (this.text instanceof TextLineText textLineText) {
-            return textLineText.line;
-        }
-        return null;
-    }
-
     public final Label text(final String text) {
-        if (this.text instanceof StringText stringText) {
-            if (!stringText.text.equals(text)) {
-                stringText.text = text;
-                this.markReshape();
-            }
-        } else {
-            this.text = new StringText(text, TextFormat.DEFAULT);
-            this.markReshape();
+        if (this.textLine.get() != null) {
+            this.textLine.set(null);
         }
+        this.text.set(text);
         return this;
     }
 
     public final Label text(final String text, @Nullable final TextFormat textFormat) {
-        if (!(this.text instanceof StringText stringText) || !stringText.text.equals(text) || !Objects.equals(stringText.format, textFormat)) {
-            this.text = new StringText(text, textFormat);
-            this.markReshape();
+        if (this.textLine.get() != null) {
+            this.textLine.set(null);
         }
+        this.text.set(text);
+        this.textFormat.set(textFormat);
         return this;
     }
 
     public final Label text(final TextLine line) {
-        if (!(this.text instanceof TextLineText textLineText) || !textLineText.line.equals(line)) {
-            this.text = new TextLineText(line);
-            this.markReshape();
-        }
+        this.textLine.set(line);
         return this;
     }
 
-    @Nullable
-    public final TextFormat textFormat() {
-        if (this.text instanceof StringText stringText) {
-            return stringText.format;
-        }
-        return null;
-    }
-
-    public final Label textFormat(final TextFormat textFormat) {
-        if (this.text instanceof StringText stringText) {
-            if (!Objects.equals(stringText.format, textFormat)) {
-                this.text = new StringText(stringText.text, textFormat);
-                this.markReshape();
-            }
-        }
+    public final Label textFormat(@Nullable final TextFormat textFormat) {
+        this.textFormat.set(textFormat);
         return this;
     }
 
-    public Label scale(final float scale) {
-        if (this.scale != scale) {
-            this.scale = scale;
-            if (this.parent() != null) {
-                this.parent().requestLayoutRecalculation();
-            }
-        }
+    public final Label scale(final float scale) {
+        this.scale.set(scale);
         return this;
     }
 
-    private void markReshape() {
+    public final Label horizontalOrigin(final TextOrigin.Horizontal horizontalOrigin) {
+        this.horizontalOrigin.set(horizontalOrigin);
+        return this;
+    }
+
+    public final Label verticalOrigin(final TextOrigin.Vertical verticalOrigin) {
+        this.verticalOrigin.set(verticalOrigin);
+        return this;
+    }
+
+    public final Label lineAlignment(final ShapedTextBlock.LineAlignment lineAlignment) {
+        this.lineAlignment.set(lineAlignment);
+        return this;
+    }
+
+    private void reshapeAndLayout() {
         this.reshape = true;
         if (this.parent() != null) {
             this.parent().requestLayoutRecalculation();
@@ -171,10 +151,10 @@ public class Label extends Component {
 
     private void shapeText(final Size size) {
         if (this.reshape) {
-            Font font = this.font != null ? this.font : this.rivet().backend().font();
+            Font font = this.font.getOrElse(this.rivet().backend().font());
             TextLine line = this.createTextLine();
             if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
-                this.shaped = TextWrapper.wrapLine(font, line, size.width() / this.scale);
+                this.shaped = TextWrapper.wrapLine(font, line, size.width() / this.scale.get());
             } else {
                 this.shaped = font.shapeText(line);
             }
@@ -183,30 +163,27 @@ public class Label extends Component {
     }
 
     private TextLine createTextLine() {
-        if (this.text instanceof StringText stringText) {
-            TextFormat format;
-            Color color;
-            if (stringText.format != null) {
-                format = stringText.format;
-                if (format.color().equals(Color.TRANSPARENT)) {
-                    color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
-                } else {
-                    if (this.disabled().get() && format.color().equals(this.textColor.value())) {
-                        color = this.disabledTextColor.value();
-                    } else {
-                        color = format.color();
-                    }
-                }
-            } else {
-                format = TextFormat.DEFAULT;
-                color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
-            }
-            return this.createTextLine(stringText.text, format.withColor(color));
-        } else if (this.text instanceof TextLineText textLineText) {
-            return textLineText.line;
-        } else {
-            throw new IllegalStateException("Unknown text type: " + this.text.getClass().getName());
+        TextLine textLine = this.textLine.get();
+        if (textLine != null) {
+            return textLine;
         }
+        TextFormat format = this.textFormat.get();
+        Color color;
+        if (format != null) {
+            if (format.color().equals(Color.TRANSPARENT)) {
+                color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
+            } else {
+                if (this.disabled().get() && format.color().equals(this.textColor.value())) {
+                    color = this.disabledTextColor.value();
+                } else {
+                    color = format.color();
+                }
+            }
+        } else {
+            format = TextFormat.DEFAULT;
+            color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
+        }
+        return this.createTextLine(this.text.getOrElse(""), format.withColor(color));
     }
 
     protected TextLine createTextLine(final String text, final TextFormat format) {
@@ -246,24 +223,29 @@ public class Label extends Component {
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         this.shapeText(size);
+        float scale = this.scale.get();
+        TextOrigin.Horizontal horizontalOrigin = this.horizontalOrigin.get();
+        TextOrigin.Vertical verticalOrigin = this.verticalOrigin.get();
+        ShapedTextBlock.LineAlignment lineAlignment = this.lineAlignment.get();
+
         if (this.shaped instanceof ShapedTextBlock shapedTextBlock) {
-            float x = this.horizontalOrigin.position(size.width() / this.scale);
-            float y = this.verticalOrigin.position(size.height() / this.scale);
-            renderer.scale(this.scale, () -> renderer.text(shapedTextBlock, x, y, this.horizontalOrigin, this.verticalOrigin, this.lineAlignment));
+            float x = horizontalOrigin.position(size.width() / scale);
+            float y = verticalOrigin.position(size.height() / scale);
+            renderer.scale(scale, () -> renderer.text(shapedTextBlock, x, y, horizontalOrigin, verticalOrigin, lineAlignment));
         } else if (this.shaped instanceof ShapedText shapedText) {
-            float scale;
+            float textScale;
             if (this.overflowBehavior.value().equals(OverflowBehavior.SCALE)) {
-                float widthRatio = size.width() / (this.shaped.visualBounds().width() * this.scale);
-                float heightRatio = size.height() / (this.shaped.logicalBounds().height() * this.scale);
+                float widthRatio = size.width() / (this.shaped.visualBounds().width() * scale);
+                float heightRatio = size.height() / (this.shaped.logicalBounds().height() * scale);
                 float ratio = Math.min(widthRatio, heightRatio);
-                scale = ratio > 1 ? this.scale : ratio;
+                textScale = ratio > 1 ? scale : ratio;
             } else {
-                scale = this.scale;
+                textScale = scale;
             }
 
-            float x = this.horizontalOrigin.position(size.width() / scale);
-            float y = this.verticalOrigin.position(size.height() / scale);
-            renderer.scale(scale, () -> renderer.text(shapedText, x, y, this.horizontalOrigin, this.verticalOrigin));
+            float x = horizontalOrigin.position(size.width() / textScale);
+            float y = verticalOrigin.position(size.height() / textScale);
+            renderer.scale(textScale, () -> renderer.text(shapedText, x, y, horizontalOrigin, verticalOrigin));
         } else {
             throw new IllegalStateException("Unknown shaped type: " + this.shaped.getClass().getName());
         }
@@ -272,9 +254,10 @@ public class Label extends Component {
     @Override
     public Size computeIdealSize(final Size constraints) {
         this.shapeText(constraints);
+        float scale = this.scale.get();
         return new Size(
-                this.shaped.visualBounds().width() * this.scale,
-                this.shaped.logicalBounds().height() * this.scale
+                this.shaped.visualBounds().width() * scale,
+                this.shaped.logicalBounds().height() * scale
         );
     }
 
@@ -288,21 +271,6 @@ public class Label extends Component {
 
     public enum OverflowBehavior {
         CLIP, SCALE, WRAP
-    }
-
-    private sealed interface Text permits StringText, TextLineText {
-    }
-
-    @AllArgsConstructor
-    private static final class StringText implements Text {
-        public String text;
-        @Nullable
-        public TextFormat format;
-    }
-
-    @AllArgsConstructor
-    private static final class TextLineText implements Text {
-        public TextLine line;
     }
 
 }

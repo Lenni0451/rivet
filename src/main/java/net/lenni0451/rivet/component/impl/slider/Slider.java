@@ -32,6 +32,11 @@ public class Slider extends AbstractSlider<Slider> {
         this.value.updateListener().add(this.thumb::value);
     }
 
+    public final Slider value(final double value) {
+        this.value.set(value);
+        return this;
+    }
+
     @Override
     protected void onThumbDrag(final SliderThumb thumb, final double newValue) {
         this.value.set(newValue);

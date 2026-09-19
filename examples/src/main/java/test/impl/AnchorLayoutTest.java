@@ -22,11 +22,11 @@ public class AnchorLayoutTest extends TestBase {
     protected void init(final Rivet rivet) {
         Container container = new Container(AnchorLayout.INSTANCE);
         container.add(new SolidColor(), c -> {
-            c.color(Color.RED);
+            c.color().set(Color.RED);
             c.layoutOptions(AnchorOptions.EMPTY.from(0, 0.7F).to(1, 1));
         });
         container.add(new SolidColor(), c -> {
-            c.color(Color.GREEN);
+            c.color().set(Color.GREEN);
             c.layoutOptions(AnchorOptions.EMPTY.from(0, 0).to(0.2F, 0.7F));
         });
         container.add(new ScrollContainer(new Container(new VerticalListLayout(5, true)), c -> {
@@ -40,7 +40,7 @@ public class AnchorLayoutTest extends TestBase {
             c.layoutOptions(AnchorOptions.EMPTY.from(0.7F, 0).to(1, 0.7F));
         });
         container.add(new SolidColor(), c -> {
-            c.color(Color.BLUE);
+            c.color().set(Color.BLUE);
             c.layoutOptions(AnchorOptions.EMPTY.from(0.2F, 0).to(0.7F, 0.7F));
         });
         rivet.root().add(container);

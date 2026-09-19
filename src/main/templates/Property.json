@@ -38,6 +38,12 @@
             "generic": true,
             "equality": "!Objects.equals(a, b)",
             "defaultValue": "null"
+        },
+        {
+            "prefix": "Corners",
+            "type": "net.lenni0451.rivet.math.Corners",
+            "equality": "!Objects.equals(a, b)",
+            "defaultValue": "net.lenni0451.rivet.math.Corners.EMPTY"
         }
     ]
 }

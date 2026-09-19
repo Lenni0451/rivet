@@ -84,6 +84,11 @@ public class ScrollBar extends Component {
         this.scroll.addValidator(s -> MathUtils.clamp(s, 0, this.maxScroll()));
     }
 
+    public final ScrollBar scroll(final float scroll) {
+        this.scroll.set(scroll);
+        return this;
+    }
+
     public final ScrollBar contentSize(final float contentSize) {
         this.contentSize = contentSize;
         this.scroll.revalidate();

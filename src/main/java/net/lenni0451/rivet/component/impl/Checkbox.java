@@ -75,9 +75,18 @@ public class Checkbox extends Component {
         this("", checked);
     }
 
+    public Checkbox(final String text) {
+        this(text, false);
+    }
+
     public Checkbox(final String text, final boolean checked) {
         this.checked = new BooleanProperty(checked);
         this.text = text;
+    }
+
+    public final Checkbox checked(final boolean checked) {
+        this.checked.set(checked);
+        return this;
     }
 
     public final Checkbox font(final Font font) {

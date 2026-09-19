@@ -111,6 +111,11 @@ public class ToggleSwitch extends Component {
         this.toggled = new BooleanProperty(toggled);
     }
 
+    public final ToggleSwitch toggled(final boolean toggled) {
+        this.toggled.set(toggled);
+        return this;
+    }
+
     private VisualState visualState() {
         return VisualState.get(this.toggled.get(), this.disabled().get(), this.hovered);
     }
