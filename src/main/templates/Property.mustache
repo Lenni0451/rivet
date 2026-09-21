@@ -2,87 +2,31 @@
 {{#var "empty_suffix"}}{{#generic}}<>{{/generic}}{{/var}}
 package net.lenni0451.rivet.property;
 
-import lombok.AllArgsConstructor;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.event.ListenerList;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public final class {{prefix}}Property{{var "generic"}} {
 
-    @lombok.Getter
-    private volatile Store{{var "generic"}} store;
-    private volatile {{type}} lastValue;
+    private volatile {{type}} value;
     private final List<Updater{{var "generic"}}> validators = new CopyOnWriteArrayList<>();
     @lombok.Getter
     private final ListenerList<Setter{{var "generic"}}> updateListener = new ListenerList<>(); // Same as changeListener but always called
     @lombok.Getter
     private final ListenerList<Setter{{var "generic"}}> changeListener = new ListenerList<>(); // Not called if fireChangeListener is false in set()
     private final Map<{{prefix}}Property{{var "generic"}}, Runnable> syncedProperties = Collections.synchronizedMap(new IdentityHashMap<>());
+    private final Map<Observable{{var "generic"}}, Runnable> syncedObservables = Collections.synchronizedMap(new IdentityHashMap<>());
 
     public {{prefix}}Property() {
-        this(new Internal{{var "empty_suffix"}}({{defaultValue}}));
+        this({{defaultValue}});
     }
 
     public {{prefix}}Property(final {{type}} initialValue) {
-        this(new Internal{{var "empty_suffix"}}(initialValue));
-    }
-
-    public {{prefix}}Property(final Getter{{var "generic"}} getter, final SyncMode syncMode) {
-        this(new External{{var "empty_suffix"}}(getter, null, syncMode));
-    }
-
-    public {{prefix}}Property(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final SyncMode syncMode) {
-        this(new External{{var "empty_suffix"}}(getter, setter, syncMode));
-    }
-
-    public {{prefix}}Property(final Getter{{var "generic"}} getter, final Consumer<Runnable> listenerRegistrar) {
-        this(getter, null, listenerRegistrar);
-    }
-
-    public {{prefix}}Property(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final Consumer<Runnable> listenerRegistrar) {
-        this(new External{{var "empty_suffix"}}(getter, setter, SyncMode.MANUAL));
-        listenerRegistrar.accept(this::refresh);
-    }
-
-    public {{prefix}}Property(final Store{{var "generic"}} store) {
-        this.store = store;
-        this.lastValue = this.getInternal();
-    }
-
-    public {{prefix}}Property{{var "generic"}} store(final Store{{var "generic"}} store) {
-        if (this.store == store) return this;
-        this.store = store;
-        this.revalidate();
-        return this;
-    }
-
-    public {{prefix}}Property{{var "generic"}} internalStore(final {{type}} value) {
-        return this.store(new Internal{{var "empty_suffix"}}(value));
-    }
-
-    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, final SyncMode syncMode) {
-        return this.store(new External{{var "empty_suffix"}}(getter, null, syncMode));
-    }
-
-    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final SyncMode syncMode) {
-        return this.store(new External{{var "empty_suffix"}}(getter, setter, syncMode));
-    }
-
-    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, final Consumer<Runnable> listenerRegistrar) {
-        return this.externalStore(getter, null, listenerRegistrar);
-    }
-
-    public {{prefix}}Property{{var "generic"}} externalStore(final Getter{{var "generic"}} getter, @Nullable final Setter{{var "generic"}} setter, final Consumer<Runnable> listenerRegistrar) {
-        this.store(new External{{var "empty_suffix"}}(getter, setter, SyncMode.MANUAL));
-        listenerRegistrar.accept(this::refresh);
-        return this;
+        this.value = initialValue;
     }
 
     public {{prefix}}Property{{var "generic"}} addValidator(final Updater{{var "generic"}} validator) {
@@ -97,50 +41,12 @@ public final class {{prefix}}Property{{var "generic"}} {
     }
 
     public {{prefix}}Property{{var "generic"}} revalidate() {
-        if (!this.readOnly()) {
-            this.set(this.get());
-        } else {
-            this.refresh();
-        }
-        return this;
-    }
-
-    public boolean readOnly() {
-        return this.store.readOnly();
-    }
-
-    public {{prefix}}Property{{var "generic"}} refresh() {
-        return this.refresh(true);
-    }
-
-    public {{prefix}}Property{{var "generic"}} refresh(final boolean fireChangeListener) {
-        {{type}} value = this.getInternal();
-        if (this.notEqual(this.lastValue, value)) {
-            this.lastValue = value;
-            this.updateListener.call(listener -> listener.set(value));
-            if (fireChangeListener) this.changeListener.call(listener -> listener.set(value));
-        }
+        this.set(this.get());
         return this;
     }
 
     public {{type}} get() {
-        {{type}} value = this.getInternal();
-        if (SyncMode.POLL_ON_GET.equals(this.store.syncMode()) && this.notEqual(this.lastValue, value)) {
-            this.lastValue = value;
-            this.updateListener.call(listener -> listener.set(value));
-            this.changeListener.call(listener -> listener.set(value));
-        }
-        return value;
-    }
-
-    private {{type}} getInternal() {
-        {{type}} value = this.store.get();
-        if (!this.validators.isEmpty()) {
-            for (Updater{{var "generic"}} validator : this.validators) {
-                value = validator.update(value);
-            }
-        }
-        return value;
+        return this.value;
     }
     {{#isEq prefix "Object"}}
 
@@ -165,24 +71,15 @@ public final class {{prefix}}Property{{var "generic"}} {
     }
 
     public {{prefix}}Property{{var "generic"}} set({{type}} value, final boolean fireChangeListener) {
-        if (this.readOnly()) return this;
         if (!this.validators.isEmpty()) {
             for (Updater{{var "generic"}} validator : this.validators) {
                 value = validator.update(value);
             }
         }
-        {{type}} previousValue = this.store.get();
-        if (this.notEqual(previousValue, value)) {
-            this.store.set(value);
-            {{type}} newValue = this.store.get(); // Custom store impls might change or reject a value
-            if (this.notEqual(previousValue, newValue)) {
-                this.lastValue = newValue;
-                this.updateListener.call(listener -> listener.set(newValue));
-                if (fireChangeListener) this.changeListener.call(listener -> listener.set(newValue));
-            }
-        } else if (this.notEqual(this.lastValue, value)) {
+        if (this.notEqual(value, this.value)) {
+            this.value = value;
+
             final {{type}} finalValue = value;
-            this.lastValue = finalValue;
             this.updateListener.call(listener -> listener.set(finalValue));
             if (fireChangeListener) this.changeListener.call(listener -> listener.set(finalValue));
         }
@@ -240,10 +137,58 @@ public final class {{prefix}}Property{{var "generic"}} {
         return this;
     }
 
+    public {{prefix}}Property{{var "generic"}} registerSync(final Observable{{var "generic"}} observable) {
+        if (this.syncedObservables.containsKey(observable)) return this;
+
+        // Prevent infinite loops if validators change the value to something else
+        AtomicBoolean syncing = new AtomicBoolean(false);
+        Setter{{var "generic"}} thisListener = value -> {
+            if (!syncing.compareAndSet(false, true)) return;
+            try {
+                observable.set(value);
+                if (this.notEqual(this.get(), observable.get())) {
+                    this.set(observable.get());
+                }
+            } finally {
+                syncing.set(false);
+            }
+        };
+        Setter{{var "generic"}} observableListener = value -> {
+            if (!syncing.compareAndSet(false, true)) return;
+            try {
+                this.set(value);
+                if (this.notEqual(observable.get(), this.get())) {
+                    observable.set(this.get());
+                }
+            } finally {
+                syncing.set(false);
+            }
+        };
+        Runnable unregister = () -> {
+            this.updateListener.remove(thisListener);
+            observable.removeChangeListener(observableListener);
+            this.syncedObservables.remove(observable);
+        };
+
+        this.syncedObservables.put(observable, unregister);
+        this.set(observable.get());
+        this.updateListener.add(thisListener);
+        observable.addChangeListener(observableListener);
+
+        return this;
+    }
+
     public {{prefix}}Property{{var "generic"}} unregisterSync(final {{prefix}}Property{{var "generic"}} property) {
         if (property == this || !this.syncedProperties.containsKey(property)) return this;
 
         this.syncedProperties.get(property).run();
+        return this;
+    }
+
+    public {{prefix}}Property{{var "generic"}} unregisterSync(final Observable{{var "generic"}} observable) {
+        if (!this.syncedObservables.containsKey(observable)) return this;
+
+        this.syncedObservables.get(observable).run();
         return this;
     }
 
@@ -253,91 +198,18 @@ public final class {{prefix}}Property{{var "generic"}} {
                 unregister.run();
             }
         }
+        synchronized (this.syncedObservables) {
+            for (Runnable unregister : List.copyOf(this.syncedObservables.values())) {
+                unregister.run();
+            }
+        }
         return this;
-    }
-
-    public Runnable bindRefresh(final Component component) {
-        Runnable refresh = this::refresh;
-        Runnable add = () -> {
-            component.rivet().renderListener().add(refresh);
-            refresh.run();
-        };
-        Runnable remove = () -> component.rivet().renderListener().remove(refresh);
-
-        component.addedListener().add(add);
-        component.removedListener().add(remove);
-        if (component.attached()) add.run();
-
-        return () -> {
-            if (component.attached()) remove.run();
-            component.addedListener().remove(add);
-            component.removedListener().remove(remove);
-        };
     }
 
     private boolean notEqual(final {{type}} a, final {{type}} b) {
         return {{equality}};
     }
 
-
-    public interface Store{{var "generic"}} {
-        {{type}} get();
-
-        void set(final {{type}} value);
-
-        default boolean readOnly() {
-            return false;
-        }
-
-        default SyncMode syncMode() {
-            return SyncMode.MANUAL;
-        }
-    }
-
-    @AllArgsConstructor
-    public static class Internal{{var "generic"}} implements Store{{var "generic"}} {
-        private volatile {{type}} value;
-
-        @Override
-        public {{type}} get() {
-            return this.value;
-        }
-
-        @Override
-        public void set(final {{type}} value) {
-            this.value = value;
-        }
-    }
-
-    @AllArgsConstructor
-    @Accessors(fluent = true, chain = true, makeFinal = true)
-    public static class External{{var "generic"}} implements Store{{var "generic"}} {
-        private final Getter{{var "generic"}} getter;
-        @Nullable
-        private final Setter{{var "generic"}} setter;
-        @lombok.Getter
-        private final SyncMode syncMode;
-
-        public External(final Getter{{var "generic"}} getter, final SyncMode syncMode) {
-            this(getter, null, syncMode);
-        }
-
-        @Override
-        public {{type}} get() {
-            return this.getter.get();
-        }
-
-        @Override
-        public void set(final {{type}} value) {
-            if (this.setter == null) return;
-            this.setter.set(value);
-        }
-
-        @Override
-        public boolean readOnly() {
-            return this.setter == null;
-        }
-    }
 
     @FunctionalInterface
     public interface Getter{{var "generic"}} {
@@ -352,6 +224,34 @@ public final class {{prefix}}Property{{var "generic"}} {
     @FunctionalInterface
     public interface Updater{{var "generic"}} {
         {{type}} update(final {{type}} value);
+    }
+
+    public interface Observable{{var "generic"}} {
+        {{type}} get();
+
+        void set(final {{type}} value);
+
+        void addChangeListener(final Setter{{var "generic"}} listener);
+
+        void removeChangeListener(final Setter{{var "generic"}} listener);
+    }
+
+    public static abstract class BasicObservable{{var "generic"}} implements Observable{{var "generic"}} {
+        private final ListenerList<Setter{{var "generic"}}> changeListener = new ListenerList<>();
+
+        @Override
+        public void addChangeListener(final Setter{{var "generic"}} listener) {
+            this.changeListener.add(listener);
+        }
+
+        @Override
+        public void removeChangeListener(final Setter{{var "generic"}} listener) {
+            this.changeListener.remove(listener);
+        }
+
+        protected void fireChangeListener(final {{type}} value) {
+            this.changeListener.call(listener -> listener.set(value));
+        }
     }
 
 }

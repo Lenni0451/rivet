@@ -260,7 +260,7 @@ public class DragNumberInput extends ParentContainer {
     @Override
     protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (!super.onMouseDownInternal(event, size)) {
-            if (event.button().equals(MouseButton.LEFT) && !this.value.readOnly()) {
+            if (event.button().equals(MouseButton.LEFT)) {
                 this.dragging = true;
                 this.mouseDownX = event.x();
                 this.mouseDownY = event.y();

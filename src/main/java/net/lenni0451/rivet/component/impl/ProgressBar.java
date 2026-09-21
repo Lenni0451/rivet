@@ -12,7 +12,6 @@ import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.FloatProperty;
-import net.lenni0451.rivet.property.SyncMode;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -68,16 +67,6 @@ public class ProgressBar extends Component {
 
     public ProgressBar(final float progress) {
         this.progress = new FloatProperty(progress);
-        this.init();
-    }
-
-    public ProgressBar(final FloatProperty.Getter progressGetter, final SyncMode syncMode) {
-        this.progress = new FloatProperty(progressGetter, syncMode);
-        this.init();
-    }
-
-    public ProgressBar(final FloatProperty.Getter progressGetter, final FloatProperty.Setter progressSetter, final SyncMode syncMode) {
-        this.progress = new FloatProperty(progressGetter, progressSetter, syncMode);
         this.init();
     }
 

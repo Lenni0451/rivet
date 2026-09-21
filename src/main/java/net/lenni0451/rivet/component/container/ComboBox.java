@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.component.container;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
@@ -16,13 +17,16 @@ import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.BooleanProperty;
-import net.lenni0451.rivet.property.SyncMode;
+import net.lenni0451.rivet.property.FloatProperty;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.ComponentPopup;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -65,12 +69,13 @@ public class ComboBox extends ParentContainer {
     public <T extends Component, C extends Component> ComboBox(final T text, final BiConsumer<ComboBox, T> textInitializer, final C child, final BiConsumer<ComboBox, C> initializer) {
         this.child = child;
         this.popup = new ComponentPopup(this, this.child, () -> new Size(Float.MAX_VALUE, this.maxPopupHeight.value()), this.interceptOutsideClicks::value);
-        this.arrow = new Arrow(() -> this.isOpen() ? 1F : 0F, SyncMode.MANUAL);
+        this.arrow = new Arrow();
         this.button = new Button(new Container(GridLayout.DEFAULT), buttonContent -> {
             buttonContent.add(text.layoutOptions(GridOptions.EMPTY.at(0, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
             buttonContent.add(this.arrow.layoutOptions(GridOptions.EMPTY.at(1, 0).withAnchor(GridAnchor.RIGHT)));
         }, () -> this.popup.open().update(open -> !open));
 
+        this.arrow.progress().registerSync(new BooleanFloatBridge(this.popup.open()));
         this.arrowColor.initListener().add(this.arrow.color()::set);
         this.arrowDisabledColor.initListener().add(this.arrow.disabledColor()::set);
         this.arrowLineWidth.initListener().add(this.arrow.lineWidth()::set);
@@ -137,6 +142,36 @@ public class ComboBox extends ParentContainer {
             return new Rectangle(this.relativeBounds().size().clamp(this.button));
         }
         return Rectangle.EMPTY;
+    }
+
+
+    @RequiredArgsConstructor
+    public static class BooleanFloatBridge implements FloatProperty.Observable {
+        private final BooleanProperty property;
+        private final Map<FloatProperty.Setter, BooleanProperty.Setter> listeners = Collections.synchronizedMap(new IdentityHashMap<>());
+
+        @Override
+        public float get() {
+            return this.property.get() ? 1F : 0F;
+        }
+
+        @Override
+        public void set(final float value) {
+        }
+
+        @Override
+        public void addChangeListener(final FloatProperty.Setter listener) {
+            BooleanProperty.Setter mappedListener = this.listeners.computeIfAbsent(listener, l -> b -> l.set(b ? 1F : 0F));
+            this.property.updateListener().add(mappedListener);
+        }
+
+        @Override
+        public void removeChangeListener(final FloatProperty.Setter listener) {
+            BooleanProperty.Setter mappedListener = this.listeners.remove(listener);
+            if (mappedListener != null) {
+                this.property.updateListener().remove(mappedListener);
+            }
+        }
     }
 
 }

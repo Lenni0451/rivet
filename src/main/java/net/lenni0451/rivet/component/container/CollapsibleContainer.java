@@ -22,7 +22,7 @@ import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.BooleanProperty;
-import net.lenni0451.rivet.property.SyncMode;
+import net.lenni0451.rivet.property.FloatProperty;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.MathUtils;
@@ -57,7 +57,7 @@ public class CollapsibleContainer extends ParentContainer {
     private final ThemeOption<ArrowPosition> arrowPosition = new ThemeOption<>(this, Theme.CollapsibleContainer.ARROW_POSITION);
 
     private Animation collapseAnimation;
-    private float collapseProgress;
+    private final FloatProperty collapseProgress = new FloatProperty(0);
     private Size headerSize;
     private Size contentSize;
 
@@ -90,7 +90,7 @@ public class CollapsibleContainer extends ParentContainer {
             } else {
                 this.collapseAnimation.finish(AnimationDirection.FORWARDS);
             }
-            this.collapseProgress = this.collapseAnimation.getValue();
+            this.collapseProgress.set(this.collapseAnimation.getValue());
         });
     }
 
@@ -109,7 +109,7 @@ public class CollapsibleContainer extends ParentContainer {
             );
         });
 
-        if (this.collapseProgress > 0) {
+        if (this.collapseProgress.get() > 0) {
             float contentX = 0;
             float contentY = this.headerSize.height();
             float contentWidth = this.contentSize.width();
@@ -122,7 +122,7 @@ public class CollapsibleContainer extends ParentContainer {
                             MathUtils.relativizeVisibleArea(visibleArea, contentX, contentY, contentWidth, contentHeight)
                     );
                 };
-                if (this.collapseProgress < 1) {
+                if (this.collapseProgress.get() < 1) {
                     renderer.scissor(0, 0, contentWidth, contentHeight, render);
                 } else {
                     renderer.componentBounds(0, 0, contentWidth, contentHeight, render);
@@ -131,8 +131,8 @@ public class CollapsibleContainer extends ParentContainer {
         }
 
         float collapseProgress = this.collapseAnimation.getValue();
-        if (this.collapseProgress != collapseProgress) {
-            this.collapseProgress = collapseProgress;
+        if (this.collapseProgress.get() != collapseProgress) {
+            this.collapseProgress.set(collapseProgress);
             this.requestLayoutRecalculation();
         }
     }
@@ -140,14 +140,14 @@ public class CollapsibleContainer extends ParentContainer {
     @Override
     public Size computeIdealSize(final Size constraints) {
         Size idealHeaderSize = this.clickableHeader.computeIdealSize(constraints).clamp(this.clickableHeader);
-        if (this.collapseProgress <= 0) {
+        if (this.collapseProgress.get() <= 0) {
             return idealHeaderSize;
         } else {
             Size contentConstraints = constraints.minus(0, idealHeaderSize.height());
             Size contentIdealSize = this.content.computeIdealSize(contentConstraints).clamp(this.content);
             return new Size(
                     Math.max(idealHeaderSize.width(), contentIdealSize.width()),
-                    idealHeaderSize.height() + contentIdealSize.height() * this.collapseProgress
+                    idealHeaderSize.height() + contentIdealSize.height() * this.collapseProgress.get()
             );
         }
     }
@@ -157,7 +157,7 @@ public class CollapsibleContainer extends ParentContainer {
         Size idealHeaderSize = this.clickableHeader.computeIdealSize(size).clamp(this.clickableHeader);
         this.headerSize = new Size(size.width(), idealHeaderSize.height()).clamp(this.clickableHeader);
         this.clickableHeader.computeLayout(this.headerSize);
-        if (this.collapseProgress > 0) {
+        if (this.collapseProgress.get() > 0) {
             float remainingHeight = Math.max(0, size.height() - this.headerSize.height());
             this.contentSize = new Size(size.width(), remainingHeight).clamp(this.content);
         } else {
@@ -168,7 +168,7 @@ public class CollapsibleContainer extends ParentContainer {
 
     @Override
     public Size contentSize() {
-        if (this.collapseProgress <= 0) {
+        if (this.collapseProgress.get() <= 0) {
             return this.headerSize;
         } else {
             return new Size(
@@ -193,13 +193,15 @@ public class CollapsibleContainer extends ParentContainer {
         return Rectangle.EMPTY;
     }
 
+
     private class ClickableHeader extends Container {
         private boolean hovered = false;
 
         private ClickableHeader(final Component header) {
             super(GridLayout.DEFAULT);
 
-            Arrow arrow = new Arrow(() -> CollapsibleContainer.this.collapseProgress, SyncMode.MANUAL);
+            Arrow arrow = new Arrow();
+            CollapsibleContainer.this.collapseProgress.registerSync(arrow.progress());
             CollapsibleContainer.this.arrowColor.initListener().add(arrow.color()::set);
             CollapsibleContainer.this.arrowDisabledColor.initListener().add(arrow.disabledColor()::set);
             CollapsibleContainer.this.arrowLineWidth.initListener().add(arrow.lineWidth()::set);
