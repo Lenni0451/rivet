@@ -84,7 +84,7 @@ public class ComponentPopup {
     }
 
     private void doOpen() {
-        if (this.isOpen()) return;
+        if (this.layer != null) return;
         Rivet rivet = this.owner.rivet();
         if (rivet == null) {
             throw new IllegalStateException("Owner component must be attached to a Rivet instance to open a popup");
@@ -112,18 +112,15 @@ public class ComponentPopup {
     }
 
     private void doClose() {
-        if (!this.isOpen()) return;
-        Rivet rivet = this.owner.rivet();
-        if (rivet != null) {
-            rivet.removeLayer(this.layer);
-        }
+        if (this.layer == null) return;
+        this.layer.container().rivet().removeLayer(this.layer);
         this.layer = null;
         this.closedListener.call(Runnable::run);
     }
 
     public final void updatePopupPosition(final Rectangle absoluteBounds) {
         Rivet rivet = this.owner.rivet();
-        if (rivet == null) return;
+        if (rivet == null || this.layer == null) return;
 
         Size screenSize = rivet.scaledSize();
         Size availableSize = switch (this.position) {

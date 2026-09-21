@@ -150,7 +150,7 @@ public class Label extends Component {
     }
 
     private void shapeText(final Size size) {
-        if (this.reshape) {
+        if (this.reshape || this.shaped == null) {
             Font font = this.font.getOrElse(this.rivet().backend().font());
             TextLine line = this.createTextLine();
             if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
