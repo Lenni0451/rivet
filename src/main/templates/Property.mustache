@@ -95,8 +95,9 @@ public final class {{prefix}}Property{{var "generic"}} {
         return this.set(updater.update(this.get()), fireChangeListener);
     }
 
-    public {{prefix}}Property{{var "generic"}} registerSync(final {{prefix}}Property{{var "generic"}} property) {
-        if (property == this || this.syncedProperties.containsKey(property)) return this;
+    public Runnable registerSync(final {{prefix}}Property{{var "generic"}} property) {
+        if (property == this) return () -> {};
+        if (this.syncedProperties.containsKey(property)) return this.syncedProperties.get(property);
 
         // Prevent infinite loops if validators change the value to something else
         AtomicBoolean syncing = new AtomicBoolean(false);
@@ -135,11 +136,11 @@ public final class {{prefix}}Property{{var "generic"}} {
         this.updateListener.add(thisListener);
         property.updateListener.add(propertyListener);
 
-        return this;
+        return unregister;
     }
 
-    public {{prefix}}Property{{var "generic"}} registerSync(final Observable{{var "generic"}} observable) {
-        if (this.syncedObservables.containsKey(observable)) return this;
+    public Runnable registerSync(final Observable{{var "generic"}} observable) {
+        if (this.syncedObservables.containsKey(observable)) return this.syncedObservables.get(observable);
 
         // Prevent infinite loops if validators change the value to something else
         AtomicBoolean syncing = new AtomicBoolean(false);
@@ -176,7 +177,7 @@ public final class {{prefix}}Property{{var "generic"}} {
         this.updateListener.add(thisListener);
         observable.addChangeListener(observableListener);
 
-        return this;
+        return unregister;
     }
 
     public {{prefix}}Property{{var "generic"}} unregisterSync(final {{prefix}}Property{{var "generic"}} property) {
