@@ -103,7 +103,7 @@ public class DragNumberInput extends ParentContainer {
         this.step.updateListener().add(v -> {
             if (this.updatedLabel != null) {
                 this.updatedLabel.step = v;
-                this.updatedLabel.cachedFormatString = null;
+                this.updatedLabel.invalidateCache(this.value.get());
             }
         });
         this.value.addValidator(v -> MathUtils.clamp(v, this.min.get(), this.max.get()));
@@ -121,7 +121,7 @@ public class DragNumberInput extends ParentContainer {
         this.valueFormat.initListener().add(format -> {
             if (this.updatedLabel != null) {
                 this.updatedLabel.valueFormat = format;
-                this.updatedLabel.cachedFormatString = null;
+                this.updatedLabel.invalidateCache(this.value.get());
             }
         });
     }
@@ -162,8 +162,7 @@ public class DragNumberInput extends ParentContainer {
             updatedLabel.step = this.step.get();
             if (this.rivet() != null) {
                 updatedLabel.valueFormat = this.valueFormat.value();
-                updatedLabel.cachedFormatString = null;
-                updatedLabel.update(this.value.get());
+                updatedLabel.invalidateCache(this.value.get());
             }
         }
         return this;
@@ -242,7 +241,7 @@ public class DragNumberInput extends ParentContainer {
     protected void onThemeChangedInternal() {
         super.onThemeChangedInternal();
         if (this.updatedLabel != null) {
-            this.updatedLabel.cachedFormatString = null;
+            this.updatedLabel.invalidateCache(this.value.get());
         }
     }
 
@@ -375,15 +374,20 @@ public class DragNumberInput extends ParentContainer {
             super(text);
         }
 
+        public final void invalidateCache(final double value) {
+            this.cachedFormatString = null;
+            this.update(value);
+        }
+
         public final void update(final double value) {
             this.text(this.formatValue(value));
         }
 
         private String formatValue(final double value) {
-            if (this.cachedFormatString == null) {
-                this.cachedFormatString = FormatUtils.formatDecimalString(this.valueFormat, this.step);
-            }
             try {
+                if (this.cachedFormatString == null) {
+                    this.cachedFormatString = FormatUtils.formatDecimalString(this.valueFormat, this.step);
+                }
                 return String.format(this.cachedFormatString, value);
             } catch (Throwable t) {
                 return Double.toString(value);
