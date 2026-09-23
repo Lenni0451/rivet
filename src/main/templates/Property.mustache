@@ -255,6 +255,13 @@ public final class {{prefix}}Property{{var "generic"}} {
         }
     }
 
+    /**
+     * <b>Warning! Many, if not all, base rivet components are not designed to work with polled observables.
+     * These components use listeners to update their state and do not call {@link Observable#get()} on their own.
+     * This results in the observable not being polled and the component not updating its state.</b>
+     * <br>
+     * If you want to safely update the component state while polling the observable source, use {@link FramePollingObservable} instead.
+     */
     public static class PollingObservable{{var "generic"}} extends BasicObservable{{var "generic"}} {
         private final Getter{{var "generic"}} getter;
         private final Setter{{var "generic"}} setter;
