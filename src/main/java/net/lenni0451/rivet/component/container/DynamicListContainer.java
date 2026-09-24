@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class DynamicListView<E> extends ReorderableContainer {
+public class DynamicListContainer<E> extends ReorderableContainer {
 
     private final Supplier<List<E>> listSupplier;
     private final Function<E, Component> componentFactory;
@@ -24,19 +24,19 @@ public class DynamicListView<E> extends ReorderableContainer {
     private final IdentityHashMap<Component, Integer> orderMap = new IdentityHashMap<>();
     private final Comparator<Component> orderComparator = Comparator.comparingInt(c -> this.orderMap.getOrDefault(c, 0));
 
-    public DynamicListView(final Layout layout, final List<E> list, final Function<E, Component> componentFactory) {
+    public DynamicListContainer(final Layout layout, final List<E> list, final Function<E, Component> componentFactory) {
         this(layout, null, obj -> false, () -> list, componentFactory);
     }
 
-    public DynamicListView(final Layout layout, final Supplier<List<E>> listSupplier, final Function<E, Component> componentFactory) {
+    public DynamicListContainer(final Layout layout, final Supplier<List<E>> listSupplier, final Function<E, Component> componentFactory) {
         this(layout, null, obj -> false, listSupplier, componentFactory);
     }
 
-    public DynamicListView(final Layout layout, final DropMarkerStrategy strategy, final Predicate<Object> dropFilter, final List<E> list, final Function<E, Component> componentFactory) {
+    public DynamicListContainer(final Layout layout, final DropMarkerStrategy strategy, final Predicate<Object> dropFilter, final List<E> list, final Function<E, Component> componentFactory) {
         this(layout, strategy, dropFilter, () -> list, componentFactory);
     }
 
-    public DynamicListView(final Layout layout, final DropMarkerStrategy strategy, final Predicate<Object> dropFilter, final Supplier<List<E>> listSupplier, final Function<E, Component> componentFactory) {
+    public DynamicListContainer(final Layout layout, final DropMarkerStrategy strategy, final Predicate<Object> dropFilter, final Supplier<List<E>> listSupplier, final Function<E, Component> componentFactory) {
         super(layout, strategy, dropFilter);
         this.listSupplier = listSupplier;
         this.componentFactory = componentFactory;
@@ -48,7 +48,7 @@ public class DynamicListView<E> extends ReorderableContainer {
         };
     }
 
-    public final DynamicListView<E> recreate(final E item) {
+    public final DynamicListContainer<E> recreate(final E item) {
         Component oldComponent = this.componentCache.remove(item);
         if (oldComponent != null) {
             this.remove(oldComponent);

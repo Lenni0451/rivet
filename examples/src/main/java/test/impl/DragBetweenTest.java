@@ -6,7 +6,7 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.component.container.DecoratedContainer;
-import net.lenni0451.rivet.component.container.DynamicListView;
+import net.lenni0451.rivet.component.container.DynamicListContainer;
 import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.component.impl.SolidColor;
 import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
@@ -40,14 +40,14 @@ public class DragBetweenTest extends TestBase {
         rightLabels.add("E");
 
         Container container = new Container(new TileLayout(2, 1));
-        container.add(this.newListView(leftLabels, rightLabels));
-        container.add(this.newListView(rightLabels, leftLabels));
+        container.add(this.newListContainer(leftLabels, rightLabels));
+        container.add(this.newListContainer(rightLabels, leftLabels));
         rivet.root().add(container);
     }
 
-    private Component newListView(final List<String> list, final List<String> otherList) {
-        DynamicListView<String> listView = new DynamicListView<>(new VerticalListLayout(0, true), DropMarkerStrategy.vertical(0, 2), DraggableLabel.class::isInstance, () -> list, DraggableLabel::new);
-        listView.reorderListener().add((dragData, insertIndex) -> {
+    private Component newListContainer(final List<String> list, final List<String> otherList) {
+        DynamicListContainer<String> listContainer = new DynamicListContainer<>(new VerticalListLayout(0, true), DropMarkerStrategy.vertical(0, 2), DraggableLabel.class::isInstance, () -> list, DraggableLabel::new);
+        listContainer.reorderListener().add((dragData, insertIndex) -> {
             String text = ((DraggableLabel) dragData.getFirst()).text().get();
             if (list.contains(text)) {
                 int sourceIndex = list.indexOf(text);
@@ -72,7 +72,7 @@ public class DragBetweenTest extends TestBase {
                 }
             }
         });
-        return new DecoratedContainer(fallbackDragHandler, listView);
+        return new DecoratedContainer(fallbackDragHandler, listContainer);
     }
 
 
