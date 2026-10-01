@@ -28,10 +28,9 @@ public record HorizontalFlowLayout(int horizontalGap, int verticalGap) implement
         float totalHeight = 0;
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
-            float xGap = currentWidth > 0 ? this.horizontalGap : 0;
             float componentWidth = this.widthOf(component, idealSize);
             float componentHeight = this.heightOf(component, idealSize);
-            if (currentWidth > 0 && currentWidth + xGap + componentWidth > constraints.width()) {
+            if (currentWidth > 0 && currentWidth + this.horizontalGap + componentWidth > constraints.width()) {
                 totalWidth = Math.max(totalWidth, currentWidth);
                 currentWidth = 0;
 
@@ -39,6 +38,7 @@ public record HorizontalFlowLayout(int horizontalGap, int verticalGap) implement
                 totalHeight += currentHeight;
                 currentHeight = 0;
             }
+            float xGap = currentWidth > 0 ? this.horizontalGap : 0;
             currentWidth += xGap + componentWidth;
             currentHeight = Math.max(currentHeight, componentHeight);
         }
