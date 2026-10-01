@@ -1,12 +1,12 @@
 package net.lenni0451.rivet.parser.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import javax.annotation.Nullable;
 
 @RequiredArgsConstructor
-public final class EnumParser<E extends Enum<E>> implements Parser<E> {
+public final class EnumParser<E extends Enum<E>> implements StringParser<E> {
 
     private final Class<E> enumClass;
 

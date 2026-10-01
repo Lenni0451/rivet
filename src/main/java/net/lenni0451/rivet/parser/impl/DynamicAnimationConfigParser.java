@@ -2,11 +2,11 @@ package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import java.util.Objects;
 
-public class DynamicAnimationConfigParser implements Parser<DynamicAnimationConfig> {
+public class DynamicAnimationConfigParser implements StringParser<DynamicAnimationConfig> {
 
     private final EasingFunctionParser easingFunctionParser = new EasingFunctionParser();
     private final EnumParser<EasingMode> easingModeParser = new EnumParser<>(EasingMode.class);

@@ -1,12 +1,12 @@
 package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.commons.animation.easing.EasingFunction;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public final class EasingFunctionParser implements Parser<EasingFunction> {
+public final class EasingFunctionParser implements StringParser<EasingFunction> {
 
     @Nullable
     @Override

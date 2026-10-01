@@ -1,13 +1,13 @@
 package net.lenni0451.rivet.parser.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class NumberParser<N extends Number> implements Parser<N> {
+public class NumberParser<N extends Number> implements StringParser<N> {
 
     private final Function<String, N> parser;
     private final Function<N, String> toString;

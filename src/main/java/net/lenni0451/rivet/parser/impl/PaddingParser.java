@@ -1,12 +1,12 @@
 package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.rivet.math.Padding;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public final class PaddingParser implements Parser<Padding> {
+public final class PaddingParser implements StringParser<Padding> {
 
     @Nullable
     @Override

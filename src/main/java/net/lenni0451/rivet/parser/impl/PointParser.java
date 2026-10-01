@@ -1,11 +1,11 @@
 package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.rivet.math.Point;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import java.util.Locale;
 
-public final class PointParser implements Parser<Point> {
+public final class PointParser implements StringParser<Point> {
 
     @Override
     public Point parse(final String s) {

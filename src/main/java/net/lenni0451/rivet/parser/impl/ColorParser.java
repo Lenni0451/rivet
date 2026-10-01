@@ -1,13 +1,13 @@
 package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 import net.lenni0451.rivet.parser.impl.color.ColorFormat;
 import net.lenni0451.rivet.text.ParserException;
 
 import javax.annotation.Nullable;
 
-public final class ColorParser implements Parser<Color> {
+public final class ColorParser implements StringParser<Color> {
 
     @Nullable
     @Override

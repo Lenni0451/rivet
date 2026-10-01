@@ -22,7 +22,7 @@ public final class ParserRegistry {
         registry.register(Long.class, new NumberParser<>(Long::valueOf));
         registry.register(Float.class, new NumberParser<>(Float::valueOf));
         registry.register(Double.class, new NumberParser<>(Double::valueOf));
-        registry.register(String.class, new StringParser());
+        registry.register(String.class, new StringValueParser());
         registry.register(Color.class, new ColorParser());
         registry.register(Padding.class, new PaddingParser());
         registry.register(Corners.class, new CornersParser());
@@ -36,9 +36,9 @@ public final class ParserRegistry {
     }
 
 
-    private final Map<Class<?>, Parser<?>> parsers = new LinkedHashMap<>();
+    private final Map<Class<?>, StringParser<?>> parsers = new LinkedHashMap<>();
 
-    public <T> ParserRegistry register(final Class<T> type, final Parser<? extends T> parser) {
+    public <T> ParserRegistry register(final Class<T> type, final StringParser<? extends T> parser) {
         this.parsers.put(this.box(type), parser);
         return this;
     }
@@ -49,7 +49,7 @@ public final class ParserRegistry {
 
     public <T> T parse(final Class<T> type, final String value) {
         Class<T> boxedType = this.box(type);
-        Parser<?> parser = this.findParser(boxedType);
+        StringParser<?> parser = this.findParser(boxedType);
         Object parsed;
         try {
             parsed = parser.parse(value);
@@ -70,7 +70,7 @@ public final class ParserRegistry {
         if (!boxedType.isInstance(value)) {
             throw new IllegalArgumentException("Expected " + boxedType.getTypeName() + " but got " + value.getClass().getTypeName());
         }
-        Parser<T> parser = (Parser<T>) this.findParser(boxedType);
+        StringParser<T> parser = (StringParser<T>) this.findParser(boxedType);
         String formatted;
         try {
             formatted = parser.toString(value);
@@ -89,11 +89,11 @@ public final class ParserRegistry {
         return copy;
     }
 
-    private Parser<?> findParser(final Class<?> type) {
+    private StringParser<?> findParser(final Class<?> type) {
         if (type.isEnum()) {
             return new EnumParser<>(type.asSubclass(Enum.class));
         }
-        Parser<?> parser = this.parsers.get(type);
+        StringParser<?> parser = this.parsers.get(type);
         if (parser == null) {
             throw new UnsupportedOperationException("Unsupported value type: " + type.getTypeName());
         }

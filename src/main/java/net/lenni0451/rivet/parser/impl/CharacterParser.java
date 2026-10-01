@@ -1,8 +1,8 @@
 package net.lenni0451.rivet.parser.impl;
 
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
-public class CharacterParser implements Parser<Character> {
+public class CharacterParser implements StringParser<Character> {
 
     @Override
     public Character parse(final String s) {

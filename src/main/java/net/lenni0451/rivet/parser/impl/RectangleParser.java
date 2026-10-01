@@ -1,11 +1,11 @@
 package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.rivet.math.Rectangle;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import java.util.Locale;
 
-public final class RectangleParser implements Parser<Rectangle> {
+public final class RectangleParser implements StringParser<Rectangle> {
 
     @Override
     public Rectangle parse(final String s) {

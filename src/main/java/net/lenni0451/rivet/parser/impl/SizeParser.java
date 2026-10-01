@@ -1,11 +1,11 @@
 package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.rivet.math.Size;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import java.util.Locale;
 
-public final class SizeParser implements Parser<Size> {
+public final class SizeParser implements StringParser<Size> {
 
     @Override
     public Size parse(final String s) {

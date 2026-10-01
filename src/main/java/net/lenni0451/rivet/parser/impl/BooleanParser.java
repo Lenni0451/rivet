@@ -1,8 +1,8 @@
 package net.lenni0451.rivet.parser.impl;
 
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
-public class BooleanParser implements Parser<Boolean> {
+public class BooleanParser implements StringParser<Boolean> {
 
     @Override
     public Boolean parse(final String s) {

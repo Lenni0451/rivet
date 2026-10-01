@@ -6,14 +6,14 @@ import net.lenni0451.commons.animation.easing.EasingFunction;
 import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.AnimationFrameConfig;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public final class AnimationConfigParser implements Parser<AnimationConfig> {
+public final class AnimationConfigParser implements StringParser<AnimationConfig> {
 
     private final EasingFunctionParser easingFunctionParser = new EasingFunctionParser();
     private final EnumParser<EasingMode> easingModeParser = new EnumParser<>(EasingMode.class);

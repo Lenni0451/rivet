@@ -2,8 +2,8 @@ package net.lenni0451.rivet.theme.loader;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import net.lenni0451.rivet.parser.Parser;
 import net.lenni0451.rivet.parser.ParserRegistry;
+import net.lenni0451.rivet.parser.StringParser;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeKey;
 
@@ -17,7 +17,7 @@ public class ThemeLoader {
 
     private static final ParserRegistry PARSERS = ParserRegistry.standard();
 
-    public static <T> void registerParser(final Class<T> type, final Parser<T> parser) {
+    public static <T> void registerParser(final Class<T> type, final StringParser<T> parser) {
         PARSERS.register(type, parser);
     }
 

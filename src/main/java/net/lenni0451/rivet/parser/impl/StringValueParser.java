@@ -1,8 +1,8 @@
 package net.lenni0451.rivet.parser.impl;
 
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
-public class StringParser implements Parser<String> {
+public class StringValueParser implements StringParser<String> {
 
     @Override
     public String parse(final String s) {

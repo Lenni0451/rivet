@@ -1,12 +1,12 @@
 package net.lenni0451.rivet.parser.impl;
 
 import net.lenni0451.rivet.math.Corners;
-import net.lenni0451.rivet.parser.Parser;
+import net.lenni0451.rivet.parser.StringParser;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public final class CornersParser implements Parser<Corners> {
+public final class CornersParser implements StringParser<Corners> {
 
     @Nullable
     @Override
