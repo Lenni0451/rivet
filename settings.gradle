@@ -13,6 +13,8 @@ rootProject.name = "rivet"
 
 include(":examples")
 
+include(":xml")
+
 include(":backend-awt")
 include(":backend-thingl")
 include(":backend-thingl-glfw")

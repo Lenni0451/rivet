@@ -1,0 +1,7 @@
+plugins {
+    id "project.defaults_and_publish"
+}
+
+dependencies {
+    api project(":")
+}
