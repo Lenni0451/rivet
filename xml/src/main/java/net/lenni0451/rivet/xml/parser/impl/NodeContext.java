@@ -1,11 +1,9 @@
 package net.lenni0451.rivet.xml.parser.impl;
 
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
+import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,31 +29,26 @@ public interface NodeContext {
     Element element();
 
     default List<Element> childElements() {
-        NodeList children = this.element().getChildNodes();
-        List<Element> elements = new ArrayList<>();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if (child.getNodeType() == Node.ELEMENT_NODE) {
-                elements.add((Element) child);
-            }
-        }
-        return elements;
+        return XmlUtils.childElements(this.element());
     }
 
-    default <T> Optional<T> attribute(final String name, final Class<T> type) {
+    default <T> Optional<T> resolveAttribute(final String name, final Class<T> type, final boolean referenceOnly) {
         if (!this.element().hasAttribute(name)) {
             return Optional.empty();
         }
-        String value = this.element().getAttribute(name);
-        if (value.startsWith("${") && value.endsWith("}")) {
-            String varName = value.substring(2, value.length() - 1);
-            T varValue = this.context().getVariable(varName, type).orElse(null);
-            if (varValue == null) {
-                throw new IllegalArgumentException("Variable '" + varName + "' not found or not of type " + type.getTypeName());
-            }
-            return Optional.of(varValue);
+        String value = this.context().resolveTemplateParameter(this.element().getAttribute(name));
+        if (XmlUtils.isVariableReference(value)) {
+            String varName = XmlUtils.extractVariableReferenceName(value);
+            return Optional.of(this.context().requireVariable(varName, type));
+        }
+        if (referenceOnly) {
+            throw new IllegalArgumentException("Attribute '" + name + "' must be a variable reference (${...})");
         }
         return Optional.ofNullable(this.context().stringParserRegistry().parse(type, value));
+    }
+
+    default <T> Optional<T> attribute(final String name, final Class<T> type) {
+        return this.resolveAttribute(name, type, false);
     }
 
     default <T> T requireAttribute(final String name, final Class<T> type) {
@@ -67,19 +60,7 @@ public interface NodeContext {
     }
 
     default <T> Optional<T> referenceAttribute(final String name, final Class<T> type) {
-        if (!this.element().hasAttribute(name)) {
-            return Optional.empty();
-        }
-        String value = this.element().getAttribute(name);
-        if (value.startsWith("${") && value.endsWith("}")) {
-            String varName = value.substring(2, value.length() - 1);
-            T varValue = this.context().getVariable(varName, type).orElse(null);
-            if (varValue == null) {
-                throw new IllegalArgumentException("Variable '" + varName + "' not found or not of type " + type.getTypeName());
-            }
-            return Optional.of(varValue);
-        }
-        throw new IllegalArgumentException("Attribute '" + name + "' must be a variable reference (${...})");
+        return this.resolveAttribute(name, type, true);
     }
 
     default <T> T requireReferenceAttribute(final String name, final Class<T> type) {
