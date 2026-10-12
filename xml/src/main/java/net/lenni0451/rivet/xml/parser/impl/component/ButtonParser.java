@@ -17,9 +17,9 @@ import java.util.Set;
 public class ButtonParser implements XmlParser<Button> {
 
     private final XmlParser<Button> parser = ElementParserBuilder.createComponent(ctx -> ctx
-                    .attribute("text", String.class)
+                    .componentOrTextAttribute("text")
+                    .or(() -> ctx.childOrReference("child", Component.class))
                     .map(Button::new)
-                    .or(() -> ctx.child(Component.class).map(Button::new))
                     .orElseThrow(() -> new IllegalArgumentException("Button must have a text attribute or a child component")))
             .referenceAttribute("handledButtons", Set.class, (button, buttons) -> {
                 button.handledButtons().clear();

@@ -5,4 +5,12 @@
 
 <suppressions>
     <suppress files="ClassNameHere\.java" checks="UnusedLocalVariable"/>
+
+    <suppress files="CheckboxParser\.java" checks="Indentation"/>
+    <suppress files="CollapsibleContainerParser\.java" checks="Indentation"/>
+    <suppress files="ComboBoxParser\.java" checks="Indentation"/>
+    <suppress files="DecoratedContainerParser\.java" checks="Indentation"/>
+    <suppress files="DragNumberInputParser\.java" checks="Indentation"/>
+    <suppress files="DynamicListContainerParser\.java" checks="Indentation"/>
+    <suppress files="TileLayoutParser\.java" checks="Indentation"/>
 </suppressions>

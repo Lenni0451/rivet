@@ -10,7 +10,9 @@ import org.w3c.dom.Node;
 
 public class ContainerParser implements XmlParser<Container> {
 
-    private final XmlParser<Container> parser = ElementParserBuilder.createComponent(ctx -> new Container(ctx.requireChild(Layout.class)))
+    private final XmlParser<Container> parser = ElementParserBuilder.createComponent(ctx -> new Container(
+                    ctx.requireChildOrReference("layout", Layout.class)
+            ))
             .child(Component.class, Container::add)
             .build();
 

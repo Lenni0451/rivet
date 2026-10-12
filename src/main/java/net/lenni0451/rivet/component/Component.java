@@ -166,6 +166,10 @@ public abstract class Component {
         return this;
     }
 
+    public final Component fixedSize(final Size size) {
+        return this.fixedSize(size.width(), size.height());
+    }
+
     public final Component fixedSize(final float width, final float height) {
         Size newMinSize = this.minSize;
         Size newMaxSize = this.maxSize;

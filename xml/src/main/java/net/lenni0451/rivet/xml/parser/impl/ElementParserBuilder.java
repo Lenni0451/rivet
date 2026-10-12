@@ -41,6 +41,7 @@ public class ElementParserBuilder<T> {
                 .attribute("id", String.class, (component, id) -> {}) // Handled in BuiltXmlParser
                 .attribute("minSize", Size.class, Component::minSize)
                 .attribute("maxSize", Size.class, Component::maxSize)
+                .attribute("fixedSize", Size.class, Component::fixedSize)
                 .child(LayoutOptions.class, Component::layoutOptions)
                 .child(Component.Capabilities.class, Component::capabilities)
                 .attribute("disabled", boolean.class, Component::disabled);

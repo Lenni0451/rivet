@@ -84,11 +84,6 @@ public class Checkbox extends Component {
         this.text = text;
     }
 
-    public final Checkbox checked(final boolean checked) {
-        this.checked.set(checked);
-        return this;
-    }
-
     public final Checkbox font(final Font font) {
         if (this.font != font) {
             this.font = font;
@@ -99,6 +94,11 @@ public class Checkbox extends Component {
                 }
             }
         }
+        return this;
+    }
+
+    public final Checkbox checked(final boolean checked) {
+        this.checked.set(checked);
         return this;
     }
 
