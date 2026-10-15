@@ -71,6 +71,14 @@ public class ThinGLRenderer extends CheckedRenderer {
     }
 
     @Override
+    public void doRotate(final float degrees, final Runnable renderer) {
+        this.positionMatrix.pushMatrix();
+        this.positionMatrix.rotateZ((float) Math.toRadians(degrees));
+        renderer.run();
+        this.positionMatrix.popMatrix();
+    }
+
+    @Override
     public void doStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         ThinGL.stencilStack().push(StencilStack.Mode.EQUAL_INTERSECTION);
         maskRenderer.accept(this);

@@ -51,6 +51,17 @@ public abstract class CheckedRenderer implements Renderer {
     protected abstract void doScale(final float x, final float y, final Runnable renderer);
 
     @Override
+    public final void rotate(final float degrees, final Runnable renderer) {
+        if (!Float.isFinite(degrees) || degrees % 360F == 0) {
+            renderer.run();
+        } else {
+            this.doRotate(degrees, renderer);
+        }
+    }
+
+    protected abstract void doRotate(final float degrees, final Runnable renderer);
+
+    @Override
     public final void stencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         this.doStencil(maskRenderer, renderer);
     }

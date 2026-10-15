@@ -46,6 +46,7 @@ public class BatchedRenderListBuilder {
                         scissor.intersection(MathUtil.transform(MathUtil.convert(scissorRect), matrix));
                     }
                     case ModifierCommand.Scale scaleCommand -> matrix.scaleXY(scaleCommand.x(), scaleCommand.y());
+                    case ModifierCommand.Rotate rotateCommand -> matrix.rotateZ((float) Math.toRadians(rotateCommand.degrees()));
                     case ThinGLModifierCommand thinGlModifierCommand -> {
                         switch (thinGlModifierCommand) {
                             case ThinGLModifierCommand.Blur blurCommand -> blurStrength += blurCommand.strength();

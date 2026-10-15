@@ -71,6 +71,11 @@ public final class DeferredRenderer extends CheckedRenderer {
     }
 
     @Override
+    public void doRotate(final float degrees, final Runnable renderer) {
+        this.transform(new ModifierCommand.Rotate(degrees), renderer);
+    }
+
+    @Override
     public void doStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         DeferredRenderer mask = new DeferredRenderer();
         maskRenderer.accept(mask);

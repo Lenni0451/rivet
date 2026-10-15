@@ -18,6 +18,8 @@ public class RenderListExecutor {
             ModifierCommand command = modifiers.next();
             if (command instanceof ModifierCommand.Scale scale) {
                 renderer.scale(scale.x(), scale.y(), () -> this.renderList(renderer, elements, modifiers));
+            } else if (command instanceof ModifierCommand.Rotate rotate) {
+                renderer.rotate(rotate.degrees(), () -> this.renderList(renderer, elements, modifiers));
             } else if (command instanceof ModifierCommand.ComponentBounds bounds) {
                 renderer.componentBounds(bounds.x(), bounds.y(), bounds.width(), bounds.height(), () -> this.renderList(renderer, elements, modifiers));
             } else if (command instanceof ModifierCommand.Scissor scissor) {

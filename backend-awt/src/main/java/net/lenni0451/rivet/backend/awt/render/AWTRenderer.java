@@ -62,6 +62,14 @@ public class AWTRenderer extends CheckedRenderer {
     }
 
     @Override
+    public void doRotate(final float degrees, final Runnable renderer) {
+        AffineTransform previous = new AffineTransform(this.graphics.getTransform());
+        this.graphics.rotate(Math.toRadians(degrees));
+        renderer.run();
+        this.graphics.setTransform(previous);
+    }
+
+    @Override
     public void doStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         ShapeRenderer shapeRenderer = new ShapeRenderer();
         maskRenderer.accept(shapeRenderer);

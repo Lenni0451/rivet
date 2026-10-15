@@ -82,6 +82,14 @@ public class ShapeRenderer extends CheckedRenderer {
     }
 
     @Override
+    public void doRotate(final float degrees, final Runnable renderer) {
+        AffineTransform previous = new AffineTransform(this.transform);
+        this.transform.rotate(Math.toRadians(degrees));
+        renderer.run();
+        this.transform = previous;
+    }
+
+    @Override
     public void doStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
         ShapeRenderer maskShapeRenderer = new ShapeRenderer(new AffineTransform(this.transform));
         maskRenderer.accept(maskShapeRenderer);

@@ -69,4 +69,35 @@ public class MathUtils {
         return new Rectangle(intersection.x() - x, intersection.y() - y, intersection.width(), intersection.height());
     }
 
+    public static Rectangle rotateVisibleArea(final Rectangle visibleArea, final float degrees) {
+        return rotateVisibleArea(visibleArea, degrees, 0, 0);
+    }
+
+    public static Rectangle rotateVisibleArea(final Rectangle visibleArea, final float degrees, final float pivotX, final float pivotY) {
+        if (visibleArea.equals(Rectangle.EMPTY) || degrees % 360F == 0) return visibleArea;
+        double rad = Math.toRadians(-degrees);
+        float cos = (float) Math.cos(rad);
+        float sin = (float) Math.sin(rad);
+
+        float minX = Float.POSITIVE_INFINITY;
+        float minY = Float.POSITIVE_INFINITY;
+        float maxX = Float.NEGATIVE_INFINITY;
+        float maxY = Float.NEGATIVE_INFINITY;
+
+        float[] xs = {visibleArea.x(), visibleArea.maxX(), visibleArea.maxX(), visibleArea.x()};
+        float[] ys = {visibleArea.y(), visibleArea.y(), visibleArea.maxY(), visibleArea.maxY()};
+
+        for (int i = 0; i < 4; i++) {
+            float dx = xs[i] - pivotX;
+            float dy = ys[i] - pivotY;
+            float rx = pivotX + (dx * cos - dy * sin);
+            float ry = pivotY + (dx * sin + dy * cos);
+            if (rx < minX) minX = rx;
+            if (rx > maxX) maxX = rx;
+            if (ry < minY) minY = ry;
+            if (ry > maxY) maxY = ry;
+        }
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+    }
+
 }

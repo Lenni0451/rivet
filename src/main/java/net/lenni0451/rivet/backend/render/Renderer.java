@@ -27,6 +27,12 @@ public interface Renderer {
 
     void scale(final float x, final float y, final Runnable renderer);
 
+    default void rotate(final float degrees, final float pivotX, final float pivotY, final Runnable renderer) {
+        this.translate(pivotX, pivotY, () -> this.rotate(degrees, () -> this.translate(-pivotX, -pivotY, renderer)));
+    }
+
+    void rotate(final float degrees, final Runnable renderer);
+
     void stencil(final Consumer<Renderer> maskRenderer, final Runnable renderer);
 
     void inverseStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer);
