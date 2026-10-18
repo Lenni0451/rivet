@@ -151,14 +151,18 @@ public class Label extends Component {
 
     private void shapeText(final Size size) {
         if (this.reshape || this.shaped == null) {
-            Font font = this.font.getOrElse(this.rivet().backend().font());
-            TextLine line = this.createTextLine();
-            if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
-                this.shaped = TextWrapper.wrapLine(font, line, size.width() / this.scale.get());
-            } else {
-                this.shaped = font.shapeText(line);
-            }
+            this.shaped = this.createShapedText(size);
             this.reshape = false;
+        }
+    }
+
+    private Shaped createShapedText(final Size size) {
+        Font font = this.font.getOrElse(this.rivet().backend().font());
+        TextLine line = this.createTextLine();
+        if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
+            return TextWrapper.wrapLine(font, line, size.width() / this.scale.get());
+        } else {
+            return font.shapeText(line);
         }
     }
 
@@ -253,17 +257,18 @@ public class Label extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        this.shapeText(constraints);
+        Shaped shaped = this.createShapedText(constraints);
         float scale = this.scale.get();
         return new Size(
-                this.shaped.visualBounds().width() * scale,
-                this.shaped.logicalBounds().height() * scale
+                shaped.visualBounds().width() * scale,
+                shaped.logicalBounds().height() * scale
         );
     }
 
     @Override
     public void computeLayout(final Size size) {
         if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
+            this.reshape = true;
             this.shapeText(size);
         }
     }
