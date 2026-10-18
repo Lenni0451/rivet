@@ -12,7 +12,9 @@ import net.lenni0451.rivet.layout.grid.GridLayout;
 import net.lenni0451.rivet.layout.grid.GridOptions;
 import net.lenni0451.rivet.layout.list.VerticalListLayout;
 import net.lenni0451.rivet.math.Corners;
+import net.lenni0451.rivet.property.DoubleProperty;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.FormatUtils;
 import test.TestBase;
 
 public class SliderStyleTest extends TestBase {
@@ -50,6 +52,11 @@ public class SliderStyleTest extends TestBase {
         container.add(this.booleanOption(rivet, "Show Tooltip", slider.showTooltip()));
         container.add(this.stringOption(rivet, "Tooltip Format", slider.tooltipFormat()));
         container.add(this.booleanOption(rivet, "Ensure Values Reachable", slider.ensureValuesReachable()));
+        container.add(this.booleanOption(rivet, "Zero Aligned Values", slider.zeroAlignedValues()));
+        container.add(this.doubleOption(rivet, "Min", slider.min(), 1));
+        container.add(this.doubleOption(rivet, "Max", slider.max(), 1));
+        container.add(this.doubleOption(rivet, "Step", slider.step(), 1));
+        container.add(this.doubleOption(rivet, "Value", slider.value(), 1));
         container.add(slider);
         container.add(new SolidColor().fixedSize(1, 500));
         rivet.root().add(new ScrollContainer(container));
@@ -127,6 +134,45 @@ public class SliderStyleTest extends TestBase {
                     textField.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1));
                     textField.valueChangeListener().add(option::set);
                 });
+    }
+
+    private Component doubleOption(final Rivet rivet, final String name, final DoubleProperty property, final double step) {
+        DragNumberInput dragInput = new DragNumberInput(-10000, 10000, step, property.get());
+        TextField textField = new TextField(this.formatDouble(property.get()));
+
+        dragInput.value().changeListener().add(v -> {
+            property.set(v);
+            if (rivet.focusedComponent() != textField) {
+                textField.text(this.formatDouble(v));
+            }
+        });
+        textField.valueChangeListener().add(text -> {
+            try {
+                double parsed = Double.parseDouble(text.trim());
+                property.set(parsed);
+                dragInput.value().set(parsed);
+            } catch (Throwable ignored) {
+            }
+        });
+        property.changeListener().add(v -> {
+            dragInput.value().set(v);
+            if (rivet.focusedComponent() != textField) {
+                textField.text(this.formatDouble(v));
+            }
+        });
+
+        return new Container(new GridLayout(5, 5))
+                .add(new Label(name).layoutOptions(new GridOptions(0, 0)))
+                .add(dragInput.layoutOptions(new GridOptions(1, 0).withFill(GridFill.HORIZONTAL).withWeightX(1)))
+                .add(textField.layoutOptions(new GridOptions(2, 0)).fixedSize(80, -1));
+    }
+
+    private String formatDouble(final double value) {
+        try {
+            return String.format(FormatUtils.formatDecimalString("%,f", value), value);
+        } catch (Throwable t) {
+            return Double.toString(value);
+        }
     }
 
 }

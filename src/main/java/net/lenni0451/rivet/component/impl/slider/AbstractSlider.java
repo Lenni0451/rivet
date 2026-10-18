@@ -107,6 +107,8 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     private final ThemeOption<Boolean> ensureValuesReachable = new ThemeOption<>(this, Theme.Slider.ENSURE_VALUES_REACHABLE);
     @Getter
     private final ThemeOption<Boolean> clickableRail = new ThemeOption<>(this, Theme.Slider.CLICKABLE_RAIL);
+    @Getter
+    private final ThemeOption<Boolean> zeroAlignedValues = new ThemeOption<>(this, Theme.Slider.ZERO_ALIGNED_VALUES);
 
     public AbstractSlider(final double min, final double max) {
         this(min, max, (max - min) / DEFAULT_STEP_COUNT);

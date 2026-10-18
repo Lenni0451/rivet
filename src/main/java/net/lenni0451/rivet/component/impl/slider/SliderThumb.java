@@ -93,7 +93,7 @@ public final class SliderThumb {
 
     public void updateValue(final float mouseX, final Size size) {
         double newValue = this.slider.valueAtX(mouseX, size);
-        newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.slider.min().get(), this.slider.max().get(), this.slider.step().get());
+        newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.slider.min().get(), this.slider.max().get(), this.slider.step().get(), this.slider.zeroAlignedValues().value());
         this.slider.onThumbDrag(this, newValue);
     }
 

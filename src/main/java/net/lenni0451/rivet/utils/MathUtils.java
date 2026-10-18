@@ -37,14 +37,18 @@ public class MathUtils {
     }
 
     public static double snap(final double value, final double min, final double max, final double step) {
+        return snap(value, min, max, step, false);
+    }
+
+    public static double snap(final double value, final double min, final double max, final double step, final boolean zeroAligned) {
         if (step <= 0) {
             return net.lenni0451.commons.math.MathUtils.clamp(value, min, max);
         }
-        double diff = value - min;
+        double base = zeroAligned ? 0 : min;
+        double diff = value - base;
         double lowerStep = Math.floor(diff / step);
-        double v1 = min + lowerStep * step;
-        double v2 = min + (lowerStep + 1) * step;
-        v2 = Math.min(v2, max);
+        double v1 = Math.max(min, base + lowerStep * step);
+        double v2 = Math.min(max, base + (lowerStep + 1) * step);
 
         double snapped;
         if (value - v1 < v2 - value) {

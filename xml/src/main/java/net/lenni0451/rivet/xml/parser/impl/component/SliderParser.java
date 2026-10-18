@@ -49,7 +49,8 @@ public class SliderParser implements XmlParser<Slider> {
                 .themeOption("hoverAnimationConfig", AnimationConfig.class, AbstractSlider::hoverAnimationConfig)
                 .themeOption("clickAnimationConfig", AnimationConfig.class, AbstractSlider::clickAnimationConfig)
                 .themeOption("ensureValuesReachable", Boolean.class, AbstractSlider::ensureValuesReachable)
-                .themeOption("clickableRail", Boolean.class, AbstractSlider::clickableRail);
+                .themeOption("clickableRail", Boolean.class, AbstractSlider::clickableRail)
+                .themeOption("zeroAlignedValues", Boolean.class, AbstractSlider::zeroAlignedValues);
     }
 
 
