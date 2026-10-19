@@ -11,7 +11,11 @@ import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -26,6 +30,11 @@ public class XmlLoader {
 
     private final XmlParserRegistry xmlParserRegistry;
     private final ParserRegistry stringParserRegistry;
+    private final List<XmlImportResolver> importResolvers;
+
+    public XmlLoader(final XmlParserRegistry xmlParserRegistry, final ParserRegistry stringParserRegistry) {
+        this(xmlParserRegistry, stringParserRegistry, List.of(XmlImportResolver.classpath(), XmlImportResolver.filesystem()));
+    }
 
     public XmlParserContext createContext(final Map<String, Object> variables) {
         return new XmlParserContext(this.xmlParserRegistry, this.stringParserRegistry, variables);
@@ -74,7 +83,7 @@ public class XmlLoader {
     }
 
     public XmlUi loadUi(final String xml, final Map<String, Object> variables) {
-        return this.loadUi(XmlUtils.parseDocument(xml), variables);
+        return this.loadUi(XmlUtils.parseDocument(xml), variables, null);
     }
 
     public XmlUi loadUi(final InputStream stream) {
@@ -82,13 +91,33 @@ public class XmlLoader {
     }
 
     public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables) {
-        return this.loadUi(XmlUtils.parseDocument(stream), variables);
+        return this.loadUi(stream, variables, null);
+    }
+
+    public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables, final String source) {
+        return this.loadUi(XmlUtils.parseDocument(stream), variables, source);
+    }
+
+    public XmlUi loadUi(final Path path) {
+        return this.loadUi(path, Map.of());
+    }
+
+    public XmlUi loadUi(final Path path, final Map<String, Object> variables) {
+        try (InputStream stream = Files.newInputStream(path)) {
+            return this.loadUi(stream, variables, XmlImportResolver.FILE_PREFIX + path.toAbsolutePath().normalize());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to read path: " + path, e);
+        }
     }
 
     public XmlUi loadUi(final Document document, final Map<String, Object> variables) {
+        return this.loadUi(document, variables, null);
+    }
+
+    public XmlUi loadUi(final Document document, final Map<String, Object> variables, final String source) {
         Element docElement = document.getDocumentElement();
         if ("RivetUi".equals(docElement.getNodeName())) {
-            return new RivetUiParser(this.xmlParserRegistry, this.stringParserRegistry).parse(docElement, variables);
+            return new RivetUiParser(this.xmlParserRegistry, this.stringParserRegistry, this.importResolvers).parse(docElement, variables, source);
         }
         XmlParserContext context = this.createContext(variables);
         Component root = this.xmlParserRegistry.parse(Component.class, docElement, context);
