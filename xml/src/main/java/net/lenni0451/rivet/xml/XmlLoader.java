@@ -37,7 +37,11 @@ public class XmlLoader {
     }
 
     public XmlParserContext createContext(final Map<String, Object> variables) {
-        return new XmlParserContext(this.xmlParserRegistry, this.stringParserRegistry, variables);
+        return this.createContext(variables, Map.of());
+    }
+
+    public XmlParserContext createContext(final Map<String, Object> variables, final Map<String, String> constants) {
+        return new XmlParserContext(this.xmlParserRegistry, this.stringParserRegistry, variables, constants);
     }
 
     public Component load(final String xml) {
@@ -46,6 +50,10 @@ public class XmlLoader {
 
     public Component load(final String xml, final Map<String, Object> variables) {
         return this.loadUi(xml, variables).root();
+    }
+
+    public Component load(final String xml, final Map<String, Object> variables, final Map<String, String> constants) {
+        return this.loadUi(xml, variables, constants).root();
     }
 
     public <T> T load(final Class<T> expectedType, final String xml) {
@@ -83,7 +91,11 @@ public class XmlLoader {
     }
 
     public XmlUi loadUi(final String xml, final Map<String, Object> variables) {
-        return this.loadUi(XmlUtils.parseDocument(xml), variables, null);
+        return this.loadUi(xml, variables, Map.of());
+    }
+
+    public XmlUi loadUi(final String xml, final Map<String, Object> variables, final Map<String, String> constants) {
+        return this.loadUi(XmlUtils.parseDocument(xml), variables, constants, null);
     }
 
     public XmlUi loadUi(final InputStream stream) {
@@ -91,11 +103,19 @@ public class XmlLoader {
     }
 
     public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables) {
-        return this.loadUi(stream, variables, null);
+        return this.loadUi(stream, variables, Map.of(), null);
     }
 
     public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables, final String source) {
-        return this.loadUi(XmlUtils.parseDocument(stream), variables, source);
+        return this.loadUi(stream, variables, Map.of(), source);
+    }
+
+    public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables, final Map<String, String> constants) {
+        return this.loadUi(stream, variables, constants, null);
+    }
+
+    public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables, final Map<String, String> constants, final String source) {
+        return this.loadUi(XmlUtils.parseDocument(stream), variables, constants, source);
     }
 
     public XmlUi loadUi(final Path path) {
@@ -103,25 +123,34 @@ public class XmlLoader {
     }
 
     public XmlUi loadUi(final Path path, final Map<String, Object> variables) {
+        return this.loadUi(path, variables, Map.of());
+    }
+
+    public XmlUi loadUi(final Path path, final Map<String, Object> variables, final Map<String, String> constants) {
         try (InputStream stream = Files.newInputStream(path)) {
-            return this.loadUi(stream, variables, XmlImportResolver.FILE_PREFIX + path.toAbsolutePath().normalize());
+            return this.loadUi(stream, variables, constants, XmlImportResolver.FILE_PREFIX + path.toAbsolutePath().normalize());
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read path: " + path, e);
         }
     }
 
     public XmlUi loadUi(final Document document, final Map<String, Object> variables) {
-        return this.loadUi(document, variables, null);
+        return this.loadUi(document, variables, Map.of(), null);
     }
 
     public XmlUi loadUi(final Document document, final Map<String, Object> variables, final String source) {
+        return this.loadUi(document, variables, Map.of(), source);
+    }
+
+    public XmlUi loadUi(final Document document, final Map<String, Object> variables, final Map<String, String> constants, final String source) {
         Element docElement = document.getDocumentElement();
         if ("RivetUi".equals(docElement.getNodeName())) {
-            return new RivetUiParser(this.xmlParserRegistry, this.stringParserRegistry, this.importResolvers).parse(docElement, variables, source);
+            return new RivetUiParser(this.xmlParserRegistry, this.stringParserRegistry, this.importResolvers).parse(docElement, variables, constants, source);
         }
-        XmlParserContext context = this.createContext(variables);
+        XmlUtils.substituteConstants(docElement, constants);
+        XmlParserContext context = this.createContext(variables, constants);
         Component root = this.xmlParserRegistry.parse(Component.class, docElement, context);
-        return new XmlUi(root, context.componentsById());
+        return new XmlUi(root, context.componentsById(), constants);
     }
 
 }

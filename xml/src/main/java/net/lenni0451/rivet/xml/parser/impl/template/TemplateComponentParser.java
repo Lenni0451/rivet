@@ -7,6 +7,7 @@ import net.lenni0451.rivet.xml.parser.XmlParser;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.ElementParserBuilder;
 import net.lenni0451.rivet.xml.parser.impl.NodeContext;
+import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -38,6 +39,7 @@ public class TemplateComponentParser implements XmlParser<Component> {
 
         TemplateSlotExpander expander = new TemplateSlotExpander(this.name, this.templateRootElement, callerContext.context());
         Element templateClone = expander.expand(callerContext.element());
+        XmlUtils.substituteConstants(templateClone, callerContext.context().constants());
 
         XmlParserContext scopedContext = callerContext.context().withTemplateParameters(parameterValues);
         scopedContext.pushTemplate(this.name);
@@ -61,6 +63,7 @@ public class TemplateComponentParser implements XmlParser<Component> {
                 throw new IllegalArgumentException("Missing required parameter '" + paramName + "' for component <" + this.name + ">");
             }
             if (rawValue != null) {
+                rawValue = callerContext.context().resolveConstants(rawValue);
                 rawValue = callerContext.context().resolveTemplateParameter(rawValue);
                 parameterValues.put(paramName, rawValue);
             }

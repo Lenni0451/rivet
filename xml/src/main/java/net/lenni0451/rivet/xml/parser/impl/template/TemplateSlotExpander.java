@@ -127,6 +127,10 @@ public class TemplateSlotExpander {
         for (int i = 0; i < attributes.getLength(); i++) {
             Node attr = attributes.item(i);
             String value = attr.getNodeValue();
+            if (value != null && value.contains("#{")) {
+                value = this.callerContext.resolveConstants(value);
+                attr.setNodeValue(value);
+            }
             if (XmlUtils.isTemplateParameter(value)) {
                 attr.setNodeValue(this.callerContext.resolveTemplateParameter(value));
             }

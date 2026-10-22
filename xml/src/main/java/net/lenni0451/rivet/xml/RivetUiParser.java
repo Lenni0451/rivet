@@ -21,43 +21,165 @@ public class RivetUiParser {
     private final List<XmlImportResolver> importResolvers;
 
     public XmlUi parse(final Element rivetUiElement, final Map<String, Object> variables) {
-        return this.parse(rivetUiElement, variables, null);
+        return this.parse(rivetUiElement, variables, Map.of(), null);
     }
 
     public XmlUi parse(final Element rivetUiElement, final Map<String, Object> variables, final String source) {
+        return this.parse(rivetUiElement, variables, Map.of(), source);
+    }
+
+    public XmlUi parse(final Element rivetUiElement, final Map<String, Object> variables, final Map<String, String> externalConstants, final String source) {
         XmlParserRegistry sessionRegistry = this.xmlParserRegistry.copy();
         DocumentParts parts = DocumentParts.of(rivetUiElement);
         if (parts.root() == null) {
             throw new IllegalArgumentException("<RivetUi> must contain a <Root> element");
         }
-        if (parts.definitions() != null) {
-            Set<String> importChain = new LinkedHashSet<>();
-            if (source != null) {
-                importChain.add(source);
-            }
-            this.parseDefinitions(parts.definitions(), sessionRegistry, source, importChain);
+
+        Map<String, String> rawConstants = new LinkedHashMap<>();
+        if (externalConstants != null) {
+            rawConstants.putAll(externalConstants);
         }
+
+        Set<String> importChain = new LinkedHashSet<>();
+        if (source != null) {
+            importChain.add(source);
+        }
+
+        for (Element importElem : parts.imports()) {
+            this.parseImport(importElem, sessionRegistry, rawConstants, source, importChain);
+        }
+        for (Element constElem : parts.constants()) {
+            this.parseConstantElement(constElem, rawConstants, "");
+        }
+        if (parts.definitions() != null) {
+            this.parseDefinitions(parts.definitions(), sessionRegistry, rawConstants, source, importChain);
+        }
+
+        Map<String, String> resolvedConstants = this.resolveAndValidateConstants(rawConstants);
+        XmlUtils.substituteConstants(rivetUiElement, resolvedConstants);
+
         List<Element> rootChildren = XmlUtils.childElements(parts.root());
         if (rootChildren.size() != 1) {
             throw new IllegalArgumentException("<Root> must contain exactly one component, but found " + rootChildren.size());
         }
 
-        XmlParserContext context = new XmlParserContext(sessionRegistry, this.stringParserRegistry, variables);
+        XmlParserContext context = new XmlParserContext(sessionRegistry, this.stringParserRegistry, variables, resolvedConstants);
         Component root = sessionRegistry.parse(Component.class, rootChildren.get(0), context);
-        return new XmlUi(root, context.componentsById());
+        return new XmlUi(root, context.componentsById(), resolvedConstants);
     }
 
-    private void parseDefinitions(final Element definitionsElement, final XmlParserRegistry registry, final String source, final Set<String> importChain) {
+    private void parseDefinitions(final Element definitionsElement, final XmlParserRegistry registry, final Map<String, String> rawConstants, final String source, final Set<String> importChain) {
         for (Element child : XmlUtils.childElements(definitionsElement)) {
             switch (child.getNodeName()) {
                 case "Component" -> this.parseComponentTemplate(child, registry);
-                case "Import", "Include" -> this.parseImport(child, registry, source, importChain);
+                case "Import", "Include" -> this.parseImport(child, registry, rawConstants, source, importChain);
+                case "Constant" -> this.parseConstant(child, rawConstants, "");
+                case "Constants", "Map" -> this.parseConstantsGroup(child, rawConstants);
                 default -> throw new IllegalArgumentException("Unknown <Definitions> child: " + child.getNodeName());
             }
         }
     }
 
-    private void parseImport(final Element importElement, final XmlParserRegistry registry, final String currentSource, final Set<String> importChain) {
+    private void parseConstantElement(final Element element, final Map<String, String> rawConstants, final String prefix) {
+        switch (element.getNodeName()) {
+            case "Constant", "Entry" -> this.parseConstant(element, rawConstants, prefix);
+            case "Constants", "Map" -> this.parseConstantsGroup(element, rawConstants);
+            default -> throw new IllegalArgumentException("Unknown constant element: " + element.getNodeName());
+        }
+    }
+
+    private void parseConstant(final Element element, final Map<String, String> rawConstants, final String prefix) {
+        String tag = element.getNodeName();
+        String name = element.hasAttribute("name") ? element.getAttribute("name") : (element.hasAttribute("key") ? element.getAttribute("key") : null);
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("<" + tag + "> requires a 'name' or 'key' attribute");
+        }
+
+        boolean hasValue = element.hasAttribute("value");
+        boolean hasCodepoint = element.hasAttribute("codepoint");
+        boolean hasHex = element.hasAttribute("hex");
+
+        int count = (hasValue ? 1 : 0) + (hasCodepoint ? 1 : 0) + (hasHex ? 1 : 0);
+        if (count > 1) {
+            throw new IllegalArgumentException("Only one of 'value', 'codepoint', or 'hex' may be specified on <" + tag + "> '" + name + "'");
+        }
+
+        String resolvedValue;
+        if (hasValue) {
+            resolvedValue = XmlUtils.unescapeJavaString(element.getAttribute("value"));
+        } else if (hasCodepoint) {
+            resolvedValue = XmlUtils.parseCodepoint(element.getAttribute("codepoint"));
+        } else if (hasHex) {
+            resolvedValue = XmlUtils.parseHexCodepoint(element.getAttribute("hex"));
+        } else {
+            String text = element.getTextContent();
+            if (text != null && !text.isBlank()) {
+                resolvedValue = XmlUtils.unescapeJavaString(text.trim());
+            } else {
+                throw new IllegalArgumentException("<" + tag + "> '" + name + "' must specify 'value', 'codepoint', 'hex', or text content");
+            }
+        }
+
+        String fullName = prefix.isEmpty() ? name : prefix + name;
+        if (rawConstants.putIfAbsent(fullName, resolvedValue) != null) {
+            throw new IllegalArgumentException("Duplicate constant name: " + fullName);
+        }
+    }
+
+    private void parseConstantsGroup(final Element groupElement, final Map<String, String> rawConstants) {
+        String name = groupElement.hasAttribute("name")
+                ? groupElement.getAttribute("name")
+                : (groupElement.hasAttribute("id") ? groupElement.getAttribute("id") : null);
+        String prefix = groupElement.hasAttribute("prefix") ? groupElement.getAttribute("prefix") : null;
+
+        String effectivePrefix;
+        if (prefix != null) {
+            effectivePrefix = prefix;
+        } else if (name != null && !name.isBlank()) {
+            effectivePrefix = name + ".";
+        } else {
+            effectivePrefix = "";
+        }
+
+        for (Element child : XmlUtils.childElements(groupElement)) {
+            String childTag = child.getNodeName();
+            if (!"Constant".equals(childTag) && !"Entry".equals(childTag)) {
+                throw new IllegalArgumentException("Unknown child element in <" + groupElement.getNodeName() + ">: " + childTag);
+            }
+            this.parseConstant(child, rawConstants, effectivePrefix);
+        }
+    }
+
+    private Map<String, String> resolveAndValidateConstants(final Map<String, String> rawConstants) {
+        Map<String, String> resolved = new LinkedHashMap<>();
+        Set<String> resolving = new LinkedHashSet<>();
+        for (String key : rawConstants.keySet()) {
+            this.resolveConstant(key, rawConstants, resolved, resolving);
+        }
+        return resolved;
+    }
+
+    private String resolveConstant(final String key, final Map<String, String> rawConstants, final Map<String, String> resolved, final Set<String> resolving) {
+        if (resolved.containsKey(key)) {
+            return resolved.get(key);
+        }
+        if (!rawConstants.containsKey(key)) {
+            throw new IllegalArgumentException("Unknown constant: " + key);
+        }
+        if (!resolving.add(key)) {
+            throw new IllegalStateException("Circular constant reference detected: " + String.join(" -> ", resolving) + " -> " + key);
+        }
+        try {
+            String rawValue = rawConstants.get(key);
+            String resolvedValue = XmlUtils.resolvePlaceholders(rawValue, "#{", "}", refKey -> this.resolveConstant(refKey, rawConstants, resolved, resolving));
+            resolved.put(key, resolvedValue);
+            return resolvedValue;
+        } finally {
+            resolving.remove(key);
+        }
+    }
+
+    private void parseImport(final Element importElement, final XmlParserRegistry registry, final Map<String, String> rawConstants, final String currentSource, final Set<String> importChain) {
         String tag = importElement.getNodeName();
         NamedNodeMap attributes = importElement.getAttributes();
         if (attributes.getLength() != 1 || !(importElement.hasAttribute("source") || importElement.hasAttribute("file"))) {
@@ -74,19 +196,26 @@ public class RivetUiParser {
             }
             try {
                 Element documentElement = XmlUtils.parseDocument(resolved.stream()).getDocumentElement();
-                Element definitions = switch (documentElement.getNodeName()) {
-                    case "Definitions" -> documentElement;
+                switch (documentElement.getNodeName()) {
+                    case "Definitions" -> this.parseDefinitions(documentElement, registry, rawConstants, resolved.source(), importChain);
+                    case "Constants", "Map" -> this.parseConstantsGroup(documentElement, rawConstants);
+                    case "Constant" -> this.parseConstant(documentElement, rawConstants, "");
                     case "RivetUi" -> {
                         DocumentParts parts = DocumentParts.of(documentElement);
                         if (parts.root() != null) {
                             throw new IllegalArgumentException("Imported document '" + resolved.source() + "' may contain definitions only, but found <Root>");
                         }
-                        yield parts.definitions();
+                        for (Element imp : parts.imports()) {
+                            this.parseImport(imp, registry, rawConstants, resolved.source(), importChain);
+                        }
+                        for (Element constElem : parts.constants()) {
+                            this.parseConstantElement(constElem, rawConstants, "");
+                        }
+                        if (parts.definitions() != null) {
+                            this.parseDefinitions(parts.definitions(), registry, rawConstants, resolved.source(), importChain);
+                        }
                     }
-                    default -> throw new IllegalArgumentException("Imported document '" + resolved.source() + "' must have <RivetUi> or <Definitions> as root element");
-                };
-                if (definitions != null) {
-                    this.parseDefinitions(definitions, registry, resolved.source(), importChain);
+                    default -> throw new IllegalArgumentException("Imported document '" + resolved.source() + "' must have <RivetUi>, <Definitions>, <Constants>, or <Map> as root element");
                 }
             } finally {
                 importChain.remove(resolved.source());
@@ -164,10 +293,12 @@ public class RivetUiParser {
     }
 
 
-    private record DocumentParts(Element definitions, Element root) {
+    private record DocumentParts(Element definitions, Element root, List<Element> constants, List<Element> imports) {
         private static DocumentParts of(final Element rivetUiElement) {
             Element definitions = null;
             Element root = null;
+            List<Element> constants = new ArrayList<>();
+            List<Element> imports = new ArrayList<>();
             for (Element child : XmlUtils.childElements(rivetUiElement)) {
                 switch (child.getNodeName()) {
                     case "Definitions" -> {
@@ -182,10 +313,12 @@ public class RivetUiParser {
                         }
                         root = child;
                     }
+                    case "Constant", "Constants", "Map" -> constants.add(child);
+                    case "Import", "Include" -> imports.add(child);
                     default -> throw new IllegalArgumentException("Unknown <RivetUi> child: " + child.getNodeName());
                 }
             }
-            return new DocumentParts(definitions, root);
+            return new DocumentParts(definitions, root, constants, imports);
         }
     }
 

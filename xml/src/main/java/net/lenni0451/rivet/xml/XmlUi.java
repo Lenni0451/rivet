@@ -5,10 +5,15 @@ import net.lenni0451.rivet.component.Component;
 import java.util.Map;
 import java.util.Optional;
 
-public record XmlUi(Component root, Map<String, Component> components) {
+public record XmlUi(Component root, Map<String, Component> components, Map<String, String> constants) {
 
     public XmlUi {
         components = Map.copyOf(components);
+        constants = Map.copyOf(constants);
+    }
+
+    public XmlUi(final Component root, final Map<String, Component> components) {
+        this(root, components, Map.of());
     }
 
     public Optional<Component> find(final String id) {
@@ -37,6 +42,15 @@ public record XmlUi(Component root, Map<String, Component> components) {
             throw new IllegalArgumentException("XML component '" + id + "' must be " + type.getTypeName() + " but is " + component.getClass().getTypeName());
         }
         return type.cast(component);
+    }
+
+    public Optional<String> constant(final String name) {
+        return Optional.ofNullable(this.constants.get(name));
+    }
+
+    public String requireConstant(final String name) {
+        return this.constant(name)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown XML constant: " + name));
     }
 
 }

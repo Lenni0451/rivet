@@ -12,11 +12,16 @@ public record XmlParserContext(
         Map<String, Object> variables,
         Map<String, Component> componentsById,
         Map<String, String> templateParameters,
-        Deque<String> templateStack
+        Deque<String> templateStack,
+        Map<String, String> constants
 ) {
 
     public XmlParserContext(final XmlParserRegistry registry, final ParserRegistry stringParserRegistry, final Map<String, Object> variables) {
-        this(registry, stringParserRegistry, variables, new HashMap<>(), new HashMap<>(), new ArrayDeque<>());
+        this(registry, stringParserRegistry, variables, new HashMap<>(), new HashMap<>(), new ArrayDeque<>(), new HashMap<>());
+    }
+
+    public XmlParserContext(final XmlParserRegistry registry, final ParserRegistry stringParserRegistry, final Map<String, Object> variables, final Map<String, String> constants) {
+        this(registry, stringParserRegistry, variables, new HashMap<>(), new HashMap<>(), new ArrayDeque<>(), constants);
     }
 
     public Optional<Object> getVariable(final String name) {
@@ -51,13 +56,26 @@ public record XmlParserContext(
     }
 
     public XmlParserContext withRegistry(final XmlParserRegistry registry) {
-        return new XmlParserContext(registry, this.stringParserRegistry, this.variables, this.componentsById, this.templateParameters, this.templateStack);
+        return new XmlParserContext(registry, this.stringParserRegistry, this.variables, this.componentsById, this.templateParameters, this.templateStack, this.constants);
     }
 
     public XmlParserContext withTemplateParameters(final Map<String, String> parameters) {
         Map<String, String> merged = new HashMap<>(this.templateParameters);
         merged.putAll(parameters);
-        return new XmlParserContext(this.registry, this.stringParserRegistry, this.variables, this.componentsById, Map.copyOf(merged), this.templateStack);
+        return new XmlParserContext(this.registry, this.stringParserRegistry, this.variables, this.componentsById, Map.copyOf(merged), this.templateStack, this.constants);
+    }
+
+    public Optional<String> getConstant(final String name) {
+        return Optional.ofNullable(this.constants.get(name));
+    }
+
+    public String requireConstant(final String name) {
+        return this.getConstant(name)
+                .orElseThrow(() -> new IllegalArgumentException("Constant '" + name + "' not found"));
+    }
+
+    public String resolveConstants(final String value) {
+        return XmlUtils.resolvePlaceholders(value, "#{", "}", this.constants::get);
     }
 
     public Optional<String> getTemplateParameter(final String name) {

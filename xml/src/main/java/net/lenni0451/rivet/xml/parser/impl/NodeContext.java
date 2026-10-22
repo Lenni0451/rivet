@@ -43,7 +43,18 @@ public interface NodeContext {
         String value = this.context().resolveTemplateParameter(this.element().getAttribute(name));
         if (XmlUtils.isVariableReference(value)) {
             String varName = XmlUtils.extractVariableReferenceName(value);
-            return Optional.of(this.context().requireVariable(varName, type));
+            Optional<T> var = this.context().getVariable(varName, type);
+            if (var.isPresent()) {
+                return var;
+            }
+            Optional<String> constant = this.context().getConstant(varName);
+            if (constant.isPresent()) {
+                if (referenceOnly) {
+                    throw new IllegalArgumentException("Attribute '" + name + "' must be a variable reference (${...})");
+                }
+                return Optional.ofNullable(this.context().stringParserRegistry().parse(type, constant.get()));
+            }
+            throw new IllegalArgumentException("Variable '" + varName + "' not found or not of type " + type.getTypeName());
         }
         if (referenceOnly) {
             throw new IllegalArgumentException("Attribute '" + name + "' must be a variable reference (${...})");
@@ -78,7 +89,15 @@ public interface NodeContext {
         String value = this.context().resolveTemplateParameter(this.element().getAttribute(name));
         if (XmlUtils.isVariableReference(value)) {
             String varName = XmlUtils.extractVariableReferenceName(value);
-            return Optional.of(this.context().requireVariable(varName, Component.class));
+            Optional<Component> comp = this.context().getVariable(varName, Component.class);
+            if (comp.isPresent()) {
+                return Optional.of(comp.get());
+            }
+            Optional<String> constant = this.context().getConstant(varName);
+            if (constant.isPresent()) {
+                return Optional.of(constant.get());
+            }
+            throw new IllegalArgumentException("Variable '" + varName + "' not found or not of type " + Component.class.getTypeName());
         }
         return Optional.of(value);
     }
