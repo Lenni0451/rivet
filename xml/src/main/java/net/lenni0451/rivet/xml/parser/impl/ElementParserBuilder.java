@@ -4,6 +4,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.LayoutOptions;
 import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.xml.XmlConstants;
 import net.lenni0451.rivet.xml.parser.XmlParser;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.template.TemplateComponentParser;
@@ -38,19 +39,19 @@ public class ElementParserBuilder<T> {
 
     public static <T extends Component> ElementParserBuilder<T> applyComponentAttributes(final ElementParserBuilder<T> builder) {
         return builder
-                .attribute("id", String.class, (component, id) -> {}) // Handled in BuiltXmlParser
-                .attribute("minSize", Size.class, Component::minSize)
-                .attribute("maxSize", Size.class, Component::maxSize)
-                .attribute("fixedSize", Size.class, Component::fixedSize)
+                .attribute(XmlConstants.ATTRIBUTE_ID, String.class, (component, id) -> {}) // Handled in BuiltXmlParser
+                .attribute(XmlConstants.ATTRIBUTE_MIN_SIZE, Size.class, Component::minSize)
+                .attribute(XmlConstants.ATTRIBUTE_MAX_SIZE, Size.class, Component::maxSize)
+                .attribute(XmlConstants.ATTRIBUTE_FIXED_SIZE, Size.class, Component::fixedSize)
                 .child(LayoutOptions.class, Component::layoutOptions)
                 .child(Component.Capabilities.class, Component::capabilities)
-                .attribute("disabled", boolean.class, Component::disabled);
+                .attribute(XmlConstants.ATTRIBUTE_DISABLED, boolean.class, Component::disabled);
     }
 
     private static <T, V> BiFunction<T, V, T> toUpdater(final BiConsumer<T, V> setter) {
-        return (t, v) -> {
-            setter.accept(t, v);
-            return t;
+        return (instance, value) -> {
+            setter.accept(instance, value);
+            return instance;
         };
     }
 
@@ -142,11 +143,11 @@ public class ElementParserBuilder<T> {
         }
 
         public T parse(final T instance, final NodeContext nodeContext) {
-            Optional<V> val = this.referenceOnly
+            Optional<V> value = this.referenceOnly
                     ? nodeContext.referenceAttribute(this.name, this.type)
                     : nodeContext.attribute(this.name, this.type);
-            if (val.isPresent()) {
-                return this.updater.apply(instance, val.get());
+            if (value.isPresent()) {
+                return this.updater.apply(instance, value.get());
             }
             if (this.required) {
                 throw new IllegalArgumentException("Missing required attribute '" + this.name + "'");
@@ -176,12 +177,12 @@ public class ElementParserBuilder<T> {
             if (!this.childParsers.isEmpty()) {
                 for (Element child : nodeContext.childElements()) {
                     String tagName = child.getNodeName();
-                    if ("Slot".equals(tagName)) {
+                    if (XmlConstants.TAG_SLOT.equals(tagName)) {
                         XmlParser<?> tagParser = context.registry().getParserByTag(element.getNodeName());
                         if (tagParser instanceof TemplateComponentParser) {
                             continue;
                         }
-                        throw new IllegalArgumentException("<Slot> can only be used inside template definitions");
+                        throw new IllegalArgumentException("<" + XmlConstants.TAG_SLOT + "> can only be used inside template definitions");
                     }
                     Class<?> type = context.registry().getTypeByTag(tagName);
                     if (type != null) {
@@ -196,8 +197,8 @@ public class ElementParserBuilder<T> {
                 }
             }
 
-            if (instance instanceof Component component && element.hasAttribute("id")) {
-                String id = context.resolveTemplateParameter(element.getAttribute("id"));
+            if (instance instanceof Component component && element.hasAttribute(XmlConstants.ATTRIBUTE_ID)) {
+                String id = context.resolveTemplateParameter(element.getAttribute(XmlConstants.ATTRIBUTE_ID));
                 if (id.isEmpty()) {
                     throw new IllegalArgumentException("Component ID cannot be empty");
                 }

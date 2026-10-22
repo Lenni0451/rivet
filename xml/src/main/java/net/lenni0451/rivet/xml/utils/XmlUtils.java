@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.xml.utils;
 
 import lombok.experimental.UtilityClass;
+import net.lenni0451.rivet.xml.XmlConstants;
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,34 +44,34 @@ public class XmlUtils {
     }
 
     public static boolean isTemplateParameter(final String value) {
-        return value != null && value.startsWith("@{") && value.endsWith("}");
+        return value != null && value.startsWith(XmlConstants.TEMPLATE_PARAM_PREFIX) && value.endsWith(XmlConstants.TEMPLATE_PARAM_SUFFIX);
     }
 
     public static String extractTemplateParameterName(final String value) {
-        return value.substring(2, value.length() - 1);
+        return value.substring(XmlConstants.TEMPLATE_PARAM_PREFIX.length(), value.length() - XmlConstants.TEMPLATE_PARAM_SUFFIX.length());
     }
 
     public static boolean isVariableReference(final String value) {
-        return value != null && value.startsWith("${") && value.endsWith("}");
+        return value != null && value.startsWith(XmlConstants.VARIABLE_PREFIX) && value.endsWith(XmlConstants.VARIABLE_SUFFIX);
     }
 
     public static String extractVariableReferenceName(final String value) {
-        return value.substring(2, value.length() - 1);
+        return value.substring(XmlConstants.VARIABLE_PREFIX.length(), value.length() - XmlConstants.VARIABLE_SUFFIX.length());
     }
 
     public static boolean isConstantReference(final String value) {
-        return value != null && value.startsWith("#{") && value.endsWith("}");
+        return value != null && value.startsWith(XmlConstants.CONSTANT_PREFIX) && value.endsWith(XmlConstants.CONSTANT_SUFFIX);
     }
 
     public static String extractConstantReferenceName(final String value) {
-        return value.substring(2, value.length() - 1);
+        return value.substring(XmlConstants.CONSTANT_PREFIX.length(), value.length() - XmlConstants.CONSTANT_SUFFIX.length());
     }
 
     public static String unescapeJavaString(final String s) {
         if (s == null || s.indexOf('\\') == -1) {
             return s;
         }
-        StringBuilder sb = new StringBuilder(s.length());
+        StringBuilder out = new StringBuilder(s.length());
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '\\' && i + 1 < s.length()) {
@@ -83,37 +84,37 @@ public class XmlUtils {
                         String hex = s.substring(i + 1, i + 5);
                         try {
                             int codePoint = Integer.parseInt(hex, 16);
-                            sb.append((char) codePoint);
+                            out.append((char) codePoint);
                             i += 4;
                         } catch (NumberFormatException e) {
                             throw new IllegalArgumentException("Invalid unicode escape '\\u" + hex + "' in string: " + s, e);
                         }
                     }
-                    case 'n' -> sb.append('\n');
-                    case 't' -> sb.append('\t');
-                    case 'r' -> sb.append('\r');
-                    case 'b' -> sb.append('\b');
-                    case 'f' -> sb.append('\f');
-                    case '\\' -> sb.append('\\');
-                    case '\'' -> sb.append('\'');
-                    case '\"' -> sb.append('\"');
+                    case 'n' -> out.append('\n');
+                    case 't' -> out.append('\t');
+                    case 'r' -> out.append('\r');
+                    case 'b' -> out.append('\b');
+                    case 'f' -> out.append('\f');
+                    case '\\' -> out.append('\\');
+                    case '\'' -> out.append('\'');
+                    case '\"' -> out.append('\"');
                     default -> {
-                        sb.append('\\');
-                        sb.append(next);
+                        out.append('\\');
+                        out.append(next);
                     }
                 }
             } else {
-                sb.append(c);
+                out.append(c);
             }
         }
-        return sb.toString();
+        return out.toString();
     }
 
-    public static String parseCodepoint(final String codepointStr) {
-        if (codepointStr == null || codepointStr.isBlank()) {
+    public static String parseCodepoint(final String codepointString) {
+        if (codepointString == null || codepointString.isBlank()) {
             throw new IllegalArgumentException("Codepoint string cannot be null or empty");
         }
-        String trimmed = codepointStr.trim();
+        String trimmed = codepointString.trim();
         int radix = 10;
         String raw = trimmed;
         if (raw.startsWith("0x") || raw.startsWith("0X")) {
@@ -138,30 +139,30 @@ public class XmlUtils {
         try {
             int codePoint = Integer.parseInt(raw, radix);
             if (!Character.isValidCodePoint(codePoint)) {
-                throw new IllegalArgumentException("Invalid Unicode codepoint: " + codepointStr);
+                throw new IllegalArgumentException("Invalid Unicode codepoint: " + codepointString);
             }
             return Character.toString(codePoint);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid codepoint number: " + codepointStr, e);
+            throw new IllegalArgumentException("Invalid codepoint number: " + codepointString, e);
         }
     }
 
-    public static String parseHexCodepoint(final String hexStr) {
-        if (hexStr == null || hexStr.isBlank()) {
+    public static String parseHexCodepoint(final String hexString) {
+        if (hexString == null || hexString.isBlank()) {
             throw new IllegalArgumentException("Hex string cannot be null or empty");
         }
-        String raw = hexStr.trim();
+        String raw = hexString.trim();
         if (raw.startsWith("0x") || raw.startsWith("0X") || raw.startsWith("U+") || raw.startsWith("u+")) {
             raw = raw.substring(2);
         }
         try {
             int codePoint = Integer.parseInt(raw, 16);
             if (!Character.isValidCodePoint(codePoint)) {
-                throw new IllegalArgumentException("Invalid Unicode codepoint: " + hexStr);
+                throw new IllegalArgumentException("Invalid Unicode codepoint: " + hexString);
             }
             return Character.toString(codePoint);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid hex codepoint: " + hexStr, e);
+            throw new IllegalArgumentException("Invalid hex codepoint: " + hexString, e);
         }
     }
 
@@ -169,45 +170,45 @@ public class XmlUtils {
         if (value == null || !value.contains(prefix)) {
             return value;
         }
-        StringBuilder sb = new StringBuilder(value.length());
+        StringBuilder out = new StringBuilder(value.length());
         int i = 0;
-        int len = value.length();
-        int prefixLen = prefix.length();
-        int suffixLen = suffix.length();
+        int length = value.length();
+        int prefixLength = prefix.length();
+        int suffixLength = suffix.length();
 
-        while (i < len) {
+        while (i < length) {
             if (i > 0 && value.charAt(i - 1) == '\\' && value.startsWith(prefix, i)) {
                 // Escaped placeholder, e.g. \#{name} -> remove the backslash and output #{name}
-                sb.deleteCharAt(sb.length() - 1);
-                int end = value.indexOf(suffix, i + prefixLen);
+                out.deleteCharAt(out.length() - 1);
+                int end = value.indexOf(suffix, i + prefixLength);
                 if (end != -1) {
-                    sb.append(value, i, end + suffixLen);
-                    i = end + suffixLen;
+                    out.append(value, i, end + suffixLength);
+                    i = end + suffixLength;
                 } else {
-                    sb.append(value, i, len);
-                    i = len;
+                    out.append(value, i, length);
+                    i = length;
                 }
                 continue;
             }
 
             if (value.startsWith(prefix, i)) {
-                int end = value.indexOf(suffix, i + prefixLen);
+                int end = value.indexOf(suffix, i + prefixLength);
                 if (end == -1) {
                     throw new IllegalArgumentException("Unclosed placeholder in string: " + value);
                 }
-                String token = value.substring(i + prefixLen, end);
+                String token = value.substring(i + prefixLength, end);
                 String replacement = lookup.apply(token);
                 if (replacement == null) {
                     throw new IllegalArgumentException("Unknown constant: " + token);
                 }
-                sb.append(replacement);
-                i = end + suffixLen;
+                out.append(replacement);
+                i = end + suffixLength;
             } else {
-                sb.append(value.charAt(i));
+                out.append(value.charAt(i));
                 i++;
             }
         }
-        return sb.toString();
+        return out.toString();
     }
 
     public static void substituteConstants(final Node rootNode, final Map<String, String> constants) {
@@ -221,10 +222,10 @@ public class XmlUtils {
             Element element = (Element) node;
             NamedNodeMap attributes = element.getAttributes();
             for (int i = 0; i < attributes.getLength(); i++) {
-                Node attr = attributes.item(i);
-                String val = attr.getNodeValue();
-                if (val != null && val.contains("#{")) {
-                    attr.setNodeValue(resolvePlaceholders(val, "#{", "}", constants::get));
+                Node attribute = attributes.item(i);
+                String value = attribute.getNodeValue();
+                if (value != null && value.contains(XmlConstants.CONSTANT_PREFIX)) {
+                    attribute.setNodeValue(resolvePlaceholders(value, XmlConstants.CONSTANT_PREFIX, XmlConstants.CONSTANT_SUFFIX, constants::get));
                 }
             }
         }
@@ -233,9 +234,9 @@ public class XmlUtils {
             Node child = children.item(i);
             short childType = child.getNodeType();
             if (childType == Node.TEXT_NODE || childType == Node.CDATA_SECTION_NODE) {
-                String val = child.getNodeValue();
-                if (val != null && val.contains("#{")) {
-                    child.setNodeValue(resolvePlaceholders(val, "#{", "}", constants::get));
+                String value = child.getNodeValue();
+                if (value != null && value.contains(XmlConstants.CONSTANT_PREFIX)) {
+                    child.setNodeValue(resolvePlaceholders(value, XmlConstants.CONSTANT_PREFIX, XmlConstants.CONSTANT_SUFFIX, constants::get));
                 }
             } else if (childType == Node.ELEMENT_NODE) {
                 substituteConstantsNode(child, constants);

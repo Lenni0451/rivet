@@ -24,15 +24,11 @@ public class RivetUiParser {
         return this.parse(rivetUiElement, variables, Map.of(), null);
     }
 
-    public XmlUi parse(final Element rivetUiElement, final Map<String, Object> variables, final String source) {
-        return this.parse(rivetUiElement, variables, Map.of(), source);
-    }
-
     public XmlUi parse(final Element rivetUiElement, final Map<String, Object> variables, final Map<String, String> externalConstants, final String source) {
         XmlParserRegistry sessionRegistry = this.xmlParserRegistry.copy();
         DocumentParts parts = DocumentParts.of(rivetUiElement);
         if (parts.root() == null) {
-            throw new IllegalArgumentException("<RivetUi> must contain a <Root> element");
+            throw new IllegalArgumentException("<" + XmlConstants.TAG_RIVET_UI + "> must contain a <" + XmlConstants.TAG_ROOT + "> element");
         }
 
         Map<String, String> rawConstants = new LinkedHashMap<>();
@@ -45,22 +41,14 @@ public class RivetUiParser {
             importChain.add(source);
         }
 
-        for (Element importElem : parts.imports()) {
-            this.parseImport(importElem, sessionRegistry, rawConstants, source, importChain);
-        }
-        for (Element constElem : parts.constants()) {
-            this.parseConstantElement(constElem, rawConstants, "");
-        }
-        if (parts.definitions() != null) {
-            this.parseDefinitions(parts.definitions(), sessionRegistry, rawConstants, source, importChain);
-        }
+        this.parseDocumentParts(parts, sessionRegistry, rawConstants, source, importChain);
 
         Map<String, String> resolvedConstants = this.resolveAndValidateConstants(rawConstants);
         XmlUtils.substituteConstants(rivetUiElement, resolvedConstants);
 
         List<Element> rootChildren = XmlUtils.childElements(parts.root());
         if (rootChildren.size() != 1) {
-            throw new IllegalArgumentException("<Root> must contain exactly one component, but found " + rootChildren.size());
+            throw new IllegalArgumentException("<" + XmlConstants.TAG_ROOT + "> must contain exactly one component, but found " + rootChildren.size());
         }
 
         XmlParserContext context = new XmlParserContext(sessionRegistry, this.stringParserRegistry, variables, resolvedConstants);
@@ -68,55 +56,69 @@ public class RivetUiParser {
         return new XmlUi(root, context.componentsById(), resolvedConstants);
     }
 
+    private void parseDocumentParts(final DocumentParts parts, final XmlParserRegistry registry, final Map<String, String> rawConstants, final String source, final Set<String> importChain) {
+        for (Element importElement : parts.imports()) {
+            this.parseImport(importElement, registry, rawConstants, source, importChain);
+        }
+        for (Element constantElement : parts.constants()) {
+            this.parseConstantElement(constantElement, rawConstants, "");
+        }
+        if (parts.definitions() != null) {
+            this.parseDefinitions(parts.definitions(), registry, rawConstants, source, importChain);
+        }
+    }
+
     private void parseDefinitions(final Element definitionsElement, final XmlParserRegistry registry, final Map<String, String> rawConstants, final String source, final Set<String> importChain) {
         for (Element child : XmlUtils.childElements(definitionsElement)) {
             switch (child.getNodeName()) {
-                case "Component" -> this.parseComponentTemplate(child, registry);
-                case "Import", "Include" -> this.parseImport(child, registry, rawConstants, source, importChain);
-                case "Constant" -> this.parseConstant(child, rawConstants, "");
-                case "Constants", "Map" -> this.parseConstantsGroup(child, rawConstants);
-                default -> throw new IllegalArgumentException("Unknown <Definitions> child: " + child.getNodeName());
+                case XmlConstants.TAG_COMPONENT -> this.parseComponentTemplate(child, registry);
+                case XmlConstants.TAG_IMPORT, XmlConstants.TAG_INCLUDE -> this.parseImport(child, registry, rawConstants, source, importChain);
+                case XmlConstants.TAG_CONSTANT -> this.parseConstant(child, rawConstants, "");
+                case XmlConstants.TAG_CONSTANTS, XmlConstants.TAG_MAP -> this.parseConstantsGroup(child, rawConstants);
+                default -> throw new IllegalArgumentException("Unknown <" + XmlConstants.TAG_DEFINITIONS + "> child: " + child.getNodeName());
             }
         }
     }
 
     private void parseConstantElement(final Element element, final Map<String, String> rawConstants, final String prefix) {
         switch (element.getNodeName()) {
-            case "Constant", "Entry" -> this.parseConstant(element, rawConstants, prefix);
-            case "Constants", "Map" -> this.parseConstantsGroup(element, rawConstants);
+            case XmlConstants.TAG_CONSTANT, XmlConstants.TAG_ENTRY -> this.parseConstant(element, rawConstants, prefix);
+            case XmlConstants.TAG_CONSTANTS, XmlConstants.TAG_MAP -> this.parseConstantsGroup(element, rawConstants);
             default -> throw new IllegalArgumentException("Unknown constant element: " + element.getNodeName());
         }
     }
 
     private void parseConstant(final Element element, final Map<String, String> rawConstants, final String prefix) {
         String tag = element.getNodeName();
-        String name = element.hasAttribute("name") ? element.getAttribute("name") : (element.hasAttribute("key") ? element.getAttribute("key") : null);
+        String name = element.hasAttribute(XmlConstants.ATTRIBUTE_NAME)
+                ? element.getAttribute(XmlConstants.ATTRIBUTE_NAME)
+                : (element.hasAttribute(XmlConstants.ATTRIBUTE_KEY) ? element.getAttribute(XmlConstants.ATTRIBUTE_KEY) : null);
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("<" + tag + "> requires a 'name' or 'key' attribute");
+            throw new IllegalArgumentException("<" + tag + "> requires a '" + XmlConstants.ATTRIBUTE_NAME + "' or '" + XmlConstants.ATTRIBUTE_KEY + "' attribute");
         }
 
-        boolean hasValue = element.hasAttribute("value");
-        boolean hasCodepoint = element.hasAttribute("codepoint");
-        boolean hasHex = element.hasAttribute("hex");
+        boolean hasValue = element.hasAttribute(XmlConstants.ATTRIBUTE_VALUE);
+        boolean hasCodepoint = element.hasAttribute(XmlConstants.ATTRIBUTE_CODEPOINT);
+        boolean hasHex = element.hasAttribute(XmlConstants.ATTRIBUTE_HEX);
 
         int count = (hasValue ? 1 : 0) + (hasCodepoint ? 1 : 0) + (hasHex ? 1 : 0);
         if (count > 1) {
-            throw new IllegalArgumentException("Only one of 'value', 'codepoint', or 'hex' may be specified on <" + tag + "> '" + name + "'");
+            throw new IllegalArgumentException("Only one of '" + XmlConstants.ATTRIBUTE_VALUE + "', '" + XmlConstants.ATTRIBUTE_CODEPOINT + "', or '" + XmlConstants.ATTRIBUTE_HEX + "' may be specified on <" + tag + "> '" + name + "'");
         }
 
         String resolvedValue;
         if (hasValue) {
-            resolvedValue = XmlUtils.unescapeJavaString(element.getAttribute("value"));
+            resolvedValue = XmlUtils.unescapeJavaString(element.getAttribute(XmlConstants.ATTRIBUTE_VALUE));
         } else if (hasCodepoint) {
-            resolvedValue = XmlUtils.parseCodepoint(element.getAttribute("codepoint"));
+            resolvedValue = XmlUtils.parseCodepoint(element.getAttribute(XmlConstants.ATTRIBUTE_CODEPOINT));
         } else if (hasHex) {
-            resolvedValue = XmlUtils.parseHexCodepoint(element.getAttribute("hex"));
+            resolvedValue = XmlUtils.parseHexCodepoint(element.getAttribute(XmlConstants.ATTRIBUTE_HEX));
         } else {
             String text = element.getTextContent();
             if (text != null && !text.isBlank()) {
                 resolvedValue = XmlUtils.unescapeJavaString(text.trim());
             } else {
-                throw new IllegalArgumentException("<" + tag + "> '" + name + "' must specify 'value', 'codepoint', 'hex', or text content");
+                throw new IllegalArgumentException("<" + tag + "> '" + name + "' must specify '" + XmlConstants.ATTRIBUTE_VALUE + "', '" + XmlConstants.ATTRIBUTE_CODEPOINT + "', '" + XmlConstants.ATTRIBUTE_HEX + "', or text content");
             }
         }
 
@@ -127,10 +129,10 @@ public class RivetUiParser {
     }
 
     private void parseConstantsGroup(final Element groupElement, final Map<String, String> rawConstants) {
-        String name = groupElement.hasAttribute("name")
-                ? groupElement.getAttribute("name")
-                : (groupElement.hasAttribute("id") ? groupElement.getAttribute("id") : null);
-        String prefix = groupElement.hasAttribute("prefix") ? groupElement.getAttribute("prefix") : null;
+        String name = groupElement.hasAttribute(XmlConstants.ATTRIBUTE_NAME)
+                ? groupElement.getAttribute(XmlConstants.ATTRIBUTE_NAME)
+                : (groupElement.hasAttribute(XmlConstants.ATTRIBUTE_ID) ? groupElement.getAttribute(XmlConstants.ATTRIBUTE_ID) : null);
+        String prefix = groupElement.hasAttribute(XmlConstants.ATTRIBUTE_PREFIX) ? groupElement.getAttribute(XmlConstants.ATTRIBUTE_PREFIX) : null;
 
         String effectivePrefix;
         if (prefix != null) {
@@ -143,7 +145,7 @@ public class RivetUiParser {
 
         for (Element child : XmlUtils.childElements(groupElement)) {
             String childTag = child.getNodeName();
-            if (!"Constant".equals(childTag) && !"Entry".equals(childTag)) {
+            if (!XmlConstants.TAG_CONSTANT.equals(childTag) && !XmlConstants.TAG_ENTRY.equals(childTag)) {
                 throw new IllegalArgumentException("Unknown child element in <" + groupElement.getNodeName() + ">: " + childTag);
             }
             this.parseConstant(child, rawConstants, effectivePrefix);
@@ -171,7 +173,7 @@ public class RivetUiParser {
         }
         try {
             String rawValue = rawConstants.get(key);
-            String resolvedValue = XmlUtils.resolvePlaceholders(rawValue, "#{", "}", refKey -> this.resolveConstant(refKey, rawConstants, resolved, resolving));
+            String resolvedValue = XmlUtils.resolvePlaceholders(rawValue, XmlConstants.CONSTANT_PREFIX, XmlConstants.CONSTANT_SUFFIX, referenceKey -> this.resolveConstant(referenceKey, rawConstants, resolved, resolving));
             resolved.put(key, resolvedValue);
             return resolvedValue;
         } finally {
@@ -182,8 +184,8 @@ public class RivetUiParser {
     private void parseImport(final Element importElement, final XmlParserRegistry registry, final Map<String, String> rawConstants, final String currentSource, final Set<String> importChain) {
         String tag = importElement.getNodeName();
         NamedNodeMap attributes = importElement.getAttributes();
-        if (attributes.getLength() != 1 || !(importElement.hasAttribute("source") || importElement.hasAttribute("file"))) {
-            throw new IllegalArgumentException("<" + tag + "> requires exactly one 'source' or 'file' attribute");
+        if (attributes.getLength() != 1 || !(importElement.hasAttribute(XmlConstants.ATTRIBUTE_SOURCE) || importElement.hasAttribute(XmlConstants.ATTRIBUTE_FILE))) {
+            throw new IllegalArgumentException("<" + tag + "> requires exactly one '" + XmlConstants.ATTRIBUTE_SOURCE + "' or '" + XmlConstants.ATTRIBUTE_FILE + "' attribute");
         }
         if (!XmlUtils.childElements(importElement).isEmpty()) {
             throw new IllegalArgumentException("<" + tag + "> cannot have child elements");
@@ -197,25 +199,17 @@ public class RivetUiParser {
             try {
                 Element documentElement = XmlUtils.parseDocument(resolved.stream()).getDocumentElement();
                 switch (documentElement.getNodeName()) {
-                    case "Definitions" -> this.parseDefinitions(documentElement, registry, rawConstants, resolved.source(), importChain);
-                    case "Constants", "Map" -> this.parseConstantsGroup(documentElement, rawConstants);
-                    case "Constant" -> this.parseConstant(documentElement, rawConstants, "");
-                    case "RivetUi" -> {
+                    case XmlConstants.TAG_DEFINITIONS -> this.parseDefinitions(documentElement, registry, rawConstants, resolved.source(), importChain);
+                    case XmlConstants.TAG_CONSTANTS, XmlConstants.TAG_MAP -> this.parseConstantsGroup(documentElement, rawConstants);
+                    case XmlConstants.TAG_CONSTANT -> this.parseConstant(documentElement, rawConstants, "");
+                    case XmlConstants.TAG_RIVET_UI -> {
                         DocumentParts parts = DocumentParts.of(documentElement);
                         if (parts.root() != null) {
-                            throw new IllegalArgumentException("Imported document '" + resolved.source() + "' may contain definitions only, but found <Root>");
+                            throw new IllegalArgumentException("Imported document '" + resolved.source() + "' may contain definitions only, but found <" + XmlConstants.TAG_ROOT + ">");
                         }
-                        for (Element imp : parts.imports()) {
-                            this.parseImport(imp, registry, rawConstants, resolved.source(), importChain);
-                        }
-                        for (Element constElem : parts.constants()) {
-                            this.parseConstantElement(constElem, rawConstants, "");
-                        }
-                        if (parts.definitions() != null) {
-                            this.parseDefinitions(parts.definitions(), registry, rawConstants, resolved.source(), importChain);
-                        }
+                        this.parseDocumentParts(parts, registry, rawConstants, resolved.source(), importChain);
                     }
-                    default -> throw new IllegalArgumentException("Imported document '" + resolved.source() + "' must have <RivetUi>, <Definitions>, <Constants>, or <Map> as root element");
+                    default -> throw new IllegalArgumentException("Imported document '" + resolved.source() + "' must have <" + XmlConstants.TAG_RIVET_UI + ">, <" + XmlConstants.TAG_DEFINITIONS + ">, <" + XmlConstants.TAG_CONSTANTS + ">, or <" + XmlConstants.TAG_MAP + "> as root element");
                 }
             } finally {
                 importChain.remove(resolved.source());
@@ -240,10 +234,10 @@ public class RivetUiParser {
     }
 
     private void parseComponentTemplate(final Element componentElement, final XmlParserRegistry registry) {
-        if (!componentElement.hasAttribute("name")) {
-            throw new IllegalArgumentException("<Component> template definition requires a 'name' attribute");
+        if (!componentElement.hasAttribute(XmlConstants.ATTRIBUTE_NAME)) {
+            throw new IllegalArgumentException("<" + XmlConstants.TAG_COMPONENT + "> template definition requires a '" + XmlConstants.ATTRIBUTE_NAME + "' attribute");
         }
-        String name = componentElement.getAttribute("name");
+        String name = componentElement.getAttribute(XmlConstants.ATTRIBUTE_NAME);
         if (registry.supports(name)) {
             throw new IllegalArgumentException("Duplicate component or template name: " + name);
         }
@@ -252,41 +246,41 @@ public class RivetUiParser {
         Element templateElement = null;
         for (Element child : XmlUtils.childElements(componentElement)) {
             switch (child.getNodeName()) {
-                case "Parameter" -> {
-                    if (!child.hasAttribute("name")) {
-                        throw new IllegalArgumentException("<Parameter> requires a 'name' attribute in template <" + name + ">");
+                case XmlConstants.TAG_PARAMETER -> {
+                    if (!child.hasAttribute(XmlConstants.ATTRIBUTE_NAME)) {
+                        throw new IllegalArgumentException("<" + XmlConstants.TAG_PARAMETER + "> requires a '" + XmlConstants.ATTRIBUTE_NAME + "' attribute in template <" + name + ">");
                     }
-                    String paramName = child.getAttribute("name");
-                    boolean required = child.hasAttribute("required") && Boolean.parseBoolean(child.getAttribute("required"));
-                    String defaultValue = child.hasAttribute("default") ? child.getAttribute("default") : null;
+                    String parameterName = child.getAttribute(XmlConstants.ATTRIBUTE_NAME);
+                    boolean required = child.hasAttribute(XmlConstants.ATTRIBUTE_REQUIRED) && Boolean.parseBoolean(child.getAttribute(XmlConstants.ATTRIBUTE_REQUIRED));
+                    String defaultValue = child.hasAttribute(XmlConstants.ATTRIBUTE_DEFAULT) ? child.getAttribute(XmlConstants.ATTRIBUTE_DEFAULT) : null;
                     if (required && defaultValue != null) {
-                        throw new IllegalArgumentException("Required parameter '" + paramName + "' cannot have a default value");
+                        throw new IllegalArgumentException("Required parameter '" + parameterName + "' cannot have a default value");
                     }
-                    if (parameters.putIfAbsent(paramName, new TemplateComponentParser.TemplateParameter(required, defaultValue)) != null) {
-                        throw new IllegalArgumentException("Duplicate parameter '" + paramName + "' in template <" + name + ">");
+                    if (parameters.putIfAbsent(parameterName, new TemplateComponentParser.TemplateParameter(required, defaultValue)) != null) {
+                        throw new IllegalArgumentException("Duplicate parameter '" + parameterName + "' in template <" + name + ">");
                     }
                 }
-                case "Template" -> {
+                case XmlConstants.TAG_TEMPLATE -> {
                     if (templateElement != null) {
-                        throw new IllegalArgumentException("Duplicate <Template> in <Component name=\"" + name + "\">");
+                        throw new IllegalArgumentException("Duplicate <" + XmlConstants.TAG_TEMPLATE + "> in <" + XmlConstants.TAG_COMPONENT + " name=\"" + name + "\">");
                     }
                     templateElement = child;
                 }
-                default -> throw new IllegalArgumentException("Unknown <Component> definition child: " + child.getNodeName());
+                default -> throw new IllegalArgumentException("Unknown <" + XmlConstants.TAG_COMPONENT + "> definition child: " + child.getNodeName());
             }
         }
         if (templateElement == null) {
-            throw new IllegalArgumentException("<Component name=\"" + name + "\"> is missing required <Template> element");
+            throw new IllegalArgumentException("<" + XmlConstants.TAG_COMPONENT + " name=\"" + name + "\"> is missing required <" + XmlConstants.TAG_TEMPLATE + "> element");
         }
 
         List<Element> templateChildren = XmlUtils.childElements(templateElement);
         if (templateChildren.size() != 1) {
-            throw new IllegalArgumentException("<Template> in <Component name=\"" + name + "\"> must contain exactly one component");
+            throw new IllegalArgumentException("<" + XmlConstants.TAG_TEMPLATE + "> in <" + XmlConstants.TAG_COMPONENT + " name=\"" + name + "\"> must contain exactly one component");
         }
 
         Element templateRoot = templateChildren.get(0);
-        if ("Slot".equals(templateRoot.getNodeName())) {
-            throw new IllegalArgumentException("<Template> in <Component name=\"" + name + "\"> root cannot be a <Slot>");
+        if (XmlConstants.TAG_SLOT.equals(templateRoot.getNodeName())) {
+            throw new IllegalArgumentException("<" + XmlConstants.TAG_TEMPLATE + "> in <" + XmlConstants.TAG_COMPONENT + " name=\"" + name + "\"> root cannot be a <" + XmlConstants.TAG_SLOT + ">");
         }
         TemplateComponentParser templateParser = new TemplateComponentParser(name, parameters, templateRoot);
         registry.registerByTag(name, Component.class, templateParser);
@@ -301,21 +295,21 @@ public class RivetUiParser {
             List<Element> imports = new ArrayList<>();
             for (Element child : XmlUtils.childElements(rivetUiElement)) {
                 switch (child.getNodeName()) {
-                    case "Definitions" -> {
+                    case XmlConstants.TAG_DEFINITIONS -> {
                         if (definitions != null) {
-                            throw new IllegalArgumentException("Duplicate <Definitions> element in <RivetUi>");
+                            throw new IllegalArgumentException("Duplicate <" + XmlConstants.TAG_DEFINITIONS + "> element in <" + XmlConstants.TAG_RIVET_UI + ">");
                         }
                         definitions = child;
                     }
-                    case "Root" -> {
+                    case XmlConstants.TAG_ROOT -> {
                         if (root != null) {
-                            throw new IllegalArgumentException("Duplicate <Root> element in <RivetUi>");
+                            throw new IllegalArgumentException("Duplicate <" + XmlConstants.TAG_ROOT + "> element in <" + XmlConstants.TAG_RIVET_UI + ">");
                         }
                         root = child;
                     }
-                    case "Constant", "Constants", "Map" -> constants.add(child);
-                    case "Import", "Include" -> imports.add(child);
-                    default -> throw new IllegalArgumentException("Unknown <RivetUi> child: " + child.getNodeName());
+                    case XmlConstants.TAG_CONSTANT, XmlConstants.TAG_CONSTANTS, XmlConstants.TAG_MAP -> constants.add(child);
+                    case XmlConstants.TAG_IMPORT, XmlConstants.TAG_INCLUDE -> imports.add(child);
+                    default -> throw new IllegalArgumentException("Unknown <" + XmlConstants.TAG_RIVET_UI + "> child: " + child.getNodeName());
                 }
             }
             return new DocumentParts(definitions, root, constants, imports);

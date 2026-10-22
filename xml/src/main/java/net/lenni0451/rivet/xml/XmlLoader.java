@@ -11,10 +11,12 @@ import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,113 +46,169 @@ public class XmlLoader {
         return new XmlParserContext(this.xmlParserRegistry, this.stringParserRegistry, variables, constants);
     }
 
-    public Component load(final String xml) {
-        return this.loadUi(xml, Map.of()).root();
+    public LoadBuilder load() {
+        return new LoadBuilder();
     }
 
-    public Component load(final String xml, final Map<String, Object> variables) {
-        return this.loadUi(xml, variables).root();
+    public LoadBuilder load(final String xml) {
+        return this.load().xml(xml);
     }
 
-    public Component load(final String xml, final Map<String, Object> variables, final Map<String, String> constants) {
-        return this.loadUi(xml, variables, constants).root();
+    public LoadBuilder load(final InputStream stream) {
+        return this.load().stream(stream);
     }
 
-    public <T> T load(final Class<T> expectedType, final String xml) {
-        return this.load(expectedType, xml, Map.of());
+    public LoadBuilder load(final Path path) {
+        return this.load().path(path);
     }
 
-    public <T> T load(final Class<T> expectedType, final String xml, final Map<String, Object> variables) {
-        if (Component.class.isAssignableFrom(expectedType)) {
-            return expectedType.cast(this.loadUi(xml, variables).root());
-        }
-        return this.xmlParserRegistry.parse(expectedType, xml, this.createContext(variables));
+    public LoadBuilder load(final File file) {
+        return this.load().file(file);
     }
 
-    public Component load(final InputStream stream) {
-        return this.loadUi(stream, Map.of()).root();
+    public LoadBuilder load(final Document document) {
+        return this.load().document(document);
     }
 
-    public Component load(final InputStream stream, final Map<String, Object> variables) {
-        return this.loadUi(stream, variables).root();
-    }
-
-    public <T> T load(final Class<T> expectedType, final InputStream stream) {
-        return this.load(expectedType, stream, Map.of());
-    }
-
-    public <T> T load(final Class<T> expectedType, final InputStream stream, final Map<String, Object> variables) {
-        if (Component.class.isAssignableFrom(expectedType)) {
-            return expectedType.cast(this.loadUi(stream, variables).root());
-        }
-        return this.xmlParserRegistry.parse(expectedType, stream, this.createContext(variables));
+    public LoadBuilder load(final Element element) {
+        return this.load().element(element);
     }
 
     public XmlUi loadUi(final String xml) {
-        return this.loadUi(xml, Map.of());
-    }
-
-    public XmlUi loadUi(final String xml, final Map<String, Object> variables) {
-        return this.loadUi(xml, variables, Map.of());
-    }
-
-    public XmlUi loadUi(final String xml, final Map<String, Object> variables, final Map<String, String> constants) {
-        return this.loadUi(XmlUtils.parseDocument(xml), variables, constants, null);
+        return this.load(xml).loadUi();
     }
 
     public XmlUi loadUi(final InputStream stream) {
-        return this.loadUi(stream, Map.of());
-    }
-
-    public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables) {
-        return this.loadUi(stream, variables, Map.of(), null);
-    }
-
-    public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables, final String source) {
-        return this.loadUi(stream, variables, Map.of(), source);
-    }
-
-    public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables, final Map<String, String> constants) {
-        return this.loadUi(stream, variables, constants, null);
-    }
-
-    public XmlUi loadUi(final InputStream stream, final Map<String, Object> variables, final Map<String, String> constants, final String source) {
-        return this.loadUi(XmlUtils.parseDocument(stream), variables, constants, source);
+        return this.load(stream).loadUi();
     }
 
     public XmlUi loadUi(final Path path) {
-        return this.loadUi(path, Map.of());
+        return this.load(path).loadUi();
     }
 
-    public XmlUi loadUi(final Path path, final Map<String, Object> variables) {
-        return this.loadUi(path, variables, Map.of());
-    }
 
-    public XmlUi loadUi(final Path path, final Map<String, Object> variables, final Map<String, String> constants) {
-        try (InputStream stream = Files.newInputStream(path)) {
-            return this.loadUi(stream, variables, constants, XmlImportResolver.FILE_PREFIX + path.toAbsolutePath().normalize());
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to read path: " + path, e);
+    public class LoadBuilder {
+
+        private String xml;
+        private InputStream stream;
+        private Path path;
+        private Document document;
+        private Element element;
+        private final Map<String, Object> variables = new LinkedHashMap<>();
+        private final Map<String, String> constants = new LinkedHashMap<>();
+        private String source;
+
+        public LoadBuilder xml(final String xml) {
+            this.xml = xml;
+            return this;
         }
-    }
 
-    public XmlUi loadUi(final Document document, final Map<String, Object> variables) {
-        return this.loadUi(document, variables, Map.of(), null);
-    }
-
-    public XmlUi loadUi(final Document document, final Map<String, Object> variables, final String source) {
-        return this.loadUi(document, variables, Map.of(), source);
-    }
-
-    public XmlUi loadUi(final Document document, final Map<String, Object> variables, final Map<String, String> constants, final String source) {
-        Element docElement = document.getDocumentElement();
-        if ("RivetUi".equals(docElement.getNodeName())) {
-            return new RivetUiParser(this.xmlParserRegistry, this.stringParserRegistry, this.importResolvers).parse(docElement, variables, constants, source);
+        public LoadBuilder stream(final InputStream stream) {
+            this.stream = stream;
+            return this;
         }
-        XmlUtils.substituteConstants(docElement, constants);
-        XmlParserContext context = this.createContext(variables, constants);
-        Component root = this.xmlParserRegistry.parse(Component.class, docElement, context);
-        return new XmlUi(root, context.componentsById(), constants);
+
+        public LoadBuilder path(final Path path) {
+            this.path = path;
+            return this;
+        }
+
+        public LoadBuilder file(final File file) {
+            return this.path(file.toPath());
+        }
+
+        public LoadBuilder document(final Document document) {
+            this.document = document;
+            return this;
+        }
+
+        public LoadBuilder element(final Element element) {
+            this.element = element;
+            return this;
+        }
+
+        public LoadBuilder variable(final String name, final Object value) {
+            this.variables.put(name, value);
+            return this;
+        }
+
+        public LoadBuilder variables(final Map<String, ?> variables) {
+            if (variables != null) {
+                this.variables.putAll(variables);
+            }
+            return this;
+        }
+
+        public LoadBuilder constant(final String name, final String value) {
+            this.constants.put(name, value);
+            return this;
+        }
+
+        public LoadBuilder constants(final Map<String, String> constants) {
+            if (constants != null) {
+                this.constants.putAll(constants);
+            }
+            return this;
+        }
+
+        public LoadBuilder source(final String source) {
+            this.source = source;
+            return this;
+        }
+
+        public XmlUi loadUi() {
+            String effectiveSource = this.source;
+            if (effectiveSource == null && this.path != null) {
+                effectiveSource = XmlConstants.FILE_PREFIX + this.path.toAbsolutePath().normalize();
+            }
+            Element rootElement = this.resolveElement();
+            if (XmlConstants.TAG_RIVET_UI.equals(rootElement.getNodeName())) {
+                return new RivetUiParser(XmlLoader.this.xmlParserRegistry, XmlLoader.this.stringParserRegistry, XmlLoader.this.importResolvers)
+                        .parse(rootElement, this.variables, this.constants, effectiveSource);
+            }
+            XmlUtils.substituteConstants(rootElement, this.constants);
+            XmlParserContext context = XmlLoader.this.createContext(this.variables, this.constants);
+            Component root = XmlLoader.this.xmlParserRegistry.parse(Component.class, rootElement, context);
+            return new XmlUi(root, context.componentsById(), this.constants);
+        }
+
+        public Component load() {
+            return this.loadUi().root();
+        }
+
+        public <T> T load(final Class<T> expectedType) {
+            if (Component.class.isAssignableFrom(expectedType)) {
+                return expectedType.cast(this.load());
+            }
+            Element rootElement = this.resolveElement();
+            XmlUtils.substituteConstants(rootElement, this.constants);
+            XmlParserContext context = XmlLoader.this.createContext(this.variables, this.constants);
+            return XmlLoader.this.xmlParserRegistry.parse(expectedType, rootElement, context);
+        }
+
+        private Element resolveElement() {
+            if (this.element != null) {
+                return this.element;
+            }
+            if (this.document != null) {
+                return this.document.getDocumentElement();
+            }
+            if (this.path != null) {
+                try (InputStream in = Files.newInputStream(this.path)) {
+                    return XmlUtils.parseDocument(in).getDocumentElement();
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Unable to read path: " + this.path, e);
+                }
+            }
+            if (this.stream != null) {
+                return XmlUtils.parseDocument(this.stream).getDocumentElement();
+            }
+            if (this.xml != null) {
+                return XmlUtils.parseDocument(this.xml).getDocumentElement();
+            }
+            throw new IllegalStateException("No XML source specified for loading");
+        }
+
     }
 
 }

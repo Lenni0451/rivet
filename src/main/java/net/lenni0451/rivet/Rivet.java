@@ -108,16 +108,6 @@ public final class Rivet {
         return false;
     }
 
-    public Rivet theme(final Theme theme) {
-        this.theme = theme;
-        this.theme.apply(this);
-        for (Layer layer : this.layers.get()) {
-            layer.container().onThemeChanged();
-        }
-        this.recalculateNextFrame();
-        return this;
-    }
-
     public Rivet size(final Size size) {
         if (!this.size.equals(size)) {
             this.size = size;
@@ -146,6 +136,16 @@ public final class Rivet {
                     }
                 }
         );
+        return this;
+    }
+
+    public Rivet theme(final Theme theme) {
+        this.theme = theme;
+        this.theme.apply(this);
+        for (Layer layer : this.layers.get()) {
+            layer.container().onThemeChanged();
+        }
+        this.recalculateNextFrame();
         return this;
     }
 

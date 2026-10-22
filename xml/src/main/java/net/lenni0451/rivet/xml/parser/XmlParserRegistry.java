@@ -29,11 +29,8 @@ import net.lenni0451.rivet.layout.tile.TileOptions;
 import net.lenni0451.rivet.xml.parser.impl.component.*;
 import net.lenni0451.rivet.xml.parser.impl.layout.*;
 import net.lenni0451.rivet.xml.parser.impl.property.*;
-import net.lenni0451.rivet.xml.utils.XmlUtils;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -150,34 +147,6 @@ public class XmlParserRegistry {
         return this.parsersByTag.get(tagName);
     }
 
-    public Document parseDocument(final InputStream stream) {
-        return XmlUtils.parseDocument(stream);
-    }
-
-    public Object parse(final Document document, final XmlParserContext context) {
-        return this.parseNode(document.getDocumentElement(), context);
-    }
-
-    public <T> T parse(final Class<T> type, final Document document, final XmlParserContext context) {
-        return this.parse(type, document.getDocumentElement(), context);
-    }
-
-    public Object parse(final InputStream stream, final XmlParserContext context) {
-        return this.parse(this.parseDocument(stream), context);
-    }
-
-    public <T> T parse(final Class<T> type, final InputStream stream, final XmlParserContext context) {
-        return this.parse(type, this.parseDocument(stream), context);
-    }
-
-    public Object parse(final String xml, final XmlParserContext context) {
-        return this.parse(XmlUtils.parseDocument(xml), context);
-    }
-
-    public <T> T parse(final Class<T> type, final String xml, final XmlParserContext context) {
-        return this.parse(type, XmlUtils.parseDocument(xml), context);
-    }
-
     public Object parseNode(final Node node, final XmlParserContext context) {
         String tagName = node.getNodeName();
         Class<?> type = this.tagNames.get(tagName);
@@ -208,27 +177,23 @@ public class XmlParserRegistry {
     }
 
     private <T> ResolvedParser resolveParser(final Class<T> type, final Node node) {
+        Class<?> tagType = null;
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             String tagName = node.getNodeName();
+            tagType = this.tagNames.get(tagName);
             XmlParser<?> tagParser = this.parsersByTag.get(tagName);
-            if (tagParser != null) {
-                Class<?> tagType = this.tagNames.get(tagName);
-                if (tagType != null && type.isAssignableFrom(tagType)) {
-                    return new ResolvedParser(tagParser, tagType);
-                }
+            if (tagParser != null && tagType != null && type.isAssignableFrom(tagType)) {
+                return new ResolvedParser(tagParser, tagType);
             }
         }
         XmlParser<?> parser = this.xmlParsers.get(type);
         if (parser != null) {
             return new ResolvedParser(parser, type);
         }
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            Class<?> tagType = this.tagNames.get(node.getNodeName());
-            if (tagType != null && type.isAssignableFrom(tagType)) {
-                XmlParser<?> tagTypeParser = this.xmlParsers.get(tagType);
-                if (tagTypeParser != null) {
-                    return new ResolvedParser(tagTypeParser, tagType);
-                }
+        if (tagType != null && type.isAssignableFrom(tagType)) {
+            XmlParser<?> tagTypeParser = this.xmlParsers.get(tagType);
+            if (tagTypeParser != null) {
+                return new ResolvedParser(tagTypeParser, tagType);
             }
         }
         return null;

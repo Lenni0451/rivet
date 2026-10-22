@@ -55,17 +55,17 @@ public class TemplateComponentParser implements XmlParser<Component> {
         Map<String, String> parameterValues = new HashMap<>();
 
         for (Map.Entry<String, TemplateParameter> entry : this.parameters.entrySet()) {
-            String paramName = entry.getKey();
-            TemplateParameter param = entry.getValue();
+            String parameterName = entry.getKey();
+            TemplateParameter parameter = entry.getValue();
 
-            String rawValue = callerElement.hasAttribute(paramName) ? callerElement.getAttribute(paramName) : param.defaultValue();
-            if (rawValue == null && param.required()) {
-                throw new IllegalArgumentException("Missing required parameter '" + paramName + "' for component <" + this.name + ">");
+            String rawValue = callerElement.hasAttribute(parameterName) ? callerElement.getAttribute(parameterName) : parameter.defaultValue();
+            if (rawValue == null && parameter.required()) {
+                throw new IllegalArgumentException("Missing required parameter '" + parameterName + "' for component <" + this.name + ">");
             }
             if (rawValue != null) {
                 rawValue = callerContext.context().resolveConstants(rawValue);
                 rawValue = callerContext.context().resolveTemplateParameter(rawValue);
-                parameterValues.put(paramName, rawValue);
+                parameterValues.put(parameterName, rawValue);
             }
         }
         return parameterValues;

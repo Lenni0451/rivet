@@ -31,8 +31,8 @@ public class BorderPositionParser implements XmlParser<BorderPosition> {
         }
         value = context.resolveTemplateParameter(value);
         if (XmlUtils.isVariableReference(value)) {
-            String varName = XmlUtils.extractVariableReferenceName(value);
-            return context.requireVariable(varName, BorderPosition.class);
+            String variableName = XmlUtils.extractVariableReferenceName(value);
+            return context.requireVariable(variableName, BorderPosition.class);
         }
         return context.stringParserRegistry().parse(BorderPosition.class, value);
     }

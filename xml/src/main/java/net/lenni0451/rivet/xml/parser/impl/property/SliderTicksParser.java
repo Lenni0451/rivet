@@ -16,7 +16,7 @@ public class SliderTicksParser implements XmlParser<SliderTicks> {
                 .or(() -> ctx.attribute("minorTickSpacing", double.class))
                 .orElseThrow(() -> new IllegalArgumentException("SliderTicks must have a minor tick spacing"));
         return ctx.referenceAttribute("labelProvider", SliderTicks.TickLabelProvider.class)
-                .map(lp -> new SliderTicks(major, minor, lp))
+                .map(labelProvider -> new SliderTicks(major, minor, labelProvider))
                 .orElseGet(() -> new SliderTicks(major, minor));
     }).build();
 

@@ -22,11 +22,11 @@ public class DragNumberInputParser implements XmlParser<DragNumberInput> {
                 double value = ctx.requireAttribute("value", double.class);
                 Optional<Double> step = ctx.attribute("step", double.class);
 
-                return child.map(c -> {
-                    return step.map(s -> new DragNumberInput(c, min, max, s, value))
-                            .orElseGet(() -> new DragNumberInput(c, min, max, value));
+                return child.map(childComponent -> {
+                    return step.map(stepValue -> new DragNumberInput(childComponent, min, max, stepValue, value))
+                            .orElseGet(() -> new DragNumberInput(childComponent, min, max, value));
                 }).orElseGet(() -> {
-                    return step.map(s -> new DragNumberInput(min, max, s, value))
+                    return step.map(stepValue -> new DragNumberInput(min, max, stepValue, value))
                             .orElseGet(() -> new DragNumberInput(min, max, value));
                 });
             })

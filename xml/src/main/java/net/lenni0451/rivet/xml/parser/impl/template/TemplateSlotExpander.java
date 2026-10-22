@@ -2,6 +2,7 @@ package net.lenni0451.rivet.xml.parser.impl.template;
 
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.xml.XmlConstants;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Document;
@@ -40,13 +41,13 @@ public class TemplateSlotExpander {
 
         for (Element child : XmlUtils.childElements(callerElement)) {
             String tagName = child.getNodeName();
-            if ("Slot".equals(tagName)) {
+            if (XmlConstants.TAG_SLOT.equals(tagName)) {
                 this.validateSlotAttributes(child);
-                String slotName = child.hasAttribute("name") ? child.getAttribute("name") : "default";
+                String slotName = child.hasAttribute(XmlConstants.ATTRIBUTE_NAME) ? child.getAttribute(XmlConstants.ATTRIBUTE_NAME) : XmlConstants.DEFAULT_SLOT_NAME;
                 if (slotName.isEmpty()) {
                     throw new IllegalArgumentException("Slot name cannot be empty on component <" + this.templateName + ">");
                 }
-                if ("default".equals(slotName)) {
+                if (XmlConstants.DEFAULT_SLOT_NAME.equals(slotName)) {
                     if (explicitDefaultSlot || !defaultSlotElements.isEmpty()) {
                         throw new IllegalArgumentException("Duplicate slot supplied: default for component <" + this.templateName + ">");
                     }
@@ -67,7 +68,7 @@ public class TemplateSlotExpander {
         }
 
         if (!defaultSlotElements.isEmpty()) {
-            suppliedSlots.put("default", defaultSlotElements);
+            suppliedSlots.put(XmlConstants.DEFAULT_SLOT_NAME, defaultSlotElements);
         }
         return suppliedSlots;
     }
@@ -75,10 +76,10 @@ public class TemplateSlotExpander {
     private void processSlots(final Element parent, final Map<String, List<Element>> suppliedSlots, final Set<String> declaredSlots) {
         List<Element> children = XmlUtils.childElements(parent);
         for (Element child : children) {
-            if ("Slot".equals(child.getNodeName())) {
+            if (XmlConstants.TAG_SLOT.equals(child.getNodeName())) {
                 Node slotParent = child.getParentNode();
-                boolean isArgumentToTemplate = slotParent instanceof Element parentElem
-                        && this.callerContext.registry().getParserByTag(parentElem.getNodeName()) instanceof TemplateComponentParser;
+                boolean isArgumentToTemplate = slotParent instanceof Element parentElement
+                        && this.callerContext.registry().getParserByTag(parentElement.getNodeName()) instanceof TemplateComponentParser;
                 if (!isArgumentToTemplate) {
                     this.replaceSlot(child, suppliedSlots, declaredSlots);
                     continue;
@@ -90,7 +91,7 @@ public class TemplateSlotExpander {
 
     private void replaceSlot(final Element slotElement, final Map<String, List<Element>> suppliedSlots, final Set<String> declaredSlots) {
         this.validateSlotAttributes(slotElement);
-        String slotName = slotElement.hasAttribute("name") ? slotElement.getAttribute("name") : "default";
+        String slotName = slotElement.hasAttribute(XmlConstants.ATTRIBUTE_NAME) ? slotElement.getAttribute(XmlConstants.ATTRIBUTE_NAME) : XmlConstants.DEFAULT_SLOT_NAME;
         if (slotName.isEmpty()) {
             throw new IllegalArgumentException("Slot name cannot be empty in template <" + this.templateName + ">");
         }
@@ -109,11 +110,11 @@ public class TemplateSlotExpander {
 
         Node parentNode = slotElement.getParentNode();
         if (parentNode == null) {
-            throw new IllegalStateException("<Slot> element cannot be root of template <" + this.templateName + ">");
+            throw new IllegalStateException("<" + XmlConstants.TAG_SLOT + "> element cannot be root of template <" + this.templateName + ">");
         }
-        Document doc = parentNode.getOwnerDocument();
+        Document document = parentNode.getOwnerDocument();
         for (Element replacement : replacements) {
-            Element imported = (Element) doc.importNode(replacement, true);
+            Element imported = (Element) document.importNode(replacement, true);
             if (isSupplied) {
                 this.interpolateParameters(imported);
             }
@@ -125,14 +126,14 @@ public class TemplateSlotExpander {
     private void interpolateParameters(final Element element) {
         NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
-            Node attr = attributes.item(i);
-            String value = attr.getNodeValue();
-            if (value != null && value.contains("#{")) {
+            Node attribute = attributes.item(i);
+            String value = attribute.getNodeValue();
+            if (value != null && value.contains(XmlConstants.CONSTANT_PREFIX)) {
                 value = this.callerContext.resolveConstants(value);
-                attr.setNodeValue(value);
+                attribute.setNodeValue(value);
             }
             if (XmlUtils.isTemplateParameter(value)) {
-                attr.setNodeValue(this.callerContext.resolveTemplateParameter(value));
+                attribute.setNodeValue(this.callerContext.resolveTemplateParameter(value));
             }
         }
         for (Element child : XmlUtils.childElements(element)) {
@@ -143,9 +144,9 @@ public class TemplateSlotExpander {
     private void validateSlotAttributes(final Element slotElement) {
         NamedNodeMap attributes = slotElement.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
-            Node attr = attributes.item(i);
-            if (!"name".equals(attr.getNodeName())) {
-                throw new IllegalArgumentException("Unknown attribute '" + attr.getNodeName() + "' on <Slot>");
+            Node attribute = attributes.item(i);
+            if (!XmlConstants.ATTRIBUTE_NAME.equals(attribute.getNodeName())) {
+                throw new IllegalArgumentException("Unknown attribute '" + attribute.getNodeName() + "' on <" + XmlConstants.TAG_SLOT + ">");
             }
         }
     }

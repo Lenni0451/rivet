@@ -2,6 +2,7 @@ package net.lenni0451.rivet.xml.parser;
 
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.parser.ParserRegistry;
+import net.lenni0451.rivet.xml.XmlConstants;
 import net.lenni0451.rivet.xml.utils.XmlUtils;
 
 import java.util.*;
@@ -16,12 +17,20 @@ public record XmlParserContext(
         Map<String, String> constants
 ) {
 
-    public XmlParserContext(final XmlParserRegistry registry, final ParserRegistry stringParserRegistry, final Map<String, Object> variables) {
-        this(registry, stringParserRegistry, variables, new HashMap<>(), new HashMap<>(), new ArrayDeque<>(), new HashMap<>());
+    public XmlParserContext {
+        variables = variables == null ? Map.of() : variables;
+        componentsById = componentsById == null ? new HashMap<>() : componentsById;
+        templateParameters = templateParameters == null ? Map.of() : templateParameters;
+        templateStack = templateStack == null ? new ArrayDeque<>() : templateStack;
+        constants = constants == null ? Map.of() : constants;
     }
 
     public XmlParserContext(final XmlParserRegistry registry, final ParserRegistry stringParserRegistry, final Map<String, Object> variables, final Map<String, String> constants) {
         this(registry, stringParserRegistry, variables, new HashMap<>(), new HashMap<>(), new ArrayDeque<>(), constants);
+    }
+
+    public XmlParserContext(final XmlParserRegistry registry, final ParserRegistry stringParserRegistry, final Map<String, Object> variables) {
+        this(registry, stringParserRegistry, variables, Map.of());
     }
 
     public Optional<Object> getVariable(final String name) {
@@ -29,7 +38,12 @@ public record XmlParserContext(
     }
 
     public <T> Optional<T> getVariable(final String name, final Class<T> type) {
-        return Optional.ofNullable(this.variables.get(name)).filter(type::isInstance).map(type::cast);
+        return this.getVariable(name).filter(type::isInstance).map(type::cast);
+    }
+
+    public Object requireVariable(final String name) {
+        return this.getVariable(name)
+                .orElseThrow(() -> new IllegalArgumentException("Variable '" + name + "' not found"));
     }
 
     public <T> T requireVariable(final String name, final Class<T> type) {
@@ -43,22 +57,6 @@ public record XmlParserContext(
         }
     }
 
-    public Optional<Component> getComponent(final String id) {
-        return Optional.ofNullable(this.componentsById.get(id));
-    }
-
-    public <T extends Component> Optional<T> getComponent(final String id, final Class<T> type) {
-        Component component = this.componentsById.get(id);
-        if (!type.isInstance(component)) {
-            return Optional.empty();
-        }
-        return Optional.of(type.cast(component));
-    }
-
-    public XmlParserContext withRegistry(final XmlParserRegistry registry) {
-        return new XmlParserContext(registry, this.stringParserRegistry, this.variables, this.componentsById, this.templateParameters, this.templateStack, this.constants);
-    }
-
     public XmlParserContext withTemplateParameters(final Map<String, String> parameters) {
         Map<String, String> merged = new HashMap<>(this.templateParameters);
         merged.putAll(parameters);
@@ -69,13 +67,8 @@ public record XmlParserContext(
         return Optional.ofNullable(this.constants.get(name));
     }
 
-    public String requireConstant(final String name) {
-        return this.getConstant(name)
-                .orElseThrow(() -> new IllegalArgumentException("Constant '" + name + "' not found"));
-    }
-
     public String resolveConstants(final String value) {
-        return XmlUtils.resolvePlaceholders(value, "#{", "}", this.constants::get);
+        return XmlUtils.resolvePlaceholders(value, XmlConstants.CONSTANT_PREFIX, XmlConstants.CONSTANT_SUFFIX, this.constants::get);
     }
 
     public Optional<String> getTemplateParameter(final String name) {
@@ -84,9 +77,9 @@ public record XmlParserContext(
 
     public String resolveTemplateParameter(final String value) {
         if (XmlUtils.isTemplateParameter(value)) {
-            String paramName = XmlUtils.extractTemplateParameterName(value);
-            return this.getTemplateParameter(paramName)
-                    .orElseThrow(() -> new IllegalArgumentException("Template parameter '" + paramName + "' not found"));
+            String parameterName = XmlUtils.extractTemplateParameterName(value);
+            return this.getTemplateParameter(parameterName)
+                    .orElseThrow(() -> new IllegalArgumentException("Template parameter '" + parameterName + "' not found"));
         }
         return value;
     }

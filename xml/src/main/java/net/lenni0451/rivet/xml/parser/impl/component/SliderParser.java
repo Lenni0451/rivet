@@ -17,9 +17,9 @@ public class SliderParser implements XmlParser<Slider> {
     public static <T extends AbstractSlider<?>> ElementParserBuilder<T> applySliderAttributes(final ElementParserBuilder<T> builder) {
         return builder
                 .referenceAttribute("font", Font.class, AbstractSlider::font)
-                .attribute("min", double.class, (s, v) -> s.min(v))
-                .attribute("max", double.class, (s, v) -> s.max(v))
-                .attribute("step", double.class, (s, v) -> s.step(v))
+                .attribute("min", double.class, (slider, value) -> slider.min(value))
+                .attribute("max", double.class, (slider, value) -> slider.max(value))
+                .attribute("step", double.class, (slider, value) -> slider.step(value))
                 .referenceAttribute("ticks", SliderTicks.class, AbstractSlider::ticks)
                 .child(SliderTicks.class, AbstractSlider::ticks)
                 .themeOption("barColor", Color.class, AbstractSlider::barColor)

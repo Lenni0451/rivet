@@ -42,19 +42,19 @@ public interface NodeContext {
         }
         String value = this.context().resolveTemplateParameter(this.element().getAttribute(name));
         if (XmlUtils.isVariableReference(value)) {
-            String varName = XmlUtils.extractVariableReferenceName(value);
-            Optional<T> var = this.context().getVariable(varName, type);
-            if (var.isPresent()) {
-                return var;
+            String variableName = XmlUtils.extractVariableReferenceName(value);
+            Optional<T> variable = this.context().getVariable(variableName, type);
+            if (variable.isPresent()) {
+                return variable;
             }
-            Optional<String> constant = this.context().getConstant(varName);
+            Optional<String> constant = this.context().getConstant(variableName);
             if (constant.isPresent()) {
                 if (referenceOnly) {
                     throw new IllegalArgumentException("Attribute '" + name + "' must be a variable reference (${...})");
                 }
                 return Optional.ofNullable(this.context().stringParserRegistry().parse(type, constant.get()));
             }
-            throw new IllegalArgumentException("Variable '" + varName + "' not found or not of type " + type.getTypeName());
+            throw new IllegalArgumentException("Variable '" + variableName + "' not found or not of type " + type.getTypeName());
         }
         if (referenceOnly) {
             throw new IllegalArgumentException("Attribute '" + name + "' must be a variable reference (${...})");
@@ -88,26 +88,26 @@ public interface NodeContext {
         }
         String value = this.context().resolveTemplateParameter(this.element().getAttribute(name));
         if (XmlUtils.isVariableReference(value)) {
-            String varName = XmlUtils.extractVariableReferenceName(value);
-            Optional<Component> comp = this.context().getVariable(varName, Component.class);
-            if (comp.isPresent()) {
-                return Optional.of(comp.get());
+            String variableName = XmlUtils.extractVariableReferenceName(value);
+            Optional<Component> component = this.context().getVariable(variableName, Component.class);
+            if (component.isPresent()) {
+                return Optional.of(component.get());
             }
-            Optional<String> constant = this.context().getConstant(varName);
+            Optional<String> constant = this.context().getConstant(variableName);
             if (constant.isPresent()) {
                 return Optional.of(constant.get());
             }
-            throw new IllegalArgumentException("Variable '" + varName + "' not found or not of type " + Component.class.getTypeName());
+            throw new IllegalArgumentException("Variable '" + variableName + "' not found or not of type " + Component.class.getTypeName());
         }
         return Optional.of(value);
     }
 
     default Optional<Component> componentOrTextAttribute(final String name, final Function<String, Component> textMapper) {
-        return this.componentOrStringAttribute(name).map(obj -> {
-            if (obj instanceof Component component) {
+        return this.componentOrStringAttribute(name).map(value -> {
+            if (value instanceof Component component) {
                 return component;
             } else {
-                return textMapper.apply((String) obj);
+                return textMapper.apply((String) value);
             }
         });
     }
@@ -152,6 +152,41 @@ public interface NodeContext {
             }
         }
         return list;
+    }
+
+    default <F, S> TwoSlotComponents<F, S> resolveTwoSlots(final F initialFirst, final S initialSecond, final String containerName, final String firstName, final String secondName) {
+        F first = initialFirst;
+        S second = initialSecond;
+        List<Component> children = this.children(Component.class);
+        if (children.isEmpty()) {
+            if (first == null || second == null) {
+                throw new IllegalArgumentException(containerName + " must have a " + firstName + " and " + secondName + " component");
+            }
+        } else if (children.size() == 1) {
+            if (first == null) {
+                first = (F) children.get(0);
+            } else if (second == null) {
+                second = (S) children.get(0);
+            } else {
+                throw new IllegalArgumentException(containerName + " has too many children, only " + firstName + " and " + secondName + " are allowed");
+            }
+            if (first == null || second == null) {
+                throw new IllegalArgumentException(containerName + " must have a " + firstName + " and " + secondName + " component");
+            }
+        } else if (children.size() == 2) {
+            if (first != null || second != null) {
+                throw new IllegalArgumentException(containerName + " has too many children, only " + firstName + " and " + secondName + " are allowed");
+            }
+            first = (F) children.get(0);
+            second = (S) children.get(1);
+        } else {
+            throw new IllegalArgumentException(containerName + " has too many children, only " + firstName + " and " + secondName + " are allowed");
+        }
+        return new TwoSlotComponents<>(first, second);
+    }
+
+
+    record TwoSlotComponents<F, S>(F first, S second) {
     }
 
 }

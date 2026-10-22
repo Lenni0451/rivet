@@ -31,8 +31,8 @@ public class DockPositionParser implements XmlParser<DockPosition> {
         }
         value = context.resolveTemplateParameter(value);
         if (XmlUtils.isVariableReference(value)) {
-            String varName = XmlUtils.extractVariableReferenceName(value);
-            return context.requireVariable(varName, DockPosition.class);
+            String variableName = XmlUtils.extractVariableReferenceName(value);
+            return context.requireVariable(variableName, DockPosition.class);
         }
         return context.stringParserRegistry().parse(DockPosition.class, value);
     }

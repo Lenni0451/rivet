@@ -136,6 +136,18 @@ public class DragNumberInput extends ParentContainer {
         valueUpdater.accept(child, this.value.get());
     }
 
+    public final DragNumberInput registerUpdatedLabel(@Nullable final UpdatedLabel updatedLabel) {
+        this.updatedLabel = updatedLabel;
+        if (updatedLabel != null) {
+            updatedLabel.step = this.step.get();
+            if (this.rivet() != null) {
+                updatedLabel.valueFormat = this.valueFormat.value();
+                updatedLabel.invalidateCache(this.value.get());
+            }
+        }
+        return this;
+    }
+
     public final DragNumberInput min(final double min) {
         this.min.set(min);
         return this;
@@ -153,18 +165,6 @@ public class DragNumberInput extends ParentContainer {
 
     public final DragNumberInput value(final double value) {
         this.value.set(value);
-        return this;
-    }
-
-    public final DragNumberInput registerUpdatedLabel(@Nullable final UpdatedLabel updatedLabel) {
-        this.updatedLabel = updatedLabel;
-        if (updatedLabel != null) {
-            updatedLabel.step = this.step.get();
-            if (this.rivet() != null) {
-                updatedLabel.valueFormat = this.valueFormat.value();
-                updatedLabel.invalidateCache(this.value.get());
-            }
-        }
         return this;
     }
 
