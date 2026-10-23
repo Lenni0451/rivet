@@ -3,11 +3,14 @@ package net.lenni0451.rivet.xml.parser.impl;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.layout.LayoutOptions;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.xml.XmlConstants;
 import net.lenni0451.rivet.xml.parser.XmlParser;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.template.TemplateComponentParser;
+import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -57,7 +60,7 @@ public class ElementParserBuilder<T> {
 
 
     private final Function<NodeContext, T> factory;
-    private final List<AttributeParser<T, ?>> attributeParsers = new ArrayList<>();
+    private final List<AttributeParser<T>> attributeParsers = new ArrayList<>();
     private final List<ChildParser<T, ?>> childParsers = new ArrayList<>();
 
     private ElementParserBuilder(final Function<NodeContext, T> factory) {
@@ -65,7 +68,7 @@ public class ElementParserBuilder<T> {
     }
 
     public <V> ElementParserBuilder<T> mapAttribute(final String name, final Class<V> type, final BiFunction<T, V, T> updater) {
-        this.attributeParsers.add(new AttributeParser<>(name, type, updater, false, null));
+        this.attributeParsers.add(new StandardAttributeParser<>(name, type, updater, false, null));
         return this;
     }
 
@@ -74,7 +77,7 @@ public class ElementParserBuilder<T> {
     }
 
     public <V> ElementParserBuilder<T> mapRequiredAttribute(final String name, final Class<V> type, final BiFunction<T, V, T> updater) {
-        this.attributeParsers.add(new AttributeParser<>(name, type, updater, true, null));
+        this.attributeParsers.add(new StandardAttributeParser<>(name, type, updater, true, null));
         return this;
     }
 
@@ -83,7 +86,7 @@ public class ElementParserBuilder<T> {
     }
 
     public <V> ElementParserBuilder<T> mapAttributeWithDefault(final String name, final Class<V> type, final V defaultValue, final BiFunction<T, V, T> updater) {
-        this.attributeParsers.add(new AttributeParser<>(name, type, updater, false, defaultValue));
+        this.attributeParsers.add(new StandardAttributeParser<>(name, type, updater, false, defaultValue));
         return this;
     }
 
@@ -92,7 +95,7 @@ public class ElementParserBuilder<T> {
     }
 
     public <V> ElementParserBuilder<T> mapReferenceAttribute(final String name, final Class<V> type, final BiFunction<T, V, T> updater) {
-        this.attributeParsers.add(new AttributeParser<>(name, type, updater, false, null, true));
+        this.attributeParsers.add(new StandardAttributeParser<>(name, type, updater, false, null, true));
         return this;
     }
 
@@ -101,7 +104,7 @@ public class ElementParserBuilder<T> {
     }
 
     public <V> ElementParserBuilder<T> mapRequiredReferenceAttribute(final String name, final Class<V> type, final BiFunction<T, V, T> updater) {
-        this.attributeParsers.add(new AttributeParser<>(name, type, updater, true, null, true));
+        this.attributeParsers.add(new StandardAttributeParser<>(name, type, updater, true, null, true));
         return this;
     }
 
@@ -110,7 +113,8 @@ public class ElementParserBuilder<T> {
     }
 
     public <V> ElementParserBuilder<T> themeOption(final String name, final Class<V> valueType, final Function<T, ThemeOption<V>> option) {
-        return this.attribute(name, valueType, (component, value) -> option.apply(component).set(value));
+        this.attributeParsers.add(new ThemeOptionAttributeParser<>(name, valueType, option));
+        return this;
     }
 
     public <V> ElementParserBuilder<T> mapChild(final Class<V> type, final BiFunction<T, V, T> updater) {
@@ -137,11 +141,16 @@ public class ElementParserBuilder<T> {
         }
     }
 
-    private record AttributeParser<T, V>(String name, Class<V> type, BiFunction<T, V, T> updater, boolean required, V defaultValue, boolean referenceOnly) {
-        public AttributeParser(final String name, final Class<V> type, final BiFunction<T, V, T> updater, final boolean required, final V defaultValue) {
+    private interface AttributeParser<T> {
+        T parse(final T instance, final NodeContext nodeContext);
+    }
+
+    private record StandardAttributeParser<T, V>(String name, Class<V> type, BiFunction<T, V, T> updater, boolean required, V defaultValue, boolean referenceOnly) implements AttributeParser<T> {
+        public StandardAttributeParser(final String name, final Class<V> type, final BiFunction<T, V, T> updater, final boolean required, final V defaultValue) {
             this(name, type, updater, required, defaultValue, false);
         }
 
+        @Override
         public T parse(final T instance, final NodeContext nodeContext) {
             Optional<V> value = this.referenceOnly
                     ? nodeContext.referenceAttribute(this.name, this.type)
@@ -159,7 +168,44 @@ public class ElementParserBuilder<T> {
         }
     }
 
-    private record BuiltXmlParser<T>(Function<NodeContext, T> factory, List<AttributeParser<T, ?>> attributeParsers, List<ChildParser<T, ?>> childParsers) implements XmlParser<T> {
+    private record ThemeOptionAttributeParser<T, V>(String name, Class<V> valueType, Function<T, ThemeOption<V>> optionGetter) implements AttributeParser<T> {
+        @Override
+        public T parse(final T instance, final NodeContext nodeContext) {
+            if (!nodeContext.element().hasAttribute(this.name)) {
+                return instance;
+            }
+            String rawValue = nodeContext.context().resolveTemplateParameter(nodeContext.element().getAttribute(this.name));
+            ThemeOption<V> option = this.optionGetter.apply(instance);
+
+            if (XmlUtils.isThemeReference(rawValue)) {
+                String key = XmlUtils.extractThemeReferenceKey(rawValue);
+                ThemeKey<?> themeKey = Theme.requireKey(key);
+                if (!this.valueType.isAssignableFrom(themeKey.type())) {
+                    throw new IllegalArgumentException("Theme key '" + key + "' of type " + themeKey.type().getName() + " is not compatible with attribute '" + this.name + "' of type " + this.valueType.getName());
+                }
+                option.set((ThemeKey<V>) themeKey);
+            } else if (XmlUtils.isVariableReference(rawValue)) {
+                String variableName = XmlUtils.extractVariableReferenceName(rawValue);
+                Optional<V> variable = nodeContext.context().getVariable(variableName, this.valueType);
+                if (variable.isPresent()) {
+                    option.set(variable.get());
+                } else {
+                    Optional<String> constant = nodeContext.context().getConstant(variableName);
+                    if (constant.isPresent()) {
+                        option.set(nodeContext.context().stringParserRegistry().parse(this.valueType, constant.get()));
+                    } else {
+                        throw new IllegalArgumentException("Variable '" + variableName + "' not found or not of type " + this.valueType.getName());
+                    }
+                }
+            } else {
+                V parsedValue = nodeContext.context().stringParserRegistry().parse(this.valueType, rawValue);
+                option.set(parsedValue);
+            }
+            return instance;
+        }
+    }
+
+    private record BuiltXmlParser<T>(Function<NodeContext, T> factory, List<AttributeParser<T>> attributeParsers, List<ChildParser<T, ?>> childParsers) implements XmlParser<T> {
         @Override
         public T parse(final XmlParserContext context, final Node node) {
             if (node.getNodeType() != Node.ELEMENT_NODE) {
@@ -170,7 +216,7 @@ public class ElementParserBuilder<T> {
             NodeContext nodeContext = NodeContext.of(context, element);
             T instance = this.factory.apply(nodeContext);
 
-            for (AttributeParser<T, ?> parser : this.attributeParsers) {
+            for (AttributeParser<T> parser : this.attributeParsers) {
                 instance = parser.parse(instance, nodeContext);
             }
 

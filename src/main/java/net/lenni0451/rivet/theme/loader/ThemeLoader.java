@@ -36,11 +36,7 @@ public class ThemeLoader {
     }
 
     private static void parse(final Theme.Values values, final String key, final String value) {
-        ThemeKey themeKey = Theme.registeredKeys().stream().filter(k -> k.name().equals(key)).findFirst().orElse(null);
-        if (themeKey == null) {
-            throw new IllegalArgumentException("Unknown key: " + key);
-        }
-
+        ThemeKey themeKey = Theme.requireKey(key);
         values.put(themeKey, PARSERS.parse(themeKey.type(), value));
     }
 

@@ -57,6 +57,18 @@ public final class ThemeOption<T> {
         return this;
     }
 
+    public ThemeOption<T> set(final ThemeKey<T> key) {
+        this.value = () -> {
+            Rivet rivet = this.component.rivet();
+            if (rivet == null) {
+                throw new IllegalStateException("Unable to get theme value for key " + key + " without a rivet instance");
+            }
+            return rivet.theme().get(key);
+        };
+        this.fireChangeListener();
+        return this;
+    }
+
     public ThemeOption<T> reset() {
         this.value = null;
         this.fireChangeListener();

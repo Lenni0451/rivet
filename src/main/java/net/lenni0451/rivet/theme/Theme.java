@@ -23,6 +23,7 @@ import net.lenni0451.rivet.math.Padding;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -51,6 +52,19 @@ public abstract class Theme {
 
     public static List<ThemeKey<?>> registeredKeys() {
         return Collections.unmodifiableList(REGISTERED_KEYS);
+    }
+
+    public static Optional<ThemeKey<?>> findKey(final String key) {
+        for (ThemeKey<?> themeKey : REGISTERED_KEYS) {
+            if (themeKey.name().equals(key)) {
+                return Optional.of(themeKey);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public static ThemeKey<?> requireKey(final String key) {
+        return findKey(key).orElseThrow(() -> new IllegalArgumentException("Unknown theme key: " + key));
     }
 
 

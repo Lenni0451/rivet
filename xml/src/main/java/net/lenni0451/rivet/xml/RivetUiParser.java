@@ -3,6 +3,8 @@ package net.lenni0451.rivet.xml;
 import lombok.RequiredArgsConstructor;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.parser.ParserRegistry;
+import net.lenni0451.rivet.theme.Theme;
+import net.lenni0451.rivet.theme.ThemeKey;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.XmlParserRegistry;
 import net.lenni0451.rivet.xml.parser.impl.template.TemplateComponentParser;
@@ -243,6 +245,7 @@ public class RivetUiParser {
         }
 
         Map<String, TemplateComponentParser.TemplateParameter> parameters = new LinkedHashMap<>();
+        Map<String, TemplateComponentParser.TemplateThemeOption> themeOptions = new LinkedHashMap<>();
         Element templateElement = null;
         for (Element child : XmlUtils.childElements(componentElement)) {
             switch (child.getNodeName()) {
@@ -256,9 +259,27 @@ public class RivetUiParser {
                     if (required && defaultValue != null) {
                         throw new IllegalArgumentException("Required parameter '" + parameterName + "' cannot have a default value");
                     }
-                    if (parameters.putIfAbsent(parameterName, new TemplateComponentParser.TemplateParameter(required, defaultValue)) != null) {
-                        throw new IllegalArgumentException("Duplicate parameter '" + parameterName + "' in template <" + name + ">");
+                    if (parameters.containsKey(parameterName) || themeOptions.containsKey(parameterName)) {
+                        throw new IllegalArgumentException("Duplicate parameter or theme option '" + parameterName + "' in template <" + name + ">");
                     }
+                    parameters.put(parameterName, new TemplateComponentParser.TemplateParameter(required, defaultValue));
+                }
+                case XmlConstants.TAG_THEME_OPTION -> {
+                    if (!child.hasAttribute(XmlConstants.ATTRIBUTE_KEY)) {
+                        throw new IllegalArgumentException("<" + XmlConstants.TAG_THEME_OPTION + "> requires a '" + XmlConstants.ATTRIBUTE_KEY + "' attribute in template <" + name + ">");
+                    }
+                    String keyName = child.getAttribute(XmlConstants.ATTRIBUTE_KEY);
+                    ThemeKey<?> themeKey = Theme.requireKey(keyName);
+                    String optionName = child.hasAttribute(XmlConstants.ATTRIBUTE_NAME)
+                            ? child.getAttribute(XmlConstants.ATTRIBUTE_NAME)
+                            : keyName.substring(keyName.lastIndexOf('.') + 1);
+                    if (optionName.isBlank()) {
+                        throw new IllegalArgumentException("Theme option name cannot be blank in template <" + name + ">");
+                    }
+                    if (parameters.containsKey(optionName) || themeOptions.containsKey(optionName)) {
+                        throw new IllegalArgumentException("Duplicate parameter or theme option '" + optionName + "' in template <" + name + ">");
+                    }
+                    themeOptions.put(optionName, new TemplateComponentParser.TemplateThemeOption(optionName, themeKey));
                 }
                 case XmlConstants.TAG_TEMPLATE -> {
                     if (templateElement != null) {
@@ -282,7 +303,7 @@ public class RivetUiParser {
         if (XmlConstants.TAG_SLOT.equals(templateRoot.getNodeName())) {
             throw new IllegalArgumentException("<" + XmlConstants.TAG_TEMPLATE + "> in <" + XmlConstants.TAG_COMPONENT + " name=\"" + name + "\"> root cannot be a <" + XmlConstants.TAG_SLOT + ">");
         }
-        TemplateComponentParser templateParser = new TemplateComponentParser(name, parameters, templateRoot);
+        TemplateComponentParser templateParser = new TemplateComponentParser(name, parameters, themeOptions, templateRoot);
         registry.registerByTag(name, Component.class, templateParser);
     }
 

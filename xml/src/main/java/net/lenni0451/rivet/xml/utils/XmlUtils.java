@@ -67,6 +67,14 @@ public class XmlUtils {
         return value.substring(XmlConstants.CONSTANT_PREFIX.length(), value.length() - XmlConstants.CONSTANT_SUFFIX.length());
     }
 
+    public static boolean isThemeReference(final String value) {
+        return value != null && value.startsWith(XmlConstants.THEME_REF_PREFIX) && value.endsWith(XmlConstants.THEME_REF_SUFFIX);
+    }
+
+    public static String extractThemeReferenceKey(final String value) {
+        return value.substring(XmlConstants.THEME_REF_PREFIX.length(), value.length() - XmlConstants.THEME_REF_SUFFIX.length());
+    }
+
     public static String unescapeJavaString(final String s) {
         if (s == null || s.indexOf('\\') == -1) {
             return s;

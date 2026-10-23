@@ -3,6 +3,8 @@ package net.lenni0451.rivet.xml.parser.impl.template;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.component.Component;
+import net.lenni0451.rivet.theme.ThemeKey;
+import net.lenni0451.rivet.xml.XmlConstants;
 import net.lenni0451.rivet.xml.parser.XmlParser;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.ElementParserBuilder;
@@ -22,12 +24,19 @@ public class TemplateComponentParser implements XmlParser<Component> {
     @Getter
     private final Map<String, TemplateParameter> parameters;
     @Getter
+    private final Map<String, TemplateThemeOption> themeOptions;
+    @Getter
     private final Element templateRootElement;
     private final XmlParser<Component> parser;
 
     public TemplateComponentParser(final String name, final Map<String, TemplateParameter> parameters, final Element templateRootElement) {
+        this(name, parameters, Map.of(), templateRootElement);
+    }
+
+    public TemplateComponentParser(final String name, final Map<String, TemplateParameter> parameters, final Map<String, TemplateThemeOption> themeOptions, final Element templateRootElement) {
         this.name = name;
         this.parameters = Map.copyOf(parameters);
+        this.themeOptions = Map.copyOf(themeOptions);
         this.templateRootElement = templateRootElement;
 
         ElementParserBuilder<Component> builder = ElementParserBuilder.create(this::instantiateTemplate);
@@ -68,6 +77,19 @@ public class TemplateComponentParser implements XmlParser<Component> {
                 parameterValues.put(parameterName, rawValue);
             }
         }
+        for (Map.Entry<String, TemplateThemeOption> entry : this.themeOptions.entrySet()) {
+            String optionName = entry.getKey();
+            TemplateThemeOption themeOption = entry.getValue();
+
+            if (callerElement.hasAttribute(optionName)) {
+                String rawValue = callerElement.getAttribute(optionName);
+                rawValue = callerContext.context().resolveConstants(rawValue);
+                rawValue = callerContext.context().resolveTemplateParameter(rawValue);
+                parameterValues.put(optionName, rawValue);
+            } else {
+                parameterValues.put(optionName, XmlConstants.THEME_REF_PREFIX + themeOption.themeKey().name() + XmlConstants.THEME_REF_SUFFIX);
+            }
+        }
         return parameterValues;
     }
 
@@ -78,6 +100,9 @@ public class TemplateComponentParser implements XmlParser<Component> {
 
 
     public record TemplateParameter(boolean required, String defaultValue) {
+    }
+
+    public record TemplateThemeOption(String name, ThemeKey<?> themeKey) {
     }
 
 }

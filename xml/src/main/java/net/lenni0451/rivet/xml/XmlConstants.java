@@ -12,6 +12,7 @@ public class XmlConstants {
     public static final String TAG_COMPONENT = "Component";
     public static final String TAG_TEMPLATE = "Template";
     public static final String TAG_PARAMETER = "Parameter";
+    public static final String TAG_THEME_OPTION = "ThemeOption";
     public static final String TAG_SLOT = "Slot";
     public static final String TAG_IMPORT = "Import";
     public static final String TAG_INCLUDE = "Include";
@@ -47,6 +48,8 @@ public class XmlConstants {
     public static final String VARIABLE_SUFFIX = "}";
     public static final String TEMPLATE_PARAM_PREFIX = "@{";
     public static final String TEMPLATE_PARAM_SUFFIX = "}";
+    public static final String THEME_REF_PREFIX = "?{";
+    public static final String THEME_REF_SUFFIX = "}";
 
     // Import Protocols
     public static final String FILE_PREFIX = "file:";
