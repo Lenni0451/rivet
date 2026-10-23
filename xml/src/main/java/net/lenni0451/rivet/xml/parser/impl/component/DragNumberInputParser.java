@@ -30,10 +30,6 @@ public class DragNumberInputParser implements XmlParser<DragNumberInput> {
                             .orElseGet(() -> new DragNumberInput(min, max, value));
                 });
             })
-            .attribute("min", double.class, DragNumberInput::min)
-            .attribute("max", double.class, DragNumberInput::max)
-            .attribute("step", double.class, DragNumberInput::step)
-            .attribute("value", double.class, DragNumberInput::value)
             .themeOption("backgroundColor", Color.class, DragNumberInput::backgroundColor)
             .themeOption("outlineColor", Color.class, DragNumberInput::outlineColor)
             .themeOption("outlineWidth", Float.class, DragNumberInput::outlineWidth)

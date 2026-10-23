@@ -38,7 +38,8 @@ public record XmlParserContext(
     }
 
     public <T> Optional<T> getVariable(final String name, final Class<T> type) {
-        return this.getVariable(name).filter(type::isInstance).map(type::cast);
+        Class<T> boxedType = XmlUtils.box(type);
+        return this.getVariable(name).filter(boxedType::isInstance).map(boxedType::cast);
     }
 
     public Object requireVariable(final String name) {
@@ -58,9 +59,7 @@ public record XmlParserContext(
     }
 
     public XmlParserContext withTemplateParameters(final Map<String, String> parameters) {
-        Map<String, String> merged = new HashMap<>(this.templateParameters);
-        merged.putAll(parameters);
-        return new XmlParserContext(this.registry, this.stringParserRegistry, this.variables, this.componentsById, Map.copyOf(merged), this.templateStack, this.constants);
+        return new XmlParserContext(this.registry, this.stringParserRegistry, this.variables, this.componentsById, Map.copyOf(parameters), this.templateStack, this.constants);
     }
 
     public Optional<String> getConstant(final String name) {
@@ -76,12 +75,13 @@ public record XmlParserContext(
     }
 
     public String resolveTemplateParameter(final String value) {
-        if (XmlUtils.isTemplateParameter(value)) {
-            String parameterName = XmlUtils.extractTemplateParameterName(value);
-            return this.getTemplateParameter(parameterName)
-                    .orElseThrow(() -> new IllegalArgumentException("Template parameter '" + parameterName + "' not found"));
-        }
-        return value;
+        return XmlUtils.resolvePlaceholders(
+                value,
+                XmlConstants.TEMPLATE_PARAM_PREFIX,
+                XmlConstants.TEMPLATE_PARAM_SUFFIX,
+                this.templateParameters::get,
+                token -> "Template parameter '" + token + "' not found"
+        );
     }
 
     public void pushTemplate(final String templateName) {

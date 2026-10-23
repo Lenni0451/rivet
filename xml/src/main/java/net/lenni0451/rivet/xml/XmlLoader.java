@@ -177,21 +177,22 @@ public class XmlLoader {
         }
 
         public <T> T load(final Class<T> expectedType) {
-            if (Component.class.isAssignableFrom(expectedType)) {
-                return expectedType.cast(this.load());
+            Class<T> boxedType = XmlUtils.box(expectedType);
+            if (Component.class.isAssignableFrom(boxedType)) {
+                return boxedType.cast(this.load());
             }
             Element rootElement = this.resolveElement();
             XmlUtils.substituteConstants(rootElement, this.constants);
             XmlParserContext context = XmlLoader.this.createContext(this.variables, this.constants);
-            return XmlLoader.this.xmlParserRegistry.parse(expectedType, rootElement, context);
+            return XmlLoader.this.xmlParserRegistry.parse(boxedType, rootElement, context);
         }
 
         private Element resolveElement() {
             if (this.element != null) {
-                return this.element;
+                return (Element) this.element.cloneNode(true);
             }
             if (this.document != null) {
-                return this.document.getDocumentElement();
+                return (Element) this.document.getDocumentElement().cloneNode(true);
             }
             if (this.path != null) {
                 try (InputStream in = Files.newInputStream(this.path)) {

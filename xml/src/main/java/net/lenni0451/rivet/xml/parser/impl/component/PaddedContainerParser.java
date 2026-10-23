@@ -14,7 +14,6 @@ public class PaddedContainerParser implements XmlParser<PaddedContainer> {
                     ctx.requireAttribute("padding", Padding.class),
                     ctx.requireChildOrReference("child", Component.class)
             ))
-            .attribute("padding", Padding.class, PaddedContainer::padding)
             .attribute("cropChild", boolean.class, PaddedContainer::cropChild)
             .build();
 

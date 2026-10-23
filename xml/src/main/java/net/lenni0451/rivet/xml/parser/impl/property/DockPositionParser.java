@@ -7,6 +7,8 @@ import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.Optional;
+
 public class DockPositionParser implements XmlParser<DockPosition> {
 
     @Override
@@ -32,7 +34,15 @@ public class DockPositionParser implements XmlParser<DockPosition> {
         value = context.resolveTemplateParameter(value);
         if (XmlUtils.isVariableReference(value)) {
             String variableName = XmlUtils.extractVariableReferenceName(value);
-            return context.requireVariable(variableName, DockPosition.class);
+            Optional<DockPosition> variable = context.getVariable(variableName, DockPosition.class);
+            if (variable.isPresent()) {
+                return variable.get();
+            }
+            Optional<String> constant = context.getConstant(variableName);
+            if (constant.isPresent()) {
+                return context.stringParserRegistry().parse(DockPosition.class, constant.get());
+            }
+            throw new IllegalArgumentException("Variable '" + variableName + "' not found or not of type " + DockPosition.class.getTypeName());
         }
         return context.stringParserRegistry().parse(DockPosition.class, value);
     }

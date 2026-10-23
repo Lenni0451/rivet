@@ -31,6 +31,19 @@ public class XmlUtils {
         return parseDocument(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
     }
 
+    public static <T> Class<T> box(final Class<T> type) {
+        if (!type.isPrimitive()) return type;
+        if (type == boolean.class) return (Class<T>) Boolean.class;
+        if (type == char.class) return (Class<T>) Character.class;
+        if (type == byte.class) return (Class<T>) Byte.class;
+        if (type == short.class) return (Class<T>) Short.class;
+        if (type == int.class) return (Class<T>) Integer.class;
+        if (type == long.class) return (Class<T>) Long.class;
+        if (type == float.class) return (Class<T>) Float.class;
+        if (type == double.class) return (Class<T>) Double.class;
+        return type;
+    }
+
     public static List<Element> childElements(final Element parent) {
         NodeList children = parent.getChildNodes();
         List<Element> elements = new ArrayList<>();
@@ -44,7 +57,7 @@ public class XmlUtils {
     }
 
     public static boolean isTemplateParameter(final String value) {
-        return value != null && value.startsWith(XmlConstants.TEMPLATE_PARAM_PREFIX) && value.endsWith(XmlConstants.TEMPLATE_PARAM_SUFFIX);
+        return isSinglePlaceholder(value, XmlConstants.TEMPLATE_PARAM_PREFIX, XmlConstants.TEMPLATE_PARAM_SUFFIX);
     }
 
     public static String extractTemplateParameterName(final String value) {
@@ -52,7 +65,7 @@ public class XmlUtils {
     }
 
     public static boolean isVariableReference(final String value) {
-        return value != null && value.startsWith(XmlConstants.VARIABLE_PREFIX) && value.endsWith(XmlConstants.VARIABLE_SUFFIX);
+        return isSinglePlaceholder(value, XmlConstants.VARIABLE_PREFIX, XmlConstants.VARIABLE_SUFFIX);
     }
 
     public static String extractVariableReferenceName(final String value) {
@@ -60,7 +73,7 @@ public class XmlUtils {
     }
 
     public static boolean isConstantReference(final String value) {
-        return value != null && value.startsWith(XmlConstants.CONSTANT_PREFIX) && value.endsWith(XmlConstants.CONSTANT_SUFFIX);
+        return isSinglePlaceholder(value, XmlConstants.CONSTANT_PREFIX, XmlConstants.CONSTANT_SUFFIX);
     }
 
     public static String extractConstantReferenceName(final String value) {
@@ -68,11 +81,18 @@ public class XmlUtils {
     }
 
     public static boolean isThemeReference(final String value) {
-        return value != null && value.startsWith(XmlConstants.THEME_REF_PREFIX) && value.endsWith(XmlConstants.THEME_REF_SUFFIX);
+        return isSinglePlaceholder(value, XmlConstants.THEME_REF_PREFIX, XmlConstants.THEME_REF_SUFFIX);
     }
 
     public static String extractThemeReferenceKey(final String value) {
         return value.substring(XmlConstants.THEME_REF_PREFIX.length(), value.length() - XmlConstants.THEME_REF_SUFFIX.length());
+    }
+
+    private static boolean isSinglePlaceholder(final String value, final String prefix, final String suffix) {
+        return value != null
+                && value.startsWith(prefix)
+                && value.endsWith(suffix)
+                && value.indexOf(suffix, prefix.length()) == value.length() - suffix.length();
     }
 
     public static String unescapeJavaString(final String s) {
@@ -175,6 +195,10 @@ public class XmlUtils {
     }
 
     public static String resolvePlaceholders(final String value, final String prefix, final String suffix, final Function<String, String> lookup) {
+        return resolvePlaceholders(value, prefix, suffix, lookup, token -> "Unknown constant: " + token);
+    }
+
+    public static String resolvePlaceholders(final String value, final String prefix, final String suffix, final Function<String, String> lookup, final Function<String, String> missingMessage) {
         if (value == null || !value.contains(prefix)) {
             return value;
         }
@@ -186,16 +210,10 @@ public class XmlUtils {
 
         while (i < length) {
             if (i > 0 && value.charAt(i - 1) == '\\' && value.startsWith(prefix, i)) {
-                // Escaped placeholder, e.g. \#{name} -> remove the backslash and output #{name}
+                // Escaped placeholder, e.g. \#{name} -> remove the backslash and output #{
                 out.deleteCharAt(out.length() - 1);
-                int end = value.indexOf(suffix, i + prefixLength);
-                if (end != -1) {
-                    out.append(value, i, end + suffixLength);
-                    i = end + suffixLength;
-                } else {
-                    out.append(value, i, length);
-                    i = length;
-                }
+                out.append(prefix);
+                i += prefixLength;
                 continue;
             }
 
@@ -207,7 +225,7 @@ public class XmlUtils {
                 String token = value.substring(i + prefixLength, end);
                 String replacement = lookup.apply(token);
                 if (replacement == null) {
-                    throw new IllegalArgumentException("Unknown constant: " + token);
+                    throw new IllegalArgumentException(missingMessage.apply(token));
                 }
                 out.append(replacement);
                 i = end + suffixLength;

@@ -12,15 +12,21 @@ import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.ElementParserBuilder;
 import org.w3c.dom.Node;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class ButtonParser implements XmlParser<Button> {
 
-    private final XmlParser<Button> parser = ElementParserBuilder.createComponent(ctx -> ctx
-                    .componentOrTextAttribute("text")
-                    .or(() -> ctx.childOrReference("child", Component.class))
-                    .map(Button::new)
-                    .orElseThrow(() -> new IllegalArgumentException("Button must have a text attribute or a child component")))
+    private final XmlParser<Button> parser = ElementParserBuilder.createComponent(ctx -> {
+                Optional<Component> text = ctx.componentOrTextAttribute("text");
+                Optional<Component> child = ctx.childOrReference("child", Component.class);
+                if (text.isPresent() && child.isPresent()) {
+                    throw new IllegalArgumentException("Button cannot have both a text attribute and a child component");
+                }
+                return text.or(() -> child)
+                        .map(Button::new)
+                        .orElseThrow(() -> new IllegalArgumentException("Button must have a text attribute or a child component"));
+            })
             .referenceAttribute("handledButtons", Set.class, (button, buttons) -> {
                 button.handledButtons().clear();
                 button.handledButtons().addAll(buttons);

@@ -40,7 +40,31 @@ public class TemplateComponentParser implements XmlParser<Component> {
         this.templateRootElement = templateRootElement;
 
         ElementParserBuilder<Component> builder = ElementParserBuilder.create(this::instantiateTemplate);
-        this.parser = ElementParserBuilder.applyComponentAttributes(builder).build();
+        this.parser = ElementParserBuilder.applyComponentAttributes(
+                builder,
+                attributeName -> !this.parameters.containsKey(attributeName) && !this.themeOptions.containsKey(attributeName)
+        ).build();
+    }
+
+    public boolean hasDeclaredSlot(final String slotName) {
+        return this.hasDeclaredSlot(this.templateRootElement, slotName);
+    }
+
+    private boolean hasDeclaredSlot(final Element parent, final String slotName) {
+        for (Element child : XmlUtils.childElements(parent)) {
+            if (XmlConstants.TAG_SLOT.equals(child.getNodeName())) {
+                String declaredName = child.hasAttribute(XmlConstants.ATTRIBUTE_NAME)
+                        ? child.getAttribute(XmlConstants.ATTRIBUTE_NAME)
+                        : XmlConstants.DEFAULT_SLOT_NAME;
+                if (slotName.equals(declaredName)) {
+                    return true;
+                }
+            }
+            if (this.hasDeclaredSlot(child, slotName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Component instantiateTemplate(final NodeContext callerContext) {
@@ -48,7 +72,6 @@ public class TemplateComponentParser implements XmlParser<Component> {
 
         TemplateSlotExpander expander = new TemplateSlotExpander(this.name, this.templateRootElement, callerContext.context());
         Element templateClone = expander.expand(callerContext.element());
-        XmlUtils.substituteConstants(templateClone, callerContext.context().constants());
 
         XmlParserContext scopedContext = callerContext.context().withTemplateParameters(parameterValues);
         scopedContext.pushTemplate(this.name);
@@ -67,12 +90,15 @@ public class TemplateComponentParser implements XmlParser<Component> {
             String parameterName = entry.getKey();
             TemplateParameter parameter = entry.getValue();
 
-            String rawValue = callerElement.hasAttribute(parameterName) ? callerElement.getAttribute(parameterName) : parameter.defaultValue();
+            boolean suppliedByCaller = callerElement.hasAttribute(parameterName);
+            String rawValue = suppliedByCaller ? callerElement.getAttribute(parameterName) : parameter.defaultValue();
             if (rawValue == null && parameter.required()) {
                 throw new IllegalArgumentException("Missing required parameter '" + parameterName + "' for component <" + this.name + ">");
             }
             if (rawValue != null) {
-                rawValue = callerContext.context().resolveConstants(rawValue);
+                if (!suppliedByCaller) {
+                    rawValue = callerContext.context().resolveConstants(rawValue);
+                }
                 rawValue = callerContext.context().resolveTemplateParameter(rawValue);
                 parameterValues.put(parameterName, rawValue);
             }
@@ -83,7 +109,6 @@ public class TemplateComponentParser implements XmlParser<Component> {
 
             if (callerElement.hasAttribute(optionName)) {
                 String rawValue = callerElement.getAttribute(optionName);
-                rawValue = callerContext.context().resolveConstants(rawValue);
                 rawValue = callerContext.context().resolveTemplateParameter(rawValue);
                 parameterValues.put(optionName, rawValue);
             } else {

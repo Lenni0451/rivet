@@ -13,7 +13,6 @@ public class ProgressBarParser implements XmlParser<ProgressBar> {
     private final XmlParser<ProgressBar> parser = ElementParserBuilder.createComponent(ctx -> ctx.attribute("progress", float.class)
                     .map(ProgressBar::new)
                     .orElseGet(ProgressBar::new))
-            .attribute("progress", float.class, ProgressBar::progress)
             .themeOption("textFormat", String.class, ProgressBar::textFormat)
             .themeOption("textPosition", ProgressBar.TextPosition.class, ProgressBar::textPosition)
             .themeOption("textPadding", Float.class, ProgressBar::textPadding)

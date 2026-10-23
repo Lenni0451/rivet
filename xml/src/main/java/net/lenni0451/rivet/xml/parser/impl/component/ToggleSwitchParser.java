@@ -15,7 +15,6 @@ public class ToggleSwitchParser implements XmlParser<ToggleSwitch> {
     private final XmlParser<ToggleSwitch> parser = ElementParserBuilder.createComponent(ctx -> ctx.attribute("toggled", boolean.class)
                     .map(ToggleSwitch::new)
                     .orElseGet(ToggleSwitch::new))
-            .attribute("toggled", boolean.class, ToggleSwitch::toggled)
             .themeOption("cornerRadius", Corners.class, ToggleSwitch::cornerRadius)
             .themeOption("outlineWidth", Float.class, ToggleSwitch::outlineWidth)
             .themeOption("offColor", Color.class, ToggleSwitch::offColor)

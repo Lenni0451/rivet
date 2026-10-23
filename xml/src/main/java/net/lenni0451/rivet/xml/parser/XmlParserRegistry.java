@@ -29,6 +29,7 @@ import net.lenni0451.rivet.layout.tile.TileOptions;
 import net.lenni0451.rivet.xml.parser.impl.component.*;
 import net.lenni0451.rivet.xml.parser.impl.layout.*;
 import net.lenni0451.rivet.xml.parser.impl.property.*;
+import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Node;
 
 import java.util.LinkedHashMap;
@@ -116,23 +117,23 @@ public class XmlParserRegistry {
     }
 
     public <T> XmlParserRegistry register(final Class<T> type, final XmlParser<? extends T> parser) {
-        this.xmlParsers.put(type, parser);
+        this.xmlParsers.put(XmlUtils.box(type), parser);
         return this;
     }
 
     public <T> XmlParserRegistry register(final String tagName, final Class<T> type, final XmlParser<? extends T> parser) {
-        this.tagNames.put(tagName, type);
+        this.tagNames.put(tagName, XmlUtils.box(type));
         return this.register(type, parser);
     }
 
     public <T> XmlParserRegistry registerByTag(final String tagName, final Class<T> type, final XmlParser<? extends T> parser) {
-        this.tagNames.put(tagName, type);
+        this.tagNames.put(tagName, XmlUtils.box(type));
         this.parsersByTag.put(tagName, parser);
         return this;
     }
 
     public boolean supports(final Class<?> type) {
-        return this.xmlParsers.containsKey(type);
+        return this.xmlParsers.containsKey(XmlUtils.box(type));
     }
 
     public boolean supports(final String tagName) {
@@ -157,7 +158,8 @@ public class XmlParserRegistry {
     }
 
     public <T> T parse(final Class<T> type, final Node node, final XmlParserContext context) {
-        ResolvedParser resolved = this.resolveParser(type, node);
+        Class<T> boxedType = XmlUtils.box(type);
+        ResolvedParser resolved = this.resolveParser(boxedType, node);
         if (resolved == null) {
             throw new UnsupportedOperationException("Unsupported value type: " + type.getTypeName());
         }
@@ -170,10 +172,10 @@ public class XmlParserRegistry {
         if (parsed == null) {
             throw new IllegalArgumentException("Unable to parse node as " + resolved.targetType().getTypeName());
         }
-        if (!type.isInstance(parsed)) {
+        if (!boxedType.isInstance(parsed)) {
             throw new IllegalStateException("Parser for " + resolved.targetType().getTypeName() + " returned " + parsed.getClass().getTypeName());
         }
-        return type.cast(parsed);
+        return boxedType.cast(parsed);
     }
 
     private <T> ResolvedParser resolveParser(final Class<T> type, final Node node) {

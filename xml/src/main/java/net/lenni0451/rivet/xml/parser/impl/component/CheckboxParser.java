@@ -23,8 +23,6 @@ public class CheckboxParser implements XmlParser<Checkbox> {
                 else return new Checkbox();
             })
             .referenceAttribute("font", Font.class, Checkbox::font)
-            .attribute("text", String.class, Checkbox::text)
-            .attribute("checked", boolean.class, Checkbox::checked)
             .themeOption("cornerRadius", Corners.class, Checkbox::cornerRadius)
             .themeOption("outlineWidth", Float.class, Checkbox::outlineWidth)
             .themeOption("backgroundColor", Color.class, Checkbox::backgroundColor)

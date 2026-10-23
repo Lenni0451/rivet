@@ -12,7 +12,6 @@ public class ColorPickerParser implements XmlParser<ColorPicker> {
     private final XmlParser<ColorPicker> parser = ElementParserBuilder.createComponent(ctx -> ctx.attribute("color", Color.class)
                     .map(ColorPicker::new)
                     .orElseGet(ColorPicker::new))
-            .attribute("color", Color.class, ColorPicker::color)
             .themeOption("outlineWidth", Float.class, ColorPicker::outlineWidth)
             .themeOption("outlineColor", Color.class, ColorPicker::outlineColor)
             .themeOption("pickerSize", Float.class, ColorPicker::pickerSize)

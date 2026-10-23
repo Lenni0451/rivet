@@ -2,6 +2,7 @@ package net.lenni0451.rivet.xml.parser.impl;
 
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.impl.Label;
+import net.lenni0451.rivet.xml.XmlConstants;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Element;
@@ -117,19 +118,20 @@ public interface NodeContext {
     }
 
     default <T> Optional<T> child(final Class<T> expectedType) {
-        for (Element child : this.childElements()) {
-            String tagName = child.getNodeName();
-            Class<?> type = this.context().registry().getTypeByTag(tagName);
-            if (type != null && expectedType.isAssignableFrom(type)) {
-                return Optional.ofNullable(expectedType.cast(this.context().registry().parseNode(child, this.context())));
-            }
+        List<T> matching = this.children(expectedType);
+        if (matching.size() > 1) {
+            throw new IllegalArgumentException("Multiple children of type " + expectedType.getTypeName() + " are not allowed");
         }
-        return Optional.empty();
+        return matching.isEmpty() ? Optional.empty() : Optional.of(matching.get(0));
     }
 
     default <T> Optional<T> childOrReference(final String referenceAttributeName, final Class<T> expectedType) {
-        return this.child(expectedType)
-                .or(() -> this.referenceAttribute(referenceAttributeName, expectedType));
+        Optional<T> child = this.child(expectedType);
+        Optional<T> reference = this.referenceAttribute(referenceAttributeName, expectedType);
+        if (child.isPresent() && reference.isPresent()) {
+            throw new IllegalArgumentException("Cannot specify both '" + referenceAttributeName + "' attribute and child of type " + expectedType.getTypeName());
+        }
+        return child.or(() -> reference);
     }
 
     default <T> T requireChild(final Class<T> expectedType) {
@@ -143,12 +145,19 @@ public interface NodeContext {
     }
 
     default <T> List<T> children(final Class<T> expectedType) {
+        Class<T> boxedType = XmlUtils.box(expectedType);
         List<T> list = new ArrayList<>();
         for (Element child : this.childElements()) {
             String tagName = child.getNodeName();
+            if (XmlConstants.TAG_SLOT.equals(tagName)) {
+                throw new IllegalArgumentException("<" + XmlConstants.TAG_SLOT + "> can only be used inside template definitions");
+            }
             Class<?> type = this.context().registry().getTypeByTag(tagName);
-            if (type != null && expectedType.isAssignableFrom(type)) {
-                list.add(expectedType.cast(this.context().registry().parseNode(child, this.context())));
+            if (type == null) {
+                throw new IllegalArgumentException("Unknown tag: " + tagName);
+            }
+            if (boxedType.isAssignableFrom(XmlUtils.box(type))) {
+                list.add(boxedType.cast(this.context().registry().parseNode(child, this.context())));
             }
         }
         return list;

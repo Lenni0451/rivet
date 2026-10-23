@@ -12,7 +12,6 @@ public class SeparatorParser implements XmlParser<Separator> {
     private final XmlParser<Separator> parser = ElementParserBuilder.createComponent(ctx -> ctx.attribute("orientation", Separator.Orientation.class)
                     .map(Separator::new)
                     .orElseGet(Separator::new))
-            .attribute("orientation", Separator.Orientation.class, Separator::orientation)
             .themeOption("color", Color.class, Separator::color)
             .themeOption("thickness", Float.class, Separator::thickness)
             .build();

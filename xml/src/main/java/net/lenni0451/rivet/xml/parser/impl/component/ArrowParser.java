@@ -12,7 +12,6 @@ public class ArrowParser implements XmlParser<Arrow> {
     private final XmlParser<Arrow> parser = ElementParserBuilder.createComponent(ctx -> ctx.attribute("progress", float.class)
                     .map(Arrow::new)
                     .orElseGet(Arrow::new))
-            .attribute("progress", float.class, Arrow::progress)
             .themeOption("color", Color.class, Arrow::color)
             .themeOption("disabledColor", Color.class, Arrow::disabledColor)
             .themeOption("lineWidth", Float.class, Arrow::lineWidth)

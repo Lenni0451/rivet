@@ -5,10 +5,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.xml.XmlConstants;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.utils.XmlUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
 import java.util.*;
 
@@ -23,6 +20,7 @@ public class TemplateSlotExpander {
         Map<String, List<Element>> suppliedSlots = this.collectSuppliedSlots(callerElement);
 
         Element templateClone = (Element) this.templateRootElement.cloneNode(true);
+        XmlUtils.substituteConstants(templateClone, this.callerContext.constants());
         Set<String> declaredSlots = new HashSet<>();
         this.processSlots(templateClone, suppliedSlots, declaredSlots);
 
@@ -58,7 +56,10 @@ public class TemplateSlotExpander {
                 suppliedSlots.put(slotName, XmlUtils.childElements(child));
             } else {
                 Class<?> type = this.callerContext.registry().getTypeByTag(tagName);
-                if (type != null && Component.class.isAssignableFrom(type)) {
+                if (type == null) {
+                    throw new IllegalArgumentException("Unknown tag: " + tagName);
+                }
+                if (Component.class.isAssignableFrom(type)) {
                     if (explicitDefaultSlot) {
                         throw new IllegalArgumentException("Duplicate slot supplied: default for component <" + this.templateName + ">");
                     }
@@ -77,16 +78,42 @@ public class TemplateSlotExpander {
         List<Element> children = XmlUtils.childElements(parent);
         for (Element child : children) {
             if (XmlConstants.TAG_SLOT.equals(child.getNodeName())) {
-                Node slotParent = child.getParentNode();
-                boolean isArgumentToTemplate = slotParent instanceof Element parentElement
-                        && this.callerContext.registry().getParserByTag(parentElement.getNodeName()) instanceof TemplateComponentParser;
-                if (!isArgumentToTemplate) {
+                if (!this.isArgumentToTemplate(child)) {
                     this.replaceSlot(child, suppliedSlots, declaredSlots);
                     continue;
                 }
             }
             this.processSlots(child, suppliedSlots, declaredSlots);
         }
+    }
+
+    private boolean isArgumentToTemplate(final Element slotElement) {
+        Node slotParent = slotElement.getParentNode();
+        if (!(slotParent instanceof Element parentElement)) {
+            return false;
+        }
+        if (!(this.callerContext.registry().getParserByTag(parentElement.getNodeName()) instanceof TemplateComponentParser targetTemplate)) {
+            return false;
+        }
+        if (this.hasDescendantSlot(slotElement)) {
+            return true;
+        }
+        if (XmlUtils.childElements(slotElement).isEmpty()) {
+            return false;
+        }
+        String slotName = slotElement.hasAttribute(XmlConstants.ATTRIBUTE_NAME)
+                ? slotElement.getAttribute(XmlConstants.ATTRIBUTE_NAME)
+                : XmlConstants.DEFAULT_SLOT_NAME;
+        return !XmlConstants.DEFAULT_SLOT_NAME.equals(slotName) && targetTemplate.hasDeclaredSlot(slotName);
+    }
+
+    private boolean hasDescendantSlot(final Element element) {
+        for (Element child : XmlUtils.childElements(element)) {
+            if (XmlConstants.TAG_SLOT.equals(child.getNodeName()) || this.hasDescendantSlot(child)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void replaceSlot(final Element slotElement, final Map<String, List<Element>> suppliedSlots, final Set<String> declaredSlots) {
@@ -128,16 +155,22 @@ public class TemplateSlotExpander {
         for (int i = 0; i < attributes.getLength(); i++) {
             Node attribute = attributes.item(i);
             String value = attribute.getNodeValue();
-            if (value != null && value.contains(XmlConstants.CONSTANT_PREFIX)) {
-                value = this.callerContext.resolveConstants(value);
-                attribute.setNodeValue(value);
-            }
-            if (XmlUtils.isTemplateParameter(value)) {
+            if (value != null && value.contains(XmlConstants.TEMPLATE_PARAM_PREFIX)) {
                 attribute.setNodeValue(this.callerContext.resolveTemplateParameter(value));
             }
         }
-        for (Element child : XmlUtils.childElements(element)) {
-            this.interpolateParameters(child);
+        NodeList children = element.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            short childType = child.getNodeType();
+            if (childType == Node.TEXT_NODE || childType == Node.CDATA_SECTION_NODE) {
+                String value = child.getNodeValue();
+                if (value != null && value.contains(XmlConstants.TEMPLATE_PARAM_PREFIX)) {
+                    child.setNodeValue(this.callerContext.resolveTemplateParameter(value));
+                }
+            } else if (childType == Node.ELEMENT_NODE) {
+                this.interpolateParameters((Element) child);
+            }
         }
     }
 

@@ -7,6 +7,8 @@ import net.lenni0451.rivet.xml.utils.XmlUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.Optional;
+
 public class BorderPositionParser implements XmlParser<BorderPosition> {
 
     @Override
@@ -32,7 +34,15 @@ public class BorderPositionParser implements XmlParser<BorderPosition> {
         value = context.resolveTemplateParameter(value);
         if (XmlUtils.isVariableReference(value)) {
             String variableName = XmlUtils.extractVariableReferenceName(value);
-            return context.requireVariable(variableName, BorderPosition.class);
+            Optional<BorderPosition> variable = context.getVariable(variableName, BorderPosition.class);
+            if (variable.isPresent()) {
+                return variable.get();
+            }
+            Optional<String> constant = context.getConstant(variableName);
+            if (constant.isPresent()) {
+                return context.stringParserRegistry().parse(BorderPosition.class, constant.get());
+            }
+            throw new IllegalArgumentException("Variable '" + variableName + "' not found or not of type " + BorderPosition.class.getTypeName());
         }
         return context.stringParserRegistry().parse(BorderPosition.class, value);
     }

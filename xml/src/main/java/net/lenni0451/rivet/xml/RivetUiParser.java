@@ -28,7 +28,7 @@ public class RivetUiParser {
 
     public XmlUi parse(final Element rivetUiElement, final Map<String, Object> variables, final Map<String, String> externalConstants, final String source) {
         XmlParserRegistry sessionRegistry = this.xmlParserRegistry.copy();
-        DocumentParts parts = DocumentParts.of(rivetUiElement);
+        DocumentParts parts = DocumentParts.of((Element) rivetUiElement.cloneNode(true));
         if (parts.root() == null) {
             throw new IllegalArgumentException("<" + XmlConstants.TAG_RIVET_UI + "> must contain a <" + XmlConstants.TAG_ROOT + "> element");
         }
@@ -46,7 +46,7 @@ public class RivetUiParser {
         this.parseDocumentParts(parts, sessionRegistry, rawConstants, source, importChain);
 
         Map<String, String> resolvedConstants = this.resolveAndValidateConstants(rawConstants);
-        XmlUtils.substituteConstants(rivetUiElement, resolvedConstants);
+        XmlUtils.substituteConstants(parts.root(), resolvedConstants);
 
         List<Element> rootChildren = XmlUtils.childElements(parts.root());
         if (rootChildren.size() != 1) {
@@ -97,6 +97,9 @@ public class RivetUiParser {
                 : (element.hasAttribute(XmlConstants.ATTRIBUTE_KEY) ? element.getAttribute(XmlConstants.ATTRIBUTE_KEY) : null);
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("<" + tag + "> requires a '" + XmlConstants.ATTRIBUTE_NAME + "' or '" + XmlConstants.ATTRIBUTE_KEY + "' attribute");
+        }
+        if (!XmlUtils.childElements(element).isEmpty()) {
+            throw new IllegalArgumentException("<" + tag + "> '" + name + "' cannot have child elements");
         }
 
         boolean hasValue = element.hasAttribute(XmlConstants.ATTRIBUTE_VALUE);
@@ -240,6 +243,9 @@ public class RivetUiParser {
             throw new IllegalArgumentException("<" + XmlConstants.TAG_COMPONENT + "> template definition requires a '" + XmlConstants.ATTRIBUTE_NAME + "' attribute");
         }
         String name = componentElement.getAttribute(XmlConstants.ATTRIBUTE_NAME);
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("<" + XmlConstants.TAG_COMPONENT + "> template name cannot be blank");
+        }
         if (registry.supports(name)) {
             throw new IllegalArgumentException("Duplicate component or template name: " + name);
         }
@@ -253,7 +259,13 @@ public class RivetUiParser {
                     if (!child.hasAttribute(XmlConstants.ATTRIBUTE_NAME)) {
                         throw new IllegalArgumentException("<" + XmlConstants.TAG_PARAMETER + "> requires a '" + XmlConstants.ATTRIBUTE_NAME + "' attribute in template <" + name + ">");
                     }
+                    if (!XmlUtils.childElements(child).isEmpty()) {
+                        throw new IllegalArgumentException("<" + XmlConstants.TAG_PARAMETER + "> cannot have child elements in template <" + name + ">");
+                    }
                     String parameterName = child.getAttribute(XmlConstants.ATTRIBUTE_NAME);
+                    if (parameterName.isBlank()) {
+                        throw new IllegalArgumentException("Parameter name cannot be blank in template <" + name + ">");
+                    }
                     boolean required = child.hasAttribute(XmlConstants.ATTRIBUTE_REQUIRED) && Boolean.parseBoolean(child.getAttribute(XmlConstants.ATTRIBUTE_REQUIRED));
                     String defaultValue = child.hasAttribute(XmlConstants.ATTRIBUTE_DEFAULT) ? child.getAttribute(XmlConstants.ATTRIBUTE_DEFAULT) : null;
                     if (required && defaultValue != null) {
@@ -267,6 +279,9 @@ public class RivetUiParser {
                 case XmlConstants.TAG_THEME_OPTION -> {
                     if (!child.hasAttribute(XmlConstants.ATTRIBUTE_KEY)) {
                         throw new IllegalArgumentException("<" + XmlConstants.TAG_THEME_OPTION + "> requires a '" + XmlConstants.ATTRIBUTE_KEY + "' attribute in template <" + name + ">");
+                    }
+                    if (!XmlUtils.childElements(child).isEmpty()) {
+                        throw new IllegalArgumentException("<" + XmlConstants.TAG_THEME_OPTION + "> cannot have child elements in template <" + name + ">");
                     }
                     String keyName = child.getAttribute(XmlConstants.ATTRIBUTE_KEY);
                     ThemeKey<?> themeKey = Theme.requireKey(keyName);

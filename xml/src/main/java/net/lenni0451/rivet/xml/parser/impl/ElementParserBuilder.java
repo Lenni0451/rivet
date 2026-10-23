@@ -17,10 +17,7 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 public class ElementParserBuilder<T> {
 
@@ -41,14 +38,28 @@ public class ElementParserBuilder<T> {
     }
 
     public static <T extends Component> ElementParserBuilder<T> applyComponentAttributes(final ElementParserBuilder<T> builder) {
-        return builder
-                .attribute(XmlConstants.ATTRIBUTE_ID, String.class, (component, id) -> {}) // Handled in BuiltXmlParser
-                .attribute(XmlConstants.ATTRIBUTE_MIN_SIZE, Size.class, Component::minSize)
-                .attribute(XmlConstants.ATTRIBUTE_MAX_SIZE, Size.class, Component::maxSize)
-                .attribute(XmlConstants.ATTRIBUTE_FIXED_SIZE, Size.class, Component::fixedSize)
-                .child(LayoutOptions.class, Component::layoutOptions)
-                .child(Component.Capabilities.class, Component::capabilities)
-                .attribute(XmlConstants.ATTRIBUTE_DISABLED, boolean.class, Component::disabled);
+        return applyComponentAttributes(builder, attributeName -> true);
+    }
+
+    public static <T extends Component> ElementParserBuilder<T> applyComponentAttributes(final ElementParserBuilder<T> builder, final Predicate<String> attributeFilter) {
+        if (attributeFilter.test(XmlConstants.ATTRIBUTE_ID)) {
+            builder.attribute(XmlConstants.ATTRIBUTE_ID, String.class, (component, id) -> {}); // Handled in BuiltXmlParser
+        }
+        if (attributeFilter.test(XmlConstants.ATTRIBUTE_MIN_SIZE)) {
+            builder.attribute(XmlConstants.ATTRIBUTE_MIN_SIZE, Size.class, Component::minSize);
+        }
+        if (attributeFilter.test(XmlConstants.ATTRIBUTE_MAX_SIZE)) {
+            builder.attribute(XmlConstants.ATTRIBUTE_MAX_SIZE, Size.class, Component::maxSize);
+        }
+        if (attributeFilter.test(XmlConstants.ATTRIBUTE_FIXED_SIZE)) {
+            builder.attribute(XmlConstants.ATTRIBUTE_FIXED_SIZE, Size.class, Component::fixedSize);
+        }
+        builder.child(LayoutOptions.class, Component::layoutOptions);
+        builder.child(Component.Capabilities.class, Component::capabilities);
+        if (attributeFilter.test(XmlConstants.ATTRIBUTE_DISABLED)) {
+            builder.attribute(XmlConstants.ATTRIBUTE_DISABLED, boolean.class, Component::disabled);
+        }
+        return builder;
     }
 
     private static <T, V> BiFunction<T, V, T> toUpdater(final BiConsumer<T, V> setter) {
@@ -176,11 +187,12 @@ public class ElementParserBuilder<T> {
             }
             String rawValue = nodeContext.context().resolveTemplateParameter(nodeContext.element().getAttribute(this.name));
             ThemeOption<V> option = this.optionGetter.apply(instance);
+            Class<V> boxedValueType = XmlUtils.box(this.valueType);
 
             if (XmlUtils.isThemeReference(rawValue)) {
                 String key = XmlUtils.extractThemeReferenceKey(rawValue);
                 ThemeKey<?> themeKey = Theme.requireKey(key);
-                if (!this.valueType.isAssignableFrom(themeKey.type())) {
+                if (!boxedValueType.isAssignableFrom(XmlUtils.box(themeKey.type()))) {
                     throw new IllegalArgumentException("Theme key '" + key + "' of type " + themeKey.type().getName() + " is not compatible with attribute '" + this.name + "' of type " + this.valueType.getName());
                 }
                 option.set((ThemeKey<V>) themeKey);
@@ -220,30 +232,31 @@ public class ElementParserBuilder<T> {
                 instance = parser.parse(instance, nodeContext);
             }
 
-            if (!this.childParsers.isEmpty()) {
-                for (Element child : nodeContext.childElements()) {
-                    String tagName = child.getNodeName();
-                    if (XmlConstants.TAG_SLOT.equals(tagName)) {
-                        XmlParser<?> tagParser = context.registry().getParserByTag(element.getNodeName());
-                        if (tagParser instanceof TemplateComponentParser) {
-                            continue;
-                        }
-                        throw new IllegalArgumentException("<" + XmlConstants.TAG_SLOT + "> can only be used inside template definitions");
+            XmlParser<?> elementTagParser = context.registry().getParserByTag(element.getNodeName());
+            for (Element child : nodeContext.childElements()) {
+                String tagName = child.getNodeName();
+                if (XmlConstants.TAG_SLOT.equals(tagName)) {
+                    if (elementTagParser instanceof TemplateComponentParser) {
+                        continue;
                     }
-                    Class<?> type = context.registry().getTypeByTag(tagName);
-                    if (type != null) {
-                        for (ChildParser<T, ?> parser : this.childParsers) {
-                            if (parser.matches(type)) {
-                                Object parsedChild = context.registry().parseNode(child, context);
-                                instance = parser.parse(instance, parsedChild);
-                                break;
-                            }
-                        }
+                    throw new IllegalArgumentException("<" + XmlConstants.TAG_SLOT + "> can only be used inside template definitions");
+                }
+                Class<?> type = context.registry().getTypeByTag(tagName);
+                if (type == null) {
+                    throw new IllegalArgumentException("Unknown tag: " + tagName);
+                }
+                for (ChildParser<T, ?> parser : this.childParsers) {
+                    if (parser.matches(type)) {
+                        Object parsedChild = context.registry().parseNode(child, context);
+                        instance = parser.parse(instance, parsedChild);
+                        break;
                     }
                 }
             }
 
-            if (instance instanceof Component component && element.hasAttribute(XmlConstants.ATTRIBUTE_ID)) {
+            boolean isTemplateIdParameter = elementTagParser instanceof TemplateComponentParser templateParser
+                    && (templateParser.parameters().containsKey(XmlConstants.ATTRIBUTE_ID) || templateParser.themeOptions().containsKey(XmlConstants.ATTRIBUTE_ID));
+            if (instance instanceof Component component && element.hasAttribute(XmlConstants.ATTRIBUTE_ID) && !isTemplateIdParameter) {
                 String id = context.resolveTemplateParameter(element.getAttribute(XmlConstants.ATTRIBUTE_ID));
                 if (id.isEmpty()) {
                     throw new IllegalArgumentException("Component ID cannot be empty");
