@@ -119,9 +119,9 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         this.max = new DoubleProperty(max);
         this.step = new DoubleProperty(step);
 
-        this.min.updateListener().add(m -> this.tickLabels.clear());
-        this.max.updateListener().add(m -> this.tickLabels.clear());
-        this.step.updateListener().add(s -> this.cachedFormatString = null);
+        this.min.syncListener().add(m -> this.tickLabels.clear());
+        this.max.syncListener().add(m -> this.tickLabels.clear());
+        this.step.syncListener().add(s -> this.cachedFormatString = null);
 
         this.positionUpdateListener().add(new PositionUpdateListener(this::updateTooltipPositions));
         this.tooltipFormat.initListener().add(f -> this.cachedFormatString = null);

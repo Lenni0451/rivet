@@ -37,15 +37,15 @@ public class RangeSlider extends AbstractSlider<RangeSlider> {
     }
 
     private void init() {
-        this.lowerValue.updateListener().add(this.lowerThumb::value);
-        this.lowerValue.updateListener().add(v -> {
+        this.lowerValue.syncListener().add(this.lowerThumb::value);
+        this.lowerValue.syncListener().add(v -> {
             if (v > this.upperValue.get()) {
                 this.upperValue.set(v);
             }
         });
 
-        this.upperValue.updateListener().add(this.upperThumb::value);
-        this.upperValue.updateListener().add(v -> {
+        this.upperValue.syncListener().add(this.upperThumb::value);
+        this.upperValue.syncListener().add(v -> {
             if (v < this.lowerValue.get()) {
                 this.lowerValue.set(v);
             }

@@ -65,7 +65,7 @@ public class ComponentPopup {
         this.owner.disabledListener().add(this::close);
         this.owner.positionUpdateListener().add(new Component.PositionUpdateListener(this::isOpen, this::updatePopupPosition));
 
-        this.open.updateListener().add(open -> {
+        this.open.syncListener().add(open -> {
             if (open) {
                 this.doOpen();
             } else {

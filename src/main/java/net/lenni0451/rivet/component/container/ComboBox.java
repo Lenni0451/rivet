@@ -162,14 +162,14 @@ public class ComboBox extends ParentContainer {
         @Override
         public void addChangeListener(final FloatProperty.Setter listener) {
             BooleanProperty.Setter mappedListener = this.listeners.computeIfAbsent(listener, l -> b -> l.set(b ? 1F : 0F));
-            this.property.updateListener().add(mappedListener);
+            this.property.syncListener().add(mappedListener);
         }
 
         @Override
         public void removeChangeListener(final FloatProperty.Setter listener) {
             BooleanProperty.Setter mappedListener = this.listeners.remove(listener);
             if (mappedListener != null) {
-                this.property.updateListener().remove(mappedListener);
+                this.property.syncListener().remove(mappedListener);
             }
         }
     }

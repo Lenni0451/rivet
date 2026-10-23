@@ -72,7 +72,7 @@ public class CollapsibleContainer extends ParentContainer {
         headerInitializer.accept(header);
         contentInitializer.accept(content);
 
-        this.collapsed.updateListener().add(collapsed -> {
+        this.collapsed.syncListener().add(collapsed -> {
             if (this.collapseAnimation != null) {
                 this.collapseAnimation.runInDirection(collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS);
             }

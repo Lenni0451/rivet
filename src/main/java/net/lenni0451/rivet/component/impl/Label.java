@@ -74,16 +74,16 @@ public class Label extends Component {
     }
 
     private void init() {
-        this.font.updateListener().add(f -> this.reshapeAndLayout());
-        this.text.updateListener().add(t -> {
+        this.font.syncListener().add(f -> this.reshapeAndLayout());
+        this.text.syncListener().add(t -> {
             if (this.textLine.get() != null) {
                 this.textLine.set(null);
             }
             this.reshapeAndLayout();
         });
-        this.textFormat.updateListener().add(f -> this.reshapeAndLayout());
-        this.textLine.updateListener().add(l -> this.reshapeAndLayout());
-        this.scale.updateListener().add(s -> this.reshapeAndLayout());
+        this.textFormat.syncListener().add(f -> this.reshapeAndLayout());
+        this.textLine.syncListener().add(l -> this.reshapeAndLayout());
+        this.scale.syncListener().add(s -> this.reshapeAndLayout());
 
         this.textColor.changeListener().add(c -> this.reshape = true);
         this.disabledTextColor.changeListener().add(c -> this.reshape = true);

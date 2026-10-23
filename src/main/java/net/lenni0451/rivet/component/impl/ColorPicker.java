@@ -69,7 +69,7 @@ public class ColorPicker extends Component {
 
     public ColorPicker(final Color color) {
         this.color = new ObjectProperty<>(color);
-        this.color.updateListener().add(c -> this.updateHSB());
+        this.color.syncListener().add(c -> this.updateHSB());
         this.updateHSB();
     }
 

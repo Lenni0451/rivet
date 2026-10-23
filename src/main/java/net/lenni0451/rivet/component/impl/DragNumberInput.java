@@ -100,20 +100,20 @@ public class DragNumberInput extends ParentContainer {
         this.step = new DoubleProperty(step);
         this.value = new DoubleProperty(value);
 
-        this.step.updateListener().add(v -> {
+        this.step.syncListener().add(v -> {
             if (this.updatedLabel != null) {
                 this.updatedLabel.step = v;
                 this.updatedLabel.invalidateCache(this.value.get());
             }
         });
         this.value.addValidator(v -> MathUtils.clamp(v, this.min.get(), this.max.get()));
-        this.value.updateListener().add(v -> {
+        this.value.syncListener().add(v -> {
             if (this.updatedLabel != null) {
                 this.updatedLabel.update(v);
             }
         });
-        this.min.updateListener().add(m -> this.value.revalidate());
-        this.max.updateListener().add(m -> this.value.revalidate());
+        this.min.syncListener().add(m -> this.value.revalidate());
+        this.max.syncListener().add(m -> this.value.revalidate());
 
         if (child instanceof UpdatedLabel label) {
             this.registerUpdatedLabel(label);
@@ -132,7 +132,7 @@ public class DragNumberInput extends ParentContainer {
 
     public <C extends Component> DragNumberInput(final C child, final BiConsumer<C, Double> valueUpdater, final double min, final double max, final double step, final double value) {
         this(child, min, max, step, value);
-        this.value.changeListener().add(val -> valueUpdater.accept(child, val));
+        this.value.syncListener().add(val -> valueUpdater.accept(child, val));
         valueUpdater.accept(child, this.value.get());
     }
 

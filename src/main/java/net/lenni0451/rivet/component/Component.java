@@ -89,7 +89,7 @@ public abstract class Component {
     private final ListenerList<PositionUpdateListener> positionUpdateListener = new ListenerList<>();
 
     {
-        this.disabled.updateListener().add(disabled -> {
+        this.disabled.syncListener().add(disabled -> {
             if (disabled) {
                 if (this.rivet != null && this.rivet.focusedComponent() == this) {
                     this.rivet.focusedComponent(null);

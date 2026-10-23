@@ -16,7 +16,7 @@ public final class {{prefix}}Property{{var "generic"}} {
     private volatile {{type}} value;
     private final List<Updater{{var "generic"}}> validators = new CopyOnWriteArrayList<>();
     @lombok.Getter
-    private final ListenerList<Setter{{var "generic"}}> updateListener = new ListenerList<>(); // Same as changeListener but always called
+    private final ListenerList<Setter{{var "generic"}}> syncListener = new ListenerList<>(); // Same as changeListener but always called
     @lombok.Getter
     private final ListenerList<Setter{{var "generic"}}> changeListener = new ListenerList<>(); // Not called if fireChangeListener is false in set()
     private final Map<{{prefix}}Property{{var "generic"}}, Runnable> syncedProperties = Collections.synchronizedMap(new IdentityHashMap<>());
@@ -81,7 +81,7 @@ public final class {{prefix}}Property{{var "generic"}} {
             this.value = value;
 
             final {{type}} finalValue = value;
-            this.updateListener.call(listener -> listener.set(finalValue));
+            this.syncListener.call(listener -> listener.set(finalValue));
             if (fireChangeListener) this.changeListener.call(listener -> listener.set(finalValue));
         }
         return this;
@@ -124,8 +124,8 @@ public final class {{prefix}}Property{{var "generic"}} {
             }
         };
         Runnable unregister = () -> {
-            this.updateListener.remove(thisListener);
-            property.updateListener.remove(propertyListener);
+            this.syncListener.remove(thisListener);
+            property.syncListener.remove(propertyListener);
             this.syncedProperties.remove(property);
             property.syncedProperties.remove(this);
         };
@@ -133,8 +133,8 @@ public final class {{prefix}}Property{{var "generic"}} {
         this.syncedProperties.put(property, unregister);
         property.syncedProperties.put(this, unregister);
         property.set(this.get());
-        this.updateListener.add(thisListener);
-        property.updateListener.add(propertyListener);
+        this.syncListener.add(thisListener);
+        property.syncListener.add(propertyListener);
 
         return unregister;
     }
@@ -167,14 +167,14 @@ public final class {{prefix}}Property{{var "generic"}} {
             }
         };
         Runnable unregister = () -> {
-            this.updateListener.remove(thisListener);
+            this.syncListener.remove(thisListener);
             observable.removeChangeListener(observableListener);
             this.syncedObservables.remove(observable);
         };
 
         this.syncedObservables.put(observable, unregister);
         this.set(observable.get());
-        this.updateListener.add(thisListener);
+        this.syncListener.add(thisListener);
         observable.addChangeListener(observableListener);
 
         return unregister;

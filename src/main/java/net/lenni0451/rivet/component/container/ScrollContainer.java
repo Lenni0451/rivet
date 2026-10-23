@@ -101,10 +101,10 @@ public class ScrollContainer extends ParentContainer {
         this.hScrollBar = new ScrollBar(ScrollBar.Orientation.HORIZONTAL);
         this.vScrollBar = new ScrollBar(ScrollBar.Orientation.VERTICAL);
 
-        this.scrollX.changeListener().add(val -> this.scrollX(val, true));
-        this.scrollY.changeListener().add(val -> this.scrollY(val, true));
-        this.hScrollBar.scroll().changeListener().add(this::scrollX);
-        this.vScrollBar.scroll().changeListener().add(this::scrollY);
+        this.scrollX.syncListener().add(val -> this.scrollX(val, true));
+        this.scrollY.syncListener().add(val -> this.scrollY(val, true));
+        this.hScrollBar.scroll().syncListener().add(this::scrollX);
+        this.vScrollBar.scroll().syncListener().add(this::scrollY);
     }
 
     public final float maxScrollX() {

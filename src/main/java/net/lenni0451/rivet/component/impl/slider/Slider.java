@@ -29,7 +29,7 @@ public class Slider extends AbstractSlider<Slider> {
     }
 
     private void init() {
-        this.value.updateListener().add(this.thumb::value);
+        this.value.syncListener().add(this.thumb::value);
     }
 
     public final Slider value(final double value) {

@@ -64,7 +64,7 @@ public class TabContainer extends ParentContainer {
             }
             return tab;
         });
-        this.selectedTab.updateListener().add(tab -> {
+        this.selectedTab.syncListener().add(tab -> {
             this.tabs.forEach(t -> t.headerBackground().deactivate());
             this.contentContainer.clear();
             if (tab != null) {
