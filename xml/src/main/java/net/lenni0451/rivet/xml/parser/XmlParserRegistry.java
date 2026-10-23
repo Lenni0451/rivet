@@ -65,6 +65,7 @@ public class XmlParserRegistry {
         registry.register("SolidColor", SolidColor.class, new SolidColorParser());
         registry.register("TabContainer", TabContainer.class, new TabContainerParser());
         registry.register("Tab", TabParser.TabDefinition.class, new TabParser());
+        registry.register("TextArea", TextArea.class, new TextAreaParser());
         registry.register("TextField", TextField.class, new TextFieldParser());
         registry.register("ToggleSwitch", ToggleSwitch.class, new ToggleSwitchParser());
 

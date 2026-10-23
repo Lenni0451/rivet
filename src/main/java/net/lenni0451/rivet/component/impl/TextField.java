@@ -24,6 +24,10 @@ import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.text.highlight.SyntaxHighlighter;
+import net.lenni0451.rivet.text.model.TextBlock;
+import net.lenni0451.rivet.text.model.TextFormat;
+import net.lenni0451.rivet.text.model.TextLine;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
@@ -48,6 +52,9 @@ public class TextField extends Component {
     private Function<Character, Character> charReplacer;
     @Getter
     private Predicate<String> validator;
+    @Getter
+    @Nullable
+    private SyntaxHighlighter highlighter;
 
     private ShapedText shapedText;
     private ShapedText shapedHintText;
@@ -185,6 +192,14 @@ public class TextField extends Component {
         return this;
     }
 
+    public final TextField highlighter(@Nullable final SyntaxHighlighter highlighter) {
+        this.highlighter = highlighter;
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
+        return this;
+    }
+
     public final TextField cursor(final int cursor) {
         this.cursor = MathUtils.clamp(cursor, 0, this.text.length());
         this.selection = MathUtils.clamp(cursor, 0, this.text.length());
@@ -214,7 +229,14 @@ public class TextField extends Component {
         if (disabled) textColor = this.disabledTextColor.value();
         else if (!this.valid) textColor = this.invalidTextColor.value();
         else textColor = this.textColor.value();
-        this.shapedText = this.usedFont().shapeText(text, textColor);
+        TextFormat defaultFormat = TextFormat.DEFAULT.withColor(textColor);
+        if (this.highlighter != null) {
+            TextBlock block = this.highlighter.highlight(text, defaultFormat);
+            TextLine line = block.lines().isEmpty() ? new TextLine() : block.lines().get(0);
+            this.shapedText = this.usedFont().shapeText(line);
+        } else {
+            this.shapedText = this.usedFont().shapeText(text, textColor);
+        }
         if (this.hint != null && !this.hint.isEmpty()) {
             Color hintColor = disabled ? this.disabledTextColor.value() : this.hintColor.value();
             this.shapedHintText = this.usedFont().shapeText(this.hint, hintColor);

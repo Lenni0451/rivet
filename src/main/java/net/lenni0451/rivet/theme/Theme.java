@@ -271,6 +271,42 @@ public abstract class Theme {
         public static final ThemeKey<Character> PASSWORD_CHAR = register("text_field.password_char", Character.class, r -> '•');
     }
 
+    public static class TextArea {
+        // Geometry & Layout
+        public static final ThemeKey<Float> CURSOR_WIDTH = register("text_area.cursor_width", Float.class, r -> r.theme().get(TextField.CURSOR_WIDTH));
+        public static final ThemeKey<Float> OUTLINE_WIDTH = register("text_area.outline_width", Float.class, r -> r.theme().get(TextField.OUTLINE_WIDTH));
+        public static final ThemeKey<Corners> CORNER_RADIUS = register("text_area.corner_radius", Corners.class, r -> r.theme().get(TextField.CORNER_RADIUS));
+        public static final ThemeKey<Padding> INNER_PADDING = register("text_area.inner_padding", Padding.class, r -> {
+            float textHeight = r.backend().font().height();
+            return new Padding(roundMin(textHeight / 5F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 5F, 0));
+        });
+
+        // Colors - Base / Inactive
+        public static final ThemeKey<Color> TEXT_COLOR = register("text_area.text_color", Color.class, r -> r.theme().get(TextField.TEXT_COLOR));
+        public static final ThemeKey<Color> HINT_COLOR = register("text_area.hint_color", Color.class, r -> r.theme().get(TextField.HINT_COLOR));
+        public static final ThemeKey<Color> BACKGROUND_COLOR = register("text_area.background_color", Color.class, r -> r.theme().get(TextField.BACKGROUND_COLOR));
+        public static final ThemeKey<Color> OUTLINE_COLOR = register("text_area.outline_color", Color.class, r -> r.theme().get(TextField.OUTLINE_COLOR));
+        public static final ThemeKey<Color> CURSOR_COLOR = register("text_area.cursor_color", Color.class, r -> r.theme().get(TextField.CURSOR_COLOR));
+
+        // Colors - States
+        public static final ThemeKey<Color> FOCUSED_OUTLINE_COLOR = register("text_area.focused_outline_color", Color.class, r -> r.theme().get(TextField.FOCUSED_OUTLINE_COLOR));
+        public static final ThemeKey<Color> INVALID_TEXT_COLOR = register("text_area.invalid_text_color", Color.class, r -> r.theme().get(TextField.INVALID_TEXT_COLOR));
+        public static final ThemeKey<Color> INVALID_OUTLINE_COLOR = register("text_area.invalid_outline_color", Color.class, r -> r.theme().get(TextField.INVALID_OUTLINE_COLOR));
+        public static final ThemeKey<Color> SELECTION_COLOR = register("text_area.selection_color", Color.class, r -> r.theme().get(TextField.SELECTION_COLOR));
+
+        // Colors - Disabled
+        public static final ThemeKey<Color> DISABLED_TEXT_COLOR = register("text_area.disabled_text_color", Color.class, r -> r.theme().get(TextField.DISABLED_TEXT_COLOR));
+        public static final ThemeKey<Color> DISABLED_BACKGROUND_COLOR = register("text_area.disabled_background_color", Color.class, r -> r.theme().get(TextField.DISABLED_BACKGROUND_COLOR));
+        public static final ThemeKey<Color> DISABLED_OUTLINE_COLOR = register("text_area.disabled_outline_color", Color.class, r -> r.theme().get(TextField.DISABLED_OUTLINE_COLOR));
+
+        // Animations
+        public static final ThemeKey<AnimationConfig> CURSOR_ANIMATION = register("text_area.cursor_animation", AnimationConfig.class, r -> r.theme().get(TextField.CURSOR_ANIMATION));
+        public static final ThemeKey<AnimationConfig> FOCUS_ANIMATION = register("text_area.focus_animation", AnimationConfig.class, r -> r.theme().get(TextField.FOCUS_ANIMATION));
+
+        // Behaviors & Settings
+        public static final ThemeKey<Integer> TAB_WIDTH = register("text_area.tab_width", Integer.class, r -> 4);
+    }
+
     public static class Checkbox {
         // Geometry & Layout
         public static final ThemeKey<Corners> CORNER_RADIUS = register("checkbox.corner_radius", Corners.class, r -> new Corners(roundMin(r.backend().font().height() / 25F, 1)));
