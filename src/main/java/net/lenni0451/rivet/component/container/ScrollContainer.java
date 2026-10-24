@@ -14,6 +14,7 @@ import net.lenni0451.rivet.component.ParentContainer;
 import net.lenni0451.rivet.component.impl.ScrollBar;
 import net.lenni0451.rivet.component.impl.ScrollBar.ScrollBarType;
 import net.lenni0451.rivet.event.ListenerList;
+import net.lenni0451.rivet.input.keyboard.ModifierKey;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -196,16 +197,24 @@ public class ScrollContainer extends ParentContainer {
         this.pendingScrollIntoView = null;
         return this.nestedScrollCoordinator.handleScrolling(
                 () -> {
-                    if (this.hScrollVisible && (event.scrollX() != 0 || (!this.vScrollVisible && event.scrollY() != 0)) && !this.hScrollBar.barPressed()) {
+                    float horizontalScrollAmount = 0;
+                    if (event.scrollX() != 0) {
+                        horizontalScrollAmount = event.scrollX();
+                    } else if (!this.vScrollVisible && event.scrollY() != 0) {
+                        horizontalScrollAmount = event.scrollY();
+                    } else if (event.scrollY() != 0 && this.rivet().backend().isKeyDown(ModifierKey.SHIFT)) {
+                        horizontalScrollAmount = event.scrollY();
+                    }
+                    if (this.hScrollVisible && horizontalScrollAmount != 0 && !this.hScrollBar.barPressed()) {
                         float contentWidth = this.childSize.width();
                         float visibleWidth = this.visibleWidth(size);
                         float maxScroll = Math.max(0, contentWidth - visibleWidth);
                         if (maxScroll > EPSILON) {
-                            float scrollAmount = event.scrollX() == 0 ? event.scrollY() : event.scrollX();
-                            this.targetScrollX = MathUtils.clamp(this.targetScrollX - scrollAmount * this.scrollSpeed.value(), 0, maxScroll);
+                            this.targetScrollX = MathUtils.clamp(this.targetScrollX - horizontalScrollAmount * this.scrollSpeed.value(), 0, maxScroll);
                             return true;
                         }
                     }
+
                     if (this.vScrollVisible && event.scrollY() != 0 && !this.vScrollBar.barPressed()) {
                         float contentHeight = this.childSize.height();
                         float visibleHeight = this.visibleHeight(size);
