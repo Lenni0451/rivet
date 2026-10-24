@@ -269,6 +269,7 @@ public abstract class Theme {
 
         // Behaviors & Settings
         public static final ThemeKey<Character> PASSWORD_CHAR = register("text_field.password_char", Character.class, r -> '•');
+        public static final ThemeKey<String> WORD_BOUNDARIES = register("text_field.word_boundaries", String.class, r -> "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?");
     }
 
     public static class TextArea {
@@ -305,6 +306,7 @@ public abstract class Theme {
 
         // Behaviors & Settings
         public static final ThemeKey<Integer> TAB_WIDTH = register("text_area.tab_width", Integer.class, r -> 4);
+        public static final ThemeKey<String> WORD_BOUNDARIES = register("text_area.word_boundaries", String.class, r -> r.theme().get(TextField.WORD_BOUNDARIES));
     }
 
     public static class Checkbox {

@@ -25,6 +25,7 @@ public class TextAreaParser implements XmlParser<TextArea> {
             .referenceAttribute("validator", Predicate.class, TextArea::validator)
             .referenceAttribute("highlighter", SyntaxHighlighter.class, TextArea::highlighter)
             .themeOption("tabWidth", Integer.class, TextArea::tabWidth)
+            .themeOption("wordBoundaries", String.class, TextArea::wordBoundaries)
             .themeOption("textColor", Color.class, TextArea::textColor)
             .themeOption("invalidTextColor", Color.class, TextArea::invalidTextColor)
             .themeOption("hintColor", Color.class, TextArea::hintColor)

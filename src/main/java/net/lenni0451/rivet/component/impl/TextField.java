@@ -14,7 +14,6 @@ import net.lenni0451.rivet.backend.text.ShapedText;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
-import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -31,6 +30,7 @@ import net.lenni0451.rivet.text.model.TextLine;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.TextInputNavigationHandler;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -70,6 +70,8 @@ public class TextField extends Component {
     private int clickCount;
     private long lastClick;
     private Animation cursorAnimation;
+    @Getter
+    private final NavigationHandler navigationHandler = new NavigationHandler();
 
     @Getter
     private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TextField.TEXT_COLOR);
@@ -99,6 +101,8 @@ public class TextField extends Component {
     private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TextField.INNER_PADDING);
     @Getter
     private final ThemeOption<Character> passwordChar = new ThemeOption<>(this, Theme.TextField.PASSWORD_CHAR);
+    @Getter
+    private final ThemeOption<String> wordBoundaries = new ThemeOption<>(this, Theme.TextField.WORD_BOUNDARIES);
     @Getter
     private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.TextField.DISABLED_TEXT_COLOR);
     @Getter
@@ -267,6 +271,21 @@ public class TextField extends Component {
         }
     }
 
+    private void onTextChange(final boolean fireListeners) {
+        this.validate();
+        if (fireListeners) {
+            this.valueChangeListener.call(c -> c.accept(this.text()));
+        }
+    }
+
+    private void validate() {
+        if (this.validator == null) {
+            this.valid = true;
+        } else {
+            this.valid = this.validator.test(this.text.toString());
+        }
+    }
+
     @Override
     protected void onAddedInternal() {
         this.updateShapedText();
@@ -327,85 +346,12 @@ public class TextField extends Component {
 
     @Override
     protected boolean onKeyDownInternal(final KeyEvent event) {
-        boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
-        boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
-
-        if (event.key().isEquivalent(Key.LEFT)) {
-            if (ctrl) {
-                this.cursor = this.findWordStart(this.cursor);
-            } else {
-                this.cursor = Math.max(0, this.cursor - 1);
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.RIGHT)) {
-            if (ctrl) {
-                this.cursor = this.findWordEnd(this.cursor);
-            } else {
-                this.cursor = Math.min(this.text.length(), this.cursor + 1);
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.HOME)) {
-            this.cursor = 0;
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.END)) {
-            this.cursor = this.text.length();
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.BACKSPACE)) {
-            if (this.cursor != this.selection) {
-                this.deleteSelection();
-            } else if (ctrl) {
-                this.selection = this.findWordStart(this.cursor);
-                this.deleteSelection();
-            } else if (this.cursor > 0) {
-                this.text.deleteCharAt(this.cursor - 1);
-                this.cursor--;
-                this.selection = this.cursor;
-                this.updateShapedText();
-                this.onTextChange(true);
-            }
-        } else if (event.key().isEquivalent(Key.DELETE)) {
-            if (this.cursor != this.selection) {
-                this.deleteSelection();
-            } else if (ctrl) {
-                this.selection = this.findWordEnd(this.cursor);
-                this.deleteSelection();
-            } else if (this.cursor < this.text.length()) {
-                this.text.deleteCharAt(this.cursor);
-                this.updateShapedText();
-                this.onTextChange(true);
-            }
-        } else if (ctrl && event.key().isEquivalent(Key.A)) {
-            this.selection = 0;
-            this.cursor = this.text.length();
-        } else if (ctrl && event.key().isEquivalent(Key.C)) {
-            this.copy();
-        } else if (ctrl && event.key().isEquivalent(Key.V)) {
-            this.paste();
-        } else if (ctrl && event.key().isEquivalent(Key.X)) {
-            this.copy();
-            this.deleteSelection();
-        } else {
-            return false;
-        }
-        this.cursorAnimation.reset().start();
-        return true;
+        return this.navigationHandler.onKeyDown(event);
     }
 
     @Override
     protected boolean onCharTypedInternal(final CharEvent event) {
-        if (event.codePoint() < 32 || event.codePoint() == 127) return false;
-        this.deleteSelection();
-        if (Character.isBmpCodePoint(event.codePoint())) {
-            this.text.insert(this.cursor, (char) event.codePoint());
-        } else {
-            this.text.insert(this.cursor, Character.toChars(event.codePoint()));
-        }
-        this.cursor++;
-        this.selection = this.cursor;
-        this.cursorAnimation.reset().start();
-        this.updateShapedText();
-        this.onTextChange(true);
-        return true;
+        return this.navigationHandler.onCharTyped(event);
     }
 
     @Override
@@ -422,17 +368,11 @@ public class TextField extends Component {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
             if (!event.modifiers().contains(ModifierKey.SHIFT)) {
                 this.selection = this.cursor;
+                this.clickCount = this.navigationHandler.handleMouseClickSelection(this.clickCount, 0);
             }
             this.selecting = true;
-
-            if (this.clickCount == 2) {
-                this.selection = this.findWordStart(this.cursor);
-                this.cursor = this.findWordEnd(this.cursor);
-            } else if (this.clickCount == 3) {
-                this.selection = 0;
-                this.cursor = this.text.length();
-            } else {
-                this.clickCount = 1;
+            if (this.cursorAnimation != null) {
+                this.cursorAnimation.reset().start();
             }
         }
         return true;
@@ -450,6 +390,7 @@ public class TextField extends Component {
     protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         if (this.selecting) {
             this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
+            this.cursorAnimation.reset().start();
         }
         return true;
     }
@@ -510,67 +451,66 @@ public class TextField extends Component {
         this.scrollX = Math.max(0, Math.min(this.scrollX, Math.max(0, this.shapedText.logicalBounds().width() - visibleWidth)));
     }
 
-    private void deleteSelection() {
-        if (this.cursor == this.selection) return;
-        int start = Math.min(this.cursor, this.selection);
-        int end = Math.max(this.cursor, this.selection);
-        this.text.delete(start, end);
-        this.cursor = start;
-        this.selection = start;
-        this.updateShapedText();
-        this.onTextChange(true);
-    }
-
-    private void copy() {
-        if (this.cursor == this.selection) return;
-        int start = Math.min(this.cursor, this.selection);
-        int end = Math.max(this.cursor, this.selection);
-        this.rivet().backend().setClipboard(this.text.substring(start, end));
-    }
-
-    private void paste() {
-        String clipboard = this.rivet().backend().getClipboard();
-        if (clipboard == null || clipboard.isEmpty()) return;
-        this.deleteSelection();
-        this.text.insert(this.cursor, clipboard);
-        this.cursor += clipboard.length();
-        this.selection = this.cursor;
-        this.updateShapedText();
-        this.onTextChange(true);
-    }
-
-    private int findWordStart(int from) {
-        int i = Math.max(0, Math.min(this.text.length(), from));
-        while (i > 0 && Character.isWhitespace(this.text.charAt(i - 1))) i--;
-        while (i > 0 && !Character.isWhitespace(this.text.charAt(i - 1))) i--;
-        return i;
-    }
-
-    private int findWordEnd(int from) {
-        int i = Math.max(0, Math.min(this.text.length(), from));
-        while (i < this.text.length() && Character.isWhitespace(this.text.charAt(i))) i++;
-        while (i < this.text.length() && !Character.isWhitespace(this.text.charAt(i))) i++;
-        return i;
-    }
-
-    private void onTextChange(final boolean fireListeners) {
-        this.validate();
-        if (fireListeners) {
-            this.valueChangeListener.call(c -> c.accept(this.text()));
-        }
-    }
-
-    private void validate() {
-        if (this.validator == null) {
-            this.valid = true;
-        } else {
-            this.valid = this.validator.test(this.text.toString());
-        }
-    }
-
 
     private enum State {
         IDLE, FOCUSED, INVALID, DISABLED
+    }
+
+    private class NavigationHandler extends TextInputNavigationHandler {
+        @Override
+        public StringBuffer textBuffer() {
+            return TextField.this.text;
+        }
+
+        @Override
+        public int cursor() {
+            return TextField.this.cursor;
+        }
+
+        @Override
+        public void cursor(final int cursor) {
+            TextField.this.cursor = MathUtils.clamp(cursor, 0, TextField.this.text.length());
+        }
+
+        @Override
+        public int selection() {
+            return TextField.this.selection;
+        }
+
+        @Override
+        public void selection(final int selection) {
+            TextField.this.selection = MathUtils.clamp(selection, 0, TextField.this.text.length());
+        }
+
+        @Override
+        public String wordBoundaries() {
+            return TextField.this.wordBoundaries.value();
+        }
+
+        @Override
+        public void onTextModified(final boolean fireListeners) {
+            if (fireListeners) {
+                TextField.this.updateShapedText();
+                TextField.this.onTextChange(true);
+            }
+        }
+
+        @Override
+        public void onCursorMoved() {
+            if (TextField.this.cursorAnimation != null) {
+                TextField.this.cursorAnimation.reset().start();
+            }
+        }
+
+        @Override
+        public String getClipboard() {
+            return TextField.this.rivet().backend().getClipboard();
+        }
+
+        @Override
+        public void setClipboard(final String text) {
+            TextField.this.rivet().backend().setClipboard(text);
+        }
     }
 
 }

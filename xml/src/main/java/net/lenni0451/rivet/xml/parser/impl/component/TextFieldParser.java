@@ -40,6 +40,7 @@ public class TextFieldParser implements XmlParser<TextField> {
             .themeOption("cornerRadius", Corners.class, TextField::cornerRadius)
             .themeOption("innerPadding", Padding.class, TextField::innerPadding)
             .themeOption("passwordChar", Character.class, TextField::passwordChar)
+            .themeOption("wordBoundaries", String.class, TextField::wordBoundaries)
             .themeOption("disabledTextColor", Color.class, TextField::disabledTextColor)
             .themeOption("disabledBackgroundColor", Color.class, TextField::disabledBackgroundColor)
             .themeOption("disabledOutlineColor", Color.class, TextField::disabledOutlineColor)

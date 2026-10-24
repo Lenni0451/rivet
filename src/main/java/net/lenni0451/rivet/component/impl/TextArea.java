@@ -15,7 +15,6 @@ import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
-import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -31,6 +30,7 @@ import net.lenni0451.rivet.text.model.TextFormat;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
+import net.lenni0451.rivet.utils.TextInputNavigationHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -67,6 +67,8 @@ public class TextArea extends Component {
     private long lastClick;
     private Animation cursorAnimation;
     private int[] lineStarts = new int[]{0};
+    @Getter
+    private final NavigationHandler navigationHandler = new NavigationHandler();
 
     @Getter
     private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.TextArea.TEXT_COLOR);
@@ -106,6 +108,8 @@ public class TextArea extends Component {
     private final ThemeOption<AnimationConfig> focusAnimationConfig = new ThemeOption<>(this, Theme.TextArea.FOCUS_ANIMATION);
     @Getter
     private final ThemeOption<Integer> tabWidth = new ThemeOption<>(this, Theme.TextArea.TAB_WIDTH);
+    @Getter
+    private final ThemeOption<String> wordBoundaries = new ThemeOption<>(this, Theme.TextArea.WORD_BOUNDARIES);
 
     private Transition<Color> outlineColorTransition;
 
@@ -302,6 +306,24 @@ public class TextArea extends Component {
         }
     }
 
+    private void onTextChange(final boolean fireListeners) {
+        this.validate();
+        if (this.parent() != null) {
+            this.parent().requestLayoutRecalculation();
+        }
+        if (fireListeners) {
+            this.valueChangeListener.call(c -> c.accept(this.text()));
+        }
+    }
+
+    private void validate() {
+        if (this.validator == null) {
+            this.valid = true;
+        } else {
+            this.valid = this.validator.test(this.text.toString());
+        }
+    }
+
     @Override
     protected void onAddedInternal() {
         this.updateLineStarts();
@@ -363,148 +385,12 @@ public class TextArea extends Component {
 
     @Override
     protected boolean onKeyDownInternal(final KeyEvent event) {
-        boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
-        boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
-
-        if (event.key().isEquivalent(Key.LEFT)) {
-            if (ctrl) {
-                this.cursor = this.findWordStart(this.cursor);
-            } else {
-                this.cursor = Math.max(0, this.cursor - 1);
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.RIGHT)) {
-            if (ctrl) {
-                this.cursor = this.findWordEnd(this.cursor);
-            } else {
-                this.cursor = Math.min(this.text.length(), this.cursor + 1);
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.UP)) {
-            int currentLine = this.lineIndexAt(this.cursor);
-            if (currentLine > 0) {
-                int column = this.cursor - this.lineStarts[currentLine];
-                int targetLine = currentLine - 1;
-                int targetColumn = Math.min(column, this.lineLength(targetLine));
-                this.cursor = this.lineStarts[targetLine] + targetColumn;
-            } else {
-                this.cursor = 0;
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.DOWN)) {
-            int currentLine = this.lineIndexAt(this.cursor);
-            if (currentLine < this.lineCount() - 1) {
-                int column = this.cursor - this.lineStarts[currentLine];
-                int targetLine = currentLine + 1;
-                int targetColumn = Math.min(column, this.lineLength(targetLine));
-                this.cursor = this.lineStarts[targetLine] + targetColumn;
-            } else {
-                this.cursor = this.text.length();
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.HOME)) {
-            if (ctrl) {
-                this.cursor = 0;
-            } else {
-                this.cursor = this.lineStarts[this.lineIndexAt(this.cursor)];
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.END)) {
-            if (ctrl) {
-                this.cursor = this.text.length();
-            } else {
-                this.cursor = this.lineEndOffset(this.lineIndexAt(this.cursor));
-            }
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.PAGE_UP)) {
-            int currentLine = this.lineIndexAt(this.cursor);
-            int column = this.cursor - this.lineStarts[currentLine];
-            int targetLine = Math.max(0, currentLine - 10);
-            this.cursor = this.lineStarts[targetLine] + Math.min(column, this.lineLength(targetLine));
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.PAGE_DOWN)) {
-            int currentLine = this.lineIndexAt(this.cursor);
-            int column = this.cursor - this.lineStarts[currentLine];
-            int targetLine = Math.min(this.lineCount() - 1, currentLine + 10);
-            this.cursor = this.lineStarts[targetLine] + Math.min(column, this.lineLength(targetLine));
-            if (!shift) this.selection = this.cursor;
-        } else if (event.key().isEquivalent(Key.ENTER)) {
-            this.deleteSelection();
-            this.text.insert(this.cursor, '\n');
-            this.cursor++;
-            this.selection = this.cursor;
-            this.updateLineStarts();
-            this.updateShapedText();
-            this.onTextChange(true);
-        } else if (event.key().isEquivalent(Key.TAB)) {
-            this.deleteSelection();
-            int tabWidth = Math.max(1, this.tabWidth.value());
-            String spaces = " ".repeat(tabWidth);
-            this.text.insert(this.cursor, spaces);
-            this.cursor += spaces.length();
-            this.selection = this.cursor;
-            this.updateLineStarts();
-            this.updateShapedText();
-            this.onTextChange(true);
-        } else if (event.key().isEquivalent(Key.BACKSPACE)) {
-            if (this.cursor != this.selection) {
-                this.deleteSelection();
-            } else if (ctrl) {
-                this.selection = this.findWordStart(this.cursor);
-                this.deleteSelection();
-            } else if (this.cursor > 0) {
-                this.text.deleteCharAt(this.cursor - 1);
-                this.cursor--;
-                this.selection = this.cursor;
-                this.updateLineStarts();
-                this.updateShapedText();
-                this.onTextChange(true);
-            }
-        } else if (event.key().isEquivalent(Key.DELETE)) {
-            if (this.cursor != this.selection) {
-                this.deleteSelection();
-            } else if (ctrl) {
-                this.selection = this.findWordEnd(this.cursor);
-                this.deleteSelection();
-            } else if (this.cursor < this.text.length()) {
-                this.text.deleteCharAt(this.cursor);
-                this.updateLineStarts();
-                this.updateShapedText();
-                this.onTextChange(true);
-            }
-        } else if (ctrl && event.key().isEquivalent(Key.A)) {
-            this.selection = 0;
-            this.cursor = this.text.length();
-        } else if (ctrl && event.key().isEquivalent(Key.C)) {
-            this.copy();
-        } else if (ctrl && event.key().isEquivalent(Key.V)) {
-            this.paste();
-        } else if (ctrl && event.key().isEquivalent(Key.X)) {
-            this.copy();
-            this.deleteSelection();
-        } else {
-            return false;
-        }
-        this.cursorAnimation.reset().start();
-        return true;
+        return this.navigationHandler.onKeyDown(event);
     }
 
     @Override
     protected boolean onCharTypedInternal(final CharEvent event) {
-        if (event.codePoint() < 32 || event.codePoint() == 127) return false;
-        this.deleteSelection();
-        if (Character.isBmpCodePoint(event.codePoint())) {
-            this.text.insert(this.cursor, (char) event.codePoint());
-        } else {
-            this.text.insert(this.cursor, Character.toChars(event.codePoint()));
-        }
-        this.cursor++;
-        this.selection = this.cursor;
-        this.cursorAnimation.reset().start();
-        this.updateLineStarts();
-        this.updateShapedText();
-        this.onTextChange(true);
-        return true;
+        return this.navigationHandler.onCharTyped(event);
     }
 
     @Override
@@ -527,19 +413,10 @@ public class TextArea extends Component {
 
             if (!event.modifiers().contains(ModifierKey.SHIFT)) {
                 this.selection = this.cursor;
+                this.clickCount = this.navigationHandler.handleMouseClickSelection(this.clickCount, lineId);
             }
             this.selecting = true;
-
-            if (this.clickCount == 2) {
-                this.selection = this.findWordStart(this.cursor);
-                this.cursor = this.findWordEnd(this.cursor);
-            } else if (this.clickCount == 3) {
-                this.selection = this.lineStarts[lineId];
-                this.cursor = this.lineEndOffset(lineId);
-            } else if (this.clickCount > 3) {
-                this.selection = 0;
-                this.cursor = this.text.length();
-            }
+            this.cursorAnimation.reset().start();
         }
         return true;
     }
@@ -561,6 +438,7 @@ public class TextArea extends Component {
             ShapedText lineShaped = this.getShapedLine(lineId);
             int column = lineShaped.index(localX, 0);
             this.cursor = this.lineStarts[lineId] + column;
+            this.cursorAnimation.reset().start();
         }
         return true;
     }
@@ -605,9 +483,10 @@ public class TextArea extends Component {
                     int lineEnd = this.lineEndOffset(i);
                     int lineEndWithNewline = (i + 1 < this.lineStarts.length) ? this.lineStarts[i + 1] : this.text.length();
 
-                    if (selectionEnd >= lineStart && selectionStart <= lineEndWithNewline) {
-                        int lineSelectionStart = Math.max(selectionStart, lineStart) - lineStart;
-                        int lineSelectionEnd = Math.min(selectionEnd, lineEnd) - lineStart;
+                    if (selectionEnd > lineStart && selectionStart < lineEndWithNewline) {
+                        int lineLen = this.lineLength(i);
+                        int lineSelectionStart = Math.min(lineLen, Math.max(0, selectionStart - lineStart));
+                        int lineSelectionEnd = Math.min(lineLen, Math.max(0, selectionEnd - lineStart));
 
                         ShapedText lineShaped = this.getShapedLine(i);
                         float x1 = lineShaped.cursorPosition(lineSelectionStart).x();
@@ -617,7 +496,9 @@ public class TextArea extends Component {
                         }
                         float y = i * lineHeight;
                         Color selectionColor = this.selectionColor.value();
-                        renderer.fillRect(Math.min(x1, x2), y, Math.abs(x2 - x1), lineHeight, selectionColor);
+                        if (Math.abs(x2 - x1) > 0.001F) {
+                            renderer.fillRect(Math.min(x1, x2), y, Math.abs(x2 - x1), lineHeight, selectionColor);
+                        }
                     }
                 }
             }
@@ -669,73 +550,102 @@ public class TextArea extends Component {
         );
     }
 
-    private void deleteSelection() {
-        if (this.cursor == this.selection) return;
-        int start = Math.min(this.cursor, this.selection);
-        int end = Math.max(this.cursor, this.selection);
-        this.text.delete(start, end);
-        this.cursor = start;
-        this.selection = start;
-        this.updateLineStarts();
-        this.updateShapedText();
-        this.onTextChange(true);
-    }
-
-    private void copy() {
-        if (this.cursor == this.selection) return;
-        int start = Math.min(this.cursor, this.selection);
-        int end = Math.max(this.cursor, this.selection);
-        this.rivet().backend().setClipboard(this.text.substring(start, end));
-    }
-
-    private void paste() {
-        String clipboard = this.rivet().backend().getClipboard();
-        if (clipboard == null || clipboard.isEmpty()) return;
-        clipboard = clipboard.replace("\r\n", "\n").replace('\r', '\n');
-        this.deleteSelection();
-        this.text.insert(this.cursor, clipboard);
-        this.cursor += clipboard.length();
-        this.selection = this.cursor;
-        this.updateLineStarts();
-        this.updateShapedText();
-        this.onTextChange(true);
-    }
-
-    private int findWordStart(int from) {
-        int i = Math.max(0, Math.min(this.text.length(), from));
-        while (i > 0 && Character.isWhitespace(this.text.charAt(i - 1)) && this.text.charAt(i - 1) != '\n') i--;
-        while (i > 0 && !Character.isWhitespace(this.text.charAt(i - 1))) i--;
-        return i;
-    }
-
-    private int findWordEnd(int from) {
-        int i = Math.max(0, Math.min(this.text.length(), from));
-        while (i < this.text.length() && Character.isWhitespace(this.text.charAt(i)) && this.text.charAt(i) != '\n') i++;
-        while (i < this.text.length() && !Character.isWhitespace(this.text.charAt(i))) i++;
-        return i;
-    }
-
-    private void onTextChange(final boolean fireListeners) {
-        this.validate();
-        if (this.parent() != null) {
-            this.parent().requestLayoutRecalculation();
-        }
-        if (fireListeners) {
-            this.valueChangeListener.call(c -> c.accept(this.text()));
-        }
-    }
-
-    private void validate() {
-        if (this.validator == null) {
-            this.valid = true;
-        } else {
-            this.valid = this.validator.test(this.text.toString());
-        }
-    }
-
 
     private enum State {
         IDLE, FOCUSED, INVALID, DISABLED
+    }
+
+    private class NavigationHandler extends TextInputNavigationHandler {
+        @Override
+        public StringBuffer textBuffer() {
+            return TextArea.this.text;
+        }
+
+        @Override
+        public int cursor() {
+            return TextArea.this.cursor;
+        }
+
+        @Override
+        public void cursor(final int cursor) {
+            TextArea.this.cursor = MathUtils.clamp(cursor, 0, TextArea.this.text.length());
+        }
+
+        @Override
+        public int selection() {
+            return TextArea.this.selection;
+        }
+
+        @Override
+        public void selection(final int selection) {
+            TextArea.this.selection = MathUtils.clamp(selection, 0, TextArea.this.text.length());
+        }
+
+        @Override
+        public String wordBoundaries() {
+            return TextArea.this.wordBoundaries.value();
+        }
+
+        @Override
+        public void onTextModified(final boolean fireListeners) {
+            TextArea.this.updateLineStarts();
+            if (fireListeners) {
+                TextArea.this.updateShapedText();
+                TextArea.this.onTextChange(true);
+            }
+        }
+
+        @Override
+        public void onCursorMoved() {
+            if (TextArea.this.cursorAnimation != null) {
+                TextArea.this.cursorAnimation.reset().start();
+            }
+        }
+
+        @Override
+        public String getClipboard() {
+            return TextArea.this.rivet().backend().getClipboard();
+        }
+
+        @Override
+        public void setClipboard(final String text) {
+            TextArea.this.rivet().backend().setClipboard(text);
+        }
+
+        @Override
+        public boolean isMultiLine() {
+            return true;
+        }
+
+        @Override
+        public int lineCount() {
+            return TextArea.this.lineCount();
+        }
+
+        @Override
+        public int lineIndexAt(final int offset) {
+            return TextArea.this.lineIndexAt(offset);
+        }
+
+        @Override
+        public int lineStartOffset(final int lineIndex) {
+            return TextArea.this.lineStartOffset(lineIndex);
+        }
+
+        @Override
+        public int lineEndOffset(final int lineIndex) {
+            return TextArea.this.lineEndOffset(lineIndex);
+        }
+
+        @Override
+        public int lineLength(final int lineIndex) {
+            return TextArea.this.lineLength(lineIndex);
+        }
+
+        @Override
+        public int tabWidth() {
+            return TextArea.this.tabWidth.value();
+        }
     }
 
 }

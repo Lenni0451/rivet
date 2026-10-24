@@ -13,4 +13,5 @@
     <suppress files="DragNumberInputParser\.java" checks="Indentation"/>
     <suppress files="DynamicListContainerParser\.java" checks="Indentation"/>
     <suppress files="TileLayoutParser\.java" checks="Indentation"/>
+    <suppress files="ButtonParser\.java" checks="Indentation"/>
 </suppressions>
