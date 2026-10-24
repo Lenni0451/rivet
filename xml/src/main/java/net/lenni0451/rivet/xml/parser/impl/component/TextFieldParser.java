@@ -6,6 +6,7 @@ import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.impl.TextField;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.text.highlight.SyntaxHighlighter;
 import net.lenni0451.rivet.xml.parser.XmlParser;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.ElementParserBuilder;
@@ -24,6 +25,7 @@ public class TextFieldParser implements XmlParser<TextField> {
             .attribute("hint", String.class, TextField::hint)
             .referenceAttribute("charReplacer", Function.class, TextField::charReplacer)
             .referenceAttribute("validator", Predicate.class, TextField::validator)
+            .referenceAttribute("highlighter", SyntaxHighlighter.class, TextField::highlighter)
             .themeOption("textColor", Color.class, TextField::textColor)
             .themeOption("invalidTextColor", Color.class, TextField::invalidTextColor)
             .themeOption("hintColor", Color.class, TextField::hintColor)

@@ -6,6 +6,7 @@ import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.impl.TextArea;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.text.highlight.SyntaxHighlighter;
 import net.lenni0451.rivet.xml.parser.XmlParser;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.ElementParserBuilder;
@@ -22,6 +23,7 @@ public class TextAreaParser implements XmlParser<TextArea> {
             .attribute("text", String.class, TextArea::text)
             .attribute("hint", String.class, TextArea::hint)
             .referenceAttribute("validator", Predicate.class, TextArea::validator)
+            .referenceAttribute("highlighter", SyntaxHighlighter.class, TextArea::highlighter)
             .themeOption("tabWidth", Integer.class, TextArea::tabWidth)
             .themeOption("textColor", Color.class, TextArea::textColor)
             .themeOption("invalidTextColor", Color.class, TextArea::invalidTextColor)
