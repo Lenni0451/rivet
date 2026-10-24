@@ -1,6 +1,7 @@
 package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.animation.Animation;
 import net.lenni0451.commons.color.Color;
@@ -61,6 +62,9 @@ public class TextArea extends Component {
     private int cursor = 0;
     @Getter
     private int selection = 0;
+    @Getter
+    @Setter
+    private boolean autoScrollToCursor = true;
     private boolean focused;
     private boolean selecting = false;
     private int clickCount;
@@ -96,6 +100,8 @@ public class TextArea extends Component {
     private final ThemeOption<Corners> cornerRadius = new ThemeOption<>(this, Theme.TextArea.CORNER_RADIUS);
     @Getter
     private final ThemeOption<Padding> innerPadding = new ThemeOption<>(this, Theme.TextArea.INNER_PADDING);
+    @Getter
+    private final ThemeOption<Padding> scrollMargin = new ThemeOption<>(this, Theme.TextArea.SCROLL_MARGIN);
     @Getter
     private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.TextArea.DISABLED_TEXT_COLOR);
     @Getter
@@ -190,6 +196,48 @@ public class TextArea extends Component {
         if (this.cursorAnimation != null) {
             this.cursorAnimation.reset().start();
         }
+        this.scrollCursorIntoView();
+        return this;
+    }
+
+    public final TextArea scrollCursorIntoView() {
+        return this.scrollCursorIntoView(false);
+    }
+
+    public final TextArea scrollCursorIntoView(final boolean immediate) {
+        if (!this.autoScrollToCursor || this.shapedTextBlock == null || this.shapedTextBlock.lines().isEmpty()) return this;
+        int currentLine = MathUtils.clamp(this.lineIndexAt(this.cursor), 0, this.lineCount() - 1);
+        int currentColumn = Math.max(0, this.cursor - this.lineStarts[currentLine]);
+        ShapedText shapedLine = this.getShapedLine(currentLine);
+        if (shapedLine == null) return this;
+        Padding padding = this.innerPadding.value();
+        Padding margin = this.scrollMargin.value();
+        float cursorX = padding.left() + shapedLine.cursorPosition(currentColumn).x();
+        float cursorY = padding.top() + currentLine * this.lineHeight();
+        float cursorWidth = this.cursorWidth.value();
+        float cursorHeight = this.lineHeight();
+
+        float minX = cursorX - cursorWidth / 2F - margin.left();
+        float maxX = cursorX + cursorWidth / 2F + margin.right();
+        float minY = cursorY - margin.top();
+        float maxY = cursorY + cursorHeight + margin.bottom();
+
+        if (currentColumn == 0) {
+            minX = 0;
+        }
+        if (currentLine == 0) {
+            minY = 0;
+        }
+        if (currentLine == this.lineCount() - 1) {
+            maxY = Math.max(maxY, cursorY + cursorHeight + padding.bottom());
+        }
+
+        minX = Math.max(0, minX);
+        minY = Math.max(0, minY);
+        float width = Math.max(cursorWidth, maxX - minX);
+        float height = Math.max(cursorHeight, maxY - minY);
+
+        this.scrollIntoView(new Rectangle(minX, minY, width, height), immediate);
         return this;
     }
 
@@ -277,7 +325,9 @@ public class TextArea extends Component {
     }
 
     private ShapedText getShapedLine(final int lineIndex) {
-        return this.shapedTextBlock.lines().get(lineIndex);
+        if (this.shapedTextBlock == null || this.shapedTextBlock.lines().isEmpty()) return null;
+        int clamped = MathUtils.clamp(lineIndex, 0, this.shapedTextBlock.lines().size() - 1);
+        return this.shapedTextBlock.lines().get(clamped);
     }
 
     private float lineHeight() {
@@ -340,6 +390,9 @@ public class TextArea extends Component {
                 this.focusAnimationConfig::value,
                 Interpolator.COLOR
         );
+        if (this.autoScrollToCursor && this.cursor > 0) {
+            this.scrollCursorIntoView();
+        }
     }
 
     @Override
@@ -368,6 +421,7 @@ public class TextArea extends Component {
         this.focused = true;
         this.rivet().backend().textInput().start();
         this.updateInputPosition(this.absoluteBounds());
+        this.scrollCursorIntoView();
     }
 
     @Override
@@ -417,6 +471,7 @@ public class TextArea extends Component {
             }
             this.selecting = true;
             this.cursorAnimation.reset().start();
+            this.scrollCursorIntoView();
         }
         return true;
     }
@@ -439,6 +494,7 @@ public class TextArea extends Component {
             int column = lineShaped.index(localX, 0);
             this.cursor = this.lineStarts[lineId] + column;
             this.cursorAnimation.reset().start();
+            this.scrollCursorIntoView();
         }
         return true;
     }
@@ -597,9 +653,8 @@ public class TextArea extends Component {
 
         @Override
         public void onCursorMoved() {
-            if (TextArea.this.cursorAnimation != null) {
-                TextArea.this.cursorAnimation.reset().start();
-            }
+            TextArea.this.cursorAnimation.reset().start();
+            TextArea.this.scrollCursorIntoView();
         }
 
         @Override

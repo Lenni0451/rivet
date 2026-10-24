@@ -17,4 +17,10 @@ public interface Parent {
 
     Rectangle childBounds(final Component component);
 
+    default void requestScrollIntoView(final Component child, final Rectangle area) {
+        this.requestScrollIntoView(child, area, false);
+    }
+
+    void requestScrollIntoView(final Component child, final Rectangle area, final boolean immediate);
+
 }

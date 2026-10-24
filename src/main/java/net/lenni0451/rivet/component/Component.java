@@ -242,6 +242,24 @@ public abstract class Component {
         }
     }
 
+    public final void scrollIntoView() {
+        this.scrollIntoView(false);
+    }
+
+    public final void scrollIntoView(final boolean immediate) {
+        this.scrollIntoView(new Rectangle(0, 0, this.relativeBounds().size()), immediate);
+    }
+
+    public final void scrollIntoView(final Rectangle area) {
+        this.scrollIntoView(area, false);
+    }
+
+    public final void scrollIntoView(final Rectangle area, final boolean immediate) {
+        if (this.parent != null) {
+            this.parent.requestScrollIntoView(this, area, immediate);
+        }
+    }
+
 
     protected void onAddedInternal() {
     }

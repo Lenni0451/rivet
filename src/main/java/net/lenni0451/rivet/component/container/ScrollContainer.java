@@ -78,6 +78,7 @@ public class ScrollContainer extends ParentContainer {
     private DynamicAnimation scrollXAnimation;
     private DynamicAnimation scrollYAnimation;
 
+    private PendingScroll pendingScrollIntoView;
     private boolean vScrollVisible;
     private boolean hScrollVisible;
 
@@ -101,10 +102,10 @@ public class ScrollContainer extends ParentContainer {
         this.hScrollBar = new ScrollBar(ScrollBar.Orientation.HORIZONTAL);
         this.vScrollBar = new ScrollBar(ScrollBar.Orientation.VERTICAL);
 
-        this.scrollX.syncListener().add(val -> this.scrollX(val, true));
-        this.scrollY.syncListener().add(val -> this.scrollY(val, true));
-        this.hScrollBar.scroll().syncListener().add(this::scrollX);
-        this.vScrollBar.scroll().syncListener().add(this::scrollY);
+        this.scrollX.changeListener().add(val -> this.scrollX(val, true));
+        this.scrollY.changeListener().add(val -> this.scrollY(val, true));
+        this.hScrollBar.scroll().changeListener().add(this::scrollX);
+        this.vScrollBar.scroll().changeListener().add(this::scrollY);
     }
 
     public final float maxScrollX() {
@@ -192,6 +193,7 @@ public class ScrollContainer extends ParentContainer {
 
     @Override
     protected boolean onMouseScrollInternal(final MouseScrollEvent event, final Size size) {
+        this.pendingScrollIntoView = null;
         return this.nestedScrollCoordinator.handleScrolling(
                 () -> {
                     if (this.hScrollVisible && (event.scrollX() != 0 || (!this.vScrollVisible && event.scrollY() != 0)) && !this.hScrollBar.barPressed()) {
@@ -431,6 +433,12 @@ public class ScrollContainer extends ParentContainer {
             this.scrollY.set(MathUtils.clamp(oldScrollY, 0, maxScrollY), false);
         }
 
+        if (this.pendingScrollIntoView != null) {
+            PendingScroll pending = this.pendingScrollIntoView;
+            this.pendingScrollIntoView = null;
+            this.scrollToVisible(pending.area, pending.immediate);
+        }
+
         float currentScrollX = this.scrollX.get();
         float currentScrollY = this.scrollY.get();
         this.hScrollBar.contentSize(this.childSize.width());
@@ -476,6 +484,66 @@ public class ScrollContainer extends ParentContainer {
             return area != null ? area : Rectangle.EMPTY;
         }
         return Rectangle.EMPTY;
+    }
+
+    @Override
+    public void requestScrollIntoView(final Component child, final Rectangle area, final boolean immediate) {
+        if (child == this.child) {
+            if (area.maxX() > this.childSize.width() || area.maxY() > this.childSize.height()) {
+                this.pendingScrollIntoView = new PendingScroll(area, immediate);
+            }
+            this.scrollToVisible(area, immediate);
+        } else {
+            super.requestScrollIntoView(child, area, immediate);
+        }
+    }
+
+    private void scrollToVisible(final Rectangle area, final boolean immediate) {
+        Size size = this.relativeBounds().size();
+        float visibleWidth = this.visibleWidth(size);
+        float visibleHeight = this.visibleHeight(size);
+        if (visibleWidth <= 0 || visibleHeight <= 0) {
+            this.pendingScrollIntoView = new PendingScroll(area, immediate);
+            return;
+        }
+
+        float newTargetX = this.targetScrollX;
+        float newTargetY = this.targetScrollY;
+
+        if (this.horizontalScrolling) {
+            if (area.width() >= visibleWidth || area.x() < newTargetX) {
+                newTargetX = area.x();
+            } else if (area.maxX() > newTargetX + visibleWidth) {
+                newTargetX = area.maxX() - visibleWidth;
+            }
+            newTargetX = MathUtils.clamp(newTargetX, 0, this.maxScrollX());
+        }
+
+        if (this.verticalScrolling) {
+            if (area.height() >= visibleHeight || area.y() < newTargetY) {
+                newTargetY = area.y();
+            } else if (area.maxY() > newTargetY + visibleHeight) {
+                newTargetY = area.maxY() - visibleHeight;
+            }
+            newTargetY = MathUtils.clamp(newTargetY, 0, this.maxScrollY());
+        }
+
+        if (this.horizontalScrolling && (newTargetX != this.targetScrollX || immediate)) {
+            this.scrollX(newTargetX, immediate);
+        }
+        if (this.verticalScrolling && (newTargetY != this.targetScrollY || immediate)) {
+            this.scrollY(newTargetY, immediate);
+        }
+
+        if (this.parent() != null) {
+            Rectangle visibleInThis = new Rectangle(
+                    Math.max(0, area.x() - newTargetX),
+                    Math.max(0, area.y() - newTargetY),
+                    Math.min(visibleWidth, area.width()),
+                    Math.min(visibleHeight, area.height())
+            );
+            this.parent().requestScrollIntoView(this, visibleInThis, immediate);
+        }
     }
 
 
@@ -562,6 +630,9 @@ public class ScrollContainer extends ParentContainer {
             }
             return List.of();
         }
+    }
+
+    private record PendingScroll(Rectangle area, boolean immediate) {
     }
 
 }

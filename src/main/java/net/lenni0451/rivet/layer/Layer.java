@@ -28,6 +28,10 @@ public final class Layer implements Parent {
     }
 
     @Override
+    public void requestScrollIntoView(final Component child, final Rectangle area, final boolean immediate) {
+    }
+
+    @Override
     public Size contentSize() {
         return this.container.contentSize();
     }

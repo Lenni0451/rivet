@@ -281,6 +281,10 @@ public abstract class Theme {
             float textHeight = r.backend().font().height();
             return new Padding(roundMin(textHeight / 5F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 5F, 0), roundMin(textHeight / 5F, 0));
         });
+        public static final ThemeKey<Padding> SCROLL_MARGIN = register("text_area.scroll_margin", Padding.class, r -> {
+            float textHeight = r.backend().font().height();
+            return new Padding(textHeight * 2F, textHeight);
+        });
 
         // Colors - Base / Inactive
         public static final ThemeKey<Color> TEXT_COLOR = register("text_area.text_color", Color.class, r -> r.theme().get(TextField.TEXT_COLOR));

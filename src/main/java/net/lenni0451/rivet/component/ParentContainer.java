@@ -98,6 +98,20 @@ public abstract class ParentContainer extends Component implements Parent {
         if (this.parent() != null) this.parent().requestLayoutRecalculation();
     }
 
+    @Override
+    public void requestScrollIntoView(final Component child, final Rectangle area, final boolean immediate) {
+        if (this.parent() != null) {
+            Rectangle childBounds = this.childBounds(child);
+            Rectangle translated = new Rectangle(
+                    childBounds.x() + area.x(),
+                    childBounds.y() + area.y(),
+                    area.width(),
+                    area.height()
+            );
+            this.parent().requestScrollIntoView(this, translated, immediate);
+        }
+    }
+
 
     private class DefaultMouseHandler extends ContainerMouseHandler<Component> {
         @Override
