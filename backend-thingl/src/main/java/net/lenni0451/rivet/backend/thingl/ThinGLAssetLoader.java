@@ -21,10 +21,6 @@ import java.util.SequencedMap;
 public class ThinGLAssetLoader implements AssetLoader {
 
     @Override
-    public ThinGLFont loadFont(final InputStream inputStream, final int size) throws IOException {
-        return this.loadFont(size, inputStream);
-    }
-
     public ThinGLFont loadFont(final int size, final InputStream... inputStreams) throws IOException {
         List<FontFace> fontFaces = new ArrayList<>();
         SequencedMap<FontInstance, GlyphPredicate> instances = new LinkedHashMap<>();
