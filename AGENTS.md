@@ -7,6 +7,7 @@ This document outlines the project-specific engineering standards, architectural
 - **Build System:** Gradle (9.x+)
 - **Project Structure:** Multi-module Gradle build:
     - Root (`rivet`): Core UI library in `src/main/java`
+    - `xml`: Declarative XML UI layout parser, loader, and template system
     - `backend-thingl`: ThinGL (OpenGL) shared rendering implementation and batching pipeline
     - `backend-thingl-glfw`: GLFW windowing & input integration for ThinGL
     - `backend-thingl-sdl`: SDL windowing & input integration for ThinGL
@@ -44,11 +45,16 @@ The graphics backend is designed to be interchangeable, allowing users to choose
 - **Layer System:** Rendering and input propagation are layer-based via `LayerList`; use `LayerBucket` (`BASE`, `OVERLAY`, `TOOLTIP`, `DRAG`) when adding cross-cutting UI such as popups, dropdowns, overlays, and drag previews.
 - **Rendering Pipeline:** Rendering is abstracted through `Renderer` (and deferred rendering via `RenderList` / `DeferredRenderer` or batched executors). The render pass may run on a separate render thread, so render methods must not mutate state in a thread-unsafe manner.
 - **Theme & Parser System:** Visual styles are managed via `Theme`, `ThemeKey`, and `ThemeOption`, loaded dynamically with `ThemeLoader`. Value parsing is handled by `ParserRegistry` and modular `Parser` implementations.
+- **XML Declarative UI System:** Declarative UI parsing, inflation, and template support are provided by the `xml` module (`XmlLoader`, `XmlUi`, `XmlParserRegistry`). Components and layouts are registered as XML parsers built with `ElementParserBuilder`.
 - **Input & Drag-and-Drop:** Input events (keyboard, mouse cursor, mouse buttons, scroll) propagate through the component hierarchy. Drag and drop interactions are orchestrated through `DragAndDropManager`.
+
+### XML Parser Synchronization
+> [!IMPORTANT]
+> **XML Parser Synchronization Mandate:** Whenever a new component property, attribute, or `ThemeOption` is added or modified in the core library, the corresponding XML parser in the `xml` module (`net.lenni0451.rivet.xml.parser.impl`) **MUST** be updated to support the new property or theme option (e.g., using `ElementParserBuilder#attribute`, `ElementParserBuilder#themeOption`, or property parsers). Always ensure declarative XML schemas remain in full parity with programmatic component features.
 
 ## Development Workflow
 1. **Research:** Map the existing component hierarchy, backend abstraction, or layout logic before making changes.
-2. **Implementation:** Adhere strictly to the fluent API, Lombok patterns, and `this.` field access conventions.
+2. **Implementation:** Adhere strictly to the fluent API, Lombok patterns, and `this.` field access conventions. When adding or modifying component properties or theme options, ensure the corresponding XML parser is also updated.
 3. **Verification:**
     - Run `./gradlew clean build` (or `./gradlew build`) to ensure the entire project compiles and passes Checkstyle verification.
     - Demo and manual UI test runners are located in `examples/src/main/java/test/impl` (extending `TestBase`). Manual UI tests should never be triggered by the agent and should only ever be run by the user.
