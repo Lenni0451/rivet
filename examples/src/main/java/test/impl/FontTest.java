@@ -19,7 +19,7 @@ public class FontTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         Slider slider = new Slider(1, 200, 40);
         TextField textField = new TextField();
         Label label = new Label("Hello World").font(rivet.backend().font());

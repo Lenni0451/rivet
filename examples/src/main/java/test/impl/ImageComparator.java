@@ -22,7 +22,7 @@ public class ImageComparator extends TestBase {
 
     @Override
     @SneakyThrows
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         Texture texture1 = rivet.backend().assetLoader().loadTexture(new File("image1.png"));
         Texture texture2 = rivet.backend().assetLoader().loadTexture(new File("image2.png"));
         rivet.root().add(new ImageViewer(texture1, texture2));

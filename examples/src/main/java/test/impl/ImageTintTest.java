@@ -18,7 +18,7 @@ public class ImageTintTest extends TestBase {
 
     @Override
     @SneakyThrows
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         ColorPicker tintPicker = new ColorPicker(Color.WHITE);
         Image image = new Image(rivet.backend().assetLoader().loadTexture(ImageTintTest.class.getClassLoader().getResourceAsStream("image.jpg")));
         image.scaleMode().set(Image.ScaleMode.FIT);

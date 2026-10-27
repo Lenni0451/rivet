@@ -2,11 +2,14 @@ package net.lenni0451.rivet.backend.awt;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.With;
 import lombok.experimental.Accessors;
+import lombok.experimental.WithBy;
+import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Application;
 import net.lenni0451.rivet.backend.awt.render.RivetCanvas;
 import net.lenni0451.rivet.backend.awt.utils.AWTMapper;
-import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -20,47 +23,122 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 
 @Getter
 @Accessors(fluent = true, chain = true)
-public abstract class AWTApplication {
+public abstract class AWTApplication implements Application<AWTBackend> {
 
+    private final Configuration configuration;
+    private final CompletableFuture<Void> launchFuture = new CompletableFuture<>();
+    private final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
+    private final Set<MouseButton> heldMouseButtons = EnumSet.noneOf(MouseButton.class);
     private AWTBackend backend;
     private Rivet rivet;
-    private final Set<MouseButton> heldMouseButtons = EnumSet.noneOf(MouseButton.class);
+    private JFrame frame;
+    private RivetCanvas canvas;
 
     public AWTApplication(final String title, final int width, final int height) {
-        this.initRivet(width, height);
-        this.initFrame(title, width, height);
+        this(Configuration.DEFAULT.withTitle(title).withWidth(width).withHeight(height));
+    }
+
+    public AWTApplication(final Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    @Override
+    public void run() {
+        try {
+            if (EventQueue.isDispatchThread()) {
+                this.launch();
+            } else {
+                EventQueue.invokeAndWait(this::launch);
+            }
+            this.launchFuture.complete(null);
+            if (EventQueue.isDispatchThread()) {
+                SecondaryLoop loop = Toolkit.getDefaultToolkit().getSystemEventQueue().createSecondaryLoop();
+                this.closeFuture.whenComplete((result, failure) -> loop.exit());
+                loop.enter();
+            } else {
+                this.closeFuture.join();
+            }
+        } catch (Throwable t) {
+            this.launchFuture.completeExceptionally(t);
+            this.closeFuture.completeExceptionally(t);
+            if (t instanceof RuntimeException re) throw re;
+            throw new RuntimeException(t);
+        }
+    }
+
+    @Override
+    public void runAsync(final boolean waitForLaunch) {
+        new Thread(this, this.getClass().getSimpleName() + " Main Thread").start();
+        if (waitForLaunch) {
+            try {
+                this.launchFuture.join();
+            } catch (CancellationException ignored) {
+            }
+        }
+    }
+
+    @Override
+    public void close(final boolean waitForClose) {
+        if (this.frame != null) {
+            EventQueue.invokeLater(() -> {
+                if (this.canvas != null) {
+                    this.canvas.stop();
+                }
+                this.frame.dispose();
+                this.closeFuture.complete(null);
+            });
+        } else {
+            this.closeFuture.complete(null);
+        }
+        if (waitForClose) {
+            try {
+                this.closeFuture.join();
+            } catch (CancellationException ignored) {
+            }
+        }
     }
 
     @SneakyThrows
-    protected void initRivet(final int width, final int height) {
+    protected void launch() {
         AWTAssetLoader assetLoader = new AWTAssetLoader();
         this.backend = new AWTBackend(this.createFont(assetLoader), assetLoader);
-        this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(width, height));
-        this.initRivet(this.rivet);
+        this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(this.configuration.width(), this.configuration.height()));
+        this.canvas = this.initCanvas();
+        this.frame = this.initFrame();
+        this.initCanvasEvents(this.canvas);
+        this.initWindowEvents(this.frame);
+        this.init(this.rivet);
+        this.frame.setVisible(true);
+        this.canvas.requestFocusInWindow();
     }
 
-    protected void initFrame(final String title, final int width, final int height) {
-        RivetCanvas canvas = new RivetCanvas(this.rivet);
+    protected RivetCanvas initCanvas() {
+        RivetCanvas canvas = new RivetCanvas(this.rivet, this.configuration);
         canvas.setFocusable(true);
         canvas.setFocusTraversalKeysEnabled(false);
-
-        JFrame frame = new JFrame(title);
-        frame.setLayout(new BorderLayout());
-        frame.add(canvas);
-        frame.pack();
-        frame.setSize(width, height);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.initComponentEvents(canvas);
-        this.initWindowEvents(frame);
-        this.initFrame(frame);
-        frame.setVisible(true);
-        canvas.requestFocusInWindow();
+        return canvas;
     }
 
-    protected void initComponentEvents(final Component component) {
+    protected JFrame initFrame() {
+        JFrame frame = new JFrame(this.configuration.title());
+        frame.setLayout(new BorderLayout());
+        frame.add(this.canvas);
+        frame.setResizable(this.configuration.resizable());
+        frame.pack();
+        frame.setSize(this.configuration.width(), this.configuration.height());
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        if (this.configuration.centered()) {
+            frame.setLocationRelativeTo(null);
+        }
+        return frame;
+    }
+
+    protected void initCanvasEvents(final Component component) {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(final MouseEvent e) {
@@ -149,6 +227,12 @@ public abstract class AWTApplication {
     }
 
     protected void initWindowEvents(final JFrame frame) {
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(final WindowEvent e) {
+                AWTApplication.this.close(false);
+            }
+        });
         frame.addWindowFocusListener(new WindowAdapter() {
             @Override
             public void windowLostFocus(final WindowEvent e) {
@@ -159,11 +243,19 @@ public abstract class AWTApplication {
         });
     }
 
-    protected abstract Font createFont(final AWTAssetLoader assetLoader) throws Exception;
 
-    protected abstract void initRivet(final Rivet rivet);
-
-    protected void initFrame(final JFrame frame) {
+    @With
+    @WithBy
+    public record Configuration(
+            String title, int width, int height,
+            boolean centered, boolean resizable, int targetFps, boolean antiAliasing, boolean textAntiAliasing,
+            Color backgroundColor
+    ) {
+        public static final Configuration DEFAULT = new Configuration(
+                "Rivet Application", 800, 600,
+                true, true, 60, false, true,
+                Color.GRAY.darker().darker().darker().darker()
+        );
     }
 
 }

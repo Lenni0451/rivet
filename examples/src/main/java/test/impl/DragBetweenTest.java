@@ -30,7 +30,7 @@ public class DragBetweenTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         List<String> leftLabels = new ArrayList<>();
         leftLabels.add("A");
         leftLabels.add("B");

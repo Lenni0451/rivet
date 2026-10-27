@@ -18,7 +18,7 @@ public class FormattedLabelWrappingTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         Container container = new Container(new GridLayout(10, 10));
         container.add(new FormattedLabel("<color=red italic bold underlined>Hello this is a really cool test string how are you doing lol\n<color=blue> <color=red>a\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), label -> {
             label.horizontalOrigin(TextOrigin.Horizontal.VISUAL_LEFT);

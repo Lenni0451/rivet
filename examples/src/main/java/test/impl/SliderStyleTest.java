@@ -24,7 +24,7 @@ public class SliderStyleTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         Container container = new Container(new VerticalListLayout(5, true));
         Slider slider = new Slider(0, 100, 50);
         container.add(this.colorOption(rivet, "Bar Color", slider.barColor()));

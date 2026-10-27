@@ -1,10 +1,9 @@
 package net.lenni0451.rivet.backend.awt.render;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.threading.ThreadUtils;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.awt.AWTApplication;
 
 import java.awt.*;
 import java.awt.event.HierarchyEvent;
@@ -23,25 +22,24 @@ import java.awt.image.BufferStrategy;
 public class RivetCanvas extends Canvas implements Runnable {
 
     private final Rivet rivet;
-    @Getter
-    @Setter
-    private int targetFps = 60;
+    private final int targetFps;
+    private final boolean antiAliasing;
+    private final boolean textAntiAliasing;
+    private final Color backgroundColor;
     private BufferStrategy bufferStrategy;
     private Thread renderThread;
 
-    public RivetCanvas(final Rivet rivet) {
+    public RivetCanvas(final Rivet rivet, final AWTApplication.Configuration configuration) {
         this.rivet = rivet;
+        this.targetFps = configuration.targetFps();
+        this.antiAliasing = configuration.antiAliasing();
+        this.textAntiAliasing = configuration.textAntiAliasing();
+        this.backgroundColor = configuration.backgroundColor().toAWT();
 
         this.addHierarchyListener(event -> {
             if ((event.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0) {
                 if (this.renderThread != null) {
-                    this.renderThread.interrupt();
-                    try {
-                        this.renderThread.join(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    this.renderThread = null;
+                    this.stop();
                 }
                 if (event.getComponent().isDisplayable()) {
                     this.createBufferStrategy(2);
@@ -52,6 +50,18 @@ public class RivetCanvas extends Canvas implements Runnable {
                 }
             }
         });
+    }
+
+    public void stop() {
+        if (this.renderThread != null) {
+            this.renderThread.interrupt();
+            try {
+                this.renderThread.join(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Render thread did not exit after 1s", e);
+            }
+            this.renderThread = null;
+        }
     }
 
     @Override
@@ -72,8 +82,7 @@ public class RivetCanvas extends Canvas implements Runnable {
                     this.configureGraphics2D(graphics);
                     this.renderBackground(graphics);
                     graphics.setColor(Color.WHITE);
-//                    RenderListExecutor.INSTANCE.renderList(new AWTRenderer(graphics), this.rivet.render(new DeferredRenderer()).complete());
-                    this.rivet.render(new AWTRenderer(graphics));
+                    this.render(graphics);
                     graphics.dispose();
                 } while (this.bufferStrategy.contentsRestored());
                 this.bufferStrategy.show();
@@ -97,7 +106,7 @@ public class RivetCanvas extends Canvas implements Runnable {
 
     protected void configureGraphics2D(final Graphics2D graphics) {
         // General
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); // AntiAliasing is great, but SUPER slow in AWT (software rendering)
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, this.antiAliasing ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         graphics.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
         graphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
@@ -107,13 +116,18 @@ public class RivetCanvas extends Canvas implements Runnable {
         graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         // Text
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, this.textAntiAliasing ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
     protected void renderBackground(final Graphics2D graphics) {
-        graphics.setBackground(Color.GRAY.darker().darker().darker().darker());
+        graphics.setBackground(this.backgroundColor);
         graphics.clearRect(0, 0, this.getWidth(), this.getHeight());
+    }
+
+    protected void render(final Graphics2D graphics) {
+//        RenderListExecutor.INSTANCE.renderList(new AWTRenderer(graphics), this.rivet.render(new DeferredRenderer()).complete());
+        this.rivet.render(new AWTRenderer(graphics));
     }
 
 }

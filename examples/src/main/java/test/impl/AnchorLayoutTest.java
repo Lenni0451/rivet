@@ -19,7 +19,7 @@ public class AnchorLayoutTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         Container container = new Container(AnchorLayout.INSTANCE);
         container.add(new SolidColor(), c -> {
             c.color().set(Color.RED);

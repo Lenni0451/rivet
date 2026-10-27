@@ -5,8 +5,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Application;
 import net.lenni0451.rivet.backend.render.deferred.DeferredRenderer;
-import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.render.batched.BatchedRenderListExecutor;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
@@ -28,7 +28,7 @@ import java.util.Set;
 
 @Getter
 @Accessors(fluent = true, chain = true)
-public abstract class GLFWApplication extends GLFWApplicationRunner {
+public abstract class GLFWApplication extends GLFWApplicationRunner implements Application<GLFWBackend> {
 
     private final ThinGLRenderer renderer = new ThinGLRenderer();
     private GLFWBackend backend;
@@ -59,10 +59,6 @@ public abstract class GLFWApplication extends GLFWApplicationRunner {
         this.rivet.scale().automaticScale(xscale[0]);
         this.init(this.rivet);
     }
-
-    protected abstract Font createFont(final ThinGLAssetLoader assetLoader) throws Exception;
-
-    protected abstract void init(final Rivet rivet);
 
     protected void setupCallbacks() {
         GLFW.glfwSetCursorPosCallback(this.window, (_, xpos, ypos) -> {

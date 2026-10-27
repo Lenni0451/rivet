@@ -14,7 +14,7 @@ public class TileLayoutTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         Container container = new Container(new TileLayout(3, 3, 10, 10));
         for (int i = 0; i < 9; i++) {
             final int finalI = i;

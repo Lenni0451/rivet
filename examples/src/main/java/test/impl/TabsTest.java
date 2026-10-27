@@ -29,7 +29,7 @@ public class TabsTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         TabContainer tabContainer = new TabContainer();
         tabContainer.tabAlignment().set(TabAlignment.CENTER);
         tabContainer.tabGap().set(5F);

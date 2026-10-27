@@ -5,8 +5,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.Rivet;
+import net.lenni0451.rivet.backend.Application;
 import net.lenni0451.rivet.backend.render.deferred.DeferredRenderer;
-import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.render.batched.BatchedRenderListExecutor;
 import net.lenni0451.rivet.backend.thingl.utils.SDLMapper;
@@ -32,7 +32,7 @@ import java.util.Set;
 
 @Getter
 @Accessors(fluent = true, chain = true)
-public abstract class SDLApplication extends SDLApplicationRunner {
+public abstract class SDLApplication extends SDLApplicationRunner implements Application<SDLBackend> {
 
     private final ThinGLRenderer renderer = new ThinGLRenderer();
     private FontInstanceSet fontInstanceSet;
@@ -131,10 +131,6 @@ public abstract class SDLApplication extends SDLApplicationRunner {
             }
         }
     }
-
-    protected abstract Font createFont(final ThinGLAssetLoader assetLoader) throws Exception;
-
-    protected abstract void init(final Rivet rivet);
 
     @Override
     protected void render(final Matrix4fStack matrix4fStack) {

@@ -24,7 +24,7 @@ public class StencilTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         Container header = new Container(new TileLayout(2, 1));
         header.add(new Label("Stencil"));
         header.add(new Label("Inverse Stencil"));

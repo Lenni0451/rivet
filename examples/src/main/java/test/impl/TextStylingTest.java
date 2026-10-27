@@ -17,7 +17,7 @@ public class TextStylingTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         rivet.theme(new TestTheme());
 
         Container container = new Container(new VerticalListLayout(8, true));

@@ -22,7 +22,7 @@ public class ProgressBarTest extends TestBase {
     }
 
     @Override
-    protected void init(final Rivet rivet) {
+    public void init(final Rivet rivet) {
         List<ProgressBar> progressBars = new ArrayList<>();
         Container container = new Container(new GridLayout(5, 5));
         AtomicInteger y = new AtomicInteger(0);
