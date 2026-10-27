@@ -5,6 +5,14 @@ public enum GridFill {
     NONE,
     HORIZONTAL,
     VERTICAL,
-    BOTH
+    BOTH;
+
+    public boolean horizontal() {
+        return this == HORIZONTAL || this == BOTH;
+    }
+
+    public boolean vertical() {
+        return this == VERTICAL || this == BOTH;
+    }
 
 }

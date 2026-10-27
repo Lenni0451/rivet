@@ -18,6 +18,16 @@ public record GridOptions(
 
     public static final GridOptions EMPTY = new GridOptions(0, 0, 1, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY);
 
+    public GridOptions {
+        columnSpan = Math.max(1, columnSpan);
+        rowSpan = Math.max(1, rowSpan);
+        weightX = Math.max(0, weightX);
+        weightY = Math.max(0, weightY);
+        if (anchor == null) anchor = GridAnchor.CENTER;
+        if (fill == null) fill = GridFill.NONE;
+        if (padding == null) padding = Padding.EMPTY;
+    }
+
     public GridOptions(final int column, final int row) {
         this(column, row, 1, 1, 0, 0, GridAnchor.CENTER, GridFill.NONE, Padding.EMPTY);
     }
