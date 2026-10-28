@@ -262,14 +262,14 @@ public final class Rivet {
         this.lastMouseY = event.y();
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
+
+        float x = this.scale.scale(event.x());
+        float y = this.scale.scale(event.y());
+        MouseButtonEvent scaledEvent = event.withX(x).withY(y);
         return this.mouseDownListener.<Boolean>callWithReturnValue(
-                (listener, ctx) -> listener.accept(ctx, event),
-                listener -> listener.accept(event),
-                () -> {
-                    float x = this.scale.scale(event.x());
-                    float y = this.scale.scale(event.y());
-                    return this.mouseHandler.onMouseDown(this, event.withX(x).withY(y), this.scaledSize()).handled();
-                }
+                (listener, ctx) -> listener.accept(ctx, scaledEvent),
+                listener -> listener.accept(scaledEvent),
+                () -> this.mouseHandler.onMouseDown(this, scaledEvent, this.scaledSize()).handled()
         );
     }
 
@@ -280,32 +280,34 @@ public final class Rivet {
             if (event.x() < 0 || event.x() >= this.size.width()) return false;
             if (event.y() < 0 || event.y() >= this.size.height()) return false;
         }
+
+        float x = this.scale.scale(event.x());
+        float y = this.scale.scale(event.y());
+        MouseButtonEvent scaledEvent = event.withX(x).withY(y);
         return this.mouseUpListener.<Boolean>callWithReturnValue(
-                (listener, ctx) -> listener.accept(ctx, event),
-                listener -> listener.accept(event),
+                (listener, ctx) -> listener.accept(ctx, scaledEvent),
+                listener -> listener.accept(scaledEvent),
                 () -> {
-                    float x = this.scale.scale(event.x());
-                    float y = this.scale.scale(event.y());
-                    MouseButtonEvent translatedEvent = event.withX(x).withY(y);
-                    boolean dragHandled = this.dragAndDropManager.onMouseUp(translatedEvent, this.layers::interactableLayers);
-                    boolean mouseHandled = this.mouseHandler.onMouseUp(this, translatedEvent, this.scaledSize()).handled();
+                    boolean dragHandled = this.dragAndDropManager.onMouseUp(scaledEvent, this.layers::interactableLayers);
+                    boolean mouseHandled = this.mouseHandler.onMouseUp(this, scaledEvent, this.scaledSize()).handled();
                     return dragHandled || mouseHandled;
                 }
         );
     }
 
     public boolean onMouseMove(final MouseMoveEvent event) {
+        this.lastMouseX = event.x();
+        this.lastMouseY = event.y();
+
+        float x = this.scale.scale(event.x());
+        float y = this.scale.scale(event.y());
+        MouseMoveEvent scaledEvent = event.withX(x).withY(y);
         return this.mouseMoveListener.<Boolean>callWithReturnValue(
-                (listener, ctx) -> listener.accept(ctx, event),
-                listener -> listener.accept(event),
+                (listener, ctx) -> listener.accept(ctx, scaledEvent),
+                listener -> listener.accept(scaledEvent),
                 () -> {
-                    this.lastMouseX = event.x();
-                    this.lastMouseY = event.y();
-                    float x = this.scale.scale(event.x());
-                    float y = this.scale.scale(event.y());
-                    MouseMoveEvent translatedEvent = event.withX(x).withY(y);
-                    boolean dragHandled = this.dragAndDropManager.onMouseMove(translatedEvent, this.layers::interactableLayers);
-                    boolean mouseHandled = this.mouseHandler.onMouseMove(translatedEvent, this.scaledSize()).handled();
+                    boolean dragHandled = this.dragAndDropManager.onMouseMove(scaledEvent, this.layers::interactableLayers);
+                    boolean mouseHandled = this.mouseHandler.onMouseMove(scaledEvent, this.scaledSize()).handled();
                     return dragHandled || mouseHandled;
                 }
         );
@@ -316,14 +318,14 @@ public final class Rivet {
         this.lastMouseY = event.y();
         if (event.x() < 0 || event.x() >= this.size.width()) return false;
         if (event.y() < 0 || event.y() >= this.size.height()) return false;
+
+        float x = this.scale.scale(event.x());
+        float y = this.scale.scale(event.y());
+        MouseScrollEvent scaledEvent = event.withX(x).withY(y);
         return this.mouseScrollListener.<Boolean>callWithReturnValue(
-                (listener, ctx) -> listener.accept(ctx, event),
-                listener -> listener.accept(event),
-                () -> {
-                    float x = this.scale.scale(event.x());
-                    float y = this.scale.scale(event.y());
-                    return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), this.scaledSize()).handled();
-                }
+                (listener, ctx) -> listener.accept(ctx, scaledEvent),
+                listener -> listener.accept(scaledEvent),
+                () -> this.mouseHandler.onMouseScroll(scaledEvent, this.scaledSize()).handled()
         );
     }
 
