@@ -119,7 +119,7 @@ public final class DragAndDropManager {
     public boolean onMouseUp(final MouseButtonEvent event, final Supplier<List<Layer>> hoveredLayerSupplier) {
         if (!this.dragging) return false;
 
-        this.onDrop(new DropEvent(event.x(), event.y(), event, this.dragData), hoveredLayerSupplier);
+        this.onDrop(new DropEvent(event, this.dragData), hoveredLayerSupplier);
         this.cancelDrag();
         return true;
     }
@@ -134,7 +134,7 @@ public final class DragAndDropManager {
             this.dragLayer.requestLayoutRecalculation();
         }
 
-        return this.onDragOver(new DragOverEvent(event.x(), event.y(), event, this.dragData), hoveredLayerSupplier);
+        return this.onDragOver(new DragOverEvent(event, this.dragData), hoveredLayerSupplier);
     }
 
     public boolean onDrop(final DropEvent event, final Supplier<List<Layer>> hoveredLayerSupplier) {

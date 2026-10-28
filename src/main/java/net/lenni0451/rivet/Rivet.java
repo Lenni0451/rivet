@@ -343,9 +343,7 @@ public final class Rivet {
 
         float x = this.scale.scale(event.x());
         float y = this.scale.scale(event.y());
-        float mouseX = this.scale.scale(event.mouseEvent().x());
-        float mouseY = this.scale.scale(event.mouseEvent().y());
-        DropEvent scaledEvent = event.withX(x).withY(y).withMouseEvent(event.mouseEvent().withX(mouseX).withY(mouseY));
+        DropEvent scaledEvent = event.withX(x).withY(y);
         return this.dropListener.<Boolean>callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, scaledEvent),
                 listener -> listener.accept(scaledEvent),
@@ -367,9 +365,7 @@ public final class Rivet {
 
         float x = this.scale.scale(event.x());
         float y = this.scale.scale(event.y());
-        float mouseX = this.scale.scale(event.mouseEvent().x());
-        float mouseY = this.scale.scale(event.mouseEvent().y());
-        DragOverEvent scaledEvent = event.withX(x).withY(y).withMouseEvent(event.mouseEvent().withX(mouseX).withY(mouseY));
+        DragOverEvent scaledEvent = event.withX(x).withY(y);
         return this.dragOverListener.<Boolean>callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, scaledEvent),
                 listener -> listener.accept(scaledEvent),
