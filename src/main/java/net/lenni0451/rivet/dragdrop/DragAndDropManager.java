@@ -106,15 +106,12 @@ public final class DragAndDropManager {
             this.rivet.removeLayer(this.dragLayer);
             this.dragLayer = null;
         }
-        if (this.hoveredDragLayer != null) {
-            this.hoveredDragLayer.container().onDragLeave();
-        }
+        this.onDragLeave();
         this.dragging = false;
         this.dragData = List.of();
         this.ghostContainer = null;
         this.ghostOffsetX = 0;
         this.ghostOffsetY = 0;
-        this.hoveredDragLayer = null;
         this.mouseX = -Float.MAX_VALUE;
         this.mouseY = -Float.MAX_VALUE;
     }
@@ -122,14 +119,7 @@ public final class DragAndDropManager {
     public boolean onMouseUp(final MouseButtonEvent event, final Supplier<List<Layer>> hoveredLayerSupplier) {
         if (!this.dragging) return false;
 
-        List<Layer> hoveredLayers = hoveredLayerSupplier.get();
-        if (!hoveredLayers.isEmpty()) {
-            DropEvent dropEvent = new DropEvent(event.x(), event.y(), event, this.dragData);
-            for (Layer hoveredLayer : hoveredLayers) {
-                boolean handled = hoveredLayer.container().onDrop(dropEvent, this.rivet.scaledSize());
-                if (handled) break;
-            }
-        }
+        this.onDrop(new DropEvent(event.x(), event.y(), event, this.dragData), hoveredLayerSupplier);
         this.cancelDrag();
         return true;
     }
@@ -144,16 +134,25 @@ public final class DragAndDropManager {
             this.dragLayer.requestLayoutRecalculation();
         }
 
-        List<Layer> hoveredLayers = hoveredLayerSupplier.get();
+        return this.onDragOver(new DragOverEvent(event.x(), event.y(), event, this.dragData), hoveredLayerSupplier);
+    }
+
+    public boolean onDrop(final DropEvent event, final Supplier<List<Layer>> hoveredLayerSupplier) {
+        boolean handled = false;
+        for (Layer hoveredLayer : hoveredLayerSupplier.get()) {
+            handled = hoveredLayer.container().onDrop(event, this.rivet.scaledSize());
+            if (handled) break;
+        }
+        this.onDragLeave();
+        return handled;
+    }
+
+    public boolean onDragOver(final DragOverEvent event, final Supplier<List<Layer>> hoveredLayerSupplier) {
         Layer handledLayer = null;
-        if (!hoveredLayers.isEmpty()) {
-            for (Layer hoveredLayer : hoveredLayers) {
-                DragOverEvent dragOverEvent = new DragOverEvent(event.x(), event.y(), event, this.dragData);
-                boolean handled = hoveredLayer.container().onDragOver(dragOverEvent, this.rivet.scaledSize());
-                if (handled) {
-                    handledLayer = hoveredLayer;
-                    break;
-                }
+        for (Layer hoveredLayer : hoveredLayerSupplier.get()) {
+            if (hoveredLayer.container().onDragOver(event, this.rivet.scaledSize())) {
+                handledLayer = hoveredLayer;
+                break;
             }
         }
         if (this.hoveredDragLayer != null && this.hoveredDragLayer != handledLayer) {
@@ -161,6 +160,13 @@ public final class DragAndDropManager {
         }
         this.hoveredDragLayer = handledLayer;
         return handledLayer != null;
+    }
+
+    public void onDragLeave() {
+        if (this.hoveredDragLayer != null) {
+            this.hoveredDragLayer.container().onDragLeave();
+            this.hoveredDragLayer = null;
+        }
     }
 
 

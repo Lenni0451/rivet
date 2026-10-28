@@ -10,6 +10,7 @@ import net.lenni0451.rivet.backend.render.deferred.DeferredRenderer;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.render.batched.BatchedRenderListExecutor;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -22,8 +23,12 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWDropCallback;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -67,8 +72,8 @@ public abstract class GLFWApplication extends GLFWApplicationRunner implements A
         });
         GLFW.glfwSetMouseButtonCallback(this.window, (window, button, action, mods) -> {
             float[] mouseScale = this.getMouseScale();
-            final double[] xpos = new double[1];
-            final double[] ypos = new double[1];
+            double[] xpos = new double[1];
+            double[] ypos = new double[1];
             GLFW.glfwGetCursorPos(window, xpos, ypos);
 
             MouseButtonEvent event = GLFWMapper.mapMouseButton((float) xpos[0] * mouseScale[0], (float) ypos[0] * mouseScale[1], button, mods);
@@ -84,8 +89,8 @@ public abstract class GLFWApplication extends GLFWApplicationRunner implements A
         });
         GLFW.glfwSetScrollCallback(this.window, (window, xoffset, yoffset) -> {
             float[] mouseScale = this.getMouseScale();
-            final double[] xpos = new double[1];
-            final double[] ypos = new double[1];
+            double[] xpos = new double[1];
+            double[] ypos = new double[1];
             GLFW.glfwGetCursorPos(window, xpos, ypos);
             this.rivet.onMouseScroll(new MouseScrollEvent((float) xpos[0] * mouseScale[0], (float) ypos[0] * mouseScale[1], (float) xoffset, (float) yoffset));
         });
@@ -112,6 +117,18 @@ public abstract class GLFWApplication extends GLFWApplicationRunner implements A
         });
         GLFW.glfwSetWindowContentScaleCallback(this.window, (_, xscale, _) -> {
             this.rivet.scale().automaticScale(xscale);
+        });
+        GLFW.glfwSetDropCallback(this.window, (window, count, names) -> {
+            float[] mouseScale = this.getMouseScale();
+            double[] xpos = new double[1];
+            double[] ypos = new double[1];
+            GLFW.glfwGetCursorPos(window, xpos, ypos);
+            List<File> files = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) {
+                String path = GLFWDropCallback.getName(names, i);
+                files.add(new File(path));
+            }
+            this.rivet.onDrop(DropEvent.at((float) xpos[0] * mouseScale[0], (float) ypos[0] * mouseScale[1], files));
         });
     }
 

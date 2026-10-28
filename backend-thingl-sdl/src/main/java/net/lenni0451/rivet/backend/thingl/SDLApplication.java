@@ -10,6 +10,8 @@ import net.lenni0451.rivet.backend.render.deferred.DeferredRenderer;
 import net.lenni0451.rivet.backend.thingl.render.ThinGLRenderer;
 import net.lenni0451.rivet.backend.thingl.render.batched.BatchedRenderListExecutor;
 import net.lenni0451.rivet.backend.thingl.utils.SDLMapper;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
 import net.lenni0451.rivet.input.mouse.MouseButton;
@@ -21,13 +23,15 @@ import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.SDLApplicationRunner;
 import net.raphimc.thingl.implementation.util.sdl.SdlException;
-import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import org.joml.Matrix4fStack;
 import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.File;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -35,10 +39,12 @@ import java.util.Set;
 public abstract class SDLApplication extends SDLApplicationRunner implements Application<SDLBackend> {
 
     private final ThinGLRenderer renderer = new ThinGLRenderer();
-    private FontInstanceSet fontInstanceSet;
     private SDLBackend backend;
     private Rivet rivet;
     private final Set<MouseButton> heldMouseButtons = EnumSet.noneOf(MouseButton.class);
+    private final List<File> droppedFiles = new ArrayList<>();
+    private float dropX;
+    private float dropY;
 
     public SDLApplication() {
         this(new Configuration());
@@ -128,6 +134,34 @@ public abstract class SDLApplication extends SDLApplicationRunner implements App
             }
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED, SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED -> {
                 this.updateWindowScale();
+            }
+            case SDLEvents.SDL_EVENT_DROP_BEGIN -> {
+                this.droppedFiles.clear();
+            }
+            case SDLEvents.SDL_EVENT_DROP_POSITION -> {
+                SDL_DropEvent drop = event.drop();
+                float[] mouseScale = this.getMouseScale();
+                this.dropX = drop.x() * mouseScale[0];
+                this.dropY = drop.y() * mouseScale[1];
+                this.rivet.onDragOver(DragOverEvent.at(this.dropX, this.dropY, List.of()));
+            }
+            case SDLEvents.SDL_EVENT_DROP_FILE -> {
+                SDL_DropEvent drop = event.drop();
+                float[] mouseScale = this.getMouseScale();
+                this.dropX = drop.x() * mouseScale[0];
+                this.dropY = drop.y() * mouseScale[1];
+                String path = drop.dataString();
+                if (path != null) {
+                    this.droppedFiles.add(new File(path));
+                }
+            }
+            case SDLEvents.SDL_EVENT_DROP_COMPLETE -> {
+                if (!this.droppedFiles.isEmpty()) {
+                    this.rivet.onDrop(DropEvent.at(this.dropX, this.dropY, this.droppedFiles));
+                    this.droppedFiles.clear();
+                } else {
+                    this.rivet.onDragLeave();
+                }
             }
         }
     }

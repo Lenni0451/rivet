@@ -10,6 +10,8 @@ import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.Application;
 import net.lenni0451.rivet.backend.awt.render.RivetCanvas;
 import net.lenni0451.rivet.backend.awt.utils.AWTMapper;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -20,8 +22,13 @@ import net.lenni0451.rivet.math.Size;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.*;
 import java.awt.event.*;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -224,6 +231,82 @@ public abstract class AWTApplication implements Application<AWTBackend> {
                 AWTApplication.this.rivet.size(new Size(width, height));
             }
         });
+        new DropTarget(component, DnDConstants.ACTION_COPY_OR_MOVE, new DropTargetListener() {
+            @Override
+            public void dragEnter(final DropTargetDragEvent event) {
+                this.handleDrag(event);
+            }
+
+            @Override
+            public void dragOver(final DropTargetDragEvent event) {
+                this.handleDrag(event);
+            }
+
+            @Override
+            public void dropActionChanged(final DropTargetDragEvent event) {
+                this.handleDrag(event);
+            }
+
+            private void handleDrag(final DropTargetDragEvent event) {
+                if (!event.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                    event.rejectDrag();
+                    return;
+                }
+
+                List<File> files = new ArrayList<>();
+                try {
+                    Object data = event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    if (data instanceof List<?> list) {
+                        list.stream().filter(File.class::isInstance).map(File.class::cast).forEach(files::add);
+                    }
+                } catch (Throwable ignored) {
+                }
+
+                Point location = event.getLocation();
+                boolean accepted = AWTApplication.this.rivet.onDragOver(DragOverEvent.at(location.x, location.y, files));
+                if (accepted) {
+                    int action = event.getDropAction();
+                    if (action == DnDConstants.ACTION_NONE) {
+                        action = DnDConstants.ACTION_COPY;
+                    }
+                    event.acceptDrag(action);
+                } else {
+                    event.rejectDrag();
+                }
+            }
+
+            @Override
+            public void dragExit(final DropTargetEvent event) {
+                AWTApplication.this.rivet.onDragLeave();
+            }
+
+            @Override
+            public void drop(final DropTargetDropEvent event) {
+                if (!event.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                    event.rejectDrop();
+                    return;
+                }
+
+                int action = event.getDropAction();
+                if (action == DnDConstants.ACTION_NONE) {
+                    action = DnDConstants.ACTION_COPY;
+                }
+                event.acceptDrop(action);
+
+                try {
+                    Object data = event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    if (data instanceof List<?> list) {
+                        List<File> files = list.stream().filter(File.class::isInstance).map(File.class::cast).toList();
+                        Point location = event.getLocation();
+                        boolean handled = AWTApplication.this.rivet.onDrop(DropEvent.at(location.x, location.y, files));
+                        event.dropComplete(handled);
+                        return;
+                    }
+                } catch (Throwable ignored) {
+                }
+                event.dropComplete(false);
+            }
+        }, true);
     }
 
     protected void initWindowEvents(final JFrame frame) {

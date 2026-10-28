@@ -7,9 +7,12 @@ import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.dragdrop.DragAndDropManager;
+import net.lenni0451.rivet.dragdrop.DragOverEvent;
+import net.lenni0451.rivet.dragdrop.DropEvent;
 import net.lenni0451.rivet.event.ListenerList;
 import net.lenni0451.rivet.event.PrePostListenerList;
 import net.lenni0451.rivet.event.listener.BiVoidListener;
+import net.lenni0451.rivet.event.listener.NullaryVoidListener;
 import net.lenni0451.rivet.event.listener.ReturnableListener;
 import net.lenni0451.rivet.input.keyboard.CharEvent;
 import net.lenni0451.rivet.input.keyboard.KeyEvent;
@@ -68,6 +71,12 @@ public final class Rivet {
     private final PrePostListenerList<ReturnableListener<Boolean, MouseMoveEvent>, Consumer<MouseMoveEvent>> mouseMoveListener = new PrePostListenerList<>();
     @Getter
     private final PrePostListenerList<ReturnableListener<Boolean, MouseScrollEvent>, Consumer<MouseScrollEvent>> mouseScrollListener = new PrePostListenerList<>();
+    @Getter
+    private final PrePostListenerList<ReturnableListener<Boolean, DropEvent>, Consumer<DropEvent>> dropListener = new PrePostListenerList<>();
+    @Getter
+    private final PrePostListenerList<ReturnableListener<Boolean, DragOverEvent>, Consumer<DragOverEvent>> dragOverListener = new PrePostListenerList<>();
+    @Getter
+    private final ListenerList<NullaryVoidListener> dragLeaveListener = new ListenerList<>();
     @Getter
     private final ListenerList<Runnable> renderListener = new ListenerList<>();
 
@@ -316,6 +325,58 @@ public final class Rivet {
                     return this.mouseHandler.onMouseScroll(event.withX(x).withY(y), this.scaledSize()).handled();
                 }
         );
+    }
+
+    public boolean onDrop(final DropEvent event) {
+        this.lastMouseX = event.x();
+        this.lastMouseY = event.y();
+        if (event.x() < 0 || event.x() >= this.size.width()) {
+            this.onDragLeave();
+            return false;
+        }
+        if (event.y() < 0 || event.y() >= this.size.height()) {
+            this.onDragLeave();
+            return false;
+        }
+
+        float x = this.scale.scale(event.x());
+        float y = this.scale.scale(event.y());
+        float mouseX = this.scale.scale(event.mouseEvent().x());
+        float mouseY = this.scale.scale(event.mouseEvent().y());
+        DropEvent scaledEvent = event.withX(x).withY(y).withMouseEvent(event.mouseEvent().withX(mouseX).withY(mouseY));
+        return this.dropListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, scaledEvent),
+                listener -> listener.accept(scaledEvent),
+                () -> this.dragAndDropManager.onDrop(scaledEvent, this.layers::interactableLayers)
+        );
+    }
+
+    public boolean onDragOver(final DragOverEvent event) {
+        this.lastMouseX = event.x();
+        this.lastMouseY = event.y();
+        if (event.x() < 0 || event.x() >= this.size.width()) {
+            this.onDragLeave();
+            return false;
+        }
+        if (event.y() < 0 || event.y() >= this.size.height()) {
+            this.onDragLeave();
+            return false;
+        }
+
+        float x = this.scale.scale(event.x());
+        float y = this.scale.scale(event.y());
+        float mouseX = this.scale.scale(event.mouseEvent().x());
+        float mouseY = this.scale.scale(event.mouseEvent().y());
+        DragOverEvent scaledEvent = event.withX(x).withY(y).withMouseEvent(event.mouseEvent().withX(mouseX).withY(mouseY));
+        return this.dragOverListener.<Boolean>callWithReturnValue(
+                (listener, ctx) -> listener.accept(ctx, scaledEvent),
+                listener -> listener.accept(scaledEvent),
+                () -> this.dragAndDropManager.onDragOver(scaledEvent, this.layers::interactableLayers)
+        );
+    }
+
+    public void onDragLeave() {
+        this.dragLeaveListener.callVoid(NullaryVoidListener::accept, this.dragAndDropManager::onDragLeave);
     }
 
     public <R extends Renderer> R render(final R renderer) {
