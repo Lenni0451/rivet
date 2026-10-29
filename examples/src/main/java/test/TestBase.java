@@ -2,9 +2,9 @@ package test;
 
 import net.lenni0451.rivet.backend.AssetLoader;
 import net.lenni0451.rivet.backend.text.Font;
-import net.lenni0451.rivet.backend.thingl.GLFWApplication;
+import net.lenni0451.rivet.backend.thingl.SDLApplication;
 
-public abstract class TestBase extends GLFWApplication {
+public abstract class TestBase extends SDLApplication {
 
     @Override
     public Font createFont(final AssetLoader assetLoader) throws Exception {
