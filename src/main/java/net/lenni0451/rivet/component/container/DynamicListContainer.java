@@ -5,10 +5,7 @@ import net.lenni0451.rivet.dragdrop.DropMarkerStrategy;
 import net.lenni0451.rivet.layout.Layout;
 import net.lenni0451.rivet.math.Size;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.IdentityHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -23,6 +20,9 @@ public class DynamicListContainer<E> extends ReorderableContainer {
 
     private final IdentityHashMap<Component, Integer> orderMap = new IdentityHashMap<>();
     private final Comparator<Component> orderComparator = Comparator.comparingInt(c -> this.orderMap.getOrDefault(c, 0));
+
+    private boolean internalChange = false;
+    private boolean childrenDirty = false;
 
     public DynamicListContainer(final Layout layout, final List<E> list, final Function<E, Component> componentFactory) {
         this(layout, null, obj -> false, () -> list, componentFactory);
@@ -42,24 +42,34 @@ public class DynamicListContainer<E> extends ReorderableContainer {
         this.componentFactory = componentFactory;
         this.updateListener = () -> {
             List<E> currentList = this.listSupplier.get();
-            if (!this.isSame(currentList, this.lastSeenList)) {
+            if (this.childrenDirty || !this.isSame(currentList, this.lastSeenList)) {
                 this.requestLayoutRecalculation();
             }
         };
+        this.childChangedListener().add(() -> {
+            if (!this.internalChange) {
+                this.childrenDirty = true;
+            }
+        });
     }
 
     public final DynamicListContainer<E> recreate(final E item) {
         Component oldComponent = this.componentCache.remove(item);
         if (oldComponent != null) {
-            this.remove(oldComponent);
-            Integer index = this.orderMap.remove(oldComponent);
-            Component newComponent = this.componentFactory.apply(item);
-            this.componentCache.put(item, newComponent);
-            this.add(newComponent);
-            if (index != null) {
-                this.orderMap.put(newComponent, index);
+            this.internalChange = true;
+            try {
+                this.remove(oldComponent);
+                Integer index = this.orderMap.remove(oldComponent);
+                Component newComponent = this.componentFactory.apply(item);
+                this.componentCache.put(item, newComponent);
+                this.add(newComponent);
+                if (index != null) {
+                    this.orderMap.put(newComponent, index);
+                }
+                this.sort(this.orderComparator);
+            } finally {
+                this.internalChange = false;
             }
-            this.sort(this.orderComparator);
         }
         return this;
     }
@@ -90,7 +100,7 @@ public class DynamicListContainer<E> extends ReorderableContainer {
 
     private void syncChildrenIfNeeded() {
         List<E> currentList = this.listSupplier.get();
-        if (!this.isSame(currentList, this.lastSeenList)) {
+        if (this.childrenDirty || !this.isSame(currentList, this.lastSeenList)) {
             this.syncChildren(currentList);
         }
     }
@@ -104,29 +114,43 @@ public class DynamicListContainer<E> extends ReorderableContainer {
     }
 
     private void syncChildren(final List<E> currentList) {
-        for (E item : this.lastSeenList) {
-            if (!currentList.contains(item)) {
-                Component comp = this.componentCache.remove(item);
-                if (comp != null) {
-                    this.remove(comp);
+        this.internalChange = true;
+        try {
+            Set<E> currentItems = identitySet(currentList);
+            Set<Component> children = identitySet(this.children());
+            this.componentCache.entrySet().removeIf(entry -> !currentItems.contains(entry.getKey()) || !children.contains(entry.getValue()));
+
+            Set<Component> managedComponents = identitySet(this.componentCache.values());
+            for (Component child : children) {
+                if (!managedComponents.contains(child)) {
+                    this.remove(child);
                 }
             }
-        }
 
-        this.orderMap.clear();
-        for (int i = 0; i < currentList.size(); i++) {
-            E item = currentList.get(i);
-            Component component = this.componentCache.computeIfAbsent(item, itm -> {
-                Component c = this.componentFactory.apply(itm);
-                this.add(c);
-                return c;
-            });
-            this.orderMap.put(component, i);
-        }
-        this.sort(this.orderComparator);
+            this.orderMap.clear();
+            for (int i = 0; i < currentList.size(); i++) {
+                E item = currentList.get(i);
+                Component component = this.componentCache.computeIfAbsent(item, itm -> {
+                    Component c = this.componentFactory.apply(itm);
+                    this.add(c);
+                    return c;
+                });
+                this.orderMap.put(component, i);
+            }
+            this.sort(this.orderComparator);
 
-        this.lastSeenList.clear();
-        this.lastSeenList.addAll(currentList);
+            this.lastSeenList.clear();
+            this.lastSeenList.addAll(currentList);
+            this.childrenDirty = false;
+        } finally {
+            this.internalChange = false;
+        }
+    }
+
+    private static <T> Set<T> identitySet(final Collection<T> elements) {
+        Set<T> set = Collections.newSetFromMap(new IdentityHashMap<>());
+        set.addAll(elements);
+        return set;
     }
 
 }
