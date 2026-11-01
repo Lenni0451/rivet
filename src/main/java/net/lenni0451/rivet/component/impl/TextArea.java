@@ -25,6 +25,8 @@ import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
+import net.lenni0451.rivet.text.diagnostic.TextDiagnostic;
+import net.lenni0451.rivet.text.diagnostic.UnderlineStyle;
 import net.lenni0451.rivet.text.highlight.SyntaxHighlighter;
 import net.lenni0451.rivet.text.model.TextBlock;
 import net.lenni0451.rivet.text.model.TextFormat;
@@ -32,11 +34,13 @@ import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.TextInputNavigationHandler;
+import net.lenni0451.rivet.utils.Tooltip;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
@@ -53,7 +57,23 @@ public class TextArea extends Component {
     private Predicate<String> validator;
     @Getter
     private SyntaxHighlighter highlighter = SyntaxHighlighter.NONE;
+    @Getter
+    private List<TextDiagnostic> diagnostics = List.of();
+    @Getter
+    @Setter
+    @Nullable
+    private Function<TextDiagnostic, Component> diagnosticTooltipFactory;
+    @Getter
+    private final Tooltip diagnosticTooltip = new Tooltip(this, () -> {
+        if (this.hoveredDiagnostic == null) return null;
+        if (this.diagnosticTooltipFactory != null) return this.diagnosticTooltipFactory.apply(this.hoveredDiagnostic);
+        return new DiagnosticTooltip(this.hoveredDiagnostic.message());
+    });
 
+    private TextDiagnostic hoveredDiagnostic;
+    private boolean mouseOver;
+    private float mouseX;
+    private float mouseY;
     private ShapedTextBlock shapedTextBlock;
     private ShapedText shapedHintText;
     @Getter
@@ -116,6 +136,20 @@ public class TextArea extends Component {
     private final ThemeOption<Integer> tabWidth = new ThemeOption<>(this, Theme.TextArea.TAB_WIDTH);
     @Getter
     private final ThemeOption<String> wordBoundaries = new ThemeOption<>(this, Theme.TextArea.WORD_BOUNDARIES);
+    @Getter
+    private final ThemeOption<Color> diagnosticColor = new ThemeOption<>(this, Theme.TextArea.DIAGNOSTIC_COLOR);
+    @Getter
+    private final ThemeOption<UnderlineStyle> diagnosticStyle = new ThemeOption<>(this, Theme.TextArea.DIAGNOSTIC_STYLE);
+    @Getter
+    private final ThemeOption<Float> diagnosticLineWidth = new ThemeOption<>(this, Theme.TextArea.DIAGNOSTIC_LINE_WIDTH);
+    @Getter
+    private final ThemeOption<Color> diagnosticTooltipBackgroundColor = new ThemeOption<>(this, Theme.TextArea.DIAGNOSTIC_TOOLTIP_BACKGROUND_COLOR);
+    @Getter
+    private final ThemeOption<Color> diagnosticTooltipTextColor = new ThemeOption<>(this, Theme.TextArea.DIAGNOSTIC_TOOLTIP_TEXT_COLOR);
+    @Getter
+    private final ThemeOption<Corners> diagnosticTooltipCornerRadius = new ThemeOption<>(this, Theme.TextArea.DIAGNOSTIC_TOOLTIP_CORNER_RADIUS);
+    @Getter
+    private final ThemeOption<Padding> diagnosticTooltipPadding = new ThemeOption<>(this, Theme.TextArea.DIAGNOSTIC_TOOLTIP_PADDING);
 
     private Transition<Color> outlineColorTransition;
 
@@ -158,6 +192,7 @@ public class TextArea extends Component {
         this.cursor = Math.min(this.cursor, this.text.length());
         this.selection = Math.min(this.selection, this.text.length());
         this.updateLineStarts();
+        this.clearDiagnostics();
         if (this.rivet() != null) {
             this.updateShapedText();
         }
@@ -187,6 +222,12 @@ public class TextArea extends Component {
         if (this.rivet() != null) {
             this.updateShapedText();
         }
+        return this;
+    }
+
+    public final TextArea diagnostics(@Nullable final List<TextDiagnostic> diagnostics) {
+        this.diagnostics = diagnostics != null ? List.copyOf(diagnostics) : List.of();
+        this.updateHoveredDiagnostic();
         return this;
     }
 
@@ -374,6 +415,66 @@ public class TextArea extends Component {
         }
     }
 
+    @Nullable
+    private Rectangle diagnosticBounds(final TextDiagnostic diagnostic, final int line) {
+        ShapedText shapedLine = this.getShapedLine(line);
+        if (shapedLine == null) return null;
+
+        int lineStart = this.lineStarts[line];
+        int lineLength = this.lineLength(line);
+        int start = MathUtils.clamp(diagnostic.start() - lineStart, 0, lineLength);
+        int end = MathUtils.clamp(diagnostic.end() - lineStart, 0, lineLength);
+        boolean marker = diagnostic.start() == diagnostic.end();
+        if (start == end && !marker) return null;
+
+        float x1 = shapedLine.cursorPosition(start).x();
+        float x2 = shapedLine.cursorPosition(end).x();
+        float lineHeight = this.lineHeight();
+        float width = Math.abs(x2 - x1);
+        if (marker) width = lineHeight / 2F;
+        return new Rectangle(Math.min(x1, x2), line * lineHeight, width, lineHeight);
+    }
+
+    private int diagnosticLine(final int offset) {
+        return this.lineIndexAt(Math.min(offset, this.text.length()));
+    }
+
+    private void updateHoveredDiagnostic() {
+        TextDiagnostic hovered;
+        if (this.mouseOver && !this.selecting) {
+            hovered = this.findDiagnostic(this.mouseX, this.mouseY);
+        } else {
+            hovered = null;
+        }
+        if (hovered != this.hoveredDiagnostic) {
+            this.hoveredDiagnostic = hovered;
+            this.diagnosticTooltip.refresh();
+        }
+    }
+
+    @Nullable
+    private TextDiagnostic findDiagnostic(final float x, final float y) {
+        if (this.diagnostics.isEmpty() || this.shapedTextBlock == null || y < 0) return null;
+        int line = (int) (y / this.lineHeight());
+        if (line >= this.lineCount()) return null;
+
+        for (TextDiagnostic diagnostic : this.diagnostics) {
+            if (diagnostic.message() == null) continue;
+            if (line < this.diagnosticLine(diagnostic.start()) || line > this.diagnosticLine(diagnostic.end())) continue;
+            Rectangle bounds = this.diagnosticBounds(diagnostic, line);
+            if (bounds != null && x >= bounds.x() && x <= bounds.x() + bounds.width()) {
+                return diagnostic;
+            }
+        }
+        return null;
+    }
+
+    private void clearDiagnostics() {
+        if (!this.diagnostics.isEmpty()) {
+            this.diagnostics(null);
+        }
+    }
+
     @Override
     protected void onAddedInternal() {
         this.updateLineStarts();
@@ -401,11 +502,14 @@ public class TextArea extends Component {
         this.focused = false;
         this.selecting = false;
         this.clickCount = 0;
+        this.mouseOver = false;
+        this.hoveredDiagnostic = null;
     }
 
     @Override
     protected void onDisabledInternal() {
         this.onRemovedInternal();
+        this.diagnosticTooltip.refresh();
         if (this.rivet() != null) {
             this.updateShapedText();
         }
@@ -448,6 +552,12 @@ public class TextArea extends Component {
     }
 
     @Override
+    protected void onMouseLeaveInternal() {
+        this.mouseOver = false;
+        this.updateHoveredDiagnostic();
+    }
+
+    @Override
     protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             long now = System.currentTimeMillis();
@@ -470,6 +580,7 @@ public class TextArea extends Component {
                 this.clickCount = this.navigationHandler.handleMouseClickSelection(this.clickCount, lineId);
             }
             this.selecting = true;
+            this.updateHoveredDiagnostic();
             this.cursorAnimation.reset().start();
             this.scrollCursorIntoView();
         }
@@ -480,12 +591,17 @@ public class TextArea extends Component {
     protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.selecting = false;
+            this.updateHoveredDiagnostic();
         }
         return true;
     }
 
     @Override
     protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
+        this.mouseOver = true;
+        this.mouseX = event.x() - this.innerPadding.value().left();
+        this.mouseY = event.y() - this.innerPadding.value().top();
+        this.updateHoveredDiagnostic();
         if (this.selecting) {
             float localX = event.x() - this.innerPadding.value().left();
             float localY = event.y() - this.innerPadding.value().top();
@@ -575,6 +691,12 @@ public class TextArea extends Component {
                 }
             }
 
+            // Render diagnostics
+            List<TextDiagnostic> diagnostics = this.diagnostics;
+            if (hasVisibleLines && !diagnostics.isEmpty()) {
+                this.renderDiagnostics(renderer, diagnostics, firstVisibleLine, lastVisibleLine, contentVisibleX1, contentVisibleX2);
+            }
+
             // Render cursor
             if (this.focused && hasVisibleLines) {
                 int currentLine = this.lineIndexAt(this.cursor);
@@ -590,6 +712,23 @@ public class TextArea extends Component {
                 }
             }
         });
+    }
+
+    private void renderDiagnostics(final Renderer renderer, final List<TextDiagnostic> diagnostics, final int firstVisibleLine, final int lastVisibleLine, final float visibleMinX, final float visibleMaxX) {
+        float thickness = this.diagnosticLineWidth.value();
+        if (thickness <= 0) return;
+
+        for (TextDiagnostic diagnostic : diagnostics) {
+            Color color = diagnostic.color() != null ? diagnostic.color() : this.diagnosticColor.value();
+            UnderlineStyle style = diagnostic.style() != null ? diagnostic.style() : this.diagnosticStyle.value();
+            int startLine = Math.max(firstVisibleLine, this.diagnosticLine(diagnostic.start()));
+            int endLine = Math.min(lastVisibleLine, this.diagnosticLine(diagnostic.end()));
+            for (int line = startLine; line <= endLine; line++) {
+                Rectangle bounds = this.diagnosticBounds(diagnostic, line);
+                if (bounds == null || bounds.x() + bounds.width() < visibleMinX || bounds.x() > visibleMaxX) continue;
+                style.render(renderer, new UnderlineStyle.Segment(bounds.x(), bounds.y(), bounds.width(), bounds.height(), thickness, color, visibleMinX, visibleMaxX));
+            }
+        }
     }
 
     @Override
@@ -609,6 +748,48 @@ public class TextArea extends Component {
 
     private enum State {
         IDLE, FOCUSED, INVALID, DISABLED
+    }
+
+    private class DiagnosticTooltip extends Component {
+        private final String message;
+        private ShapedTextBlock shapedMessage;
+
+        private DiagnosticTooltip(final String message) {
+            this.message = message;
+        }
+
+        private void shapeMessage() {
+            TextFormat format = TextFormat.DEFAULT.withColor(TextArea.this.diagnosticTooltipTextColor.value());
+            this.shapedMessage = TextArea.this.usedFont().shapeText(SyntaxHighlighter.defaultHighlight(this.message, format));
+        }
+
+        @Override
+        protected void onAddedInternal() {
+            this.shapeMessage();
+        }
+
+        @Override
+        protected void onThemeChangedInternal() {
+            if (this.rivet() != null) {
+                this.shapeMessage();
+            }
+        }
+
+        @Override
+        protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
+            Padding padding = TextArea.this.diagnosticTooltipPadding.value();
+            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), TextArea.this.diagnosticTooltipCornerRadius.value(), TextArea.this.diagnosticTooltipBackgroundColor.value());
+            renderer.text(this.shapedMessage, padding.left(), padding.top(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP, ShapedTextBlock.LineAlignment.LEFT);
+        }
+
+        @Override
+        public Size computeIdealSize(final Size constraints) {
+            Padding padding = TextArea.this.diagnosticTooltipPadding.value();
+            return new Size(
+                    this.shapedMessage.visualBounds().width() + padding.horizontal(),
+                    this.shapedMessage.logicalBounds().height() + padding.vertical()
+            );
+        }
     }
 
     private class NavigationHandler extends TextInputNavigationHandler {
@@ -645,6 +826,7 @@ public class TextArea extends Component {
         @Override
         public void onTextModified(final boolean fireListeners) {
             TextArea.this.updateLineStarts();
+            TextArea.this.clearDiagnostics();
             if (fireListeners) {
                 TextArea.this.updateShapedText();
                 TextArea.this.onTextChange(true);

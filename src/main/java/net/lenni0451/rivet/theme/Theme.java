@@ -19,6 +19,7 @@ import net.lenni0451.rivet.component.impl.slider.AbstractSlider.ThumbShape;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.text.diagnostic.UnderlineStyle;
 
 import java.util.Collections;
 import java.util.List;
@@ -303,6 +304,15 @@ public abstract class Theme {
         public static final ThemeKey<Color> DISABLED_TEXT_COLOR = register("text_area.disabled_text_color", Color.class, r -> r.theme().get(TextField.DISABLED_TEXT_COLOR));
         public static final ThemeKey<Color> DISABLED_BACKGROUND_COLOR = register("text_area.disabled_background_color", Color.class, r -> r.theme().get(TextField.DISABLED_BACKGROUND_COLOR));
         public static final ThemeKey<Color> DISABLED_OUTLINE_COLOR = register("text_area.disabled_outline_color", Color.class, r -> r.theme().get(TextField.DISABLED_OUTLINE_COLOR));
+
+        // Diagnostics
+        public static final ThemeKey<Color> DIAGNOSTIC_COLOR = register("text_area.diagnostic_color", Color.class, r -> r.theme().get(INVALID_OUTLINE_COLOR));
+        public static final ThemeKey<UnderlineStyle> DIAGNOSTIC_STYLE = register("text_area.diagnostic_style", UnderlineStyle.class, r -> UnderlineStyle.WAVY);
+        public static final ThemeKey<Float> DIAGNOSTIC_LINE_WIDTH = register("text_area.diagnostic_line_width", Float.class, r -> roundMin(r.backend().font().height() / 25F, 1));
+        public static final ThemeKey<Color> DIAGNOSTIC_TOOLTIP_BACKGROUND_COLOR = register("text_area.diagnostic_tooltip_background_color", Color.class, r -> r.theme().get(Slider.TOOLTIP_BACKGROUND_COLOR));
+        public static final ThemeKey<Color> DIAGNOSTIC_TOOLTIP_TEXT_COLOR = register("text_area.diagnostic_tooltip_text_color", Color.class, r -> r.theme().get(Slider.TOOLTIP_TEXT_COLOR));
+        public static final ThemeKey<Corners> DIAGNOSTIC_TOOLTIP_CORNER_RADIUS = register("text_area.diagnostic_tooltip_corner_radius", Corners.class, r -> r.theme().get(Slider.TOOLTIP_CORNER_RADIUS));
+        public static final ThemeKey<Padding> DIAGNOSTIC_TOOLTIP_PADDING = register("text_area.diagnostic_tooltip_padding", Padding.class, r -> r.theme().get(Slider.TOOLTIP_PADDING));
 
         // Animations
         public static final ThemeKey<AnimationConfig> CURSOR_ANIMATION = register("text_area.cursor_animation", AnimationConfig.class, r -> r.theme().get(TextField.CURSOR_ANIMATION));

@@ -6,12 +6,14 @@ import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.impl.TextArea;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
+import net.lenni0451.rivet.text.diagnostic.UnderlineStyle;
 import net.lenni0451.rivet.text.highlight.SyntaxHighlighter;
 import net.lenni0451.rivet.xml.parser.XmlParser;
 import net.lenni0451.rivet.xml.parser.XmlParserContext;
 import net.lenni0451.rivet.xml.parser.impl.ElementParserBuilder;
 import org.w3c.dom.Node;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class TextAreaParser implements XmlParser<TextArea> {
@@ -24,6 +26,7 @@ public class TextAreaParser implements XmlParser<TextArea> {
             .attribute("hint", String.class, TextArea::hint)
             .referenceAttribute("validator", Predicate.class, TextArea::validator)
             .referenceAttribute("highlighter", SyntaxHighlighter.class, TextArea::highlighter)
+            .referenceAttribute("diagnosticTooltipFactory", Function.class, TextArea::diagnosticTooltipFactory)
             .themeOption("tabWidth", Integer.class, TextArea::tabWidth)
             .themeOption("wordBoundaries", String.class, TextArea::wordBoundaries)
             .themeOption("textColor", Color.class, TextArea::textColor)
@@ -39,9 +42,17 @@ public class TextAreaParser implements XmlParser<TextArea> {
             .themeOption("outlineWidth", Float.class, TextArea::outlineWidth)
             .themeOption("cornerRadius", Corners.class, TextArea::cornerRadius)
             .themeOption("innerPadding", Padding.class, TextArea::innerPadding)
+            .themeOption("scrollMargin", Padding.class, TextArea::scrollMargin)
             .themeOption("disabledTextColor", Color.class, TextArea::disabledTextColor)
             .themeOption("disabledBackgroundColor", Color.class, TextArea::disabledBackgroundColor)
             .themeOption("disabledOutlineColor", Color.class, TextArea::disabledOutlineColor)
+            .themeOption("diagnosticColor", Color.class, TextArea::diagnosticColor)
+            .themeOption("diagnosticStyle", UnderlineStyle.class, TextArea::diagnosticStyle)
+            .themeOption("diagnosticLineWidth", Float.class, TextArea::diagnosticLineWidth)
+            .themeOption("diagnosticTooltipBackgroundColor", Color.class, TextArea::diagnosticTooltipBackgroundColor)
+            .themeOption("diagnosticTooltipTextColor", Color.class, TextArea::diagnosticTooltipTextColor)
+            .themeOption("diagnosticTooltipCornerRadius", Corners.class, TextArea::diagnosticTooltipCornerRadius)
+            .themeOption("diagnosticTooltipPadding", Padding.class, TextArea::diagnosticTooltipPadding)
             .themeOption("cursorAnimationConfig", AnimationConfig.class, TextArea::cursorAnimationConfig)
             .themeOption("focusAnimationConfig", AnimationConfig.class, TextArea::focusAnimationConfig)
             .build();

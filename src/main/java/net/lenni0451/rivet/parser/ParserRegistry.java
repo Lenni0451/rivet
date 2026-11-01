@@ -6,6 +6,7 @@ import net.lenni0451.rivet.animation.AnimationConfig;
 import net.lenni0451.rivet.animation.DynamicAnimationConfig;
 import net.lenni0451.rivet.math.*;
 import net.lenni0451.rivet.parser.impl.*;
+import net.lenni0451.rivet.text.diagnostic.UnderlineStyle;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ public final class ParserRegistry {
         registry.register(EasingFunction.class, new EasingFunctionParser());
         registry.register(AnimationConfig.class, new AnimationConfigParser());
         registry.register(DynamicAnimationConfig.class, new DynamicAnimationConfigParser());
+        registry.register(UnderlineStyle.class, new UnderlineStyleParser());
         return registry;
     }
 

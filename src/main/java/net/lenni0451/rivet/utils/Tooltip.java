@@ -76,13 +76,23 @@ public class Tooltip {
         return this;
     }
 
+    public Tooltip refresh() {
+        this.lastMoveTime = System.currentTimeMillis();
+        this.remove();
+        return this;
+    }
+
     private void add() {
         if (this.layer == null) {
             if (this.hideOnDrag && this.component.rivet().dragAndDropManager().isDragging()) {
                 return;
             }
 
-            this.currentTooltip = this.tooltip.get();
+            Component tooltip = this.tooltip.get();
+            if (tooltip == null) {
+                return;
+            }
+            this.currentTooltip = tooltip;
             this.layer = new Layer(new Container(AbsoluteLayout.INSTANCE).add(this.currentTooltip), LayerBucket.TOOLTIP);
             this.component.rivet().addLayer(this.layer);
         }
