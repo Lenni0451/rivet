@@ -94,11 +94,15 @@ public interface NodeContext {
             if (component.isPresent()) {
                 return Optional.of(component.get());
             }
+            Optional<String> string = this.context().getVariable(variableName, String.class);
+            if (string.isPresent()) {
+                return Optional.of(string.get());
+            }
             Optional<String> constant = this.context().getConstant(variableName);
             if (constant.isPresent()) {
                 return Optional.of(constant.get());
             }
-            throw new IllegalArgumentException("Variable '" + variableName + "' not found or not of type " + Component.class.getTypeName());
+            throw new IllegalArgumentException("Variable '" + variableName + "' not found or not of type " + Component.class.getTypeName() + " or " + String.class.getTypeName());
         }
         return Optional.of(value);
     }
