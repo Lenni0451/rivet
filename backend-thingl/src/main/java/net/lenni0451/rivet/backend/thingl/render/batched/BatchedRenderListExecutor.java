@@ -59,7 +59,7 @@ public class BatchedRenderListExecutor extends RenderListExecutor {
                 if (layer.blurStrength() > 0) {
                     ThinGL.programs().getGaussianBlur().unbindInput();
                     ThinGL.programs().getGaussianBlur().configureParameters(layer.blurStrength());
-                    ThinGL.programs().getGaussianBlur().render(renderer.positionMatrix(), layer.bounds().minX, layer.bounds().minY, layer.bounds().maxX, layer.bounds().maxY);
+                    ThinGL.programs().getGaussianBlur().render(renderer.positionMatrix(), layer.coarseBounds().minX, layer.coarseBounds().minY, layer.coarseBounds().maxX, layer.coarseBounds().maxY);
                     ThinGL.programs().getGaussianBlur().clearInput();
                 }
                 GL43C.glPopDebugGroup();

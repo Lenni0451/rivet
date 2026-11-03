@@ -100,12 +100,12 @@ public class BatchedRenderListBuilder {
             return false;
         }
 
-        public Rectanglef bounds() {
-            final Rectanglef bounds = new Rectanglef(EMPTY_RECT);
+        public Rectanglef coarseBounds() {
+            final Rectanglef coarseBounds = new Rectanglef(EMPTY_RECT);
             for (Layer layer : this) {
-                bounds.union(layer.bounds);
+                coarseBounds.union(layer.coarseBounds());
             }
-            return bounds;
+            return coarseBounds;
         }
 
     }
@@ -113,7 +113,8 @@ public class BatchedRenderListBuilder {
     public static class Layer {
 
         private final List<CommandState> commandStates = new ArrayList<>();
-        private final Rectanglef bounds = new Rectanglef(EMPTY_RECT);
+        private final Rectanglef coarseBounds = new Rectanglef(EMPTY_RECT);
+        private final RectangleQuadTree exactBounds = new RectangleQuadTree();
         private final Rectanglef scissor;
         private final StencilStack.Mode stencilMaskMode;
         private final Layers stencilMaskLayers = new Layers();
@@ -142,30 +143,23 @@ public class BatchedRenderListBuilder {
             if (this.stencilMaskLayers.isEmpty() != stencilMaskLayers.isEmpty()) {
                 return false;
             }
-            if (!this.addedStencilMaskLayers.contains(stencilMaskLayers) && (stencilMaskLayers.intersectsLayers(this.stencilMaskLayers) || renderBounds.intersectsRectangle(this.stencilMaskLayers.bounds()) || this.bounds.intersectsRectangle(stencilMaskLayers.bounds()))) {
+            if (!this.addedStencilMaskLayers.contains(stencilMaskLayers) && (stencilMaskLayers.intersectsLayers(this.stencilMaskLayers) || renderBounds.intersectsRectangle(this.stencilMaskLayers.coarseBounds()) || this.coarseBounds.intersectsRectangle(stencilMaskLayers.coarseBounds()))) {
                 return false;
             }
             return true;
         }
 
         public boolean intersectsRectangle(final Rectanglef bounds) {
-            if (this.bounds.intersectsRectangle(bounds)) {
-                for (CommandState commandState : this.commandStates) {
-                    if (commandState.bounds.intersectsRectangle(bounds)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return this.coarseBounds.intersectsRectangle(bounds) && this.exactBounds.intersects(bounds);
         }
 
         public boolean intersectsLayer(final Layer otherLayer) {
-            if (this.bounds.intersectsRectangle(otherLayer.bounds)) {
-                for (CommandState commandState : this.commandStates) {
-                    for (CommandState otherCommandState : otherLayer.commandStates) {
-                        if (commandState.bounds.intersectsRectangle(otherCommandState.bounds)) {
-                            return true;
-                        }
+            if (this.coarseBounds.intersectsRectangle(otherLayer.coarseBounds)) {
+                final Layer smaller = this.commandStates.size() <= otherLayer.commandStates.size() ? this : otherLayer;
+                final Layer larger = smaller == this ? otherLayer : this;
+                for (CommandState commandState : smaller.commandStates) {
+                    if (larger.exactBounds.intersects(commandState.bounds)) {
+                        return true;
                     }
                 }
             }
@@ -174,7 +168,8 @@ public class BatchedRenderListBuilder {
 
         public void addCommandState(final CommandState commandState) {
             this.commandStates.add(commandState);
-            this.bounds.union(commandState.bounds);
+            this.coarseBounds.union(commandState.bounds);
+            this.exactBounds.add(commandState.bounds);
         }
 
         public void addStencilMaskLayers(final Layers layers) {
@@ -191,8 +186,8 @@ public class BatchedRenderListBuilder {
             return this.commandStates;
         }
 
-        public Rectanglef bounds() {
-            return this.bounds;
+        public Rectanglef coarseBounds() {
+            return this.coarseBounds;
         }
 
         public Rectanglef scissor() {
