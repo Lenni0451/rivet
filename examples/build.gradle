@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    include project(":xml")
     include project(":backend-awt")
     include project(":backend-thingl-glfw")
     include project(":backend-thingl-sdl")
