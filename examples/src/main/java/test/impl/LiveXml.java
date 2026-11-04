@@ -6,13 +6,14 @@ import net.lenni0451.rivet.component.impl.Label;
 import net.lenni0451.rivet.xml.XmlLoader;
 import test.TestBase;
 
-import java.nio.file.Path;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 public class LiveXml extends TestBase {
+
+    private static final Path PATH = Path.of("ui.xml").normalize().toAbsolutePath();
 
     void main() {
         this.run();
@@ -20,46 +21,17 @@ public class LiveXml extends TestBase {
 
     @Override
     public void init(final Rivet rivet) {
+        this.reload();
         Thread.ofVirtual().start(() -> {
             try {
-                Path path = Path.of("ui.xml").normalize().toAbsolutePath();
-                WatchService watchService = path.getFileSystem().newWatchService();
-                path.getParent().register(watchService, java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY);
+                WatchService watchService = PATH.getFileSystem().newWatchService();
+                PATH.getParent().register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
                 while (true) {
-                    var key = watchService.take();
-                    for (var event : key.pollEvents()) {
-                        if (event.context().toString().equals(path.getFileName().toString())) {
+                    WatchKey key = watchService.take();
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        if (event.context().toString().equals(PATH.getFileName().toString())) {
                             System.out.println("Reloading UI");
-
-                            try {
-                                Component loaded = XmlLoader.standard().load(path).load();
-                                rivet.tasks().beforeNextFrame(() -> {
-                                    rivet.root().clear();
-                                    rivet.root().add(loaded);
-                                });
-                            } catch (Throwable t) {
-                                t.printStackTrace();
-                                rivet.tasks().beforeNextFrame(() -> {
-                                    rivet.root().clear();
-
-                                    List<String> lines = new ArrayList<>();
-                                    Stack<Throwable> causes = new Stack<>();
-                                    causes.push(t);
-                                    while (!causes.isEmpty()) {
-                                        Throwable cause = causes.pop();
-                                        lines.add(cause.getClass().getSimpleName() + ": " + cause.getMessage());
-                                        for (Throwable suppressed : cause.getSuppressed()) {
-                                            causes.push(suppressed);
-                                        }
-                                        if (cause.getCause() != null) {
-                                            causes.push(cause.getCause());
-                                        }
-                                    }
-                                    rivet.root().add(new Label("Failed to load UI:\n" + String.join("\n", lines)), label -> {
-                                        label.overflowBehavior().set(Label.OverflowBehavior.WRAP);
-                                    });
-                                });
-                            }
+                            this.reload();
                         }
                     }
                     key.reset();
@@ -69,6 +41,42 @@ public class LiveXml extends TestBase {
                 System.exit(-1);
             }
         });
+    }
+
+    private void reload() {
+        var ref = new Object() {
+            Component loaded;
+        };
+        try {
+            ref.loaded = XmlLoader.standard().load(PATH).load();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            ref.loaded = this.formatException(t);
+        }
+        this.rivet().tasks().beforeNextFrame(() -> {
+            this.rivet().root().clear();
+            this.rivet().root().add(ref.loaded);
+        });
+    }
+
+    private Label formatException(final Throwable t) {
+        List<String> lines = new ArrayList<>();
+        Stack<Throwable> causes = new Stack<>();
+        causes.push(t);
+        while (!causes.isEmpty()) {
+            Throwable cause = causes.pop();
+            lines.add(cause.getClass().getSimpleName() + ": " + cause.getMessage());
+            for (Throwable suppressed : cause.getSuppressed()) {
+                causes.push(suppressed);
+            }
+            if (cause.getCause() != null) {
+                causes.push(cause.getCause());
+            }
+        }
+
+        Label label = new Label("Failed to load UI:\n" + String.join("\n", lines));
+        label.overflowBehavior().set(Label.OverflowBehavior.WRAP);
+        return label;
     }
 
 }
