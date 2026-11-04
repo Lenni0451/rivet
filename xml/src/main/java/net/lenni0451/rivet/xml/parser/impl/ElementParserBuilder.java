@@ -195,7 +195,7 @@ public class ElementParserBuilder<T> {
                 if (!boxedValueType.isAssignableFrom(XmlUtils.box(themeKey.type()))) {
                     throw new IllegalArgumentException("Theme key '" + key + "' of type " + themeKey.type().getName() + " is not compatible with attribute '" + this.name + "' of type " + this.valueType.getName());
                 }
-                option.set((ThemeKey<V>) themeKey);
+                option.bind((ThemeKey<V>) themeKey);
             } else if (XmlUtils.isVariableReference(rawValue)) {
                 String variableName = XmlUtils.extractVariableReferenceName(rawValue);
                 Optional<V> variable = nodeContext.context().getVariable(variableName, this.valueType);

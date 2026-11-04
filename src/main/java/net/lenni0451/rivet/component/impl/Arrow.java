@@ -47,8 +47,8 @@ public class Arrow extends Component {
         float height = size.height() / 4;
         float widthGap = (size.width() - width) / 2F;
         float heightGap = (size.height() - height) / 2F;
-        Color color = this.disabled().get() ? this.disabledColor.value() : this.color.value();
-        float lineWidth = this.lineWidth.value();
+        Color color = this.disabled().get() ? this.disabledColor.get() : this.color.get();
+        float lineWidth = this.lineWidth.get();
         float progress = this.progress.get();
 
         renderer.polyLine(
@@ -64,7 +64,7 @@ public class Arrow extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        float arrowSize = this.size.value();
+        float arrowSize = this.size.get();
         return new Size(arrowSize, arrowSize);
     }
 

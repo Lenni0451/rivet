@@ -81,10 +81,10 @@ public class CollapsibleContainer extends ParentContainer {
             }
             this.requestLayoutRecalculation();
         });
-        this.arrowSize.initListener().add(val -> this.requestLayoutRecalculation());
-        this.arrowPosition.initListener().add(val -> this.requestLayoutRecalculation());
-        this.collapseAnimationConfig.initListener().add(config -> {
-            this.collapseAnimation = this.collapseAnimationConfig.value().create();
+        this.arrowSize.changeListener().add(val -> this.requestLayoutRecalculation());
+        this.arrowPosition.changeListener().add(val -> this.requestLayoutRecalculation());
+        this.collapseAnimationConfig.changeListener().add(config -> {
+            this.collapseAnimation = config.create();
             if (this.collapsed.get()) {
                 this.collapseAnimation.finish(AnimationDirection.BACKWARDS);
             } else {
@@ -202,15 +202,15 @@ public class CollapsibleContainer extends ParentContainer {
 
             Arrow arrow = new Arrow();
             CollapsibleContainer.this.collapseProgress.registerSync(arrow.progress());
-            CollapsibleContainer.this.arrowColor.initListener().add(arrow.color()::set);
-            CollapsibleContainer.this.arrowDisabledColor.initListener().add(arrow.disabledColor()::set);
-            CollapsibleContainer.this.arrowLineWidth.initListener().add(arrow.lineWidth()::set);
-            CollapsibleContainer.this.arrowSize.initListener().add(arrow.size()::set);
+            CollapsibleContainer.this.arrowColor.changeListener().add(arrow.color()::set);
+            CollapsibleContainer.this.arrowDisabledColor.changeListener().add(arrow.disabledColor()::set);
+            CollapsibleContainer.this.arrowLineWidth.changeListener().add(arrow.lineWidth()::set);
+            CollapsibleContainer.this.arrowSize.changeListener().add(arrow.size()::set);
 
             this.add(arrow.layoutOptions(GridOptions.EMPTY.at(0, 0).withAnchor(GridAnchor.LEFT)));
             this.add(header.layoutOptions(GridOptions.EMPTY.at(1, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
 
-            CollapsibleContainer.this.arrowPosition.initListener().add(position -> {
+            CollapsibleContainer.this.arrowPosition.changeListener().add(position -> {
                 int arrowPosition;
                 int headerPosition;
                 if (position.equals(ArrowPosition.LEFT)) {
@@ -240,7 +240,7 @@ public class CollapsibleContainer extends ParentContainer {
         protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
             if (!super.onMouseDownInternal(event, size)) {
                 if (event.button().equals(MouseButton.LEFT)) {
-                    if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.DOWN) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
+                    if (CollapsibleContainer.this.collapseOn.get().equals(ClickOn.DOWN) || CollapsibleContainer.this.collapseOn.get().equals(ClickOn.BOTH)) {
                         CollapsibleContainer.this.collapsed.update(c -> !c);
                     }
                 }
@@ -252,7 +252,7 @@ public class CollapsibleContainer extends ParentContainer {
         protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
             if (!super.onMouseUpInternal(event, size)) {
                 if (this.hovered && event.button().equals(MouseButton.LEFT)) {
-                    if (CollapsibleContainer.this.collapseOn.value().equals(ClickOn.UP) || CollapsibleContainer.this.collapseOn.value().equals(ClickOn.BOTH)) {
+                    if (CollapsibleContainer.this.collapseOn.get().equals(ClickOn.UP) || CollapsibleContainer.this.collapseOn.get().equals(ClickOn.BOTH)) {
                         CollapsibleContainer.this.collapsed.update(c -> !c);
                     }
                 }

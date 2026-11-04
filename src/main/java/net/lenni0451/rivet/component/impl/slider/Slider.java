@@ -44,7 +44,7 @@ public class Slider extends AbstractSlider<Slider> {
 
     @Override
     protected void renderFills(final Renderer renderer, final Size size, final float barWidth, final float barHeight, final float sliderCenter, final float thumbWidth, final Color barFillColor) {
-        float startX = this.thumbEncased().value() ? 0 : thumbWidth / 2F;
+        float startX = this.thumbEncased().get() ? 0 : thumbWidth / 2F;
         float thumbX = this.thumbX(this.value.get(), thumbWidth, barWidth);
         this.renderFill(renderer, startX, thumbX, sliderCenter, barHeight, barFillColor);
     }

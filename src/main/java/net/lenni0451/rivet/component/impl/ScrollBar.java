@@ -147,7 +147,7 @@ public class ScrollBar extends Component {
                 this.railPressed = true;
                 float maxScroll = this.maxScroll();
                 float visible = this.visibleSize;
-                if (this.railClickJump.value()) {
+                if (this.railClickJump.get()) {
                     float thumbSize = this.orientation == Orientation.HORIZONTAL ? thumb.width() : thumb.height();
                     float railSize = this.orientation == Orientation.HORIZONTAL ? rail.width() : rail.height();
                     float scrollableSize = railSize - thumbSize;
@@ -210,7 +210,7 @@ public class ScrollBar extends Component {
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Rectangle rail = this.getRailBounds(size);
         if (rail != null) {
-            if (this.barType.value() == ScrollBarType.NORMAL) {
+            if (this.barType.get() == ScrollBarType.NORMAL) {
                 this.renderRail(renderer, rail);
             }
 
@@ -224,18 +224,18 @@ public class ScrollBar extends Component {
     @Override
     public Size computeIdealSize(final Size constraints) {
         return switch (this.orientation) {
-            case HORIZONTAL -> new Size(0, this.barWidth.value());
-            case VERTICAL -> new Size(this.barWidth.value(), 0);
+            case HORIZONTAL -> new Size(0, this.barWidth.get());
+            case VERTICAL -> new Size(this.barWidth.get(), 0);
         };
     }
 
     private void renderRail(final Renderer renderer, final Rectangle bounds) {
         boolean disabled = this.disabled().get();
-        Color color = disabled ? this.disabledRailColor.value() : this.railColor.value();
+        Color color = disabled ? this.disabledRailColor.get() : this.railColor.get();
         renderer.fillRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), color);
-        if (this.railOutlineWidth.value() > 0) {
-            Color outlineColor = disabled ? this.disabledRailOutlineColor.value() : this.railOutlineColor.value();
-            renderer.outlineRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.railOutlineWidth.value(), outlineColor);
+        if (this.railOutlineWidth.get() > 0) {
+            Color outlineColor = disabled ? this.disabledRailOutlineColor.get() : this.railOutlineColor.get();
+            renderer.outlineRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.railOutlineWidth.get(), outlineColor);
         }
     }
 
@@ -243,18 +243,18 @@ public class ScrollBar extends Component {
         Color color;
         Color outlineColor;
         if (this.disabled().get()) {
-            color = this.disabledBarColor.value();
-            outlineColor = this.disabledBarOutlineColor.value();
+            color = this.disabledBarColor.get();
+            outlineColor = this.disabledBarOutlineColor.get();
         } else {
-            if (this.barPressed) color = this.barClickColor.value();
-            else if (this.barHovered) color = this.barHoverColor.value();
-            else color = this.barColor.value();
-            outlineColor = this.barOutlineColor.value();
+            if (this.barPressed) color = this.barClickColor.get();
+            else if (this.barHovered) color = this.barHoverColor.get();
+            else color = this.barColor.get();
+            outlineColor = this.barOutlineColor.get();
         }
 
-        renderer.optimizedFillRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), color);
-        if (this.barOutlineWidth.value() > 0) {
-            renderer.optimizedOutlineRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.value(), this.barOutlineWidth.value(), outlineColor);
+        renderer.optimizedFillRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.get(), color);
+        if (this.barOutlineWidth.get() > 0) {
+            renderer.optimizedOutlineRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.get(), this.barOutlineWidth.get(), outlineColor);
         }
     }
 

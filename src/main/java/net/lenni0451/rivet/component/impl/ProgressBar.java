@@ -85,50 +85,50 @@ public class ProgressBar extends Component {
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         this.renderTrack(renderer, size);
         Runnable drawIndicatorAndStripes = () -> {
-            this.renderIndicator(renderer, size, this.indicatorColor.value());
-            if (this.stripes.value()) {
+            this.renderIndicator(renderer, size, this.indicatorColor.get());
+            if (this.stripes.get()) {
                 renderer.stencil(
                         maskRenderer -> this.renderIndicator(maskRenderer, size, Color.RED),
                         () -> this.renderStripes(renderer, size)
                 );
             }
         };
-        if (this.trackCornerRadius.value().max() < this.indicatorCornerRadius.value().max()) {
+        if (this.trackCornerRadius.get().max() < this.indicatorCornerRadius.get().max()) {
             drawIndicatorAndStripes.run();
         } else {
             renderer.stencil(maskRenderer -> {
-                maskRenderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.value(), Color.RED);
+                maskRenderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), Color.RED);
             }, drawIndicatorAndStripes);
         }
-        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.value(), this.borderWidth.value(), this.borderColor.value());
+        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), this.borderWidth.get(), this.borderColor.get());
 
         this.renderText(renderer, size);
     }
 
     protected void renderTrack(final Renderer renderer, final Size size) {
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.value(), this.trackColor.value());
+        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), this.trackColor.get());
     }
 
     protected void renderIndicator(final Renderer renderer, final Size size, final Color color) {
-        renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress.get(), size.height(), this.indicatorCornerRadius.value(), color);
+        renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress.get(), size.height(), this.indicatorCornerRadius.get(), color);
     }
 
     protected void renderStripes(final Renderer renderer, final Size size) {
         float width = size.width();
         float height = size.height();
         float progressWidth = width * this.progress.get();
-        float stripeWidth = this.stripeWidth.value();
-        float stripeGap = this.stripeGap.value();
+        float stripeWidth = this.stripeWidth.get();
+        float stripeGap = this.stripeGap.get();
         float period = stripeWidth + stripeGap;
 
-        double timeSec = this.stripeAnimated.value() ? System.currentTimeMillis() / 1000D : 0;
-        float speed = this.stripeSpeed.value();
+        double timeSec = this.stripeAnimated.get() ? System.currentTimeMillis() / 1000D : 0;
+        float speed = this.stripeSpeed.get();
         float offset = (float) ((timeSec * speed) % period);
         if (offset < 0) {
             offset += period;
         }
 
-        float angle = MathUtils.clamp(this.stripeAngle.value(), -89.9F, 89.9F);
+        float angle = MathUtils.clamp(this.stripeAngle.get(), -89.9F, 89.9F);
         float slant = height * (float) Math.tan(Math.toRadians(angle));
         float minX = -stripeWidth - Math.max(0, slant);
         float maxX = progressWidth - Math.min(0, slant);
@@ -140,23 +140,23 @@ public class ProgressBar extends Component {
                     new Point(x + stripeWidth + slant, height),
                     new Point(x + slant, height)
             };
-            renderer.fillPolygon(points, this.stripeColor.value());
+            renderer.fillPolygon(points, this.stripeColor.get());
         }
     }
 
     protected void renderText(final Renderer renderer, final Size size) {
-        if (!this.textPosition.value().equals(TextPosition.NONE)) {
+        if (!this.textPosition.get().equals(TextPosition.NONE)) {
             float progress = this.progress.get();
-            String text = String.format(this.textFormat.value(), progress * 100);
+            String text = String.format(this.textFormat.get(), progress * 100);
             if (!text.equals(this.currentText)) {
                 this.currentText = text;
-                this.currentShapedText = this.rivet().backend().font().shapeText(text, this.textColor.value());
+                this.currentShapedText = this.rivet().backend().font().shapeText(text, this.textColor.get());
             }
 
-            switch (this.textPosition.value()) {
+            switch (this.textPosition.get()) {
                 case LEFT -> renderer.text(
                         this.currentShapedText,
-                        this.textPadding.value(), size.height() / 2F,
+                        this.textPadding.get(), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case CENTER -> renderer.text(
@@ -166,27 +166,27 @@ public class ProgressBar extends Component {
                 );
                 case RIGHT -> renderer.text(
                         this.currentShapedText,
-                        size.width() - this.textPadding.value(), size.height() / 2F,
+                        size.width() - this.textPadding.get(), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_RIGHT, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case FOLLOW_LEFT -> renderer.text(
                         this.currentShapedText,
-                        Math.max(size.width() * progress - this.textPadding.value(), this.textPadding.value() + this.currentShapedText.visualBounds().width()), size.height() / 2F,
+                        Math.max(size.width() * progress - this.textPadding.get(), this.textPadding.get() + this.currentShapedText.visualBounds().width()), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_RIGHT, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case FOLLOW_CENTER -> renderer.text(
                         this.currentShapedText,
-                        MathUtils.clamp(size.width() * progress, this.textPadding.value() + this.currentShapedText.visualBounds().width() / 2F, size.width() - this.textPadding.value() - this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
+                        MathUtils.clamp(size.width() * progress, this.textPadding.get() + this.currentShapedText.visualBounds().width() / 2F, size.width() - this.textPadding.get() - this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case FOLLOW_RIGHT -> renderer.text(
                         this.currentShapedText,
-                        Math.min(size.width() * progress + this.textPadding.value(), size.width() - this.textPadding.value() - this.currentShapedText.visualBounds().width()), size.height() / 2F,
+                        Math.min(size.width() * progress + this.textPadding.get(), size.width() - this.textPadding.get() - this.currentShapedText.visualBounds().width()), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER
                 );
                 case PROGRESS_CENTER -> renderer.text(
                         this.currentShapedText,
-                        Math.max(size.width() * progress / 2, this.textPadding.value() + this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
+                        Math.max(size.width() * progress / 2, this.textPadding.get() + this.currentShapedText.visualBounds().width() / 2), size.height() / 2F,
                         TextOrigin.Horizontal.VISUAL_CENTER, TextOrigin.Vertical.LOGICAL_CENTER
                 );
             }

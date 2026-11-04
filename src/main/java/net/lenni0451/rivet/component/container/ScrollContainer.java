@@ -181,15 +181,15 @@ public class ScrollContainer extends ParentContainer {
     @Override
     protected void onAddedInternal() {
         super.onAddedInternal();
-        this.scrollXAnimation = this.animationConfig.value().create(this.scrollX.get());
-        this.scrollYAnimation = this.animationConfig.value().create(this.scrollY.get());
+        this.scrollXAnimation = this.animationConfig.get().create(this.scrollX.get());
+        this.scrollYAnimation = this.animationConfig.get().create(this.scrollY.get());
     }
 
     @Override
     protected void onThemeChangedInternal() {
         super.onThemeChangedInternal();
-        this.scrollXAnimation = this.animationConfig.value().create(this.scrollXAnimation.getValue());
-        this.scrollYAnimation = this.animationConfig.value().create(this.scrollYAnimation.getValue());
+        this.scrollXAnimation = this.animationConfig.get().create(this.scrollXAnimation.getValue());
+        this.scrollYAnimation = this.animationConfig.get().create(this.scrollYAnimation.getValue());
     }
 
     @Override
@@ -210,7 +210,7 @@ public class ScrollContainer extends ParentContainer {
                         float visibleWidth = this.visibleWidth(size);
                         float maxScroll = Math.max(0, contentWidth - visibleWidth);
                         if (maxScroll > EPSILON) {
-                            this.targetScrollX = MathUtils.clamp(this.targetScrollX - horizontalScrollAmount * this.scrollSpeed.value(), 0, maxScroll);
+                            this.targetScrollX = MathUtils.clamp(this.targetScrollX - horizontalScrollAmount * this.scrollSpeed.get(), 0, maxScroll);
                             return true;
                         }
                     }
@@ -220,7 +220,7 @@ public class ScrollContainer extends ParentContainer {
                         float visibleHeight = this.visibleHeight(size);
                         float maxScroll = Math.max(0, contentHeight - visibleHeight);
                         if (maxScroll > EPSILON) {
-                            this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.value(), 0, maxScroll);
+                            this.targetScrollY = MathUtils.clamp(this.targetScrollY - event.scrollY() * this.scrollSpeed.get(), 0, maxScroll);
                             return true;
                         }
                     }
@@ -276,7 +276,7 @@ public class ScrollContainer extends ParentContainer {
     }
 
     private void updateAnimation() {
-        if (this.smoothScrolling.value()) {
+        if (this.smoothScrolling.get()) {
             this.scrollXAnimation.setTarget(this.targetScrollX);
             this.scrollYAnimation.setTarget(this.targetScrollY);
         } else {
@@ -300,31 +300,31 @@ public class ScrollContainer extends ParentContainer {
     }
 
     private void renderCorner(final Renderer renderer, final Size size) {
-        if (this.vScrollVisible && this.hScrollVisible && this.vScrollBar.barType().value() == ScrollBarType.NORMAL && this.hScrollBar.barType().value() == ScrollBarType.NORMAL) {
-            Color color = this.disabled().get() ? this.vScrollBar.disabledRailColor().value() : this.vScrollBar.railColor().value();
-            float vBarWidth = this.vScrollBar.barWidth().value();
-            float hBarHeight = this.hScrollBar.barWidth().value();
+        if (this.vScrollVisible && this.hScrollVisible && this.vScrollBar.barType().get() == ScrollBarType.NORMAL && this.hScrollBar.barType().get() == ScrollBarType.NORMAL) {
+            Color color = this.disabled().get() ? this.vScrollBar.disabledRailColor().get() : this.vScrollBar.railColor().get();
+            float vBarWidth = this.vScrollBar.barWidth().get();
+            float hBarHeight = this.hScrollBar.barWidth().get();
             renderer.fillRect(size.width() - vBarWidth, size.height() - hBarHeight, vBarWidth, hBarHeight, color);
         }
     }
 
     private float visibleWidth(final Size size) {
-        return size.width() - (this.vScrollVisible && this.vScrollBar.barType().value() == ScrollBarType.NORMAL ? this.vScrollBar.barWidth().value() : 0);
+        return size.width() - (this.vScrollVisible && this.vScrollBar.barType().get() == ScrollBarType.NORMAL ? this.vScrollBar.barWidth().get() : 0);
     }
 
     private float visibleHeight(final Size size) {
-        return size.height() - (this.hScrollVisible && this.hScrollBar.barType().value() == ScrollBarType.NORMAL ? this.hScrollBar.barWidth().value() : 0);
+        return size.height() - (this.hScrollVisible && this.hScrollBar.barType().get() == ScrollBarType.NORMAL ? this.hScrollBar.barWidth().get() : 0);
     }
 
     @Nullable
     private Rectangle getHScrollArea(final Size size) {
         if (!this.hScrollVisible) return null;
-        float barHeight = this.hScrollBar.barWidth().value();
-        float vBarWidth = this.vScrollBar.barWidth().value();
+        float barHeight = this.hScrollBar.barWidth().get();
+        float vBarWidth = this.vScrollBar.barWidth().get();
         return new Rectangle(
                 0,
                 size.height() - barHeight,
-                size.width() - (this.vScrollVisible && this.vScrollBar.barType().value() == ScrollBarType.NORMAL ? vBarWidth : 0),
+                size.width() - (this.vScrollVisible && this.vScrollBar.barType().get() == ScrollBarType.NORMAL ? vBarWidth : 0),
                 barHeight
         );
     }
@@ -332,13 +332,13 @@ public class ScrollContainer extends ParentContainer {
     @Nullable
     private Rectangle getVScrollArea(final Size size) {
         if (!this.vScrollVisible) return null;
-        float barWidth = this.vScrollBar.barWidth().value();
-        float hBarHeight = this.hScrollBar.barWidth().value();
+        float barWidth = this.vScrollBar.barWidth().get();
+        float hBarHeight = this.hScrollBar.barWidth().get();
         return new Rectangle(
                 size.width() - barWidth,
                 0,
                 barWidth,
-                size.height() - (this.hScrollVisible && this.hScrollBar.barType().value() == ScrollBarType.NORMAL ? hBarHeight : 0)
+                size.height() - (this.hScrollVisible && this.hScrollBar.barType().get() == ScrollBarType.NORMAL ? hBarHeight : 0)
         );
     }
 
@@ -358,8 +358,8 @@ public class ScrollContainer extends ParentContainer {
         this.hScrollVisible = false;
         this.vScrollVisible = false;
 
-        boolean hBarNormal = this.hScrollBar.barType().value() == ScrollBarType.NORMAL;
-        boolean vBarNormal = this.vScrollBar.barType().value() == ScrollBarType.NORMAL;
+        boolean hBarNormal = this.hScrollBar.barType().get() == ScrollBarType.NORMAL;
+        boolean vBarNormal = this.vScrollBar.barType().get() == ScrollBarType.NORMAL;
 
         float availableWidth;
         float availableHeight;
@@ -372,8 +372,8 @@ public class ScrollContainer extends ParentContainer {
 
             availableWidth = size.width();
             availableHeight = size.height();
-            if (this.hScrollVisible && hBarNormal) availableHeight -= this.hScrollBar.barWidth().value();
-            if (this.vScrollVisible && vBarNormal) availableWidth -= this.vScrollBar.barWidth().value();
+            if (this.hScrollVisible && hBarNormal) availableHeight -= this.hScrollBar.barWidth().get();
+            if (this.vScrollVisible && vBarNormal) availableWidth -= this.vScrollBar.barWidth().get();
 
             Size idealChildSize = this.child.computeIdealSize(new Size(
                     this.horizontalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : availableWidth,
@@ -401,10 +401,10 @@ public class ScrollContainer extends ParentContainer {
                 boolean newVScrollVisible = this.verticalScrolling && isGreaterThan(this.childSize.height(), availableHeight);
 
                 if (newHScrollVisible && !newVScrollVisible && hBarNormal) {
-                    newVScrollVisible = this.verticalScrolling && isGreaterThan(this.childSize.height(), availableHeight - this.hScrollBar.barWidth().value());
+                    newVScrollVisible = this.verticalScrolling && isGreaterThan(this.childSize.height(), availableHeight - this.hScrollBar.barWidth().get());
                 }
                 if (newVScrollVisible && !newHScrollVisible && vBarNormal) {
-                    newHScrollVisible = this.horizontalScrolling && isGreaterThan(this.childSize.width(), availableWidth - this.vScrollBar.barWidth().value());
+                    newHScrollVisible = this.horizontalScrolling && isGreaterThan(this.childSize.width(), availableWidth - this.vScrollBar.barWidth().get());
                 }
 
                 if (newHScrollVisible != this.hScrollVisible || newVScrollVisible != this.vScrollVisible) {
@@ -567,7 +567,7 @@ public class ScrollContainer extends ParentContainer {
         private long lastScroll;
 
         public boolean handleScrolling(final BooleanSupplier parent, final BooleanSupplier child) {
-            if (System.nanoTime() - this.lastScroll > TimeUnit.MILLISECONDS.toNanos(ScrollContainer.this.nestedScrollTimeout.value())) {
+            if (System.nanoTime() - this.lastScroll > TimeUnit.MILLISECONDS.toNanos(ScrollContainer.this.nestedScrollTimeout.get())) {
                 this.lastTarget = null;
             }
             if (this.lastTarget == null || this.lastTarget.equals(ScrollTarget.CHILD)) {

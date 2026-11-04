@@ -127,18 +127,18 @@ public class ToggleSwitch extends Component {
                 this::visualState,
                 (start, target) -> {
                     if (start.toggled != target.toggled) {
-                        return this.toggleAnimationConfig.value();
+                        return this.toggleAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case NORMAL_OFF -> this.offColor.value();
-                    case NORMAL_ON -> this.onColor.value();
-                    case HOVERED_OFF -> this.hoverOffColor.value();
-                    case HOVERED_ON -> this.hoverOnColor.value();
-                    case DISABLED_OFF -> this.disabledOffColor.value();
-                    case DISABLED_ON -> this.disabledOnColor.value();
+                    case NORMAL_OFF -> this.offColor.get();
+                    case NORMAL_ON -> this.onColor.get();
+                    case HOVERED_OFF -> this.hoverOffColor.get();
+                    case HOVERED_ON -> this.hoverOnColor.get();
+                    case DISABLED_OFF -> this.disabledOffColor.get();
+                    case DISABLED_ON -> this.disabledOnColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -147,18 +147,18 @@ public class ToggleSwitch extends Component {
                 this::visualState,
                 (start, target) -> {
                     if (start.toggled != target.toggled) {
-                        return this.toggleAnimationConfig.value();
+                        return this.toggleAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case NORMAL_OFF -> this.offOutlineColor.value();
-                    case NORMAL_ON -> this.onOutlineColor.value();
-                    case HOVERED_OFF -> this.hoverOffOutlineColor.value();
-                    case HOVERED_ON -> this.hoverOnOutlineColor.value();
-                    case DISABLED_OFF -> this.disabledOffOutlineColor.value();
-                    case DISABLED_ON -> this.disabledOnOutlineColor.value();
+                    case NORMAL_OFF -> this.offOutlineColor.get();
+                    case NORMAL_ON -> this.onOutlineColor.get();
+                    case HOVERED_OFF -> this.hoverOffOutlineColor.get();
+                    case HOVERED_ON -> this.hoverOnOutlineColor.get();
+                    case DISABLED_OFF -> this.disabledOffOutlineColor.get();
+                    case DISABLED_ON -> this.disabledOnOutlineColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -167,18 +167,18 @@ public class ToggleSwitch extends Component {
                 this::visualState,
                 (start, target) -> {
                     if (start.toggled != target.toggled) {
-                        return this.toggleAnimationConfig.value();
+                        return this.toggleAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case NORMAL_OFF -> this.offThumbColor.value();
-                    case NORMAL_ON -> this.onThumbColor.value();
-                    case HOVERED_OFF -> this.hoverOffThumbColor.value();
-                    case HOVERED_ON -> this.hoverOnThumbColor.value();
-                    case DISABLED_OFF -> this.disabledOffThumbColor.value();
-                    case DISABLED_ON -> this.disabledOnThumbColor.value();
+                    case NORMAL_OFF -> this.offThumbColor.get();
+                    case NORMAL_ON -> this.onThumbColor.get();
+                    case HOVERED_OFF -> this.hoverOffThumbColor.get();
+                    case HOVERED_ON -> this.hoverOnThumbColor.get();
+                    case DISABLED_OFF -> this.disabledOffThumbColor.get();
+                    case DISABLED_ON -> this.disabledOnThumbColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -187,25 +187,25 @@ public class ToggleSwitch extends Component {
                 this::visualState,
                 (start, target) -> {
                     if (start.toggled != target.toggled) {
-                        return this.toggleAnimationConfig.value();
+                        return this.toggleAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.visualState()) {
-                    case NORMAL_OFF -> this.offThumbOutlineColor.value();
-                    case NORMAL_ON -> this.onThumbOutlineColor.value();
-                    case HOVERED_OFF -> this.hoverOffThumbOutlineColor.value();
-                    case HOVERED_ON -> this.hoverOnThumbOutlineColor.value();
-                    case DISABLED_OFF -> this.disabledOffThumbOutlineColor.value();
-                    case DISABLED_ON -> this.disabledOnThumbOutlineColor.value();
+                    case NORMAL_OFF -> this.offThumbOutlineColor.get();
+                    case NORMAL_ON -> this.onThumbOutlineColor.get();
+                    case HOVERED_OFF -> this.hoverOffThumbOutlineColor.get();
+                    case HOVERED_ON -> this.hoverOnThumbOutlineColor.get();
+                    case DISABLED_OFF -> this.disabledOffThumbOutlineColor.get();
+                    case DISABLED_ON -> this.disabledOnThumbOutlineColor.get();
                 },
                 Interpolator.COLOR
         );
         this.toggleProgress = new Transition<>(
                 this,
                 () -> this.toggled.get() ? 1F : 0F,
-                this.toggleAnimationConfig::value,
+                this.toggleAnimationConfig::get,
                 Interpolator.FLOAT
         );
     }
@@ -235,7 +235,7 @@ public class ToggleSwitch extends Component {
     protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (event.button().equals(MouseButton.LEFT)) {
             this.pressed = true;
-            if (this.toggleOn.value().equals(ClickOn.DOWN) || this.toggleOn.value().equals(ClickOn.BOTH)) {
+            if (this.toggleOn.get().equals(ClickOn.DOWN) || this.toggleOn.get().equals(ClickOn.BOTH)) {
                 this.toggled.update(t -> !t);
             }
         }
@@ -247,7 +247,7 @@ public class ToggleSwitch extends Component {
         if (event.button().equals(MouseButton.LEFT)) {
             boolean wasPressed = this.pressed;
             this.pressed = false;
-            if (this.hovered && wasPressed && (this.toggleOn.value().equals(ClickOn.UP) || this.toggleOn.value().equals(ClickOn.BOTH))) {
+            if (this.hovered && wasPressed && (this.toggleOn.get().equals(ClickOn.UP) || this.toggleOn.get().equals(ClickOn.BOTH))) {
                 this.toggled.update(t -> !t);
             }
         }
@@ -256,12 +256,12 @@ public class ToggleSwitch extends Component {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        Corners cornerRadius = this.cornerRadius.value();
-        float outlineWidth = this.outlineWidth.value();
-        boolean encased = this.thumbEncased.value();
+        Corners cornerRadius = this.cornerRadius.get();
+        float outlineWidth = this.outlineWidth.get();
+        boolean encased = this.thumbEncased.get();
 
         float progress = this.toggleProgress.value();
-        float thumbRadius = size.height() / 2 * this.thumbRatio.value();
+        float thumbRadius = size.height() / 2 * this.thumbRatio.get();
         float thumbX;
         if (encased) {
             thumbX = MathUtils.lerp(size.height() / 2, size.width() - size.height() / 2, progress);
@@ -270,7 +270,7 @@ public class ToggleSwitch extends Component {
         }
         float thumbY = size.height() / 2;
 
-        float railHeight = encased ? size.height() : size.height() * this.railRatio.value();
+        float railHeight = encased ? size.height() : size.height() * this.railRatio.get();
         float railWidth = encased ? size.width() : size.width() - 2 * thumbRadius + railHeight;
         float railX = encased ? 0 : thumbRadius - railHeight / 2;
         float railY = encased ? 0 : (size.height() - railHeight) / 2;
@@ -281,7 +281,7 @@ public class ToggleSwitch extends Component {
         }
 
         renderer.fillCircle(thumbX, thumbY, thumbRadius, this.thumbColorTransition.value());
-        float thumbOutlineWidth = this.thumbOutlineWidth.value();
+        float thumbOutlineWidth = this.thumbOutlineWidth.get();
         if (thumbOutlineWidth > 0) {
             renderer.outlineCircle(thumbX, thumbY, thumbRadius, thumbOutlineWidth, this.thumbOutlineColorTransition.value());
         }

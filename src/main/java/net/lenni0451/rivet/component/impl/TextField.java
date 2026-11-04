@@ -169,7 +169,7 @@ public class TextField extends Component {
 
     public final TextField passwordField(final boolean enabled) {
         if (enabled) {
-            this.charReplacer = c -> this.passwordChar.value();
+            this.charReplacer = c -> this.passwordChar.get();
         } else {
             this.charReplacer = null;
         }
@@ -230,9 +230,9 @@ public class TextField extends Component {
         }
         boolean disabled = this.disabled().get();
         Color textColor;
-        if (disabled) textColor = this.disabledTextColor.value();
-        else if (!this.valid) textColor = this.invalidTextColor.value();
-        else textColor = this.textColor.value();
+        if (disabled) textColor = this.disabledTextColor.get();
+        else if (!this.valid) textColor = this.invalidTextColor.get();
+        else textColor = this.textColor.get();
         TextFormat defaultFormat = TextFormat.DEFAULT.withColor(textColor);
         if (this.highlighter != null) {
             TextBlock block = this.highlighter.highlight(text, defaultFormat);
@@ -242,7 +242,7 @@ public class TextField extends Component {
             this.shapedText = this.usedFont().shapeText(text, textColor);
         }
         if (this.hint != null && !this.hint.isEmpty()) {
-            Color hintColor = disabled ? this.disabledTextColor.value() : this.hintColor.value();
+            Color hintColor = disabled ? this.disabledTextColor.get() : this.hintColor.get();
             this.shapedHintText = this.usedFont().shapeText(this.hint, hintColor);
         } else {
             this.shapedHintText = null;
@@ -289,16 +289,16 @@ public class TextField extends Component {
     @Override
     protected void onAddedInternal() {
         this.updateShapedText();
-        this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
+        this.cursorAnimation = this.cursorAnimationConfig.get().create().start();
         this.outlineColorTransition = new Transition<>(
                 this,
                 () -> switch (this.state()) {
-                    case IDLE -> this.outlineColor.value();
-                    case FOCUSED -> this.focusedOutlineColor.value();
-                    case INVALID -> this.invalidOutlineColor.value();
-                    case DISABLED -> this.disabledOutlineColor.value();
+                    case IDLE -> this.outlineColor.get();
+                    case FOCUSED -> this.focusedOutlineColor.get();
+                    case INVALID -> this.invalidOutlineColor.get();
+                    case DISABLED -> this.disabledOutlineColor.get();
                 },
-                this.focusAnimationConfig::value,
+                this.focusAnimationConfig::get,
                 Interpolator.COLOR
         );
     }
@@ -340,7 +340,7 @@ public class TextField extends Component {
 
     @Override
     protected void onThemeChangedInternal() {
-        this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
+        this.cursorAnimation = this.cursorAnimationConfig.get().create().start();
         this.updateShapedText();
     }
 
@@ -365,7 +365,7 @@ public class TextField extends Component {
             }
             this.lastClick = now;
 
-            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.get().left() + this.scrollX, 0);
             if (!event.modifiers().contains(ModifierKey.SHIFT)) {
                 this.selection = this.cursor;
                 this.clickCount = this.navigationHandler.handleMouseClickSelection(this.clickCount, 0);
@@ -389,7 +389,7 @@ public class TextField extends Component {
     @Override
     protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         if (this.selecting) {
-            this.cursor = this.shapedText.index(event.x() - this.innerPadding.value().left() + this.scrollX, 0);
+            this.cursor = this.shapedText.index(event.x() - this.innerPadding.get().left() + this.scrollX, 0);
             this.cursorAnimation.reset().start();
         }
         return true;
@@ -397,22 +397,22 @@ public class TextField extends Component {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        float visibleWidth = size.width() - this.innerPadding.value().horizontal();
+        float visibleWidth = size.width() - this.innerPadding.get().horizontal();
         float textHeight = this.shapedText.logicalBounds().height();
         float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;
         this.ensureCursorVisible(visibleWidth);
 
-        Color backgroundColor = this.disabled().get() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), backgroundColor);
-        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColorTransition.value());
+        Color backgroundColor = this.disabled().get() ? this.disabledBackgroundColor.get() : this.backgroundColor.get();
+        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.get(), backgroundColor);
+        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.get(), this.outlineWidth.get(), this.outlineColorTransition.value());
 
-        renderer.scissor(this.innerPadding.value().left(), this.innerPadding.value().top(), visibleWidth, size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom(), () -> {
-            renderer.translate(this.innerPadding.value().left(), this.innerPadding.value().top() + (size.height() - this.innerPadding.value().top() - this.innerPadding.value().bottom()) / 2F, () -> {
+        renderer.scissor(this.innerPadding.get().left(), this.innerPadding.get().top(), visibleWidth, size.height() - this.innerPadding.get().top() - this.innerPadding.get().bottom(), () -> {
+            renderer.translate(this.innerPadding.get().left(), this.innerPadding.get().top() + (size.height() - this.innerPadding.get().top() - this.innerPadding.get().bottom()) / 2F, () -> {
                 renderer.translate(-this.scrollX, 0, () -> {
                     if (this.cursor != this.selection) {
                         float x1 = this.shapedText.cursorPosition(this.cursor).x();
                         float x2 = this.shapedText.cursorPosition(this.selection).x();
-                        renderer.fillRect(Math.min(x1, x2), -cursorHeight / 2F, Math.abs(x1 - x2), cursorHeight, this.selectionColor.value());
+                        renderer.fillRect(Math.min(x1, x2), -cursorHeight / 2F, Math.abs(x1 - x2), cursorHeight, this.selectionColor.get());
                     }
 
                     if (this.text.isEmpty() && this.shapedHintText != null) {
@@ -422,10 +422,10 @@ public class TextField extends Component {
                     }
 
                     if (this.focused) {
-                        float cursorWidth = this.cursorWidth.value();
+                        float cursorWidth = this.cursorWidth.get();
                         float cursorX = this.shapedText.cursorPosition(this.cursor).x();
                         float cursorAlpha = this.cursorAnimation != null ? this.cursorAnimation.getValue() : 1;
-                        renderer.fillRect(cursorX - cursorWidth / 2F, -cursorHeight / 2F, cursorWidth, cursorHeight, this.cursorColor.value().withAlphaF(cursorAlpha));
+                        renderer.fillRect(cursorX - cursorWidth / 2F, -cursorHeight / 2F, cursorWidth, cursorHeight, this.cursorColor.get().withAlphaF(cursorAlpha));
                     }
                 });
             });
@@ -436,8 +436,8 @@ public class TextField extends Component {
     public Size computeIdealSize(final Size constraints) {
         float textHeight = this.usedFont().height();
         return new Size(
-                textHeight * 10 + this.innerPadding.value().horizontal(),
-                textHeight + this.innerPadding.value().vertical()
+                textHeight * 10 + this.innerPadding.get().horizontal(),
+                textHeight + this.innerPadding.get().vertical()
         );
     }
 
@@ -484,7 +484,7 @@ public class TextField extends Component {
 
         @Override
         public String wordBoundaries() {
-            return TextField.this.wordBoundaries.value();
+            return TextField.this.wordBoundaries.get();
         }
 
         @Override

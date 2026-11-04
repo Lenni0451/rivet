@@ -8,7 +8,6 @@ import net.lenni0451.rivet.animation.Interpolator;
 import net.lenni0451.rivet.animation.StateTransition;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.component.Component;
-import net.lenni0451.rivet.component.container.DecoratedContainer;
 import net.lenni0451.rivet.input.mouse.ClickOn;
 import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
@@ -45,13 +44,6 @@ public class TabBackground extends Component {
 
     public TabBackground(final Runnable clickListener) {
         this.clickListener = clickListener;
-
-        this.innerPadding.initListener().add(padding -> {
-            if (this.parent() instanceof DecoratedContainer decoratedContainer) {
-                decoratedContainer.innerPadding(padding);
-                decoratedContainer.requestLayoutRecalculation();
-            }
-        });
     }
 
     @ApiStatus.Internal
@@ -79,15 +71,15 @@ public class TabBackground extends Component {
                 this::state,
                 (start, target) -> {
                     if (start.equals(State.ACTIVE) || target.equals(State.ACTIVE)) {
-                        return this.activeAnimationConfig.value();
+                        return this.activeAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.inactiveColor.value();
-                    case HOVERED -> this.hoverColor.value();
-                    case ACTIVE -> this.activeColor.value();
+                    case INACTIVE -> this.inactiveColor.get();
+                    case HOVERED -> this.hoverColor.get();
+                    case ACTIVE -> this.activeColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -96,15 +88,15 @@ public class TabBackground extends Component {
                 this::state,
                 (start, target) -> {
                     if (start.equals(State.ACTIVE) || target.equals(State.ACTIVE)) {
-                        return this.activeAnimationConfig.value();
+                        return this.activeAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.inactiveOutlineColor.value();
-                    case HOVERED -> this.hoverOutlineColor.value();
-                    case ACTIVE -> this.activeOutlineColor.value();
+                    case INACTIVE -> this.inactiveOutlineColor.get();
+                    case HOVERED -> this.hoverOutlineColor.get();
+                    case ACTIVE -> this.activeOutlineColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -123,7 +115,7 @@ public class TabBackground extends Component {
     @Override
     protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (!this.active && event.button().equals(MouseButton.LEFT)) {
-            if (this.selectOn.value().equals(ClickOn.DOWN) || this.selectOn.value().equals(ClickOn.BOTH)) {
+            if (this.selectOn.get().equals(ClickOn.DOWN) || this.selectOn.get().equals(ClickOn.BOTH)) {
                 this.clickListener.run();
                 this.active = true;
             }
@@ -134,7 +126,7 @@ public class TabBackground extends Component {
     @Override
     protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         if (!this.active && this.hovered && event.button().equals(MouseButton.LEFT)) {
-            if (this.selectOn.value().equals(ClickOn.UP) || this.selectOn.value().equals(ClickOn.BOTH)) {
+            if (this.selectOn.get().equals(ClickOn.UP) || this.selectOn.get().equals(ClickOn.BOTH)) {
                 this.clickListener.run();
                 this.active = true;
             }
@@ -144,13 +136,13 @@ public class TabBackground extends Component {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        Corners corners = this.cornerRadius.value();
+        Corners corners = this.cornerRadius.get();
         renderer.fillRoundedRect(
                 0, 0, size.width(), size.height(),
                 corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(),
                 this.backgroundColor.value()
         );
-        float outlineWidth = this.outlineWidth.value();
+        float outlineWidth = this.outlineWidth.get();
         if (outlineWidth > 0) {
             renderer.outlineRoundedRect(
                     0, 0, size.width(), size.height(),

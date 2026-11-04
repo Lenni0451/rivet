@@ -30,8 +30,8 @@ public class Separator extends Component {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        Color color = this.color.value();
-        float thickness = this.thickness.value();
+        Color color = this.color.get();
+        float thickness = this.thickness.get();
         switch (this.orientation) {
             case HORIZONTAL -> renderer.optimizedFillRoundedRect(
                     0, (size.height() - thickness) / 2F,
@@ -49,8 +49,8 @@ public class Separator extends Component {
     @Override
     public Size computeIdealSize(final Size constraints) {
         return switch (this.orientation) {
-            case HORIZONTAL -> new Size(0, this.thickness.value());
-            case VERTICAL -> new Size(this.thickness.value(), 0);
+            case HORIZONTAL -> new Size(0, this.thickness.get());
+            case VERTICAL -> new Size(this.thickness.get(), 0);
         };
     }
 

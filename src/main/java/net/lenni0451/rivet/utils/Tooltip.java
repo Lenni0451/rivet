@@ -130,7 +130,7 @@ public class Tooltip {
     private void onMouseMove(final MouseMoveEvent event) {
         if (Math.abs(this.mouseOffsetX - event.x()) > 1 || Math.abs(this.mouseOffsetY - event.y()) > 1) {
             this.lastMoveTime = System.currentTimeMillis();
-            if (this.removeOnMouseMove.value()) {
+            if (this.removeOnMouseMove.get()) {
                 this.remove();
             }
         }
@@ -152,15 +152,15 @@ public class Tooltip {
             this.remove();
             return;
         } else if (this.layer == null) {
-            if (System.currentTimeMillis() - this.lastMoveTime >= this.delay.value()) {
+            if (System.currentTimeMillis() - this.lastMoveTime >= this.delay.get()) {
                 this.add();
             }
         }
         if (this.currentTooltip != null) {
             Rectangle absoluteBounds = this.component.absoluteBounds();
             this.currentTooltip.layoutOptions(new AbsoluteOptions(
-                    absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset.value(),
-                    absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset.value()
+                    absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset.get(),
+                    absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset.get()
             ));
         }
     }

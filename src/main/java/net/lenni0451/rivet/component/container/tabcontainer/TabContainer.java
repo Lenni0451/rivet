@@ -72,19 +72,19 @@ public class TabContainer extends ParentContainer {
                 this.contentContainer.add(tab.content());
             }
         });
-        this.tabAlignment.initListener().add(val -> {
+        this.tabAlignment.changeListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).alignment = val;
             this.requestLayoutRecalculation();
         });
-        this.tabSameSize.initListener().add(val -> {
+        this.tabSameSize.changeListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).sameSize = val;
             this.requestLayoutRecalculation();
         });
-        this.tabVerticalGap.initListener().add(val -> {
+        this.tabVerticalGap.changeListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).verticalGap = val;
             this.requestLayoutRecalculation();
         });
-        this.tabGap.initListener().add(val -> {
+        this.tabGap.changeListener().add(val -> {
             ((TabLayout) this.centerTabContainer.layout()).tabGap = val;
             this.requestLayoutRecalculation();
         });
@@ -148,7 +148,7 @@ public class TabContainer extends ParentContainer {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        Color headerColor = this.headerBackgroundColor.value();
+        Color headerColor = this.headerBackgroundColor.get();
         if (!headerColor.equals(Color.TRANSPARENT)) {
             renderer.fillRect(0, 0, size.width(), this.tabSize.height(), headerColor);
         }
@@ -161,9 +161,9 @@ public class TabContainer extends ParentContainer {
             );
         });
 
-        float separatorThickness = this.separatorThickness.value();
+        float separatorThickness = this.separatorThickness.get();
         if (separatorThickness > 0) {
-            Color separatorColor = this.separatorColor.value();
+            Color separatorColor = this.separatorColor.get();
             renderer.fillRect(0, this.tabSize.height() - separatorThickness, size.width(), separatorThickness, separatorColor);
         }
 

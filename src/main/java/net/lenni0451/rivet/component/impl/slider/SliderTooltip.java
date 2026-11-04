@@ -66,7 +66,7 @@ public class SliderTooltip extends Component {
     public final void text(final String text) {
         this.text = text;
         Font font = this.font != null ? this.font : this.rivet().backend().font();
-        this.shapedText = font.shapeText(text, this.textColor.value());
+        this.shapedText = font.shapeText(text, this.textColor.get());
     }
 
     public final void position(final float x, final float y, final float height) {
@@ -122,10 +122,10 @@ public class SliderTooltip extends Component {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        float triangleSize = this.triangleSize.value();
-        Color backgroundColor = this.backgroundColor.value();
-        Corners cornerRadius = this.cornerRadius.value();
-        Padding padding = this.padding.value();
+        float triangleSize = this.triangleSize.get();
+        Color backgroundColor = this.backgroundColor.get();
+        Corners cornerRadius = this.cornerRadius.get();
+        Padding padding = this.padding.get();
 
         switch (this.position) {
             case ABOVE -> {
@@ -153,10 +153,10 @@ public class SliderTooltip extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        Padding padding = this.padding.value();
+        Padding padding = this.padding.get();
         return new Size(
                 this.shapedText.visualBounds().width() + padding.horizontal(),
-                this.shapedText.logicalBounds().height() + padding.vertical() + this.triangleSize.value()
+                this.shapedText.logicalBounds().height() + padding.vertical() + this.triangleSize.get()
         );
     }
 

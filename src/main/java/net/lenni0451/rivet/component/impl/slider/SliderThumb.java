@@ -38,16 +38,16 @@ public final class SliderThumb {
                 this::state,
                 (start, target) -> {
                     if (start.equals(AbstractSlider.State.DRAGGED) || target.equals(AbstractSlider.State.DRAGGED)) {
-                        return this.slider.clickAnimationConfig().value();
+                        return this.slider.clickAnimationConfig().get();
                     } else {
-                        return this.slider.hoverAnimationConfig().value();
+                        return this.slider.hoverAnimationConfig().get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.slider.thumbColor().value();
-                    case HOVERED -> this.slider.thumbHoverColor().value();
-                    case DRAGGED -> this.slider.thumbClickColor().value();
-                    case DISABLED -> this.slider.disabledThumbColor().value();
+                    case INACTIVE -> this.slider.thumbColor().get();
+                    case HOVERED -> this.slider.thumbHoverColor().get();
+                    case DRAGGED -> this.slider.thumbClickColor().get();
+                    case DISABLED -> this.slider.disabledThumbColor().get();
                 },
                 Interpolator.COLOR
         );
@@ -56,16 +56,16 @@ public final class SliderThumb {
                 this::state,
                 (start, target) -> {
                     if (start.equals(AbstractSlider.State.DRAGGED) || target.equals(AbstractSlider.State.DRAGGED)) {
-                        return this.slider.clickAnimationConfig().value();
+                        return this.slider.clickAnimationConfig().get();
                     } else {
-                        return this.slider.hoverAnimationConfig().value();
+                        return this.slider.hoverAnimationConfig().get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.slider.thumbOutlineColor().value();
-                    case HOVERED -> this.slider.thumbHoverOutlineColor().value();
-                    case DRAGGED -> this.slider.thumbClickOutlineColor().value();
-                    case DISABLED -> this.slider.disabledThumbOutlineColor().value();
+                    case INACTIVE -> this.slider.thumbOutlineColor().get();
+                    case HOVERED -> this.slider.thumbHoverOutlineColor().get();
+                    case DRAGGED -> this.slider.thumbClickOutlineColor().get();
+                    case DISABLED -> this.slider.disabledThumbOutlineColor().get();
                 },
                 Interpolator.COLOR
         );
@@ -93,17 +93,17 @@ public final class SliderThumb {
 
     public void updateValue(final float mouseX, final Size size) {
         double newValue = this.slider.valueAtX(mouseX, size);
-        newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.slider.min().get(), this.slider.max().get(), this.slider.step().get(), this.slider.zeroAlignedValues().value());
+        newValue = net.lenni0451.rivet.utils.MathUtils.snap(newValue, this.slider.min().get(), this.slider.max().get(), this.slider.step().get(), this.slider.zeroAlignedValues().get());
         this.slider.onThumbDrag(this, newValue);
     }
 
     void render(final Renderer renderer, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float thumbX) {
         Color color = this.thumbColorTransition.value();
         Color outlineColor = this.thumbOutlineColorTransition.value();
-        float outlineWidth = this.slider.thumbOutlineWidth().value();
-        Corners cornerRadius = this.slider.thumbCornerRadius().value();
+        float outlineWidth = this.slider.thumbOutlineWidth().get();
+        Corners cornerRadius = this.slider.thumbCornerRadius().get();
 
-        switch (this.slider.thumbShape().value()) {
+        switch (this.slider.thumbShape().get()) {
             case CIRCLE -> {
                 renderer.fillCircle(thumbX, sliderCenter, Math.min(thumbWidth, thumbHeight) / 2F, color);
                 if (outlineWidth > 0) {

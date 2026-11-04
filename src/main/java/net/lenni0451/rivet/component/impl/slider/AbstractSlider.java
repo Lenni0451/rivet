@@ -124,7 +124,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         this.step.syncListener().add(s -> this.cachedFormatString = null);
 
         this.positionUpdateListener().add(new PositionUpdateListener(this::updateTooltipPositions));
-        this.tooltipFormat.initListener().add(f -> this.cachedFormatString = null);
+        this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
     }
 
     public final S font(final Font font) {
@@ -183,17 +183,17 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     protected final float effectiveThumbWidth() {
-        if (this.thumbShape.value() == ThumbShape.CIRCLE) {
-            return Math.min(this.thumbWidth.value(), this.thumbHeight.value());
+        if (this.thumbShape.get() == ThumbShape.CIRCLE) {
+            return Math.min(this.thumbWidth.get(), this.thumbHeight.get());
         }
-        return this.thumbWidth.value();
+        return this.thumbWidth.get();
     }
 
     protected final float effectiveThumbHeight() {
-        if (this.thumbShape.value() == ThumbShape.CIRCLE) {
-            return Math.min(this.thumbWidth.value(), this.thumbHeight.value());
+        if (this.thumbShape.get() == ThumbShape.CIRCLE) {
+            return Math.min(this.thumbWidth.get(), this.thumbHeight.get());
         }
-        return this.thumbHeight.value();
+        return this.thumbHeight.get();
     }
 
     protected final Font usedFont() {
@@ -249,7 +249,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         this.draggedThumb = thumb;
         if (this.draggedThumb != null) {
             this.draggedThumb.dragged = true;
-            if (this.showTooltip.value() && this.rivet() != null) {
+            if (this.showTooltip.get() && this.rivet() != null) {
                 this.draggedThumb.tooltip = new SliderTooltip(this.formatValue(this.draggedThumb.value()));
                 this.draggedThumb.tooltip.add(this.rivet());
                 this.draggedThumb.tooltip.font(this.font);
@@ -268,7 +268,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         for (SliderThumb thumb : this.thumbs) {
             float thumbX = this.thumbX(thumb.value(), thumbWidth, barWidth);
             double distance = Math.abs(mouseX - thumbX);
-            if (distance < minDistance && (this.clickableRail.value() || distance < thumbWidth / 2)) {
+            if (distance < minDistance && (this.clickableRail.get() || distance < thumbWidth / 2)) {
                 closest = thumb;
                 minDistance = distance;
             }
@@ -282,7 +282,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
 
     protected final String formatValue(final double value) {
         if (this.cachedFormatString == null) {
-            this.cachedFormatString = FormatUtils.formatDecimalString(this.tooltipFormat.value(), this.step.get());
+            this.cachedFormatString = FormatUtils.formatDecimalString(this.tooltipFormat.get(), this.step.get());
         }
         try {
             return String.format(this.cachedFormatString, value);
@@ -385,7 +385,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         float thumbWidth = this.effectiveThumbWidth();
         float thumbHeight = this.effectiveThumbHeight();
-        float barHeight = this.barHeight.value();
+        float barHeight = this.barHeight.get();
         float sliderCenter = this.ticks != null ? Math.max(thumbHeight, barHeight) / 2F : size.height() / 2F;
         float barWidth = this.barWidth(size);
 
@@ -398,14 +398,14 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
 
     protected void renderBar(final Renderer renderer, final Size size, final float sliderCenter, final float barHeight, final float thumbWidth) {
         boolean disabled = this.disabled().get();
-        Color barColor = disabled ? this.disabledBarColor.value() : this.barColor.value();
-        if (this.thumbEncased.value()) {
-            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.value(), barColor);
+        Color barColor = disabled ? this.disabledBarColor.get() : this.barColor.get();
+        if (this.thumbEncased.get()) {
+            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.get(), barColor);
         } else {
-            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.value(), barColor);
+            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.get(), barColor);
         }
 
-        Color barFillColor = disabled ? this.disabledBarFillColor().value() : this.barFillColor().value();
+        Color barFillColor = disabled ? this.disabledBarFillColor().get() : this.barFillColor().get();
         this.renderFills(renderer, size, this.barWidth(size), barHeight, sliderCenter, thumbWidth, barFillColor);
     }
 
@@ -414,7 +414,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     protected void renderFill(final Renderer renderer, final float startX, final float endX, final float sliderCenter, final float barHeight, final Color color) {
         float x = Math.min(startX, endX);
         float width = Math.abs(endX - startX);
-        renderer.optimizedFillRoundedRect(x, sliderCenter - barHeight / 2F, width, barHeight, this.barCornerRadius.value(), color);
+        renderer.optimizedFillRoundedRect(x, sliderCenter - barHeight / 2F, width, barHeight, this.barCornerRadius.get(), color);
     }
 
     protected void renderThumbs(final Renderer renderer, final Size size, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float barWidth) {
@@ -431,7 +431,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         float tickStartY = sliderCenter + thumbHeight / 2F + TICK_OFFSET;
         float majorTickLength = barHeight;
         float minorTickLength = barHeight / 2F;
-        Color color = disabled ? this.disabledTickColor.value() : this.tickColor.value();
+        Color color = disabled ? this.disabledTickColor.get() : this.tickColor.get();
 
         if (this.ticks.majorTickSpacing() > 0) {
             for (double tick = 0; ; tick += this.ticks.majorTickSpacing()) {
@@ -471,12 +471,12 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     public Size computeIdealSize(final Size constraints) {
         float height;
         if (this.ticks == null) {
-            height = Math.max(this.effectiveThumbHeight(), this.barHeight.value());
+            height = Math.max(this.effectiveThumbHeight(), this.barHeight.get());
         } else {
-            height = Math.max(this.effectiveThumbHeight(), this.barHeight.value()) + TICK_OFFSET + this.barHeight.value() + TICK_OFFSET + this.usedFont().height() / 2F;
+            height = Math.max(this.effectiveThumbHeight(), this.barHeight.get()) + TICK_OFFSET + this.barHeight.get() + TICK_OFFSET + this.usedFont().height() / 2F;
         }
         float width;
-        if (this.ensureValuesReachable.value()) {
+        if (this.ensureValuesReachable.get()) {
             width = (float) ((this.max.get() - this.min.get()) / this.step.get()) + this.effectiveThumbWidth();
         } else {
             width = 0;

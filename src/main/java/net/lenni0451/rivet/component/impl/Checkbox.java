@@ -137,27 +137,27 @@ public class Checkbox extends Component {
         this.backgroundColorTransition = new Transition<>(
                 this,
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.backgroundColor.value();
-                    case HOVERED -> this.hoverBackgroundColor.value();
-                    case DISABLED -> this.disabledBackgroundColor.value();
+                    case INACTIVE -> this.backgroundColor.get();
+                    case HOVERED -> this.hoverBackgroundColor.get();
+                    case DISABLED -> this.disabledBackgroundColor.get();
                 },
-                this.hoverAnimationConfig::value,
+                this.hoverAnimationConfig::get,
                 Interpolator.COLOR
         );
         this.outlineColorTransition = new Transition<>(
                 this,
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.outlineColor.value();
-                    case HOVERED -> this.hoverOutlineColor.value();
-                    case DISABLED -> this.disabledOutlineColor.value();
+                    case INACTIVE -> this.outlineColor.get();
+                    case HOVERED -> this.hoverOutlineColor.get();
+                    case DISABLED -> this.disabledOutlineColor.get();
                 },
-                this.hoverAnimationConfig::value,
+                this.hoverAnimationConfig::get,
                 Interpolator.COLOR
         );
         this.checkProgress = new Transition<>(
                 this,
                 () -> this.checked.get() ? 1F : 0F,
-                this.checkAnimationConfig::value,
+                this.checkAnimationConfig::get,
                 Interpolator.FLOAT
         );
     }
@@ -208,16 +208,16 @@ public class Checkbox extends Component {
         float boxSize = size.height() * 0.8F;
         float offset = (size.height() - boxSize) / 2F;
 
-        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.backgroundColorTransition.value());
-        if (this.outlineWidth.value() > 0) {
-            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.value(), this.outlineWidth.value(), this.outlineColorTransition.value());
+        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.get(), this.backgroundColorTransition.value());
+        if (this.outlineWidth.get() > 0) {
+            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.get(), this.outlineWidth.get(), this.outlineColorTransition.value());
         }
 
         float progress = this.checkProgress.value();
         if (progress > 0) {
             float padding = boxSize * 0.2F;
-            float checkWidth = this.checkWidth.value();
-            Color checkColor = this.disabled().get() ? this.disabledCheckColor.value() : this.checkColor.value();
+            float checkWidth = this.checkWidth.get();
+            Color checkColor = this.disabled().get() ? this.disabledCheckColor.get() : this.checkColor.get();
             checkColor = checkColor.withAlphaF(checkColor.getAlpha() / 255F * progress);
 
             renderer.polyLine(new Point[]{
@@ -228,7 +228,7 @@ public class Checkbox extends Component {
         }
 
         if (!this.text.isEmpty()) {
-            renderer.text(this.shapedText, size.height() + this.textGap.value(), size.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
+            renderer.text(this.shapedText, size.height() + this.textGap.get(), size.height() / 2F, TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_CENTER);
         }
     }
 
@@ -238,7 +238,7 @@ public class Checkbox extends Component {
         if (height <= 0) height = this.rivet().backend().font().height();
         float width = height;
         if (!this.text.isEmpty()) {
-            width += this.textGap.value() + this.shapedText.visualBounds().width();
+            width += this.textGap.get() + this.shapedText.visualBounds().width();
         }
         return new Size(width, height);
     }

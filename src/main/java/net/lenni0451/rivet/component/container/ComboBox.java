@@ -68,7 +68,7 @@ public class ComboBox extends ParentContainer {
 
     public <T extends Component, C extends Component> ComboBox(final T text, final BiConsumer<ComboBox, T> textInitializer, final C child, final BiConsumer<ComboBox, C> initializer) {
         this.child = child;
-        this.popup = new ComponentPopup(this, this.child, () -> new Size(Float.MAX_VALUE, this.maxPopupHeight.value()), this.interceptOutsideClicks::value);
+        this.popup = new ComponentPopup(this, this.child, () -> new Size(Float.MAX_VALUE, this.maxPopupHeight.get()), this.interceptOutsideClicks::get);
         this.arrow = new Arrow();
         this.button = new Button(new Container(GridLayout.DEFAULT), buttonContent -> {
             buttonContent.add(text.layoutOptions(GridOptions.EMPTY.at(0, 0).withWeightX(1).withFill(GridFill.HORIZONTAL)));
@@ -76,10 +76,10 @@ public class ComboBox extends ParentContainer {
         }, () -> this.popup.open().update(open -> !open));
 
         this.arrow.progress().registerSync(new BooleanFloatBridge(this.popup.open()));
-        this.arrowColor.initListener().add(this.arrow.color()::set);
-        this.arrowDisabledColor.initListener().add(this.arrow.disabledColor()::set);
-        this.arrowLineWidth.initListener().add(this.arrow.lineWidth()::set);
-        this.arrowSize.initListener().add(this.arrow.size()::set);
+        this.arrowColor.changeListener().add(this.arrow.color()::set);
+        this.arrowDisabledColor.changeListener().add(this.arrow.disabledColor()::set);
+        this.arrowLineWidth.changeListener().add(this.arrow.lineWidth()::set);
+        this.arrowSize.changeListener().add(this.arrow.size()::set);
 
         textInitializer.accept(this, text);
         initializer.accept(this, child);

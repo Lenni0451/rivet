@@ -159,7 +159,7 @@ public class Label extends Component {
     private Shaped createShapedText(final Size size) {
         Font font = this.font.getOrElse(this.rivet().backend().font());
         TextLine line = this.createTextLine();
-        if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
+        if (this.overflowBehavior.get().equals(OverflowBehavior.WRAP)) {
             return TextWrapper.wrapLine(font, line, size.width() / this.scale.get());
         } else {
             return font.shapeText(line);
@@ -175,17 +175,17 @@ public class Label extends Component {
         Color color;
         if (format != null) {
             if (format.color().equals(Color.TRANSPARENT)) {
-                color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
+                color = this.disabled().get() ? this.disabledTextColor.get() : this.textColor.get();
             } else {
-                if (this.disabled().get() && format.color().equals(this.textColor.value())) {
-                    color = this.disabledTextColor.value();
+                if (this.disabled().get() && format.color().equals(this.textColor.get())) {
+                    color = this.disabledTextColor.get();
                 } else {
                     color = format.color();
                 }
             }
         } else {
             format = TextFormat.DEFAULT;
-            color = this.disabled().get() ? this.disabledTextColor.value() : this.textColor.value();
+            color = this.disabled().get() ? this.disabledTextColor.get() : this.textColor.get();
         }
         return this.createTextLine(this.text.getOrElse(""), format.withColor(color));
     }
@@ -238,7 +238,7 @@ public class Label extends Component {
             renderer.scale(scale, () -> renderer.text(shapedTextBlock, x, y, horizontalOrigin, verticalOrigin, lineAlignment));
         } else if (this.shaped instanceof ShapedText shapedText) {
             float textScale;
-            if (this.overflowBehavior.value().equals(OverflowBehavior.SCALE)) {
+            if (this.overflowBehavior.get().equals(OverflowBehavior.SCALE)) {
                 float widthRatio = size.width() / (this.shaped.visualBounds().width() * scale);
                 float heightRatio = size.height() / (this.shaped.logicalBounds().height() * scale);
                 float ratio = Math.min(widthRatio, heightRatio);
@@ -267,7 +267,7 @@ public class Label extends Component {
 
     @Override
     public void computeLayout(final Size size) {
-        if (this.overflowBehavior.value().equals(OverflowBehavior.WRAP)) {
+        if (this.overflowBehavior.get().equals(OverflowBehavior.WRAP)) {
             this.reshape = true;
             this.shapeText(size);
         }

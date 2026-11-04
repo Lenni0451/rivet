@@ -123,16 +123,16 @@ public class Button extends Component implements Parent {
                 this::state,
                 (start, target) -> {
                     if (start.equals(State.PRESSED) || target.equals(State.PRESSED)) {
-                        return this.clickAnimationConfig.value();
+                        return this.clickAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case NORMAL -> this.backgroundColor.value();
-                    case HOVERED -> this.hoverBackgroundColor.value();
-                    case PRESSED -> this.clickBackgroundColor.value();
-                    case DISABLED -> this.disabledBackgroundColor.value();
+                    case NORMAL -> this.backgroundColor.get();
+                    case HOVERED -> this.hoverBackgroundColor.get();
+                    case PRESSED -> this.clickBackgroundColor.get();
+                    case DISABLED -> this.disabledBackgroundColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -141,16 +141,16 @@ public class Button extends Component implements Parent {
                 this::state,
                 (start, target) -> {
                     if (start.equals(State.PRESSED) || target.equals(State.PRESSED)) {
-                        return this.clickAnimationConfig.value();
+                        return this.clickAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case NORMAL -> this.outlineColor.value();
-                    case HOVERED -> this.hoverOutlineColor.value();
-                    case PRESSED -> this.clickOutlineColor.value();
-                    case DISABLED -> this.disabledOutlineColor.value();
+                    case NORMAL -> this.outlineColor.get();
+                    case HOVERED -> this.hoverOutlineColor.get();
+                    case PRESSED -> this.clickOutlineColor.get();
+                    case DISABLED -> this.disabledOutlineColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -194,7 +194,7 @@ public class Button extends Component implements Parent {
     protected boolean onMouseDownInternal(final MouseButtonEvent event, final Size size) {
         if (this.handledButtons.contains(event.button())) {
             this.pressed.add(event.button());
-            if (this.clickOn.value().equals(ClickOn.DOWN) || this.clickOn.value().equals(ClickOn.BOTH)) {
+            if (this.clickOn.get().equals(ClickOn.DOWN) || this.clickOn.get().equals(ClickOn.BOTH)) {
                 this.clickListener.call(listener -> listener.onClick(event));
             }
         }
@@ -204,7 +204,7 @@ public class Button extends Component implements Parent {
     @Override
     protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
         this.pressed.remove(event.button());
-        if (this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.value().equals(ClickOn.UP) || this.clickOn.value().equals(ClickOn.BOTH))) {
+        if (this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.get().equals(ClickOn.UP) || this.clickOn.get().equals(ClickOn.BOTH))) {
             this.clickListener.call(listener -> listener.onClick(event));
         }
         return true;
@@ -212,14 +212,14 @@ public class Button extends Component implements Parent {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        Corners cornerRadius = this.cornerRadius.value();
-        float outlineWidth = this.outlineWidth.value();
+        Corners cornerRadius = this.cornerRadius.get();
+        float outlineWidth = this.outlineWidth.get();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
         if (outlineWidth > 0) {
             renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColorTransition.value());
         }
 
-        Padding innerPadding = this.innerPadding.value();
+        Padding innerPadding = this.innerPadding.get();
         Size innerSize = size.minus(innerPadding).clamp(this.child);
         renderer.translate(innerPadding.left(), innerPadding.top(), () -> {
             renderer.componentBounds(0, 0, innerSize.width(), innerSize.height(), () -> {
@@ -234,12 +234,12 @@ public class Button extends Component implements Parent {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.innerPadding.value())).clamp(this.child).plus(this.innerPadding.value());
+        return this.child.computeIdealSize(constraints.minus(this.innerPadding.get())).clamp(this.child).plus(this.innerPadding.get());
     }
 
     @Override
     public void computeLayout(final Size size) {
-        this.child.computeLayout(size.minus(this.innerPadding.value()).clamp(this.child));
+        this.child.computeLayout(size.minus(this.innerPadding.get()).clamp(this.child));
     }
 
     @Override
@@ -252,7 +252,7 @@ public class Button extends Component implements Parent {
         if (this.child instanceof Parent parent) {
             Size parentContentSize = parent.contentSize();
             if (!parentContentSize.equals(Size.EMPTY)) {
-                return parentContentSize.plus(this.innerPadding.value());
+                return parentContentSize.plus(this.innerPadding.get());
             }
         }
         return Size.EMPTY;
@@ -267,10 +267,10 @@ public class Button extends Component implements Parent {
     public Rectangle childBounds(final Component component) {
         if (this.child == component) {
             Size containerSize = this.relativeBounds().size();
-            Size innerSize = containerSize.minus(this.innerPadding.value()).clamp(this.child);
+            Size innerSize = containerSize.minus(this.innerPadding.get()).clamp(this.child);
             return new Rectangle(
-                    this.innerPadding.value().left(),
-                    this.innerPadding.value().top(),
+                    this.innerPadding.get().left(),
+                    this.innerPadding.get().top(),
                     innerSize
             );
         }

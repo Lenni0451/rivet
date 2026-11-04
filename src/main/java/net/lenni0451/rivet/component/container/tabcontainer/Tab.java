@@ -24,6 +24,11 @@ public class Tab {
         this.headerBackground = new TabBackground(() -> headerBackground.accept(this));
         this.button = new DecoratedContainer(this.headerBackground, header);
         this.content = content;
+
+        this.headerBackground.innerPadding().changeListener().add(padding -> {
+            this.button.innerPadding(padding);
+            this.button.requestLayoutRecalculation();
+        });
     }
 
 }

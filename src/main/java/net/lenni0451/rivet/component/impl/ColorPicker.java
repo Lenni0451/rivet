@@ -182,10 +182,10 @@ public class ColorPicker extends Component {
 
         this.renderSaturationValue(renderer, layout);
         this.renderHueSlider(renderer, layout);
-        if (this.showAlpha.value()) {
+        if (this.showAlpha.get()) {
             this.renderAlphaSlider(renderer, layout);
         }
-        if (this.showPreview.value()) {
+        if (this.showPreview.get()) {
             this.renderPreview(renderer, layout);
         }
     }
@@ -199,13 +199,13 @@ public class ColorPicker extends Component {
         renderer.fillRect(x, y, width, height, Color.fromHSB(this.hue, 1F, 1F));
         renderer.fillGradientRect(x, y, width, height, Color.WHITE, Color.WHITE, Color.WHITE.withAlpha(0), Color.WHITE.withAlpha(0));
         renderer.fillGradientRect(x, y, width, height, Color.BLACK.withAlpha(0), Color.BLACK, Color.BLACK, Color.BLACK.withAlpha(0));
-        renderer.outlineRect(x, y, width, height, this.outlineWidth.value(), this.outlineColor.value());
+        renderer.outlineRect(x, y, width, height, this.outlineWidth.get(), this.outlineColor.get());
 
         // Selection circle
         float cursorX = x + this.saturation * width;
         float cursorY = y + (1F - this.brightness) * height;
-        float cursorWidth = this.pickerIndicatorOutlineWidth.value();
-        float cursorHeight = this.pickerIndicatorRadius.value();
+        float cursorWidth = this.pickerIndicatorOutlineWidth.get();
+        float cursorHeight = this.pickerIndicatorRadius.get();
         renderer.outlineCircle(cursorX, cursorY, cursorHeight + cursorWidth, cursorWidth, Color.BLACK);
         renderer.outlineCircle(cursorX, cursorY, cursorHeight, cursorWidth, Color.WHITE);
 
@@ -228,12 +228,12 @@ public class ColorPicker extends Component {
             Color c2 = Color.fromHSB(h2, 1, 1);
             renderer.fillGradientRect(x, y + i * stepHeight, width, stepHeight, c1, c2, c2, c1);
         }
-        renderer.outlineRect(x, y, width, height, this.outlineWidth.value(), this.outlineColor.value());
+        renderer.outlineRect(x, y, width, height, this.outlineWidth.get(), this.outlineColor.get());
 
         // Selector slider indicator
         float cursorY = y + this.hue * height;
-        float sWidth = this.sliderIndicatorOutlineWidth.value();
-        float innerW = this.sliderIndicatorInnerWidth.value();
+        float sWidth = this.sliderIndicatorOutlineWidth.get();
+        float innerW = this.sliderIndicatorInnerWidth.get();
         float halfInner = innerW / 2F;
         renderer.outlineRect(x - 2 * sWidth, cursorY - 2 * sWidth - halfInner, width + 4 * sWidth, 4 * sWidth + innerW, sWidth, Color.BLACK);
         renderer.outlineRect(x - sWidth, cursorY - sWidth - halfInner, width + 2 * sWidth, 2 * sWidth + innerW, sWidth, Color.WHITE);
@@ -261,12 +261,12 @@ public class ColorPicker extends Component {
         Color opaque = Color.fromHSB(this.hue, this.saturation, this.brightness);
         Color transparent = opaque.withAlpha(0);
         renderer.fillGradientRect(x, y, width, height, transparent, transparent, opaque, opaque);
-        renderer.outlineRect(x, y, width, height, this.outlineWidth.value(), this.outlineColor.value());
+        renderer.outlineRect(x, y, width, height, this.outlineWidth.get(), this.outlineColor.get());
 
         // Selector slider indicator
         float cursorX = x + this.alpha * width;
-        float cursorWidth = this.sliderIndicatorOutlineWidth.value();
-        float innerCursorWidth = this.sliderIndicatorInnerWidth.value();
+        float cursorWidth = this.sliderIndicatorOutlineWidth.get();
+        float innerCursorWidth = this.sliderIndicatorInnerWidth.get();
         renderer.outlineRect(cursorX - 2 * cursorWidth - innerCursorWidth / 2F, y - 2 * cursorWidth, 4 * cursorWidth + innerCursorWidth, height + 4 * cursorWidth, cursorWidth, Color.BLACK);
         renderer.outlineRect(cursorX - cursorWidth - innerCursorWidth / 2F, y - cursorWidth, 2 * cursorWidth + innerCursorWidth, height + 2 * cursorWidth, cursorWidth, Color.WHITE);
 
@@ -286,7 +286,7 @@ public class ColorPicker extends Component {
         renderer.fillRect(x + width / 2F, y + height / 2F, width / 2F, height / 2F, Color.WHITE);
         renderer.fillRect(x, y + height / 2F, width / 2F, height / 2F, Color.LIGHT_GRAY);
         renderer.fillRect(x, y, width, height, this.color.get());
-        renderer.outlineRect(x, y, width, height, this.outlineWidth.value(), this.outlineColor.value());
+        renderer.outlineRect(x, y, width, height, this.outlineWidth.get(), this.outlineColor.get());
         if (this.disabled().get()) {
             renderer.fillRect(x, y, width, height, DISABLED_OVERLAY_COLOR);
         }
@@ -294,12 +294,12 @@ public class ColorPicker extends Component {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        float pickerSize = this.pickerSize.value();
-        float sliderWidth = this.sliderWidth.value();
-        float gap = this.gap.value();
+        float pickerSize = this.pickerSize.get();
+        float sliderWidth = this.sliderWidth.get();
+        float gap = this.gap.get();
         return new Size(
                 pickerSize + gap + sliderWidth,
-                this.showAlpha.value() ? (pickerSize + gap + sliderWidth) : pickerSize
+                this.showAlpha.get() ? (pickerSize + gap + sliderWidth) : pickerSize
         );
     }
 
@@ -314,18 +314,18 @@ public class ColorPicker extends Component {
         final Rectangle previewArea;
 
         LayoutInfo(final Size actualSize) {
-            float pickerSize = ColorPicker.this.pickerSize.value();
-            float sliderWidth = ColorPicker.this.sliderWidth.value();
-            float gap = ColorPicker.this.gap.value();
-            boolean showAlpha = ColorPicker.this.showAlpha.value();
-            boolean showPreview = ColorPicker.this.showPreview.value();
+            float pickerSize = ColorPicker.this.pickerSize.get();
+            float sliderWidth = ColorPicker.this.sliderWidth.get();
+            float gap = ColorPicker.this.gap.get();
+            boolean showAlpha = ColorPicker.this.showAlpha.get();
+            boolean showPreview = ColorPicker.this.showPreview.get();
 
             float idealWidth = pickerSize + gap + sliderWidth;
             float idealHeight = showAlpha ? (pickerSize + gap + sliderWidth) : pickerSize;
 
             float scaleX = actualSize.width() / idealWidth;
             float scaleY = actualSize.height() / idealHeight;
-            if (ColorPicker.this.allowScaling.value()) {
+            if (ColorPicker.this.allowScaling.get()) {
                 this.scale = Math.min(scaleX, scaleY);
             } else {
                 this.scale = 1F;

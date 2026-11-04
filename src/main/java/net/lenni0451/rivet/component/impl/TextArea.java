@@ -251,11 +251,11 @@ public class TextArea extends Component {
         int currentColumn = Math.max(0, this.cursor - this.lineStarts[currentLine]);
         ShapedText shapedLine = this.getShapedLine(currentLine);
         if (shapedLine == null) return this;
-        Padding padding = this.innerPadding.value();
-        Padding margin = this.scrollMargin.value();
+        Padding padding = this.innerPadding.get();
+        Padding margin = this.scrollMargin.get();
         float cursorX = padding.left() + shapedLine.cursorPosition(currentColumn).x();
         float cursorY = padding.top() + currentLine * this.lineHeight();
-        float cursorWidth = this.cursorWidth.value();
+        float cursorWidth = this.cursorWidth.get();
         float cursorHeight = this.lineHeight();
 
         float minX = cursorX - cursorWidth / 2F - margin.left();
@@ -344,9 +344,9 @@ public class TextArea extends Component {
         String fullText = this.text.toString();
         boolean disabled = this.disabled().get();
         Color activeTextColor;
-        if (disabled) activeTextColor = this.disabledTextColor.value();
-        else if (!this.valid) activeTextColor = this.invalidTextColor.value();
-        else activeTextColor = this.textColor.value();
+        if (disabled) activeTextColor = this.disabledTextColor.get();
+        else if (!this.valid) activeTextColor = this.invalidTextColor.get();
+        else activeTextColor = this.textColor.get();
 
         TextFormat defaultFormat = TextFormat.DEFAULT.withColor(activeTextColor);
         SyntaxHighlighter activeHighlighter = this.highlighter != null ? this.highlighter : SyntaxHighlighter.NONE;
@@ -354,7 +354,7 @@ public class TextArea extends Component {
         this.shapedTextBlock = this.usedFont().shapeText(textBlock);
 
         if (this.hint != null && !this.hint.isEmpty()) {
-            Color hintColor = disabled ? this.disabledTextColor.value() : this.hintColor.value();
+            Color hintColor = disabled ? this.disabledTextColor.get() : this.hintColor.get();
             this.shapedHintText = this.usedFont().shapeText(this.hint, hintColor);
         } else {
             this.shapedHintText = null;
@@ -479,16 +479,16 @@ public class TextArea extends Component {
     protected void onAddedInternal() {
         this.updateLineStarts();
         this.updateShapedText();
-        this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
+        this.cursorAnimation = this.cursorAnimationConfig.get().create().start();
         this.outlineColorTransition = new Transition<>(
                 this,
                 () -> switch (this.state()) {
-                    case IDLE -> this.outlineColor.value();
-                    case FOCUSED -> this.focusedOutlineColor.value();
-                    case INVALID -> this.invalidOutlineColor.value();
-                    case DISABLED -> this.disabledOutlineColor.value();
+                    case IDLE -> this.outlineColor.get();
+                    case FOCUSED -> this.focusedOutlineColor.get();
+                    case INVALID -> this.invalidOutlineColor.get();
+                    case DISABLED -> this.disabledOutlineColor.get();
                 },
-                this.focusAnimationConfig::value,
+                this.focusAnimationConfig::get,
                 Interpolator.COLOR
         );
         if (this.autoScrollToCursor && this.cursor > 0) {
@@ -537,7 +537,7 @@ public class TextArea extends Component {
 
     @Override
     protected void onThemeChangedInternal() {
-        this.cursorAnimation = this.cursorAnimationConfig.value().create().start();
+        this.cursorAnimation = this.cursorAnimationConfig.get().create().start();
         this.updateShapedText();
     }
 
@@ -568,8 +568,8 @@ public class TextArea extends Component {
             }
             this.lastClick = now;
 
-            float localX = event.x() - this.innerPadding.value().left();
-            float localY = event.y() - this.innerPadding.value().top();
+            float localX = event.x() - this.innerPadding.get().left();
+            float localY = event.y() - this.innerPadding.get().top();
             int lineId = MathUtils.clamp((int) (localY / this.lineHeight()), 0, this.lineCount() - 1);
             ShapedText lineShaped = this.getShapedLine(lineId);
             int column = lineShaped.index(localX, 0);
@@ -599,12 +599,12 @@ public class TextArea extends Component {
     @Override
     protected boolean onMouseMoveInternal(final MouseMoveEvent event, final Size size) {
         this.mouseOver = true;
-        this.mouseX = event.x() - this.innerPadding.value().left();
-        this.mouseY = event.y() - this.innerPadding.value().top();
+        this.mouseX = event.x() - this.innerPadding.get().left();
+        this.mouseY = event.y() - this.innerPadding.get().top();
         this.updateHoveredDiagnostic();
         if (this.selecting) {
-            float localX = event.x() - this.innerPadding.value().left();
-            float localY = event.y() - this.innerPadding.value().top();
+            float localX = event.x() - this.innerPadding.get().left();
+            float localY = event.y() - this.innerPadding.get().top();
             int lineId = MathUtils.clamp((int) (localY / this.lineHeight()), 0, this.lineCount() - 1);
             ShapedText lineShaped = this.getShapedLine(lineId);
             int column = lineShaped.index(localX, 0);
@@ -620,14 +620,14 @@ public class TextArea extends Component {
         Rectangle effectiveVisibleArea = visibleArea.intersection(new Rectangle(0, 0, size.width(), size.height()));
         if (effectiveVisibleArea.width() <= 0 || effectiveVisibleArea.height() <= 0) return;
 
-        Color backgroundColor = this.disabled().get() ? this.disabledBackgroundColor.value() : this.backgroundColor.value();
-        Corners cornerRadius = this.cornerRadius.value();
-        float outlineWidth = this.outlineWidth.value();
+        Color backgroundColor = this.disabled().get() ? this.disabledBackgroundColor.get() : this.backgroundColor.get();
+        Corners cornerRadius = this.cornerRadius.get();
+        float outlineWidth = this.outlineWidth.get();
         Color outlineColor = this.outlineColorTransition.value();
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, backgroundColor);
         renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
 
-        Padding padding = this.innerPadding.value();
+        Padding padding = this.innerPadding.get();
         float contentVisibleY1 = effectiveVisibleArea.y() - padding.top();
         float contentVisibleY2 = effectiveVisibleArea.maxY() - padding.top();
         float contentVisibleX1 = effectiveVisibleArea.x() - padding.left();
@@ -667,7 +667,7 @@ public class TextArea extends Component {
                             x2 += lineHeight * 0.3F;
                         }
                         float y = i * lineHeight;
-                        Color selectionColor = this.selectionColor.value();
+                        Color selectionColor = this.selectionColor.get();
                         if (Math.abs(x2 - x1) > 0.001F) {
                             renderer.fillRect(Math.min(x1, x2), y, Math.abs(x2 - x1), lineHeight, selectionColor);
                         }
@@ -705,8 +705,8 @@ public class TextArea extends Component {
                     ShapedText lineShaped = this.getShapedLine(currentLine);
                     float cursorX = lineShaped.cursorPosition(currentColumn).x();
                     float cursorY = currentLine * lineHeight;
-                    float cursorWidth = this.cursorWidth.value();
-                    Color cursorColor = this.cursorColor.value();
+                    float cursorWidth = this.cursorWidth.get();
+                    Color cursorColor = this.cursorColor.get();
                     float cursorAlpha = this.cursorAnimation != null ? this.cursorAnimation.getValue() : 1F;
                     renderer.fillRect(cursorX - cursorWidth / 2F, cursorY, cursorWidth, lineHeight, cursorColor.withAlphaF(cursorAlpha));
                 }
@@ -715,12 +715,12 @@ public class TextArea extends Component {
     }
 
     private void renderDiagnostics(final Renderer renderer, final List<TextDiagnostic> diagnostics, final int firstVisibleLine, final int lastVisibleLine, final float visibleMinX, final float visibleMaxX) {
-        float thickness = this.diagnosticLineWidth.value();
+        float thickness = this.diagnosticLineWidth.get();
         if (thickness <= 0) return;
 
         for (TextDiagnostic diagnostic : diagnostics) {
-            Color color = diagnostic.color() != null ? diagnostic.color() : this.diagnosticColor.value();
-            UnderlineStyle style = diagnostic.style() != null ? diagnostic.style() : this.diagnosticStyle.value();
+            Color color = diagnostic.color() != null ? diagnostic.color() : this.diagnosticColor.get();
+            UnderlineStyle style = diagnostic.style() != null ? diagnostic.style() : this.diagnosticStyle.get();
             int startLine = Math.max(firstVisibleLine, this.diagnosticLine(diagnostic.start()));
             int endLine = Math.min(lastVisibleLine, this.diagnosticLine(diagnostic.end()));
             for (int line = startLine; line <= endLine; line++) {
@@ -738,7 +738,7 @@ public class TextArea extends Component {
                 ? this.shapedHintText.logicalBounds().width()
                 : this.shapedTextBlock.logicalBounds().width();
         float contentHeight = Math.max(1, this.lineCount()) * lineHeight;
-        Padding padding = this.innerPadding.value();
+        Padding padding = this.innerPadding.get();
         return new Size(
                 contentWidth + padding.horizontal(),
                 contentHeight + padding.vertical()
@@ -759,7 +759,7 @@ public class TextArea extends Component {
         }
 
         private void shapeMessage() {
-            TextFormat format = TextFormat.DEFAULT.withColor(TextArea.this.diagnosticTooltipTextColor.value());
+            TextFormat format = TextFormat.DEFAULT.withColor(TextArea.this.diagnosticTooltipTextColor.get());
             this.shapedMessage = TextArea.this.usedFont().shapeText(SyntaxHighlighter.defaultHighlight(this.message, format));
         }
 
@@ -777,14 +777,14 @@ public class TextArea extends Component {
 
         @Override
         protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-            Padding padding = TextArea.this.diagnosticTooltipPadding.value();
-            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), TextArea.this.diagnosticTooltipCornerRadius.value(), TextArea.this.diagnosticTooltipBackgroundColor.value());
+            Padding padding = TextArea.this.diagnosticTooltipPadding.get();
+            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), TextArea.this.diagnosticTooltipCornerRadius.get(), TextArea.this.diagnosticTooltipBackgroundColor.get());
             renderer.text(this.shapedMessage, padding.left(), padding.top(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP, ShapedTextBlock.LineAlignment.LEFT);
         }
 
         @Override
         public Size computeIdealSize(final Size constraints) {
-            Padding padding = TextArea.this.diagnosticTooltipPadding.value();
+            Padding padding = TextArea.this.diagnosticTooltipPadding.get();
             return new Size(
                     this.shapedMessage.visualBounds().width() + padding.horizontal(),
                     this.shapedMessage.logicalBounds().height() + padding.vertical()
@@ -820,7 +820,7 @@ public class TextArea extends Component {
 
         @Override
         public String wordBoundaries() {
-            return TextArea.this.wordBoundaries.value();
+            return TextArea.this.wordBoundaries.get();
         }
 
         @Override
@@ -881,7 +881,7 @@ public class TextArea extends Component {
 
         @Override
         public int tabWidth() {
-            return TextArea.this.tabWidth.value();
+            return TextArea.this.tabWidth.get();
         }
     }
 

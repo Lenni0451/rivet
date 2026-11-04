@@ -118,7 +118,7 @@ public class DragNumberInput extends ParentContainer {
         if (child instanceof UpdatedLabel label) {
             this.registerUpdatedLabel(label);
         }
-        this.valueFormat.initListener().add(format -> {
+        this.valueFormat.changeListener().add(format -> {
             if (this.updatedLabel != null) {
                 this.updatedLabel.valueFormat = format;
                 this.updatedLabel.invalidateCache(this.value.get());
@@ -141,7 +141,7 @@ public class DragNumberInput extends ParentContainer {
         if (updatedLabel != null) {
             updatedLabel.step = this.step.get();
             if (this.rivet() != null) {
-                updatedLabel.valueFormat = this.valueFormat.value();
+                updatedLabel.valueFormat = this.valueFormat.get();
                 updatedLabel.invalidateCache(this.value.get());
             }
         }
@@ -182,7 +182,9 @@ public class DragNumberInput extends ParentContainer {
     protected void onAddedInternal() {
         super.onAddedInternal();
         if (this.updatedLabel != null) {
-            this.updatedLabel.update(this.value.get());
+            // The label might have been registered while detached, so the change listener didn't apply the format yet
+            this.updatedLabel.valueFormat = this.valueFormat.get();
+            this.updatedLabel.invalidateCache(this.value.get());
         }
 
         this.backgroundColorTransition = new StateTransition<>(
@@ -190,16 +192,16 @@ public class DragNumberInput extends ParentContainer {
                 this::state,
                 (start, target) -> {
                     if (start.equals(State.DRAGGED) || target.equals(State.DRAGGED)) {
-                        return this.clickAnimationConfig.value();
+                        return this.clickAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.backgroundColor.value();
-                    case HOVERED -> this.hoverBackgroundColor.value();
-                    case DRAGGED -> this.clickBackgroundColor.value();
-                    case DISABLED -> this.disabledBackgroundColor.value();
+                    case INACTIVE -> this.backgroundColor.get();
+                    case HOVERED -> this.hoverBackgroundColor.get();
+                    case DRAGGED -> this.clickBackgroundColor.get();
+                    case DISABLED -> this.disabledBackgroundColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -208,16 +210,16 @@ public class DragNumberInput extends ParentContainer {
                 this::state,
                 (start, target) -> {
                     if (start.equals(State.DRAGGED) || target.equals(State.DRAGGED)) {
-                        return this.clickAnimationConfig.value();
+                        return this.clickAnimationConfig.get();
                     } else {
-                        return this.hoverAnimationConfig.value();
+                        return this.hoverAnimationConfig.get();
                     }
                 },
                 () -> switch (this.state()) {
-                    case INACTIVE -> this.outlineColor.value();
-                    case HOVERED -> this.hoverOutlineColor.value();
-                    case DRAGGED -> this.clickOutlineColor.value();
-                    case DISABLED -> this.disabledOutlineColor.value();
+                    case INACTIVE -> this.outlineColor.get();
+                    case HOVERED -> this.hoverOutlineColor.get();
+                    case DRAGGED -> this.clickOutlineColor.get();
+                    case DISABLED -> this.disabledOutlineColor.get();
                 },
                 Interpolator.COLOR
         );
@@ -295,11 +297,11 @@ public class DragNumberInput extends ParentContainer {
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
-        Padding padding = this.innerPadding.value();
+        Padding padding = this.innerPadding.get();
         Color background = this.backgroundColorTransition.value();
         Color outline = this.outlineColorTransition.value();
-        float outlineWidth = this.outlineWidth.value();
-        Corners cornerRadius = this.cornerRadius.value();
+        float outlineWidth = this.outlineWidth.get();
+        Corners cornerRadius = this.cornerRadius.get();
 
         renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, background);
         if (outlineWidth > 0) {
@@ -320,13 +322,13 @@ public class DragNumberInput extends ParentContainer {
 
     @Override
     public Size computeIdealSize(final Size constraints) {
-        Padding padding = this.innerPadding.value();
+        Padding padding = this.innerPadding.get();
         return this.child.computeIdealSize(constraints.minus(padding)).clamp(this.child).plus(padding);
     }
 
     @Override
     public void computeLayout(final Size size) {
-        Padding padding = this.innerPadding.value();
+        Padding padding = this.innerPadding.get();
         this.child.computeLayout(size.minus(padding).clamp(this.child));
     }
 
@@ -335,7 +337,7 @@ public class DragNumberInput extends ParentContainer {
         if (this.child instanceof Parent parent) {
             Size parentContentSize = parent.contentSize();
             if (!parentContentSize.equals(Size.EMPTY)) {
-                return parentContentSize.plus(this.innerPadding.value());
+                return parentContentSize.plus(this.innerPadding.get());
             }
         }
         return Size.EMPTY;
@@ -350,7 +352,7 @@ public class DragNumberInput extends ParentContainer {
     public Rectangle childBounds(final Component component) {
         if (component == this.child) {
             Size containerSize = this.relativeBounds().size();
-            Padding padding = this.innerPadding.value();
+            Padding padding = this.innerPadding.get();
             Size innerSize = containerSize.minus(padding).clamp(this.child);
             return new Rectangle(
                     padding.left(), padding.top(),
