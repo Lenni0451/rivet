@@ -40,12 +40,15 @@ public class PaddedContainer extends ParentContainer {
         initializer.accept(child);
     }
 
+    public final PaddedContainer padding(final float padding) {
+        return this.padding(new Padding(padding));
+    }
+
     public final PaddedContainer padding(final Padding padding) {
         this.padding = padding;
         this.requestLayoutRecalculation();
         return this;
     }
-
 
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
