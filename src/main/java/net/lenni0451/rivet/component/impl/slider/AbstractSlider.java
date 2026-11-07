@@ -296,10 +296,13 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     protected void updateTooltipPositions(final Rectangle absoluteBounds) {
         float thumbWidth = this.effectiveThumbWidth();
         float barWidth = this.barWidth(absoluteBounds.size());
+        float trackHeight = Math.max(this.effectiveThumbHeight(), this.barHeight.get());
+        float sliderCenter = this.ticks != null ? trackHeight / 2F : absoluteBounds.height() / 2F;
+        float trackY = absoluteBounds.y() + sliderCenter - trackHeight / 2F;
         for (SliderThumb thumb : this.thumbs) {
             if (thumb.tooltip != null) {
                 float thumbX = this.thumbX(thumb.value(), thumbWidth, barWidth);
-                thumb.tooltip.position(absoluteBounds.x() + thumbX, absoluteBounds.y(), absoluteBounds.height());
+                thumb.tooltip.position(absoluteBounds.x() + thumbX, trackY, trackHeight);
             }
         }
     }
