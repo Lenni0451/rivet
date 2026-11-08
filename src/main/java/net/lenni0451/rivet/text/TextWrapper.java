@@ -22,7 +22,7 @@ public class TextWrapper {
         return font.shapeText(new TextBlock(lines));
     }
 
-    private static List<TextLine> splitExplicitLines(final TextLine line) {
+    public static List<TextLine> splitExplicitLines(final TextLine line) {
         List<TextLine> lines = new ArrayList<>();
         List<TextSection> currentLine = new ArrayList<>();
         for (TextSection section : line.sections()) {

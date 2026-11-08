@@ -16,14 +16,12 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.FloatProperty;
 import net.lenni0451.rivet.property.ObjectProperty;
 import net.lenni0451.rivet.text.TextWrapper;
-import net.lenni0451.rivet.text.model.TextFormat;
-import net.lenni0451.rivet.text.model.TextLine;
-import net.lenni0451.rivet.text.model.TextOrigin;
-import net.lenni0451.rivet.text.model.TextSection;
+import net.lenni0451.rivet.text.model.*;
 import net.lenni0451.rivet.theme.Theme;
 import net.lenni0451.rivet.theme.ThemeOption;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public class Label extends Component {
@@ -161,8 +159,13 @@ public class Label extends Component {
         TextLine line = this.createTextLine();
         if (this.overflowBehavior.get().equals(OverflowBehavior.WRAP)) {
             return TextWrapper.wrapLine(font, line, size.width() / this.scale.get());
+        }
+
+        List<TextLine> lines = TextWrapper.splitExplicitLines(line);
+        if (lines.size() == 1) {
+            return font.shapeText(lines.get(0));
         } else {
-            return font.shapeText(line);
+            return font.shapeText(new TextBlock(lines));
         }
     }
 
@@ -232,23 +235,19 @@ public class Label extends Component {
         TextOrigin.Vertical verticalOrigin = this.verticalOrigin.get();
         ShapedTextBlock.LineAlignment lineAlignment = this.lineAlignment.get();
 
-        if (this.shaped instanceof ShapedTextBlock shapedTextBlock) {
-            float x = horizontalOrigin.position(size.width() / scale);
-            float y = verticalOrigin.position(size.height() / scale);
-            renderer.scale(scale, () -> renderer.text(shapedTextBlock, x, y, horizontalOrigin, verticalOrigin, lineAlignment));
-        } else if (this.shaped instanceof ShapedText shapedText) {
-            float textScale;
-            if (this.overflowBehavior.get().equals(OverflowBehavior.SCALE)) {
-                float widthRatio = size.width() / (this.shaped.visualBounds().width() * scale);
-                float heightRatio = size.height() / (this.shaped.logicalBounds().height() * scale);
-                float ratio = Math.min(widthRatio, heightRatio);
-                textScale = ratio > 1 ? scale : ratio;
-            } else {
-                textScale = scale;
-            }
+        float textScale = scale;
+        if (this.overflowBehavior.get().equals(OverflowBehavior.SCALE)) {
+            float widthRatio = size.width() / (this.shaped.visualBounds().width() * scale);
+            float heightRatio = size.height() / (this.shaped.logicalBounds().height() * scale);
+            float ratio = Math.min(widthRatio, heightRatio);
+            if (ratio < 1) textScale = scale * ratio;
+        }
 
-            float x = horizontalOrigin.position(size.width() / textScale);
-            float y = verticalOrigin.position(size.height() / textScale);
+        float x = horizontalOrigin.position(size.width() / textScale);
+        float y = verticalOrigin.position(size.height() / textScale);
+        if (this.shaped instanceof ShapedTextBlock shapedTextBlock) {
+            renderer.scale(textScale, () -> renderer.text(shapedTextBlock, x, y, horizontalOrigin, verticalOrigin, lineAlignment));
+        } else if (this.shaped instanceof ShapedText shapedText) {
             renderer.scale(textScale, () -> renderer.text(shapedText, x, y, horizontalOrigin, verticalOrigin));
         } else {
             throw new IllegalStateException("Unknown shaped type: " + this.shaped.getClass().getName());
