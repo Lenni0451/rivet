@@ -69,6 +69,12 @@ public abstract class SDLApplication extends SDLApplicationRunner implements App
     }
 
     @Override
+    protected void initSDL() {
+        super.initSDL();
+        SDLHints.SDL_SetHint(SDLHints.SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+    }
+
+    @Override
     protected void handleWindowEvent(final SDL_Event event) {
         super.handleWindowEvent(event);
         if (event.window().windowID() != this.windowId) return;
