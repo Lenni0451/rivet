@@ -285,16 +285,9 @@ public class Label extends Component {
         TextOrigin.Vertical verticalOrigin = this.verticalOrigin.get();
         ShapedTextBlock.LineAlignment lineAlignment = this.lineAlignment.get();
 
-        float textScale = scale;
-        if (this.overflowBehavior.get().equals(OverflowBehavior.SCALE)) {
-            float widthRatio = size.width() / (this.shaped.visualBounds().width() * scale);
-            float heightRatio = size.height() / (this.shaped.logicalBounds().height() * scale);
-            float ratio = Math.min(widthRatio, heightRatio);
-            if (ratio < 1) textScale = scale * ratio;
-        }
-
         TextOrigin.Horizontal renderOrigin;
         float x;
+        float textScale = this.textScale(size, scale);
         float overflow = this.shaped.visualBounds().width() * textScale - size.width();
         if (this.overflowBehavior.get().equals(OverflowBehavior.SCROLL) && overflow > 0) {
             renderOrigin = TextOrigin.Horizontal.VISUAL_LEFT;
@@ -304,13 +297,32 @@ public class Label extends Component {
             x = horizontalOrigin.position(size.width() / textScale);
         }
         float y = verticalOrigin.position(size.height() / textScale);
+        Runnable textRenderer;
         if (this.shaped instanceof ShapedTextBlock shapedTextBlock) {
-            renderer.scale(textScale, () -> renderer.text(shapedTextBlock, x, y, renderOrigin, verticalOrigin, lineAlignment));
+            textRenderer = () -> renderer.scale(textScale, () -> renderer.text(shapedTextBlock, x, y, renderOrigin, verticalOrigin, lineAlignment));
         } else if (this.shaped instanceof ShapedText shapedText) {
-            renderer.scale(textScale, () -> renderer.text(shapedText, x, y, renderOrigin, verticalOrigin));
+            textRenderer = () -> renderer.scale(textScale, () -> renderer.text(shapedText, x, y, renderOrigin, verticalOrigin));
         } else {
             throw new IllegalStateException("Unknown shaped type: " + this.shaped.getClass().getName());
         }
+
+        boolean clipsHorizontally = this.shaped.visualBounds().width() * textScale > size.width();
+        boolean clipsVertically = this.shaped.logicalBounds().height() * textScale > size.height();
+        if (clipsHorizontally || clipsVertically) {
+            renderer.scissor(0, 0, size.width(), size.height(), textRenderer);
+        } else {
+            textRenderer.run();
+        }
+    }
+
+    private float textScale(final Size size, final float scale) {
+        if (this.overflowBehavior.get().equals(OverflowBehavior.SCALE)) {
+            float widthRatio = size.width() / (this.shaped.visualBounds().width() * scale);
+            float heightRatio = size.height() / (this.shaped.logicalBounds().height() * scale);
+            float ratio = Math.min(widthRatio, heightRatio);
+            if (ratio < 1) return scale * ratio;
+        }
+        return scale;
     }
 
     @Override
