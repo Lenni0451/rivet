@@ -1,5 +1,7 @@
 package net.lenni0451.rivet.xml.parser.impl.component;
 
+import net.lenni0451.commons.animation.easing.EasingFunction;
+import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedTextBlock;
@@ -23,7 +25,11 @@ public class LabelParser implements XmlParser<Label> {
                 .attribute("lineAlignment", ShapedTextBlock.LineAlignment.class, Label::lineAlignment)
                 .themeOption("textColor", Color.class, Label::textColor)
                 .themeOption("disabledTextColor", Color.class, Label::disabledTextColor)
-                .themeOption("overflowBehavior", Label.OverflowBehavior.class, Label::overflowBehavior);
+                .themeOption("overflowBehavior", Label.OverflowBehavior.class, Label::overflowBehavior)
+                .themeOption("scrollSpeed", Float.class, Label::scrollSpeed)
+                .themeOption("scrollPause", Integer.class, Label::scrollPause)
+                .themeOption("scrollEasingFunction", EasingFunction.class, Label::scrollEasingFunction)
+                .themeOption("scrollEasingMode", EasingMode.class, Label::scrollEasingMode);
     }
 
 

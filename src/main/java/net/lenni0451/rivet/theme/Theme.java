@@ -105,6 +105,10 @@ public abstract class Theme {
 
     public static class Label {
         public static final ThemeKey<OverflowBehavior> OVERFLOW_BEHAVIOR = register("label.overflow_behavior", OverflowBehavior.class, r -> OverflowBehavior.CLIP);
+        public static final ThemeKey<Float> SCROLL_SPEED = register("label.scroll_speed", Float.class, r -> roundMin(r.backend().font().height() * 1.5F, 1));
+        public static final ThemeKey<Integer> SCROLL_PAUSE = register("label.scroll_pause", Integer.class, r -> 1500);
+        public static final ThemeKey<EasingFunction> SCROLL_EASING_FUNCTION = register("label.scroll_easing_function", EasingFunction.class, r -> EasingFunction.SINE);
+        public static final ThemeKey<EasingMode> SCROLL_EASING_MODE = register("label.scroll_easing_mode", EasingMode.class, r -> EasingMode.EASE_IN_OUT);
     }
 
     public static class Button {

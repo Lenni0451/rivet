@@ -2,6 +2,8 @@ package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.lenni0451.commons.animation.easing.EasingFunction;
+import net.lenni0451.commons.animation.easing.EasingMode;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.render.Renderer;
 import net.lenni0451.rivet.backend.text.Font;
@@ -45,6 +47,8 @@ public class Label extends Component {
 
     private Shaped shaped;
     private boolean reshape;
+    private long scrollStartTime = System.currentTimeMillis();
+    private boolean overflowing;
 
     @Getter
     private final ThemeOption<Color> textColor = new ThemeOption<>(this, Theme.General.TEXT_COLOR);
@@ -52,6 +56,14 @@ public class Label extends Component {
     private final ThemeOption<Color> disabledTextColor = new ThemeOption<>(this, Theme.General.DISABLED_TEXT_COLOR);
     @Getter
     private final ThemeOption<OverflowBehavior> overflowBehavior = new ThemeOption<>(this, Theme.Label.OVERFLOW_BEHAVIOR);
+    @Getter
+    private final ThemeOption<Float> scrollSpeed = new ThemeOption<>(this, Theme.Label.SCROLL_SPEED);
+    @Getter
+    private final ThemeOption<Integer> scrollPause = new ThemeOption<>(this, Theme.Label.SCROLL_PAUSE);
+    @Getter
+    private final ThemeOption<EasingFunction> scrollEasingFunction = new ThemeOption<>(this, Theme.Label.SCROLL_EASING_FUNCTION);
+    @Getter
+    private final ThemeOption<EasingMode> scrollEasingMode = new ThemeOption<>(this, Theme.Label.SCROLL_EASING_MODE);
 
     public Label(final String text) {
         this(text, null);
@@ -78,14 +90,23 @@ public class Label extends Component {
                 this.textLine.set(null);
             }
             this.reshapeAndLayout();
+            this.restartScrollAnimation();
         });
         this.textFormat.syncListener().add(f -> this.reshapeAndLayout());
-        this.textLine.syncListener().add(l -> this.reshapeAndLayout());
+        this.textLine.syncListener().add(l -> {
+            this.reshapeAndLayout();
+            this.restartScrollAnimation();
+        });
         this.scale.syncListener().add(s -> this.reshapeAndLayout());
 
         this.textColor.changeListener().add(c -> this.reshape = true);
         this.disabledTextColor.changeListener().add(c -> this.reshape = true);
-        this.overflowBehavior.changeListener().add(o -> this.reshapeAndLayout());
+        this.overflowBehavior.changeListener().add(o -> {
+            this.reshapeAndLayout();
+            this.restartScrollAnimation();
+        });
+        this.scrollSpeed.changeListener().add(s -> this.restartScrollAnimation());
+        this.scrollPause.changeListener().add(p -> this.restartScrollAnimation());
     }
 
     public final Label font(@Nullable final Font font) {
@@ -147,6 +168,33 @@ public class Label extends Component {
         }
     }
 
+    private void restartScrollAnimation() {
+        this.scrollStartTime = System.currentTimeMillis();
+    }
+
+    private float scrollOffset(final float overflow) {
+        float speed = this.scrollSpeed.get();
+        if (speed <= 0) return 0;
+        float pause = Math.max(0, this.scrollPause.get());
+        float move = overflow / speed * 1000F;
+        float cycle = 2 * pause + 2 * move;
+        float time = (System.currentTimeMillis() - this.scrollStartTime) % cycle;
+
+        EasingMode easingMode = this.scrollEasingMode.get();
+        EasingFunction easingFunction = this.scrollEasingFunction.get();
+        float progress;
+        if (time < pause) {
+            progress = 0;
+        } else if (time < pause + move) {
+            progress = easingMode.call(easingFunction, (time - pause) / move);
+        } else if (time < 2 * pause + move) {
+            progress = 1;
+        } else {
+            progress = 1 - easingMode.call(easingFunction, (time - 2 * pause - move) / move);
+        }
+        return overflow * progress;
+    }
+
     private void shapeText(final Size size) {
         if (this.reshape || this.shaped == null) {
             this.shaped = this.createShapedText(size);
@@ -200,6 +248,7 @@ public class Label extends Component {
     @Override
     protected void onAddedInternal() {
         this.reshape = true;
+        this.restartScrollAnimation();
     }
 
     @Override
@@ -215,6 +264,7 @@ public class Label extends Component {
     @Override
     protected void onThemeChangedInternal() {
         this.reshape = true;
+        this.restartScrollAnimation();
     }
 
     @Override
@@ -243,12 +293,21 @@ public class Label extends Component {
             if (ratio < 1) textScale = scale * ratio;
         }
 
-        float x = horizontalOrigin.position(size.width() / textScale);
+        TextOrigin.Horizontal renderOrigin;
+        float x;
+        float overflow = this.shaped.visualBounds().width() * textScale - size.width();
+        if (this.overflowBehavior.get().equals(OverflowBehavior.SCROLL) && overflow > 0) {
+            renderOrigin = TextOrigin.Horizontal.VISUAL_LEFT;
+            x = -this.scrollOffset(overflow) / textScale;
+        } else {
+            renderOrigin = horizontalOrigin;
+            x = horizontalOrigin.position(size.width() / textScale);
+        }
         float y = verticalOrigin.position(size.height() / textScale);
         if (this.shaped instanceof ShapedTextBlock shapedTextBlock) {
-            renderer.scale(textScale, () -> renderer.text(shapedTextBlock, x, y, horizontalOrigin, verticalOrigin, lineAlignment));
+            renderer.scale(textScale, () -> renderer.text(shapedTextBlock, x, y, renderOrigin, verticalOrigin, lineAlignment));
         } else if (this.shaped instanceof ShapedText shapedText) {
-            renderer.scale(textScale, () -> renderer.text(shapedText, x, y, horizontalOrigin, verticalOrigin));
+            renderer.scale(textScale, () -> renderer.text(shapedText, x, y, renderOrigin, verticalOrigin));
         } else {
             throw new IllegalStateException("Unknown shaped type: " + this.shaped.getClass().getName());
         }
@@ -266,15 +325,26 @@ public class Label extends Component {
 
     @Override
     public void computeLayout(final Size size) {
-        if (this.overflowBehavior.get().equals(OverflowBehavior.WRAP)) {
+        OverflowBehavior overflowBehavior = this.overflowBehavior.get();
+        if (overflowBehavior.equals(OverflowBehavior.WRAP)) {
             this.reshape = true;
             this.shapeText(size);
+        }
+        if (overflowBehavior.equals(OverflowBehavior.SCROLL)) {
+            this.shapeText(size);
+            boolean overflowing = this.shaped.visualBounds().width() * this.scale.get() > size.width();
+            if (overflowing && !this.overflowing) {
+                this.restartScrollAnimation();
+            }
+            this.overflowing = overflowing;
+        } else {
+            this.overflowing = false;
         }
     }
 
 
     public enum OverflowBehavior {
-        CLIP, SCALE, WRAP
+        CLIP, SCALE, WRAP, SCROLL
     }
 
 }
