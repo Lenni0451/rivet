@@ -157,12 +157,33 @@ public class Tooltip {
             }
         }
         if (this.currentTooltip != null) {
-            Rectangle absoluteBounds = this.component.absoluteBounds();
-            this.currentTooltip.layoutOptions(new AbsoluteOptions(
-                    absoluteBounds.x() + this.mouseOffsetX + this.mouseOffset.get(),
-                    absoluteBounds.y() + this.mouseOffsetY + this.mouseOffset.get()
-            ));
+            this.updatePosition();
         }
+    }
+
+    private void updatePosition() {
+        Rectangle absoluteBounds = this.component.absoluteBounds();
+        Size screenSize = this.component.rivet().scaledSize();
+        Size tooltipSize = this.currentTooltip.computeIdealSize(screenSize);
+        float mouseX = absoluteBounds.x() + this.mouseOffsetX;
+        float mouseY = absoluteBounds.y() + this.mouseOffsetY;
+        int offset = this.mouseOffset.get();
+
+        float x = this.computeAxis(mouseX, offset, tooltipSize.width(), screenSize.width());
+        float y = this.computeAxis(mouseY, offset, tooltipSize.height(), screenSize.height());
+        this.currentTooltip.layoutOptions(new AbsoluteOptions(x, y));
+    }
+
+    private float computeAxis(final float mouse, final int offset, final float size, final float screenSize) {
+        float position = mouse + offset;
+        if (position + size > screenSize) {
+            float flipped = mouse - offset - size;
+            if (flipped >= 0) {
+                return flipped;
+            }
+            return Math.max(0, screenSize - size);
+        }
+        return position;
     }
 
 }
