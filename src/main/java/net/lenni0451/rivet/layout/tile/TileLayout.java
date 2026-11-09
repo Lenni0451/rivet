@@ -22,6 +22,11 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
         this(columns, rows, 0, 0);
     }
 
+    public TileLayout {
+        if (columns < 1) throw new IllegalArgumentException("Columns must be at least 1");
+        if (rows < 1) throw new IllegalArgumentException("Rows must be at least 1");
+    }
+
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
         Grid grid = this.calculateGrid(components);

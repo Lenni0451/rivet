@@ -63,6 +63,7 @@ public class Tooltip {
         this.component.mouseLeaveListener().add(this.mouseLeaveListener);
         this.component.mouseMoveListener().add(this.mouseMoveListener);
         this.component.removedListener().add(this.removedListener);
+        this.component.disabledListener().add(this.removedListener);
         return this;
     }
 
@@ -71,6 +72,7 @@ public class Tooltip {
         this.component.mouseLeaveListener().remove(this.mouseLeaveListener);
         this.component.mouseMoveListener().remove(this.mouseMoveListener);
         this.component.removedListener().remove(this.removedListener);
+        this.component.disabledListener().remove(this.removedListener);
         this.stopRenderTick();
         this.remove();
         return this;

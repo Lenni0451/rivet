@@ -269,13 +269,13 @@ public class ScrollBar extends Component {
         float maxScroll = this.maxScroll();
         if (this.orientation == Orientation.HORIZONTAL) {
             float railWidth = rail.width();
-            float thumbWidth = this.contentSize <= 0 ? railWidth : Math.max(20, (this.visibleSize / this.contentSize) * railWidth);
+            float thumbWidth = this.contentSize <= 0 ? railWidth : MathUtils.clamp((this.visibleSize / this.contentSize) * railWidth, Math.min(20, railWidth), railWidth);
             float scrollPercentage = maxScroll <= 0 ? 0 : MathUtils.clamp(this.scroll.get() / maxScroll, 0, 1);
             float thumbX = rail.x() + scrollPercentage * (railWidth - thumbWidth);
             return new Rectangle(thumbX, rail.y(), thumbWidth, rail.height());
         } else {
             float railHeight = rail.height();
-            float thumbHeight = this.contentSize <= 0 ? railHeight : Math.max(20, (this.visibleSize / this.contentSize) * railHeight);
+            float thumbHeight = this.contentSize <= 0 ? railHeight : MathUtils.clamp((this.visibleSize / this.contentSize) * railHeight, Math.min(20, railHeight), railHeight);
             float scrollPercentage = maxScroll <= 0 ? 0 : MathUtils.clamp(this.scroll.get() / maxScroll, 0, 1);
             float thumbY = rail.y() + scrollPercentage * (railHeight - thumbHeight);
             return new Rectangle(rail.x(), thumbY, rail.width(), thumbHeight);

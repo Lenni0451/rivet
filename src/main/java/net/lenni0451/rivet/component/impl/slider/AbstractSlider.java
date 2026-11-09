@@ -22,10 +22,7 @@ import net.lenni0451.rivet.theme.ThemeOption;
 import net.lenni0451.rivet.utils.FormatUtils;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Accessors(fluent = true, chain = true, makeFinal = true)
 public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Component {
@@ -154,8 +151,13 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     public final S ticks(@Nullable final SliderTicks ticks) {
-        this.ticks = ticks;
-        this.tickLabels.clear();
+        if (!Objects.equals(this.ticks, ticks)) {
+            this.ticks = ticks;
+            this.tickLabels.clear();
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
+            }
+        }
         return (S) this;
     }
 
@@ -166,7 +168,8 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     protected final float thumbX(final double value, final float thumbWidth, final float barWidth) {
         double min = this.min.get();
         double max = this.max.get();
-        double progress = MathUtils.clamp((value - min) / (max - min), 0, 1);
+        double range = max - min;
+        double progress = range == 0 ? 0 : MathUtils.clamp((value - min) / range, 0, 1);
         return (float) (thumbWidth / 2F + barWidth * progress);
     }
 
@@ -177,7 +180,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     protected final double valueAtX(final float mouseX, final float thumbWidth, final float barWidth) {
         double min = this.min.get();
         double max = this.max.get();
-        double progress = (mouseX - thumbWidth / 2F) / barWidth;
+        double progress = barWidth <= 0 ? 0 : (mouseX - thumbWidth / 2F) / barWidth;
         progress = MathUtils.clamp(progress, 0, 1);
         return min + progress * (max - min);
     }
@@ -479,7 +482,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
             height = Math.max(this.effectiveThumbHeight(), this.barHeight.get()) + TICK_OFFSET + this.barHeight.get() + TICK_OFFSET + this.usedFont().height() / 2F;
         }
         float width;
-        if (this.ensureValuesReachable.get()) {
+        if (this.ensureValuesReachable.get() && this.step.get() > 0) {
             width = (float) ((this.max.get() - this.min.get()) / this.step.get()) + this.effectiveThumbWidth();
         } else {
             width = 0;

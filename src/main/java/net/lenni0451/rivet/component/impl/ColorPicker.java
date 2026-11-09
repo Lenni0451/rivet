@@ -31,6 +31,7 @@ public class ColorPicker extends Component {
     private float saturation;
     private float brightness;
     private float alpha;
+    private Color lastInternalColor;
 
     private boolean draggingPicker;
     private boolean draggingHue;
@@ -69,8 +70,22 @@ public class ColorPicker extends Component {
 
     public ColorPicker(final Color color) {
         this.color = new ObjectProperty<>(color);
-        this.color.syncListener().add(c -> this.updateHSB());
+        this.color.syncListener().add(c -> {
+            if (c != this.lastInternalColor) {
+                this.updateHSB();
+            }
+        });
         this.updateHSB();
+
+        Runnable requestLayout = () -> {
+            if (this.parent() != null) {
+                this.parent().requestLayoutRecalculation();
+            }
+        };
+        this.pickerSize.changeListener().add(v -> requestLayout.run());
+        this.sliderWidth.changeListener().add(v -> requestLayout.run());
+        this.gap.changeListener().add(v -> requestLayout.run());
+        this.showAlpha.changeListener().add(v -> requestLayout.run());
     }
 
     public final ColorPicker color(final Color color) {
@@ -88,7 +103,13 @@ public class ColorPicker extends Component {
     }
 
     private void updateColor() {
-        this.color.set(Color.fromHSB(this.hue, this.saturation, this.brightness).withAlphaF(this.alpha));
+        Color newColor = Color.fromHSB(this.hue, this.saturation, this.brightness).withAlphaF(this.alpha);
+        this.lastInternalColor = newColor;
+        try {
+            this.color.set(newColor);
+        } finally {
+            this.lastInternalColor = null;
+        }
     }
 
     @Override
@@ -251,10 +272,12 @@ public class ColorPicker extends Component {
 
         // Background checkerboard
         float checkSize = height / 2F;
-        for (float cx = 0; cx < width; cx += checkSize) {
-            for (float cy = 0; cy < height; cy += checkSize) {
-                boolean light = ((int) (cx / checkSize) + (int) (cy / checkSize)) % 2 == 0;
-                renderer.fillRect(x + cx, y + cy, Math.min(checkSize, width - cx), Math.min(checkSize, height - cy), light ? Color.WHITE : Color.LIGHT_GRAY);
+        if (checkSize > 0) {
+            for (float cx = 0; cx < width; cx += checkSize) {
+                for (float cy = 0; cy < height; cy += checkSize) {
+                    boolean light = ((int) (cx / checkSize) + (int) (cy / checkSize)) % 2 == 0;
+                    renderer.fillRect(x + cx, y + cy, Math.min(checkSize, width - cx), Math.min(checkSize, height - cy), light ? Color.WHITE : Color.LIGHT_GRAY);
+                }
             }
         }
         // Alpha gradient

@@ -115,10 +115,13 @@ public class Checkbox extends Component {
 
     private void shapeText() {
         if (this.rivet() != null) {
-            Font font = this.font != null ? this.font : this.rivet().backend().font();
             Color textColor = this.disabled().get() ? this.rivet().theme().get(Theme.General.DISABLED_TEXT_COLOR) : this.rivet().theme().get(Theme.General.TEXT_COLOR);
-            this.shapedText = font.shapeText(this.text, textColor);
+            this.shapedText = this.usedFont().shapeText(this.text, textColor);
         }
+    }
+
+    protected final Font usedFont() {
+        return this.font != null ? this.font : this.rivet().backend().font();
     }
 
     private State state() {
@@ -235,7 +238,7 @@ public class Checkbox extends Component {
     @Override
     public Size computeIdealSize(final Size constraints) {
         float height = this.shapedText.logicalBounds().height();
-        if (height <= 0) height = this.rivet().backend().font().height();
+        if (height <= 0) height = this.usedFont().height();
         float width = height;
         if (!this.text.isEmpty()) {
             width += this.textGap.get() + this.shapedText.visualBounds().width();

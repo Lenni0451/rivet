@@ -55,7 +55,7 @@ public class TabContainer extends ParentContainer {
 
     public TabContainer() {
         this.tabContainer.add(this.leftTabContainer.layoutOptions(BorderPosition.LEFT));
-        this.tabContainer.add(new ScrollContainer(this.centerTabContainer.layoutOptions(BorderPosition.CENTER), true, false));
+        this.tabContainer.add(new ScrollContainer(this.centerTabContainer, true, false).layoutOptions(BorderPosition.CENTER));
         this.tabContainer.add(this.rightTabContainer.layoutOptions(BorderPosition.RIGHT));
 
         this.selectedTab.addValidator(tab -> {

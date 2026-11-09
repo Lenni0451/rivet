@@ -74,7 +74,13 @@ public class CollapsibleContainer extends ParentContainer {
 
         this.collapsed.syncListener().add(collapsed -> {
             if (this.collapseAnimation != null) {
-                this.collapseAnimation.runInDirection(collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS);
+                AnimationDirection direction = collapsed ? AnimationDirection.BACKWARDS : AnimationDirection.FORWARDS;
+                if (this.attached()) {
+                    this.collapseAnimation.runInDirection(direction);
+                } else {
+                    this.collapseAnimation.finish(direction);
+                    this.collapseProgress.set(this.collapseAnimation.getValue());
+                }
             }
             if (collapsed) {
                 this.mouseHandler().checkAndRemove(Sneaky.unsafeCast(this.content));
@@ -213,14 +219,17 @@ public class CollapsibleContainer extends ParentContainer {
             CollapsibleContainer.this.arrowPosition.changeListener().add(position -> {
                 int arrowPosition;
                 int headerPosition;
+                GridAnchor arrowAnchor;
                 if (position.equals(ArrowPosition.LEFT)) {
                     arrowPosition = 0;
                     headerPosition = 1;
+                    arrowAnchor = GridAnchor.LEFT;
                 } else {
                     arrowPosition = 1;
                     headerPosition = 0;
+                    arrowAnchor = GridAnchor.RIGHT;
                 }
-                arrow.layoutOptions(GridOptions.EMPTY.at(arrowPosition, 0).withAnchor(GridAnchor.RIGHT));
+                arrow.layoutOptions(GridOptions.EMPTY.at(arrowPosition, 0).withAnchor(arrowAnchor));
                 header.layoutOptions(GridOptions.EMPTY.at(headerPosition, 0).withWeightX(1).withFill(GridFill.HORIZONTAL));
                 this.requestLayoutRecalculation();
             });

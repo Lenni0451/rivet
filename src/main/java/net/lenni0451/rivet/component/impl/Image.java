@@ -50,13 +50,15 @@ public class Image extends Component {
             case FILL -> {
                 float textureAspectRatio = (float) this.texture.width() / this.texture.height();
                 float componentAspectRatio = size.width() / size.height();
+                Runnable renderImage;
                 if (textureAspectRatio > componentAspectRatio) {
                     float width = size.height() * textureAspectRatio;
-                    renderer.image(this.texture, (size.width() - width) / 2F, 0, width, size.height(), this.color.get());
+                    renderImage = () -> renderer.image(this.texture, (size.width() - width) / 2F, 0, width, size.height(), this.color.get());
                 } else {
                     float height = size.width() / textureAspectRatio;
-                    renderer.image(this.texture, 0, (size.height() - height) / 2F, size.width(), height, this.color.get());
+                    renderImage = () -> renderer.image(this.texture, 0, (size.height() - height) / 2F, size.width(), height, this.color.get());
                 }
+                renderer.scissor(0, 0, size.width(), size.height(), renderImage);
             }
         }
     }

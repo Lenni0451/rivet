@@ -246,11 +246,10 @@ public class TextArea extends Component {
     }
 
     public final TextArea scrollCursorIntoView(final boolean immediate) {
-        if (!this.autoScrollToCursor || this.shapedTextBlock == null || this.shapedTextBlock.lines().isEmpty()) return this;
+        if (!this.autoScrollToCursor || this.shapedTextBlock == null) return this;
         int currentLine = MathUtils.clamp(this.lineIndexAt(this.cursor), 0, this.lineCount() - 1);
         int currentColumn = Math.max(0, this.cursor - this.lineStarts[currentLine]);
         ShapedText shapedLine = this.getShapedLine(currentLine);
-        if (shapedLine == null) return this;
         Padding padding = this.innerPadding.get();
         Padding margin = this.scrollMargin.get();
         float cursorX = padding.left() + shapedLine.cursorPosition(currentColumn).x();
@@ -351,6 +350,9 @@ public class TextArea extends Component {
         TextFormat defaultFormat = TextFormat.DEFAULT.withColor(activeTextColor);
         SyntaxHighlighter activeHighlighter = this.highlighter != null ? this.highlighter : SyntaxHighlighter.NONE;
         TextBlock textBlock = activeHighlighter.highlight(fullText, defaultFormat);
+        if (textBlock.lines().isEmpty()) {
+            throw new IllegalStateException("Syntax highlighter must return at least one line");
+        }
         this.shapedTextBlock = this.usedFont().shapeText(textBlock);
 
         if (this.hint != null && !this.hint.isEmpty()) {
@@ -366,7 +368,6 @@ public class TextArea extends Component {
     }
 
     private ShapedText getShapedLine(final int lineIndex) {
-        if (this.shapedTextBlock == null || this.shapedTextBlock.lines().isEmpty()) return null;
         int clamped = MathUtils.clamp(lineIndex, 0, this.shapedTextBlock.lines().size() - 1);
         return this.shapedTextBlock.lines().get(clamped);
     }
@@ -418,7 +419,6 @@ public class TextArea extends Component {
     @Nullable
     private Rectangle diagnosticBounds(final TextDiagnostic diagnostic, final int line) {
         ShapedText shapedLine = this.getShapedLine(line);
-        if (shapedLine == null) return null;
 
         int lineStart = this.lineStarts[line];
         int lineLength = this.lineLength(line);

@@ -120,6 +120,7 @@ public class ProgressBar extends Component {
         float stripeWidth = this.stripeWidth.get();
         float stripeGap = this.stripeGap.get();
         float period = stripeWidth + stripeGap;
+        if (stripeWidth <= 0 || period <= 0) return;
 
         double timeSec = this.stripeAnimated.get() ? System.currentTimeMillis() / 1000D : 0;
         float speed = this.stripeSpeed.get();

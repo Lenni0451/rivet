@@ -39,12 +39,12 @@ public class DecoratedContainer extends ParentContainer {
 
     public final DecoratedContainer innerPadding(final Padding padding) {
         this.innerPadding = padding;
+        this.requestLayoutRecalculation();
         return this;
     }
 
     public final DecoratedContainer innerPadding(final float padding) {
-        this.innerPadding = new Padding(padding);
-        return this;
+        return this.innerPadding(new Padding(padding));
     }
 
     @Override
