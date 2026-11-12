@@ -26,6 +26,7 @@ public class Container extends ParentContainer {
     @Getter
     private final Layout layout;
     private final List<Child> children = new CopyOnWriteArrayList<>();
+    private final Map<Component, Child> childIndex = Collections.synchronizedMap(new IdentityHashMap<>());
     private final MouseHandler mouseHandler = new MouseHandler();
     @Getter
     private final ListenerList<VoidListener<Component>> addChildListener = new ListenerList<>();
@@ -46,7 +47,9 @@ public class Container extends ParentContainer {
         initializer.accept(component);
         this.addChildListener.callVoid((l, c) -> l.accept(c, component), () -> {
             this.remove(component);
-            this.children.add(new Child(component));
+            Child child = new Child(component);
+            this.children.add(child);
+            this.childIndex.put(component, child);
             if (this.rivet() != null) {
                 component.setRivet(this.rivet(), this);
             }
@@ -70,16 +73,12 @@ public class Container extends ParentContainer {
     // Can return Bounds.EMPTY if the component isn't layouted yet or is not a child of this container
     @Override
     public final Rectangle childBounds(final Component component) {
-        for (Child child : this.children) {
-            if (child.component == component) {
-                return child.bounds;
-            }
-        }
-        return Rectangle.EMPTY;
+        Child child = this.childIndex.get(component);
+        return child == null ? Rectangle.EMPTY : child.bounds;
     }
 
     public final synchronized boolean remove(final Component component) {
-        Child toRemove = this.children.stream().filter(child -> child.component == component).findFirst().orElse(null);
+        Child toRemove = this.childIndex.remove(component);
         if (toRemove != null && this.children.remove(toRemove)) {
             this.mouseHandler.checkAndRemove(toRemove);
             if (this.rivet() != null && this.rivet().focusedComponent() == component) {
@@ -107,6 +106,7 @@ public class Container extends ParentContainer {
             }
         }
         this.children.clear();
+        this.childIndex.clear();
         this.invalidateLayout();
         this.clearChildrenListener.call(Runnable::run);
         this.childChangedListener.call(Runnable::run);
