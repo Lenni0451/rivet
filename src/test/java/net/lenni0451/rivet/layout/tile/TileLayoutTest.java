@@ -394,6 +394,20 @@ class TileLayoutTest {
         assertRectangleEquals(new Rectangle(110, 110, 100, 100), gapBounds.get(c1));
     }
 
+    @Test
+    void testNegativeGapsAreClamped() {
+        final TileLayout layout = new TileLayout(2, 1, -10, -5);
+        assertEquals(0, layout.horizontalGap());
+        assertEquals(0, layout.verticalGap());
+
+        final Component c1 = new TestComponent(10, 10);
+        final Component c2 = new TestComponent(10, 10);
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(new Size(200, 50), List.of(c1, c2), bounds::put);
+        assertRectangleEquals(new Rectangle(0, 0, 100, 50), bounds.get(c1));
+        assertRectangleEquals(new Rectangle(100, 0, 100, 50), bounds.get(c2));
+    }
+
     private static class TestComponent extends Component {
         private final Size idealSize;
 

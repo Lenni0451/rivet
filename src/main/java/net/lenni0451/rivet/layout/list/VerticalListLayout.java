@@ -31,10 +31,8 @@ public record VerticalListLayout(int gap, boolean fullWidth, boolean constrained
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
             width = Math.max(width, this.widthOf(component, idealSize));
+            if (height > 0) height += this.gap;
             height += this.heightOf(component, idealSize);
-        }
-        if (!components.isEmpty()) {
-            height += this.gap * (components.size() - 1);
         }
         return new Size(width, height);
     }
@@ -47,13 +45,15 @@ public record VerticalListLayout(int gap, boolean fullWidth, boolean constrained
             Size idealSize = component.computeIdealSize(containerSize);
             float width = this.fullWidth ? this.widthOf(component, containerSize.width()) : this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
+            float gap = y > 0 ? this.gap : 0;
             if (this.constrained) {
+                leftoverHeight -= gap;
                 if (leftoverHeight > 0 && height > leftoverHeight) {
                     height = this.heightOf(component, leftoverHeight);
                 }
                 leftoverHeight -= height;
             }
-            if (y != 0) y += this.gap;
+            y += gap;
             setBounds.accept(component, new Rectangle(0, y, width, height));
             y += height;
         }

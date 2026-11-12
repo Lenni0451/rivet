@@ -25,6 +25,8 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
     public TileLayout {
         if (columns < 1) throw new IllegalArgumentException("Columns must be at least 1");
         if (rows < 1) throw new IllegalArgumentException("Rows must be at least 1");
+        horizontalGap = Math.max(0, horizontalGap);
+        verticalGap = Math.max(0, verticalGap);
     }
 
     @Override

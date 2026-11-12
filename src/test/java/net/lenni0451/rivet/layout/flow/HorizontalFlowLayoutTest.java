@@ -319,6 +319,20 @@ class HorizontalFlowLayoutTest {
         assertTrue(parameterized.toString().contains("horizontalGap=10"));
     }
 
+    @Test
+    void testZeroHeightRowIdealSizeMatchesLayout() {
+        final HorizontalFlowLayout layout = new HorizontalFlowLayout(0, 20);
+        final Size containerSize = new Size(100, 400);
+        final Component c1 = new TestComponent(100, 0);
+        final Component c2 = new TestComponent(100, 50);
+        final List<Component> list = List.of(c1, c2);
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(containerSize, list, bounds::put);
+        assertRectangleEquals(new Rectangle(0, 20, 100, 50), bounds.get(c2));
+        assertEquals(new Size(100, 70), layout.computeIdealSize(containerSize, list));
+    }
+
     private static class TestComponent extends Component {
         private final Size idealSize;
 

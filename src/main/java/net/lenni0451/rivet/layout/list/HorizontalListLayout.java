@@ -30,11 +30,9 @@ public record HorizontalListLayout(int gap, boolean fullHeight, boolean constrai
         float height = 0;
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
+            if (width > 0) width += this.gap;
             width += this.widthOf(component, idealSize);
             height = Math.max(height, this.heightOf(component, idealSize));
-        }
-        if (!components.isEmpty()) {
-            width += this.gap * (components.size() - 1);
         }
         return new Size(width, height);
     }
@@ -47,13 +45,15 @@ public record HorizontalListLayout(int gap, boolean fullHeight, boolean constrai
             Size idealSize = component.computeIdealSize(containerSize);
             float width = this.widthOf(component, idealSize);
             float height = this.fullHeight ? this.heightOf(component, containerSize.height()) : this.heightOf(component, idealSize);
+            float gap = x > 0 ? this.gap : 0;
             if (this.constrained) {
+                leftoverWidth -= gap;
                 if (leftoverWidth > 0 && width > leftoverWidth) {
                     width = this.widthOf(component, leftoverWidth);
                 }
                 leftoverWidth -= width;
             }
-            if (x > 0) x += this.gap;
+            x += gap;
             setBounds.accept(component, new Rectangle(x, 0, width, height));
             x += width;
         }

@@ -40,8 +40,8 @@ public final class AnchorLayout implements Layout {
             float maxX = containerSize.width() * options.anchorMaxX();
             float minY = containerSize.height() * options.anchorMinY();
             float maxY = containerSize.height() * options.anchorMaxY();
-            boolean isPointAnchorX = minX >= maxX;
-            boolean isPointAnchorY = minY >= maxY;
+            boolean isPointAnchorX = options.anchorMinX() >= options.anchorMaxX();
+            boolean isPointAnchorY = options.anchorMinY() >= options.anchorMaxY();
             Size idealSize = null;
             if (isPointAnchorX || isPointAnchorY) {
                 idealSize = component.computeIdealSize(containerSize);

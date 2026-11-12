@@ -329,6 +329,25 @@ class VerticalListLayoutTest {
         assertTrue(threeArg.toString().contains("gap=10"));
     }
 
+    @Test
+    void testConstrainedModeAccountsForGap() {
+        final VerticalListLayout layout = new VerticalListLayout(10, false, true);
+        final Component c1 = new TestComponent(50, 100);
+        final Component c2 = new TestComponent(50, 120);
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(new Size(50, 180), List.of(c1, c2), bounds::put);
+        assertRectangleEquals(new Rectangle(0, 0, 50, 100), bounds.get(c1));
+        assertRectangleEquals(new Rectangle(0, 110, 50, 70), bounds.get(c2));
+    }
+
+    @Test
+    void testZeroHeightLeadComponentIdealSizeMatchesLayout() {
+        final VerticalListLayout layout = new VerticalListLayout(20, false);
+        final List<Component> list = List.of(new TestComponent(50, 0), new TestComponent(50, 80), new TestComponent(50, 70));
+        assertEquals(new Size(50, 170), layout.computeIdealSize(new Size(200, 400), list));
+    }
+
     private static class TestComponent extends Component {
         private final Size idealSize;
 

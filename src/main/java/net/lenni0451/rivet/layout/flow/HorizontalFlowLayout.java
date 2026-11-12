@@ -22,30 +22,24 @@ public record HorizontalFlowLayout(int horizontalGap, int verticalGap) implement
 
     @Override
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
-        float currentWidth = 0;
-        float currentHeight = 0;
+        float x = 0;
+        float y = 0;
+        float maxHeight = 0;
         float totalWidth = 0;
         float totalHeight = 0;
         for (Component component : components) {
             Size idealSize = component.computeIdealSize(constraints);
-            float componentWidth = this.widthOf(component, idealSize);
-            float componentHeight = this.heightOf(component, idealSize);
-            if (currentWidth > 0 && currentWidth + this.horizontalGap + componentWidth > constraints.width()) {
-                totalWidth = Math.max(totalWidth, currentWidth);
-                currentWidth = 0;
-
-                if (totalHeight > 0) totalHeight += this.verticalGap;
-                totalHeight += currentHeight;
-                currentHeight = 0;
+            float width = this.widthOf(component, idealSize);
+            float height = this.heightOf(component, idealSize);
+            if (x + width > constraints.width() && x > 0) {
+                x = 0;
+                y += maxHeight + this.verticalGap;
+                maxHeight = height;
             }
-            float xGap = currentWidth > 0 ? this.horizontalGap : 0;
-            currentWidth += xGap + componentWidth;
-            currentHeight = Math.max(currentHeight, componentHeight);
-        }
-        if (currentWidth > 0) {
-            totalWidth = Math.max(totalWidth, currentWidth);
-            if (totalHeight > 0) totalHeight += this.verticalGap;
-            totalHeight += currentHeight;
+            totalWidth = Math.max(totalWidth, x + width);
+            totalHeight = Math.max(totalHeight, y + height);
+            x += width + this.horizontalGap;
+            maxHeight = Math.max(maxHeight, height);
         }
         return new Size(totalWidth, totalHeight);
     }

@@ -319,6 +319,20 @@ class VerticalFlowLayoutTest {
         assertTrue(parameterized.toString().contains("horizontalGap=20"));
     }
 
+    @Test
+    void testZeroWidthColumnIdealSizeMatchesLayout() {
+        final VerticalFlowLayout layout = new VerticalFlowLayout(20, 0);
+        final Size containerSize = new Size(400, 100);
+        final Component c1 = new TestComponent(0, 100);
+        final Component c2 = new TestComponent(50, 100);
+        final List<Component> list = List.of(c1, c2);
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        layout.layoutComponents(containerSize, list, bounds::put);
+        assertRectangleEquals(new Rectangle(20, 0, 50, 100), bounds.get(c2));
+        assertEquals(new Size(70, 100), layout.computeIdealSize(containerSize, list));
+    }
+
     private static class TestComponent extends Component {
         private final Size idealSize;
 

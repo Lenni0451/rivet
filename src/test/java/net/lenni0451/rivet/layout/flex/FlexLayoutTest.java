@@ -670,12 +670,12 @@ class FlexLayoutTest {
                 .layoutOptions(FlexOptions.DEFAULT.withGrow(1));
 
         // Container width 300. Free = 200, share = 100.
-        // cGrowMax proposed = 150, clamped to 80.
-        // cGrowOther proposed = 150.
+        // cGrowMax proposed = 150, clamped to 80 and frozen.
+        // cGrowOther receives the remaining free space: 300 - 80 = 220.
         final Map<Component, Rectangle> growBounds = new HashMap<>();
         FlexLayout.DEFAULT.layoutComponents(new Size(300, 100), List.of(cGrowMax, cGrowOther), growBounds::put);
         assertRectangleEquals(new Rectangle(0, 0, 80, 40), growBounds.get(cGrowMax));
-        assertRectangleEquals(new Rectangle(80, 0, 150, 40), growBounds.get(cGrowOther));
+        assertRectangleEquals(new Rectangle(80, 0, 220, 40), growBounds.get(cGrowOther));
 
         // Main axis shrink clamping with minSize
         final Component cShrinkMin = new TestComponent(100, 40)
@@ -686,12 +686,12 @@ class FlexLayoutTest {
                 .layoutOptions(FlexOptions.DEFAULT.withShrink(1));
 
         // Container width 150. Free = -50. Reduction = 25 per item.
-        // cShrinkMin proposed = 75, clamped to 85.
-        // cShrinkOther proposed = 75.
+        // cShrinkMin proposed = 75, clamped to 85 and frozen.
+        // cShrinkOther absorbs the remaining deficit: 150 - 85 = 65.
         final Map<Component, Rectangle> shrinkBounds = new HashMap<>();
         FlexLayout.DEFAULT.layoutComponents(new Size(150, 100), List.of(cShrinkMin, cShrinkOther), shrinkBounds::put);
         assertRectangleEquals(new Rectangle(0, 0, 85, 40), shrinkBounds.get(cShrinkMin));
-        assertRectangleEquals(new Rectangle(85, 0, 75, 40), shrinkBounds.get(cShrinkOther));
+        assertRectangleEquals(new Rectangle(85, 0, 65, 40), shrinkBounds.get(cShrinkOther));
 
         // Cross axis stretch clamping with maxSize
         final Component cStretchMax = new TestComponent(80, 50);
@@ -913,6 +913,35 @@ class FlexLayoutTest {
         saOver.layoutComponents(new Size(150, 100), List.of(o1, o2), saOverBounds::put);
         assertRectangleEquals(new Rectangle(10, 0, 100, 40), saOverBounds.get(o1));
         assertRectangleEquals(new Rectangle(130, 0, 100, 40), saOverBounds.get(o2));
+    }
+
+    @Test
+    void testGrowRedistributesSpaceFromMaxClampedItems() {
+        final Component c1 = new TestComponent(100, 50).maxSize(150, 50).layoutOptions(FlexOptions.DEFAULT.withGrow(1));
+        final Component c2 = new TestComponent(100, 50).layoutOptions(FlexOptions.DEFAULT.withGrow(1));
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        FlexLayout.DEFAULT.withColumnGap(10).layoutComponents(new Size(510, 50), List.of(c1, c2), bounds::put);
+        assertRectangleEquals(new Rectangle(0, 0, 150, 50), bounds.get(c1));
+        assertRectangleEquals(new Rectangle(160, 0, 350, 50), bounds.get(c2));
+    }
+
+    @Test
+    void testShrinkRedistributesDeficitFromMinClampedItems() {
+        final Component c1 = new TestComponent(200, 50).minSize(180, 0);
+        final Component c2 = new TestComponent(200, 50);
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        FlexLayout.DEFAULT.layoutComponents(new Size(200, 50), List.of(c1, c2), bounds::put);
+        assertRectangleEquals(new Rectangle(0, 0, 180, 50), bounds.get(c1));
+        assertRectangleEquals(new Rectangle(180, 0, 20, 50), bounds.get(c2));
+    }
+
+    @Test
+    void testZeroCrossSizeLineIdealSizeIncludesGap() {
+        final FlexLayout layout = FlexLayout.DEFAULT.withWrap(FlexWrap.WRAP).withRowGap(20);
+        final List<Component> list = List.of(new TestComponent(100, 0), new TestComponent(100, 50));
+        assertEquals(new Size(100, 70), layout.computeIdealSize(new Size(100, 400), list));
     }
 
     private static class TestComponent extends Component {

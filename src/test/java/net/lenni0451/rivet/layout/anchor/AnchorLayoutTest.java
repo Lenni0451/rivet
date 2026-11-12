@@ -312,6 +312,16 @@ class AnchorLayoutTest {
         assertEquals(0.75f, modified.pivotY(), DELTA);
     }
 
+    @Test
+    void testStretchAnchorInZeroSizedContainer() {
+        final Component c = new TestComponent(100, 50);
+        c.layoutOptions(AnchorOptions.EMPTY.anchor(0, 0, 1, 1).pivot(0.5f, 0.5f));
+
+        final Map<Component, Rectangle> bounds = new HashMap<>();
+        AnchorLayout.INSTANCE.layoutComponents(new Size(0, 0), List.of(c), bounds::put);
+        assertRectangleEquals(new Rectangle(0, 0, 0, 0), bounds.get(c));
+    }
+
     private static class TestComponent extends Component {
         private final Size idealSize;
 

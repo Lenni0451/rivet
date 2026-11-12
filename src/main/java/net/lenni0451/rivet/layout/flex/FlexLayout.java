@@ -34,9 +34,10 @@ public record FlexLayout(FlexDirection direction, FlexWrap wrap, FlexJustify jus
         float crossGap = rowAxis ? this.rowGap : this.columnGap;
         float totalMain = 0;
         float totalCross = 0;
-        for (Line line : lines) {
+        for (int i = 0; i < lines.size(); i++) {
+            Line line = lines.get(i);
             totalMain = Math.max(totalMain, line.mainSize);
-            if (totalCross > 0) totalCross += crossGap;
+            if (i > 0) totalCross += crossGap;
             totalCross += line.crossSize;
         }
         return rowAxis ? new Size(totalMain, totalCross) : new Size(totalCross, totalMain);
@@ -111,9 +112,7 @@ public record FlexLayout(FlexDirection direction, FlexWrap wrap, FlexJustify jus
                     default -> crossPos = lineCrossOffset;
                 }
 
-                Rectangle bounds = rowAxis
-                        ? new Rectangle(mainPos, crossPos, itemMain, itemCross)
-                        : new Rectangle(crossPos, mainPos, itemCross, itemMain);
+                Rectangle bounds = rowAxis ? new Rectangle(mainPos, crossPos, itemMain, itemCross) : new Rectangle(crossPos, mainPos, itemCross, itemMain);
                 setBounds.accept(alignableComponent.component, bounds);
             }
         }
@@ -158,46 +157,65 @@ public record FlexLayout(FlexDirection direction, FlexWrap wrap, FlexJustify jus
         float free = mainAvailable - line.mainSize;
         if (free == 0) return line;
 
+        boolean growing = free > 0;
         List<AlignableComponent> components = line.components;
-        List<AlignableComponent> resolved = new ArrayList<>(components.size());
-        if (free > 0) {
-            float totalGrow = 0;
-            for (AlignableComponent component : components) {
-                totalGrow += Math.max(0, component.options.grow());
-            }
-            if (totalGrow <= 0) return line;
+        int count = components.size();
+        float[] baseSizes = new float[count];
+        float[] factors = new float[count];
+        float[] targetSizes = new float[count];
+        boolean[] frozen = new boolean[count];
+        boolean anyFlexible = false;
+        for (int i = 0; i < count; i++) {
+            AlignableComponent component = components.get(i);
+            baseSizes[i] = component.mainSize;
+            targetSizes[i] = component.mainSize;
+            factors[i] = growing ? Math.max(0, component.options.grow()) : Math.max(0, component.options.shrink()) * component.mainSize;
+            frozen[i] = factors[i] <= 0;
+            anyFlexible |= !frozen[i];
+        }
+        if (!anyFlexible) return line;
 
-            for (AlignableComponent component : components) {
-                float grow = Math.max(0, component.options.grow());
-                float extra = free * (grow / totalGrow);
-                float newMain = rowAxis
-                        ? this.widthOf(component.component, component.mainSize + extra)
-                        : this.heightOf(component.component, component.mainSize + extra);
-                resolved.add(new AlignableComponent(component.component, component.options, newMain, component.crossSize));
+        float gaps = count > 1 ? mainGap * (count - 1) : 0;
+        float[] candidateSizes = new float[count];
+        while (true) {
+            float used = gaps;
+            float totalFactor = 0;
+            for (int i = 0; i < count; i++) {
+                used += frozen[i] ? targetSizes[i] : baseSizes[i];
+                if (!frozen[i]) totalFactor += factors[i];
             }
-        } else {
-            float totalShrinkWeighted = 0;
-            for (AlignableComponent component : components) {
-                totalShrinkWeighted += Math.max(0, component.options.shrink()) * component.mainSize;
-            }
-            if (totalShrinkWeighted <= 0) return line;
+            float remainingFree = mainAvailable - used;
+            if (totalFactor <= 0 || (growing ? remainingFree <= 0 : remainingFree >= 0)) break;
 
-            for (AlignableComponent component : components) {
-                float weighted = Math.max(0, component.options.shrink()) * component.mainSize;
-                float reduction = -free * (weighted / totalShrinkWeighted);
-                float newMain = rowAxis
-                        ? this.widthOf(component.component, Math.max(0, component.mainSize - reduction))
-                        : this.heightOf(component.component, Math.max(0, component.mainSize - reduction));
-                resolved.add(new AlignableComponent(component.component, component.options, newMain, component.crossSize));
+            float totalViolation = 0;
+            for (int i = 0; i < count; i++) {
+                if (frozen[i]) continue;
+                float unclamped = Math.max(0, baseSizes[i] + remainingFree * (factors[i] / totalFactor));
+                candidateSizes[i] = this.clampMain(components.get(i).component, unclamped, rowAxis);
+                totalViolation += candidateSizes[i] - unclamped;
             }
+            for (int i = 0; i < count; i++) {
+                if (frozen[i]) continue;
+                float unclamped = Math.max(0, baseSizes[i] + remainingFree * (factors[i] / totalFactor));
+                float violation = candidateSizes[i] - unclamped;
+                if (totalViolation == 0 || (totalViolation > 0 && violation > 0) || (totalViolation < 0 && violation < 0)) {
+                    targetSizes[i] = candidateSizes[i];
+                    frozen[i] = true;
+                }
+            }
+            if (totalViolation == 0) break;
         }
 
-        float[] mainSizes = new float[resolved.size()];
-        for (int i = 0; i < resolved.size(); i++) {
-            mainSizes[i] = resolved.get(i).mainSize;
+        List<AlignableComponent> resolved = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            AlignableComponent component = components.get(i);
+            resolved.add(new AlignableComponent(component.component, component.options, targetSizes[i], component.crossSize));
         }
-        float newLineMain = sumWithGaps(mainSizes, mainGap);
-        return new Line(resolved, newLineMain, line.crossSize);
+        return new Line(resolved, sumWithGaps(targetSizes, mainGap), line.crossSize);
+    }
+
+    private float clampMain(final Component component, final float size, final boolean rowAxis) {
+        return rowAxis ? this.widthOf(component, size) : this.heightOf(component, size);
     }
 
     private static float[] distribute(final float[] sizes, final float gap, final float available, final Distribution mode) {
