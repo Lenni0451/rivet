@@ -23,7 +23,7 @@ public final class Layer implements Parent {
     private boolean recalculateNextFrame;
 
     @Override
-    public void requestLayoutRecalculation() {
+    public void invalidateLayout() {
         this.recalculateNextFrame = true;
     }
 

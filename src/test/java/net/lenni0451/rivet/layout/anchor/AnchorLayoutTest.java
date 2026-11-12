@@ -39,7 +39,7 @@ class AnchorLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -247,7 +247,7 @@ class AnchorLayoutTest {
         container.add(c2);
         container.add(c3);
 
-        assertDoesNotThrow(() -> container.computeLayout(new Size(500, 400)));
+        assertDoesNotThrow(() -> container.layout(new Size(500, 400)));
         assertRectangleEquals(new Rectangle(225, 175, 50, 50), container.childBounds(c1));
         assertRectangleEquals(new Rectangle(0, 0, 500, 400), container.childBounds(c2));
         assertRectangleEquals(new Rectangle(0, 0, 60, 40), container.childBounds(c3));
@@ -338,7 +338,7 @@ class AnchorLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

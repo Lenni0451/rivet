@@ -39,7 +39,7 @@ class VerticalFlowLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -59,7 +59,7 @@ class VerticalFlowLayoutTest {
 
         final Container container = new Container(layout);
         container.add(child);
-        container.computeLayout(containerSize);
+        container.layout(containerSize);
         assertRectangleEquals(new Rectangle(0, 0, 80, 120), container.childBounds(child));
         assertEquals(new Size(80, 120), container.contentSize());
     }
@@ -276,7 +276,7 @@ class VerticalFlowLayoutTest {
         final Component c3 = new TestComponent(40, 60);
         container.add(c1).add(c2).add(c3);
 
-        container.computeLayout(new Size(300, 100));
+        container.layout(new Size(300, 100));
 
         assertRectangleEquals(new Rectangle(0, 0, 40, 60), container.childBounds(c1));
         assertRectangleEquals(new Rectangle(50, 0, 40, 60), container.childBounds(c2));
@@ -345,7 +345,7 @@ class VerticalFlowLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

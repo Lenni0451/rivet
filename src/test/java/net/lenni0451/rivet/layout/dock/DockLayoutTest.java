@@ -40,7 +40,7 @@ class DockLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -336,14 +336,14 @@ class DockLayoutTest {
         container.add(left);
         container.add(center);
 
-        assertDoesNotThrow(() -> container.computeLayout(new Size(500, 400)));
+        assertDoesNotThrow(() -> container.layout(new Size(500, 400)));
         assertRectangleEquals(new Rectangle(0, 0, 500, 40), container.childBounds(top));
         assertRectangleEquals(new Rectangle(0, 45, 60, 355), container.childBounds(left));
         assertRectangleEquals(new Rectangle(65, 45, 435, 355), container.childBounds(center));
 
         assertEquals(new Size(500, 400), container.contentSize());
         final Size expectedIdeal = layout.computeIdealSize(new Size(500, 400), List.of(top, left, center));
-        assertEquals(expectedIdeal, container.computeIdealSize(new Size(500, 400)));
+        assertEquals(expectedIdeal, container.idealSize(new Size(500, 400)));
     }
 
     @Test
@@ -383,7 +383,7 @@ class DockLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

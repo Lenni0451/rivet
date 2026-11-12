@@ -131,9 +131,7 @@ public class TextField extends Component {
             this.font = font;
             if (this.rivet() != null) {
                 this.updateShapedText();
-                if (this.parent() != null) {
-                    this.parent().requestLayoutRecalculation();
-                }
+                this.invalidateLayout();
             }
         }
         return this;
@@ -433,7 +431,7 @@ public class TextField extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         float textHeight = this.usedFont().height();
         return new Size(
                 textHeight * 10 + this.innerPadding.get().horizontal(),

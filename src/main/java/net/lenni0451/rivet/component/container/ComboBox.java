@@ -117,13 +117,13 @@ public class ComboBox extends ParentContainer {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
-        return this.button.computeIdealSize(constraints).clamp(this.button);
+    protected Size idealSizeInternal(final Size constraints) {
+        return this.button.idealSize(constraints).clamp(this.button);
     }
 
     @Override
-    public void computeLayout(final Size size) {
-        this.button.computeLayout(size.clamp(this.button));
+    protected void layoutInternal(final Size size) {
+        this.button.layout(size.clamp(this.button));
     }
 
     @Override

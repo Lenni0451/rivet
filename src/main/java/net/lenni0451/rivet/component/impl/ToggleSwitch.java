@@ -288,7 +288,7 @@ public class ToggleSwitch extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         float fontSize = this.rivet().backend().font().height();
         return new Size(fontSize * 2, fontSize);
     }

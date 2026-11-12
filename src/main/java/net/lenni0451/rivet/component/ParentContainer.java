@@ -91,12 +91,7 @@ public abstract class ParentContainer extends Component implements Parent {
     }
 
     @Override
-    public abstract void computeLayout(final Size size);
-
-    @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
-    }
+    protected abstract void layoutInternal(final Size size);
 
     @Override
     public void requestScrollIntoView(final Component child, final Rectangle area, final boolean immediate) {

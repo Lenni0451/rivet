@@ -31,7 +31,7 @@ public class TabContainer extends ParentContainer {
     private final List<Tab> tabs = new ArrayList<>();
     private final Container tabContainer = new Container(BorderLayout.DEFAULT);
     private final Container leftTabContainer = new Container(new HorizontalListLayout(0, true));
-    private final Container centerTabContainer = new Container(new TabLayout());
+    private final Container centerTabContainer = new Container(new TabLayout(this));
     private final Container rightTabContainer = new Container(new HorizontalListLayout(0, true));
     private final Container contentContainer = new Container(FullSizeLayout.INSTANCE);
     private Size tabSize;
@@ -45,13 +45,13 @@ public class TabContainer extends ParentContainer {
     @Getter
     private final ThemeOption<Float> separatorThickness = new ThemeOption<>(this, Theme.Tab.SEPARATOR_THICKNESS);
     @Getter
-    private final ThemeOption<TabAlignment> tabAlignment = new ThemeOption<>(this, Theme.Tab.ALIGNMENT);
+    private final ThemeOption<TabAlignment> tabAlignment = new ThemeOption<>(this.centerTabContainer, Theme.Tab.ALIGNMENT);
     @Getter
-    private final ThemeOption<Boolean> tabSameSize = new ThemeOption<>(this, Theme.Tab.SAME_SIZE);
+    private final ThemeOption<Boolean> tabSameSize = new ThemeOption<>(this.centerTabContainer, Theme.Tab.SAME_SIZE);
     @Getter
-    private final ThemeOption<Float> tabVerticalGap = new ThemeOption<>(this, Theme.Tab.VERTICAL_GAP);
+    private final ThemeOption<Float> tabVerticalGap = new ThemeOption<>(this.centerTabContainer, Theme.Tab.VERTICAL_GAP);
     @Getter
-    private final ThemeOption<Float> tabGap = new ThemeOption<>(this, Theme.Tab.TAB_GAP);
+    private final ThemeOption<Float> tabGap = new ThemeOption<>(this.centerTabContainer, Theme.Tab.TAB_GAP);
 
     public TabContainer() {
         this.tabContainer.add(this.leftTabContainer.layoutOptions(BorderPosition.LEFT));
@@ -71,22 +71,6 @@ public class TabContainer extends ParentContainer {
                 tab.headerBackground().activate();
                 this.contentContainer.add(tab.content());
             }
-        });
-        this.tabAlignment.changeListener().add(val -> {
-            ((TabLayout) this.centerTabContainer.layout()).alignment = val;
-            this.requestLayoutRecalculation();
-        });
-        this.tabSameSize.changeListener().add(val -> {
-            ((TabLayout) this.centerTabContainer.layout()).sameSize = val;
-            this.requestLayoutRecalculation();
-        });
-        this.tabVerticalGap.changeListener().add(val -> {
-            ((TabLayout) this.centerTabContainer.layout()).verticalGap = val;
-            this.requestLayoutRecalculation();
-        });
-        this.tabGap.changeListener().add(val -> {
-            ((TabLayout) this.centerTabContainer.layout()).tabGap = val;
-            this.requestLayoutRecalculation();
         });
     }
 
@@ -179,9 +163,9 @@ public class TabContainer extends ParentContainer {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
-        Size tabSize = this.tabContainer.computeIdealSize(constraints).clamp(this.tabContainer);
-        Size contentSize = this.contentContainer.computeIdealSize(constraints.withHeight(constraints.height() - tabSize.height())).clamp(this.contentContainer);
+    protected Size idealSizeInternal(final Size constraints) {
+        Size tabSize = this.tabContainer.idealSize(constraints).clamp(this.tabContainer);
+        Size contentSize = this.contentContainer.idealSize(constraints.withHeight(constraints.height() - tabSize.height())).clamp(this.contentContainer);
         return new Size(
                 Math.max(tabSize.width(), contentSize.width()),
                 tabSize.height() + contentSize.height()
@@ -189,11 +173,11 @@ public class TabContainer extends ParentContainer {
     }
 
     @Override
-    public void computeLayout(final Size size) {
-        this.tabSize = this.tabContainer.computeIdealSize(size).withWidth(size.width()).clamp(this.tabContainer);
+    protected void layoutInternal(final Size size) {
+        this.tabSize = this.tabContainer.idealSize(size).withWidth(size.width()).clamp(this.tabContainer);
         this.contentSize = new Size(size.width(), size.height() - this.tabSize.height()).clamp(this.contentContainer);
-        this.tabContainer.computeLayout(this.tabSize);
-        this.contentContainer.computeLayout(this.contentSize);
+        this.tabContainer.layout(this.tabSize);
+        this.contentContainer.layout(this.contentSize);
     }
 
 

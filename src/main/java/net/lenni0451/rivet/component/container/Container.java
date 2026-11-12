@@ -49,8 +49,8 @@ public class Container extends ParentContainer {
             this.children.add(new Child(component));
             if (this.rivet() != null) {
                 component.setRivet(this.rivet(), this);
-                this.requestLayoutRecalculation();
             }
+            this.invalidateLayout();
             this.childChangedListener.call(Runnable::run);
         });
         return this;
@@ -58,7 +58,7 @@ public class Container extends ParentContainer {
 
     public final synchronized Container sort(final Comparator<Component> comparator) {
         this.children.sort((child1, child2) -> comparator.compare(child1.component, child2.component));
-        if (this.rivet() != null) this.rivet().recalculateNextFrame();
+        this.invalidateLayout();
         return this;
     }
 
@@ -87,8 +87,8 @@ public class Container extends ParentContainer {
             }
             if (this.rivet() != null) {
                 component.setRivet(null, null);
-                this.requestLayoutRecalculation();
             }
+            this.invalidateLayout();
             this.removeChildListener.call(l -> l.accept(component));
             this.childChangedListener.call(Runnable::run);
             return true;
@@ -107,9 +107,7 @@ public class Container extends ParentContainer {
             }
         }
         this.children.clear();
-        if (this.rivet() != null) {
-            this.requestLayoutRecalculation();
-        }
+        this.invalidateLayout();
         this.clearChildrenListener.call(Runnable::run);
         this.childChangedListener.call(Runnable::run);
         return this;
@@ -136,12 +134,12 @@ public class Container extends ParentContainer {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         return this.layout.computeIdealSize(constraints, this.children.stream().map(child -> child.component).toList());
     }
 
     @Override
-    public void computeLayout(final Size size) {
+    protected void layoutInternal(final Size size) {
         List<Child> children = List.copyOf(this.children);
         Map<Component, Rectangle> newBounds = new IdentityHashMap<>();
         this.layout.layoutComponents(size, children.stream().map(child -> child.component).toList(), newBounds::put);
@@ -156,7 +154,7 @@ public class Container extends ParentContainer {
                 throw new IllegalStateException("Layout '" + this.layout.getClass().getSimpleName() + "' did not provide bounds for child '" + child.component.getClass().getSimpleName() + "'");
             }
             child.bounds = newChildBounds;
-            child.component.computeLayout(child.bounds.size());
+            child.component.layout(child.bounds.size());
             float childWidth = child.bounds.width();
             float childHeight = child.bounds.height();
             if (child.component instanceof Parent parent) {

@@ -116,9 +116,18 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         this.max = new DoubleProperty(max);
         this.step = new DoubleProperty(step);
 
-        this.min.syncListener().add(m -> this.tickLabels.clear());
-        this.max.syncListener().add(m -> this.tickLabels.clear());
-        this.step.syncListener().add(s -> this.cachedFormatString = null);
+        this.min.syncListener().add(m -> {
+            this.tickLabels.clear();
+            this.invalidateLayout();
+        });
+        this.max.syncListener().add(m -> {
+            this.tickLabels.clear();
+            this.invalidateLayout();
+        });
+        this.step.syncListener().add(s -> {
+            this.cachedFormatString = null;
+            this.invalidateLayout();
+        });
 
         this.positionUpdateListener().add(new PositionUpdateListener(this::updateTooltipPositions));
         this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
@@ -128,9 +137,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         if (this.font != font) {
             this.font = font;
             this.tickLabels.clear();
-            if (this.parent() != null) {
-                this.parent().requestLayoutRecalculation();
-            }
+            this.invalidateLayout();
         }
         return (S) this;
     }
@@ -154,9 +161,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         if (!Objects.equals(this.ticks, ticks)) {
             this.ticks = ticks;
             this.tickLabels.clear();
-            if (this.parent() != null) {
-                this.parent().requestLayoutRecalculation();
-            }
+            this.invalidateLayout();
         }
         return (S) this;
     }
@@ -474,7 +479,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         float height;
         if (this.ticks == null) {
             height = Math.max(this.effectiveThumbHeight(), this.barHeight.get());

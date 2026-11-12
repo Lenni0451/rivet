@@ -25,10 +25,7 @@ public class Tab {
         this.button = new DecoratedContainer(this.headerBackground, header);
         this.content = content;
 
-        this.headerBackground.innerPadding().changeListener().add(padding -> {
-            this.button.innerPadding(padding);
-            this.button.requestLayoutRecalculation();
-        });
+        this.headerBackground.innerPadding().changeListener().add(this.button::innerPadding);
     }
 
 }

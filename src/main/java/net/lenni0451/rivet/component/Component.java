@@ -24,6 +24,8 @@ import net.lenni0451.rivet.math.Size;
 import net.lenni0451.rivet.property.BooleanProperty;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -46,6 +48,12 @@ public abstract class Component {
     private Capabilities capabilities = new Capabilities();
     @Getter
     private final BooleanProperty disabled = new BooleanProperty(false);
+
+    private final AtomicInteger layoutVersion = new AtomicInteger();
+    private IdealSizeEntry latestIdealSize;
+    private IdealSizeEntry previousIdealSize;
+    private int arrangedVersion = -1;
+    private Size arrangedSize;
 
     @Getter
     private final ListenerList<Runnable> addedListener = new ListenerList<>();
@@ -118,6 +126,7 @@ public abstract class Component {
             this.onRemovedInternal();
             this.rivet = null;
             this.parent = null;
+            this.layoutVersion.incrementAndGet();
             for (PositionUpdateListener listener : this.positionUpdateListener.listeners()) {
                 listener.lastPosition = null;
             }
@@ -130,6 +139,7 @@ public abstract class Component {
             }
             this.rivet = rivet;
             this.parent = parent;
+            this.layoutVersion.incrementAndGet();
             for (PositionUpdateListener listener : this.positionUpdateListener.listeners()) {
                 listener.lastPosition = null;
             }
@@ -149,7 +159,7 @@ public abstract class Component {
     public final Component minSize(final Size minSize) {
         if (!this.minSize.equals(minSize)) {
             this.minSize = minSize;
-            if (this.parent != null) this.parent.requestLayoutRecalculation();
+            this.invalidateLayout();
         }
         return this;
     }
@@ -161,7 +171,7 @@ public abstract class Component {
     public final Component maxSize(final Size maxSize) {
         if (!this.maxSize.equals(maxSize)) {
             this.maxSize = maxSize;
-            if (this.parent != null) this.parent.requestLayoutRecalculation();
+            this.invalidateLayout();
         }
         return this;
     }
@@ -184,7 +194,7 @@ public abstract class Component {
         if (!this.minSize.equals(newMinSize) || !this.maxSize.equals(newMaxSize)) {
             this.minSize = newMinSize;
             this.maxSize = newMaxSize;
-            if (this.parent != null) this.parent.requestLayoutRecalculation();
+            this.invalidateLayout();
         }
         return this;
     }
@@ -192,7 +202,7 @@ public abstract class Component {
     public final Component layoutOptions(final LayoutOptions layoutOptions) {
         if (this.layoutOptions == null || !this.layoutOptions.equals(layoutOptions)) {
             this.layoutOptions = layoutOptions;
-            if (this.parent != null) this.parent.requestLayoutRecalculation();
+            this.invalidateLayout();
         }
         return this;
     }
@@ -257,6 +267,20 @@ public abstract class Component {
     public final void scrollIntoView(final Rectangle area, final boolean immediate) {
         if (this.parent != null) {
             this.parent.requestScrollIntoView(this, area, immediate);
+        }
+    }
+
+    public final void invalidateLayout() {
+        this.layoutVersion.incrementAndGet();
+        if (this.parent != null) this.parent.invalidateLayout();
+    }
+
+    public final void invalidateLayoutTree() {
+        this.layoutVersion.incrementAndGet();
+        if (this instanceof Parent self) {
+            for (Component child : self.children()) {
+                child.invalidateLayoutTree();
+            }
         }
     }
 
@@ -465,9 +489,37 @@ public abstract class Component {
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
     }
 
-    public abstract Size computeIdealSize(final Size constraints);
+    public final Size idealSize(@Nullable final Size constraints) {
+        int version = this.layoutVersion.get();
+        IdealSizeEntry latest = this.latestIdealSize;
+        if (latest != null && latest.matches(version, constraints)) {
+            return latest.result;
+        }
+        IdealSizeEntry previous = this.previousIdealSize;
+        if (previous != null && previous.matches(version, constraints)) {
+            this.previousIdealSize = latest;
+            this.latestIdealSize = previous;
+            return previous.result;
+        }
 
-    public void computeLayout(final Size size) {
+        Size result = this.idealSizeInternal(constraints);
+        this.previousIdealSize = latest;
+        this.latestIdealSize = new IdealSizeEntry(version, constraints, result);
+        return result;
+    }
+
+    protected abstract Size idealSizeInternal(@Nullable final Size constraints);
+
+    public final void layout(final Size size) {
+        int version = this.layoutVersion.get();
+        if (version == this.arrangedVersion && size.equals(this.arrangedSize)) return;
+
+        this.layoutInternal(size);
+        this.arrangedVersion = version;
+        this.arrangedSize = size;
+    }
+
+    protected void layoutInternal(final Size size) {
     }
 
 
@@ -490,6 +542,12 @@ public abstract class Component {
             this.mouseHover = value;
             this.dragAndDrop = value;
             return this;
+        }
+    }
+
+    private record IdealSizeEntry(int version, @Nullable Size constraints, Size result) {
+        private boolean matches(final int version, @Nullable final Size constraints) {
+            return this.version == version && Objects.equals(this.constraints, constraints);
         }
     }
 

@@ -154,7 +154,7 @@ public class TabBackground extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         return Size.EMPTY;
     }
 

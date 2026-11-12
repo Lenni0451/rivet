@@ -40,7 +40,7 @@ class FlexLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
 
         // Also test with non-zero gaps
@@ -76,7 +76,7 @@ class FlexLayoutTest {
         // Container contract
         final Container container = new Container(layout);
         container.add(child);
-        container.computeLayout(containerSize);
+        container.layout(containerSize);
         assertRectangleEquals(new Rectangle(0, 0, 120, 80), container.childBounds(child));
         assertEquals(new Size(120, 80), container.contentSize());
     }
@@ -729,7 +729,7 @@ class FlexLayoutTest {
         container.add(c3);
 
         final Size containerSize = new Size(300, 400);
-        assertDoesNotThrow(() -> container.computeLayout(containerSize));
+        assertDoesNotThrow(() -> container.layout(containerSize));
 
         // Verify bounds exist for every child
         assertNotNull(container.childBounds(c1));
@@ -956,7 +956,7 @@ class FlexLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

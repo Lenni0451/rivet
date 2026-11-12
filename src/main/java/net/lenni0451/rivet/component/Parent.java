@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface Parent {
 
-    void requestLayoutRecalculation();
+    void invalidateLayout();
 
     Size contentSize();
 

@@ -29,7 +29,7 @@ public record HorizontalListLayout(int gap, boolean fullHeight, boolean constrai
         float width = 0;
         float height = 0;
         for (Component component : components) {
-            Size idealSize = component.computeIdealSize(constraints);
+            Size idealSize = component.idealSize(constraints);
             if (width > 0) width += this.gap;
             width += this.widthOf(component, idealSize);
             height = Math.max(height, this.heightOf(component, idealSize));
@@ -42,7 +42,7 @@ public record HorizontalListLayout(int gap, boolean fullHeight, boolean constrai
         float x = 0;
         float leftoverWidth = containerSize.width();
         for (Component component : components) {
-            Size idealSize = component.computeIdealSize(containerSize);
+            Size idealSize = component.idealSize(containerSize);
             float width = this.widthOf(component, idealSize);
             float height = this.fullHeight ? this.heightOf(component, containerSize.height()) : this.heightOf(component, idealSize);
             float gap = x > 0 ? this.gap : 0;

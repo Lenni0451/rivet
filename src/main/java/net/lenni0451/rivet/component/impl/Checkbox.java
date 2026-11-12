@@ -89,9 +89,7 @@ public class Checkbox extends Component {
             this.font = font;
             if (this.rivet() != null) {
                 this.shapeText();
-                if (this.parent() != null) {
-                    this.parent().requestLayoutRecalculation();
-                }
+                this.invalidateLayout();
             }
         }
         return this;
@@ -107,7 +105,7 @@ public class Checkbox extends Component {
             this.text = text;
             if (this.rivet() != null) {
                 this.shapeText();
-                this.parent().requestLayoutRecalculation();
+                this.invalidateLayout();
             }
         }
         return this;
@@ -236,7 +234,7 @@ public class Checkbox extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         float height = this.shapedText.logicalBounds().height();
         if (height <= 0) height = this.usedFont().height();
         float width = height;

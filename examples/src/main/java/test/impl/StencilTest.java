@@ -60,7 +60,7 @@ public class StencilTest extends TestBase {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return constraints;
         }
     }

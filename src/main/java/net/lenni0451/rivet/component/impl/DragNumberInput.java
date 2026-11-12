@@ -321,15 +321,15 @@ public class DragNumberInput extends ParentContainer {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         Padding padding = this.innerPadding.get();
-        return this.child.computeIdealSize(constraints.minus(padding)).clamp(this.child).plus(padding);
+        return this.child.idealSize(constraints.minus(padding)).clamp(this.child).plus(padding);
     }
 
     @Override
-    public void computeLayout(final Size size) {
+    protected void layoutInternal(final Size size) {
         Padding padding = this.innerPadding.get();
-        this.child.computeLayout(size.minus(padding).clamp(this.child));
+        this.child.layout(size.minus(padding).clamp(this.child));
     }
 
     @Override

@@ -64,7 +64,7 @@ public class Image extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         return new Size(this.texture.width(), this.texture.height());
     }
 

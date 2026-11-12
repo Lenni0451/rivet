@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.component.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.MathUtils;
@@ -25,7 +24,6 @@ import static net.lenni0451.rivet.utils.MathUtils.EPSILON;
 public class ScrollBar extends Component {
 
     @Getter
-    @Setter
     private Orientation orientation;
     @Getter
     private final FloatProperty scroll = new FloatProperty(0F);
@@ -82,6 +80,14 @@ public class ScrollBar extends Component {
         this.orientation = orientation;
 
         this.scroll.addValidator(s -> MathUtils.clamp(s, 0, this.maxScroll()));
+    }
+
+    public final ScrollBar orientation(final Orientation orientation) {
+        if (this.orientation != orientation) {
+            this.orientation = orientation;
+            this.invalidateLayout();
+        }
+        return this;
     }
 
     public final ScrollBar scroll(final float scroll) {
@@ -222,7 +228,7 @@ public class ScrollBar extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         return switch (this.orientation) {
             case HORIZONTAL -> new Size(0, this.barWidth.get());
             case VERTICAL -> new Size(this.barWidth.get(), 0);

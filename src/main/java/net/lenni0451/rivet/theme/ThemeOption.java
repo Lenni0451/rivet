@@ -24,6 +24,9 @@ public final class ThemeOption<T> {
 
         // The value can be null if it can't be resolved (e.g. the component is not attached), keep the last value instead
         this.value.addValidator(newValue -> newValue != null ? newValue : this.value.get());
+        if (key.affectsLayout()) {
+            this.value.changeListener().add(newValue -> component.invalidateLayout());
+        }
         this.reset();
     }
 

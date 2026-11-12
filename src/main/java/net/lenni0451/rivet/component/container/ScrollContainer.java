@@ -52,7 +52,6 @@ public class ScrollContainer extends ParentContainer {
     @Setter
     private float autoScrollThreshold = 0.1F;
     @Getter
-    @Setter
     private boolean presentInfiniteSize = true;
 
     @Getter
@@ -117,6 +116,14 @@ public class ScrollContainer extends ParentContainer {
     public final float maxScrollY() {
         float maxScroll = this.childSize.height() - this.visibleHeight(this.relativeBounds().size());
         return maxScroll <= EPSILON ? 0 : maxScroll;
+    }
+
+    public final ScrollContainer presentInfiniteSize(final boolean presentInfiniteSize) {
+        if (this.presentInfiniteSize != presentInfiniteSize) {
+            this.presentInfiniteSize = presentInfiniteSize;
+            this.invalidateLayout();
+        }
+        return this;
     }
 
     public final ScrollContainer scrollX(final float scrollX) {
@@ -343,15 +350,15 @@ public class ScrollContainer extends ParentContainer {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(new Size(
+    protected Size idealSizeInternal(final Size constraints) {
+        return this.child.idealSize(new Size(
                 this.horizontalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : constraints.width(),
                 this.verticalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : constraints.height()
         )).clamp(this.child);
     }
 
     @Override
-    public void computeLayout(final Size size) {
+    protected void layoutInternal(final Size size) {
         // float previousMaxScrollX = this.childSize.width() - this.visibleWidth(size);
         float previousMaxScrollY = this.childSize.height() - this.visibleHeight(size);
 
@@ -375,7 +382,7 @@ public class ScrollContainer extends ParentContainer {
             if (this.hScrollVisible && hBarNormal) availableHeight -= this.hScrollBar.barWidth().get();
             if (this.vScrollVisible && vBarNormal) availableWidth -= this.vScrollBar.barWidth().get();
 
-            Size idealChildSize = this.child.computeIdealSize(new Size(
+            Size idealChildSize = this.child.idealSize(new Size(
                     this.horizontalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : availableWidth,
                     this.verticalScrolling && this.presentInfiniteSize ? Float.MAX_VALUE : availableHeight
             ));
@@ -384,7 +391,7 @@ public class ScrollContainer extends ParentContainer {
                     MathUtils.clamp(this.horizontalScrolling ? Math.max(idealChildSize.width(), availableWidth) : availableWidth, this.child.minSize().width(), this.child.maxSize().width()),
                     MathUtils.clamp(this.verticalScrolling ? Math.max(idealChildSize.height(), availableHeight) : availableHeight, this.child.minSize().height(), this.child.maxSize().height())
             );
-            this.child.computeLayout(childSize);
+            this.child.layout(childSize);
             if (this.child instanceof Parent parent) {
                 Size parentContentSize = parent.contentSize();
                 if (!parentContentSize.equals(Size.EMPTY)) {
@@ -455,7 +462,7 @@ public class ScrollContainer extends ParentContainer {
         this.hScrollBar.scroll().set(currentScrollX, false);
         Rectangle hArea = this.getHScrollArea(size);
         if (hArea != null) {
-            this.hScrollBar.computeLayout(hArea.size());
+            this.hScrollBar.layout(hArea.size());
         }
 
         this.vScrollBar.contentSize(this.childSize.height());
@@ -463,7 +470,7 @@ public class ScrollContainer extends ParentContainer {
         this.vScrollBar.scroll().set(currentScrollY, false);
         Rectangle vArea = this.getVScrollArea(size);
         if (vArea != null) {
-            this.vScrollBar.computeLayout(vArea.size());
+            this.vScrollBar.layout(vArea.size());
         }
 
         if (oldScrollX != currentScrollX || oldScrollY != currentScrollY) {

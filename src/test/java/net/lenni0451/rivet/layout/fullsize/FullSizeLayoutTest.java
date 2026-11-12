@@ -39,7 +39,7 @@ class FullSizeLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -178,12 +178,12 @@ class FullSizeLayoutTest {
         container.add(c2);
         container.add(c3);
 
-        assertDoesNotThrow(() -> container.computeLayout(new Size(500, 400)));
+        assertDoesNotThrow(() -> container.layout(new Size(500, 400)));
         assertRectangleEquals(new Rectangle(0, 0, 500, 400), container.childBounds(c1));
         assertRectangleEquals(new Rectangle(210, 160, 80, 80), container.childBounds(c2));
         assertRectangleEquals(new Rectangle(-50, -50, 600, 500), container.childBounds(c3));
         assertEquals(new Size(550, 450), container.contentSize());
-        assertEquals(new Size(600, 500), container.computeIdealSize(new Size(500, 400)));
+        assertEquals(new Size(600, 500), container.idealSize(new Size(500, 400)));
     }
 
     private static class TestComponent extends Component {
@@ -202,7 +202,7 @@ class FullSizeLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

@@ -63,7 +63,7 @@ public class Arrow extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         float arrowSize = this.size.get();
         return new Size(arrowSize, arrowSize);
     }

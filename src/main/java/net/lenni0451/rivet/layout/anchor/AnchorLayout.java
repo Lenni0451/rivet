@@ -19,7 +19,7 @@ public final class AnchorLayout implements Layout {
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
         Size size = Size.EMPTY;
         for (Component component : components) {
-            Size idealSize = component.computeIdealSize(constraints);
+            Size idealSize = component.idealSize(constraints);
             size = size.max(
                     this.widthOf(component, idealSize),
                     this.heightOf(component, idealSize)
@@ -44,7 +44,7 @@ public final class AnchorLayout implements Layout {
             boolean isPointAnchorY = options.anchorMinY() >= options.anchorMaxY();
             Size idealSize = null;
             if (isPointAnchorX || isPointAnchorY) {
-                idealSize = component.computeIdealSize(containerSize);
+                idealSize = component.idealSize(containerSize);
             }
 
             float width;

@@ -76,16 +76,6 @@ public class ColorPicker extends Component {
             }
         });
         this.updateHSB();
-
-        Runnable requestLayout = () -> {
-            if (this.parent() != null) {
-                this.parent().requestLayoutRecalculation();
-            }
-        };
-        this.pickerSize.changeListener().add(v -> requestLayout.run());
-        this.sliderWidth.changeListener().add(v -> requestLayout.run());
-        this.gap.changeListener().add(v -> requestLayout.run());
-        this.showAlpha.changeListener().add(v -> requestLayout.run());
     }
 
     public final ColorPicker color(final Color color) {
@@ -316,7 +306,7 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         float pickerSize = this.pickerSize.get();
         float sliderWidth = this.sliderWidth.get();
         float gap = this.gap.get();

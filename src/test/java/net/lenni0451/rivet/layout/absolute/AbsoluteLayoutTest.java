@@ -39,7 +39,7 @@ class AbsoluteLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -268,11 +268,11 @@ class AbsoluteLayoutTest {
         container.add(c1);
         container.add(c2);
 
-        assertDoesNotThrow(() -> container.computeLayout(new Size(500, 500)));
+        assertDoesNotThrow(() -> container.layout(new Size(500, 500)));
         assertRectangleEquals(new Rectangle(10, 20, 100, 50), container.childBounds(c1));
         assertRectangleEquals(new Rectangle(50, 80, 120, 70), container.childBounds(c2));
         assertEquals(new Size(170, 150), container.contentSize());
-        assertEquals(new Size(170, 150), container.computeIdealSize(new Size(500, 500)));
+        assertEquals(new Size(170, 150), container.idealSize(new Size(500, 500)));
     }
 
     @Test
@@ -324,7 +324,7 @@ class AbsoluteLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

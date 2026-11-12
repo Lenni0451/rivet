@@ -131,7 +131,7 @@ public final class DragAndDropManager {
         this.mouseY = event.y();
         if (this.dragLayer != null) {
             this.ghostContainer.layoutOptions(new AbsoluteOptions(this.mouseX + this.ghostOffsetX, this.mouseY + this.ghostOffsetY));
-            this.dragLayer.requestLayoutRecalculation();
+            this.dragLayer.invalidateLayout();
         }
 
         return this.onDragOver(new DragOverEvent(event, this.dragData), hoveredLayerSupplier);
@@ -182,7 +182,7 @@ public final class DragAndDropManager {
                 float width = 0;
                 float height = 0;
                 for (Component child : components) {
-                    Size idealSize = child.computeIdealSize(constraints);
+                    Size idealSize = child.idealSize(constraints);
                     if (width <= 0) {
                         width = this.widthOf(child, idealSize);
                     } else {
@@ -202,7 +202,7 @@ public final class DragAndDropManager {
             public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
                 float offset = STACK_OFFSET * (components.size() - 1);
                 for (Component component : components) {
-                    Size idealSize = component.computeIdealSize(containerSize);
+                    Size idealSize = component.idealSize(containerSize);
                     setBounds.accept(component, new Rectangle(offset, offset, this.widthOf(component, idealSize), this.heightOf(component, idealSize)));
                     offset -= STACK_OFFSET;
                 }

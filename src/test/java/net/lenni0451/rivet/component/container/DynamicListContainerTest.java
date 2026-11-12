@@ -33,7 +33,7 @@ class DynamicListContainerTest {
             this.createdComponents++;
             return component;
         });
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
     }
 
     private List<String> childItems() {
@@ -46,7 +46,7 @@ class DynamicListContainerTest {
 
         this.items.remove("b");
         this.items.add(0, "d");
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(List.of("d", "a", "c"), this.childItems());
         assertEquals(4, this.createdComponents);
@@ -56,7 +56,7 @@ class DynamicListContainerTest {
     void testUnchangedListKeepsComponents() {
         List<Component> children = this.container.children();
 
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(children, this.container.children());
         assertEquals(3, this.createdComponents);
@@ -68,7 +68,7 @@ class DynamicListContainerTest {
         Component kept = this.container.children().get(0);
 
         this.container.remove(removed);
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(List.of("a", "b", "c"), this.childItems());
         assertFalse(this.container.children().contains(removed));
@@ -81,7 +81,7 @@ class DynamicListContainerTest {
         this.container.clear();
         assertTrue(this.container.children().isEmpty());
 
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(List.of("a", "b", "c"), this.childItems());
         assertEquals(6, this.createdComponents);
@@ -92,7 +92,7 @@ class DynamicListContainerTest {
         Component foreign = new Container(FullSizeLayout.INSTANCE);
 
         this.container.add(foreign);
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertFalse(this.container.children().contains(foreign));
         assertEquals(List.of("a", "b", "c"), this.childItems());
@@ -104,7 +104,7 @@ class DynamicListContainerTest {
         List<Component> children = this.container.children();
 
         this.container.add(children.get(0));
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(children, this.container.children());
         assertEquals(3, this.createdComponents);
@@ -115,7 +115,7 @@ class DynamicListContainerTest {
         Component oldComponent = this.container.children().get(0);
 
         this.items.set(0, new String("a"));
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(List.of("a", "b", "c"), this.childItems());
         assertFalse(this.container.children().contains(oldComponent));
@@ -130,7 +130,7 @@ class DynamicListContainerTest {
         this.container.recreate("b");
         assertNotSame(second, this.container.children().get(1));
         Component recreated = this.container.children().get(1);
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(List.of("a", "b", "c"), this.childItems());
         assertSame(first, this.container.children().get(0));
@@ -141,7 +141,7 @@ class DynamicListContainerTest {
     @Test
     void testDuplicateItemsShareOneComponent() {
         this.items.add(this.items.get(0));
-        this.container.computeLayout(SIZE);
+        this.container.layout(SIZE);
 
         assertEquals(3, this.container.children().size());
         assertEquals(3, this.createdComponents);

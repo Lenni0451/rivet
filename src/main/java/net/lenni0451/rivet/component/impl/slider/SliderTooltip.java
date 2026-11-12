@@ -58,7 +58,7 @@ public class SliderTooltip extends Component {
         if (this.font != font) {
             this.font = font;
             this.text(this.text);
-            this.parent().requestLayoutRecalculation();
+            this.invalidateLayout();
         }
         return this;
     }
@@ -67,10 +67,11 @@ public class SliderTooltip extends Component {
         this.text = text;
         Font font = this.font != null ? this.font : this.rivet().backend().font();
         this.shapedText = font.shapeText(text, this.textColor.get());
+        this.invalidateLayout();
     }
 
     public final void position(final float x, final float y, final float height) {
-        Size idealSize = this.computeIdealSize(null);
+        Size idealSize = this.idealSize(null);
         Size screenBounds = this.rivet().scaledSize();
 
         float posX = x - idealSize.width() / 2F;
@@ -97,7 +98,7 @@ public class SliderTooltip extends Component {
         this.layoutOptions(new AbsoluteOptions(x, y));
         this.position = position;
         this.pointerOffset = pointerOffset;
-        this.parent().requestLayoutRecalculation();
+        this.invalidateLayout();
     }
 
     public final void add(final Rivet rivet) {
@@ -152,7 +153,7 @@ public class SliderTooltip extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         Padding padding = this.padding.get();
         return new Size(
                 this.shapedText.visualBounds().width() + padding.horizontal(),

@@ -76,7 +76,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             boolean fillVertical = options.fill().vertical();
             Size idealSize = null;
             if (!fillHorizontal || !fillVertical) {
-                idealSize = component.computeIdealSize(new Size(availableWidth, availableHeight));
+                idealSize = component.idealSize(new Size(availableWidth, availableHeight));
             }
 
             float width = fillHorizontal ? availableWidth : Math.min(this.widthOf(component, idealSize), availableWidth);
@@ -96,7 +96,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
         for (ResolvedComponent resolved : components) {
             Component component = resolved.component();
             GridOptions options = resolved.options();
-            Size idealSize = component.computeIdealSize(constraints.minus(options.padding()));
+            Size idealSize = component.idealSize(constraints.minus(options.padding()));
             float width = this.widthOf(component, idealSize) + options.padding().horizontal();
             items.add(new AxisItem(options.column(), options.columnSpan(), width, options.weightX()));
         }
@@ -111,7 +111,7 @@ public record GridLayout(int horizontalGap, int verticalGap, boolean homogeneous
             float cellWidth = this.sumRange(columnWidths, options.column(), options.columnSpan()) + this.getGaps(options.columnSpan(), this.horizontalGap);
             float availableWidth = Math.max(0, cellWidth - options.padding().horizontal());
             float availableHeight = Math.max(0, constraints.height() - options.padding().vertical());
-            Size idealSize = component.computeIdealSize(new Size(availableWidth, availableHeight));
+            Size idealSize = component.idealSize(new Size(availableWidth, availableHeight));
             float height = this.heightOf(component, idealSize) + options.padding().vertical();
             items.add(new AxisItem(options.row(), options.rowSpan(), height, options.weightY()));
         }

@@ -28,6 +28,14 @@ public class Separator extends Component {
         this.orientation = orientation;
     }
 
+    public final Separator orientation(final Orientation orientation) {
+        if (this.orientation != orientation) {
+            this.orientation = orientation;
+            this.invalidateLayout();
+        }
+        return this;
+    }
+
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Color color = this.color.get();
@@ -47,7 +55,7 @@ public class Separator extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         return switch (this.orientation) {
             case HORIZONTAL -> new Size(0, this.thickness.get());
             case VERTICAL -> new Size(this.thickness.get(), 0);

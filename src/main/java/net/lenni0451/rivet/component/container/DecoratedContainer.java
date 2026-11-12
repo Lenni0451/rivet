@@ -39,7 +39,7 @@ public class DecoratedContainer extends ParentContainer {
 
     public final DecoratedContainer innerPadding(final Padding padding) {
         this.innerPadding = padding;
-        this.requestLayoutRecalculation();
+        this.invalidateLayout();
         return this;
     }
 
@@ -65,14 +65,14 @@ public class DecoratedContainer extends ParentContainer {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.innerPadding)).clamp(this.child).plus(this.innerPadding);
+    protected Size idealSizeInternal(final Size constraints) {
+        return this.child.idealSize(constraints.minus(this.innerPadding)).clamp(this.child).plus(this.innerPadding);
     }
 
     @Override
-    public void computeLayout(final Size size) {
-        this.background.computeLayout(size.clamp(this.background));
-        this.child.computeLayout(size.minus(this.innerPadding).clamp(this.child));
+    protected void layoutInternal(final Size size) {
+        this.background.layout(size.clamp(this.background));
+        this.child.layout(size.minus(this.innerPadding).clamp(this.child));
     }
 
     @Override

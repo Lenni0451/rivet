@@ -24,7 +24,7 @@ public record FlexLayout(FlexDirection direction, FlexWrap wrap, FlexJustify jus
 
         Map<Component, Size> idealSizes = new IdentityHashMap<>();
         for (Component component : ordered) {
-            idealSizes.put(component, component.computeIdealSize(constraints));
+            idealSizes.put(component, component.idealSize(constraints));
         }
 
         float mainConstraint = rowAxis ? constraints.width() : constraints.height();
@@ -51,7 +51,7 @@ public record FlexLayout(FlexDirection direction, FlexWrap wrap, FlexJustify jus
 
         Map<Component, Size> idealSizes = new IdentityHashMap<>();
         for (Component component : ordered) {
-            idealSizes.put(component, component.computeIdealSize(containerSize));
+            idealSizes.put(component, component.idealSize(containerSize));
         }
 
         float mainAvailable = rowAxis ? containerSize.width() : containerSize.height();

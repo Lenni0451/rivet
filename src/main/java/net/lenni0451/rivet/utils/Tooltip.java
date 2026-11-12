@@ -166,7 +166,7 @@ public class Tooltip {
     private void updatePosition() {
         Rectangle absoluteBounds = this.component.absoluteBounds();
         Size screenSize = this.component.rivet().scaledSize();
-        Size tooltipSize = this.currentTooltip.computeIdealSize(screenSize);
+        Size tooltipSize = this.currentTooltip.idealSize(screenSize);
         float mouseX = absoluteBounds.x() + this.mouseOffsetX;
         float mouseY = absoluteBounds.y() + this.mouseOffsetY;
         int offset = this.mouseOffset.get();

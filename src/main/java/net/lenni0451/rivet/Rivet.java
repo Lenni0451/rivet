@@ -103,7 +103,7 @@ public final class Rivet {
     public Rivet addLayer(final Layer layer) {
         this.layers.add(layer);
         layer.container().setRivet(this, layer);
-        layer.recalculateNextFrame(true);
+        layer.invalidateLayout();
         return this;
     }
 
@@ -120,7 +120,9 @@ public final class Rivet {
     public Rivet size(final Size size) {
         if (!this.size.equals(size)) {
             this.size = size;
-            this.recalculateNextFrame();
+            for (Layer layer : this.layers.get()) {
+                layer.invalidateLayout();
+            }
         }
         return this;
     }
@@ -160,6 +162,7 @@ public final class Rivet {
 
     public Rivet recalculateNextFrame() {
         for (Layer layer : this.layers.get()) {
+            layer.container().invalidateLayoutTree();
             layer.recalculateNextFrame(true);
         }
         return this;
@@ -386,8 +389,8 @@ public final class Rivet {
             for (Layer layer : this.layers.get()) {
                 if (layer.container().rivet() == null) continue;
                 if (layer.recalculateNextFrame()) {
-                    layer.container().computeLayout(scaledSize);
                     layer.recalculateNextFrame(false);
+                    layer.container().layout(scaledSize);
                     this.updateMouseState();
                 }
                 if (layer.container().rivet() == null) continue;

@@ -31,7 +31,7 @@ public record DockLayout(float gap) implements Layout {
             float remainingHeight = Math.max(0, constraints.height() - yOffset);
 
             DockPosition position = component.layoutOptions() instanceof DockPosition pos ? pos : DockPosition.CENTER;
-            Size idealSize = component.computeIdealSize(new Size(remainingWidth, remainingHeight));
+            Size idealSize = component.idealSize(new Size(remainingWidth, remainingHeight));
             float width = this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
             switch (position) {
@@ -64,7 +64,7 @@ public record DockLayout(float gap) implements Layout {
             DockPosition position = component.layoutOptions() instanceof DockPosition pos ? pos : DockPosition.CENTER;
             float remainingWidth = Math.max(0, right - left);
             float remainingHeight = Math.max(0, bottom - top);
-            Size idealSize = component.computeIdealSize(new Size(remainingWidth, remainingHeight));
+            Size idealSize = component.idealSize(new Size(remainingWidth, remainingHeight));
             switch (position) {
                 case LEFT -> {
                     float width = this.widthOf(component, Math.min(remainingWidth, idealSize.width()));

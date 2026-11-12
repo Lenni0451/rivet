@@ -168,9 +168,7 @@ public class TextArea extends Component {
             this.font = font;
             if (this.rivet() != null) {
                 this.updateShapedText();
-                if (this.parent() != null) {
-                    this.parent().requestLayoutRecalculation();
-                }
+                this.invalidateLayout();
             }
         }
         return this;
@@ -400,9 +398,7 @@ public class TextArea extends Component {
 
     private void onTextChange(final boolean fireListeners) {
         this.validate();
-        if (this.parent() != null) {
-            this.parent().requestLayoutRecalculation();
-        }
+        this.invalidateLayout();
         if (fireListeners) {
             this.valueChangeListener.call(c -> c.accept(this.text()));
         }
@@ -732,7 +728,7 @@ public class TextArea extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         float lineHeight = this.lineHeight();
         float contentWidth = (this.text.isEmpty() && this.shapedHintText != null)
                 ? this.shapedHintText.logicalBounds().width()
@@ -783,7 +779,7 @@ public class TextArea extends Component {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             Padding padding = TextArea.this.diagnosticTooltipPadding.get();
             return new Size(
                     this.shapedMessage.visualBounds().width() + padding.horizontal(),

@@ -43,7 +43,7 @@ public class DynamicListContainer<E> extends ReorderableContainer {
         this.updateListener = () -> {
             List<E> currentList = this.listSupplier.get();
             if (this.childrenDirty || !this.isSame(currentList, this.lastSeenList)) {
-                this.requestLayoutRecalculation();
+                this.invalidateLayout();
             }
         };
         this.childChangedListener().add(() -> {
@@ -87,15 +87,15 @@ public class DynamicListContainer<E> extends ReorderableContainer {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         this.syncChildrenIfNeeded();
-        return super.computeIdealSize(constraints);
+        return super.idealSizeInternal(constraints);
     }
 
     @Override
-    public void computeLayout(final Size size) {
+    protected void layoutInternal(final Size size) {
         this.syncChildrenIfNeeded();
-        super.computeLayout(size);
+        super.layoutInternal(size);
     }
 
     private void syncChildrenIfNeeded() {

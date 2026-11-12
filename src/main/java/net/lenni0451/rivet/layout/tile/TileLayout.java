@@ -34,7 +34,7 @@ public record TileLayout(int columns, int rows, int horizontalGap, int verticalG
         Grid grid = this.calculateGrid(components);
         Size cellSize = Size.EMPTY;
         for (Component component : components) {
-            Size idealSize = component.computeIdealSize(constraints);
+            Size idealSize = component.idealSize(constraints);
             cellSize = cellSize.max(
                     this.widthOf(component, idealSize),
                     this.heightOf(component, idealSize)

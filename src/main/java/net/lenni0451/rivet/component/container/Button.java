@@ -233,18 +233,13 @@ public class Button extends Component implements Parent {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
-        return this.child.computeIdealSize(constraints.minus(this.innerPadding.get())).clamp(this.child).plus(this.innerPadding.get());
+    protected Size idealSizeInternal(final Size constraints) {
+        return this.child.idealSize(constraints.minus(this.innerPadding.get())).clamp(this.child).plus(this.innerPadding.get());
     }
 
     @Override
-    public void computeLayout(final Size size) {
-        this.child.computeLayout(size.minus(this.innerPadding.get()).clamp(this.child));
-    }
-
-    @Override
-    public void requestLayoutRecalculation() {
-        if (this.parent() != null) this.parent().requestLayoutRecalculation();
+    protected void layoutInternal(final Size size) {
+        this.child.layout(size.minus(this.innerPadding.get()).clamp(this.child));
     }
 
     @Override

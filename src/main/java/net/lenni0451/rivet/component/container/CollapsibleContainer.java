@@ -85,10 +85,8 @@ public class CollapsibleContainer extends ParentContainer {
             if (collapsed) {
                 this.mouseHandler().checkAndRemove(Sneaky.unsafeCast(this.content));
             }
-            this.requestLayoutRecalculation();
+            this.invalidateLayout();
         });
-        this.arrowSize.changeListener().add(val -> this.requestLayoutRecalculation());
-        this.arrowPosition.changeListener().add(val -> this.requestLayoutRecalculation());
         this.collapseAnimationConfig.changeListener().add(config -> {
             this.collapseAnimation = config.create();
             if (this.collapsed.get()) {
@@ -139,18 +137,18 @@ public class CollapsibleContainer extends ParentContainer {
         float collapseProgress = this.collapseAnimation.getValue();
         if (this.collapseProgress.get() != collapseProgress) {
             this.collapseProgress.set(collapseProgress);
-            this.requestLayoutRecalculation();
+            this.invalidateLayout();
         }
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
-        Size idealHeaderSize = this.clickableHeader.computeIdealSize(constraints).clamp(this.clickableHeader);
+    protected Size idealSizeInternal(final Size constraints) {
+        Size idealHeaderSize = this.clickableHeader.idealSize(constraints).clamp(this.clickableHeader);
         if (this.collapseProgress.get() <= 0) {
             return idealHeaderSize;
         } else {
             Size contentConstraints = constraints.minus(0, idealHeaderSize.height());
-            Size contentIdealSize = this.content.computeIdealSize(contentConstraints).clamp(this.content);
+            Size contentIdealSize = this.content.idealSize(contentConstraints).clamp(this.content);
             return new Size(
                     Math.max(idealHeaderSize.width(), contentIdealSize.width()),
                     idealHeaderSize.height() + contentIdealSize.height() * this.collapseProgress.get()
@@ -159,17 +157,17 @@ public class CollapsibleContainer extends ParentContainer {
     }
 
     @Override
-    public void computeLayout(final Size size) {
-        Size idealHeaderSize = this.clickableHeader.computeIdealSize(size).clamp(this.clickableHeader);
+    protected void layoutInternal(final Size size) {
+        Size idealHeaderSize = this.clickableHeader.idealSize(size).clamp(this.clickableHeader);
         this.headerSize = new Size(size.width(), idealHeaderSize.height()).clamp(this.clickableHeader);
-        this.clickableHeader.computeLayout(this.headerSize);
+        this.clickableHeader.layout(this.headerSize);
         if (this.collapseProgress.get() > 0) {
             float remainingHeight = Math.max(0, size.height() - this.headerSize.height());
             this.contentSize = new Size(size.width(), remainingHeight).clamp(this.content);
         } else {
             this.contentSize = new Size(size.width(), 0).clamp(this.content);
         }
-        this.content.computeLayout(this.contentSize);
+        this.content.layout(this.contentSize);
     }
 
     @Override
@@ -231,7 +229,6 @@ public class CollapsibleContainer extends ParentContainer {
                 }
                 arrow.layoutOptions(GridOptions.EMPTY.at(arrowPosition, 0).withAnchor(arrowAnchor));
                 header.layoutOptions(GridOptions.EMPTY.at(headerPosition, 0).withWeightX(1).withFill(GridFill.HORIZONTAL));
-                this.requestLayoutRecalculation();
             });
         }
 

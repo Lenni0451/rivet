@@ -163,9 +163,7 @@ public class Label extends Component {
 
     private void reshapeAndLayout() {
         this.reshape = true;
-        if (this.parent() != null) {
-            this.parent().requestLayoutRecalculation();
-        }
+        this.invalidateLayout();
     }
 
     private void restartScrollAnimation() {
@@ -326,7 +324,7 @@ public class Label extends Component {
     }
 
     @Override
-    public Size computeIdealSize(final Size constraints) {
+    protected Size idealSizeInternal(final Size constraints) {
         Shaped shaped = this.createShapedText(constraints);
         float scale = this.scale.get();
         return new Size(
@@ -336,7 +334,7 @@ public class Label extends Component {
     }
 
     @Override
-    public void computeLayout(final Size size) {
+    protected void layoutInternal(final Size size) {
         OverflowBehavior overflowBehavior = this.overflowBehavior.get();
         if (overflowBehavior.equals(OverflowBehavior.WRAP)) {
             this.reshape = true;

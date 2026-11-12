@@ -40,7 +40,7 @@ class TileLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -71,7 +71,7 @@ class TileLayoutTest {
 
         final Container container = new Container(layout);
         container.add(child);
-        container.computeLayout(containerSize);
+        container.layout(containerSize);
         assertRectangleEquals(new Rectangle(0, 0, 100, 50), container.childBounds(child));
     }
 
@@ -275,14 +275,14 @@ class TileLayoutTest {
         container.add(c0).add(c1).add(c2).add(c3);
 
         final Size containerSize = new Size(210, 210);
-        assertDoesNotThrow(() -> container.computeLayout(containerSize));
+        assertDoesNotThrow(() -> container.layout(containerSize));
 
         assertRectangleEquals(new Rectangle(0, 0, 100, 100), container.childBounds(c0));
         assertRectangleEquals(new Rectangle(110, 0, 100, 100), container.childBounds(c1));
         assertRectangleEquals(new Rectangle(0, 110, 100, 100), container.childBounds(c2));
         assertRectangleEquals(new Rectangle(110, 110, 100, 100), container.childBounds(c3));
         assertEquals(new Size(210, 210), container.contentSize());
-        assertEquals(layout.computeIdealSize(containerSize, List.of(c0, c1, c2, c3)), container.computeIdealSize(containerSize));
+        assertEquals(layout.computeIdealSize(containerSize, List.of(c0, c1, c2, c3)), container.idealSize(containerSize));
     }
 
     @Test
@@ -420,7 +420,7 @@ class TileLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

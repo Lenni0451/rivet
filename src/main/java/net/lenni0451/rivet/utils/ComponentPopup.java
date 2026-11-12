@@ -15,7 +15,6 @@ import net.lenni0451.rivet.layout.absolute.AbsoluteLayout;
 import net.lenni0451.rivet.layout.absolute.AbsoluteOptions;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
-
 import net.lenni0451.rivet.property.BooleanProperty;
 
 import java.util.function.Supplier;
@@ -162,7 +161,7 @@ public class ComponentPopup {
             case CLAMP -> availableSize;
             case MOVE -> screenSize;
         };
-        idealSize = this.child.computeIdealSize(idealSize.min(maxSize));
+        idealSize = this.child.idealSize(idealSize.min(maxSize));
 
         float width = idealSize.width();
         if (this.matchOwnerWidth && (this.position.equals(Position.UP) || this.position.equals(Position.DOWN))) {

@@ -19,7 +19,7 @@ public final class AbsoluteLayout implements Layout {
     public Size computeIdealSize(final Size constraints, final Collection<Component> components) {
         Size size = Size.EMPTY;
         for (Component component : components) {
-            Size idealSize = component.computeIdealSize(constraints);
+            Size idealSize = component.idealSize(constraints);
             float width = this.widthOf(component, idealSize);
             float height = this.heightOf(component, idealSize);
             if (component.layoutOptions() instanceof AbsoluteOptions options) {
@@ -41,7 +41,7 @@ public final class AbsoluteLayout implements Layout {
     @Override
     public void layoutComponents(final Size containerSize, final Collection<Component> components, final BiConsumer<Component, Rectangle> setBounds) {
         for (Component component : components) {
-            Size idealSize = component.computeIdealSize(containerSize);
+            Size idealSize = component.idealSize(containerSize);
             float x = 0;
             float y = 0;
             float width = this.widthOf(component, idealSize);

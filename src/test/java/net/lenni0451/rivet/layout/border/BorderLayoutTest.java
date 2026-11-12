@@ -40,7 +40,7 @@ class BorderLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -336,7 +336,7 @@ class BorderLayoutTest {
         container.add(center);
         container.add(extraCenter);
 
-        assertDoesNotThrow(() -> container.computeLayout(new Size(800, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(800, 600)));
 
         assertRectangleEquals(new Rectangle(0, 0, 800, 50), container.childBounds(top));
         assertRectangleEquals(new Rectangle(0, 540, 800, 60), container.childBounds(bottom));
@@ -346,7 +346,7 @@ class BorderLayoutTest {
         assertRectangleEquals(new Rectangle(80, 50, 630, 490), container.childBounds(extraCenter));
 
         assertEquals(new Size(800, 600), container.contentSize());
-        assertEquals(new Size(470, 310), container.computeIdealSize(new Size(800, 600)));
+        assertEquals(new Size(470, 310), container.idealSize(new Size(800, 600)));
     }
 
     @Test
@@ -396,7 +396,7 @@ class BorderLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

@@ -39,7 +39,7 @@ class VerticalListLayoutTest {
         assertTrue(bounds.isEmpty());
 
         final Container container = new Container(layout);
-        assertDoesNotThrow(() -> container.computeLayout(new Size(400, 600)));
+        assertDoesNotThrow(() -> container.layout(new Size(400, 600)));
         assertEquals(Size.EMPTY, container.contentSize());
     }
 
@@ -59,7 +59,7 @@ class VerticalListLayoutTest {
 
         final Container container = new Container(layout);
         container.add(child);
-        container.computeLayout(containerSize);
+        container.layout(containerSize);
         assertRectangleEquals(new Rectangle(0, 0, 60, 90), container.childBounds(child));
         assertEquals(new Size(60, 90), container.contentSize());
     }
@@ -85,7 +85,7 @@ class VerticalListLayoutTest {
 
         final Container container = new Container(layout);
         container.add(c1).add(c2).add(c3);
-        container.computeLayout(containerSize);
+        container.layout(containerSize);
         assertEquals(new Size(70, 250), container.contentSize());
     }
 
@@ -110,7 +110,7 @@ class VerticalListLayoutTest {
 
         final Container container = new Container(layout);
         container.add(c1).add(c2).add(c3);
-        container.computeLayout(containerSize);
+        container.layout(containerSize);
         assertEquals(new Size(80, 270), container.contentSize());
     }
 
@@ -215,7 +215,7 @@ class VerticalListLayoutTest {
 
         final Container container = new Container(layout);
         container.add(c1).add(c2).add(c3);
-        assertDoesNotThrow(() -> container.computeLayout(containerSize));
+        assertDoesNotThrow(() -> container.layout(containerSize));
         assertEquals(new Size(50, 620), container.contentSize());
     }
 
@@ -237,7 +237,7 @@ class VerticalListLayoutTest {
 
         final Container container = new Container(layout);
         container.add(c0).add(c1).add(c2);
-        container.computeLayout(containerSize);
+        container.layout(containerSize);
         assertEquals(new Size(50, 170), container.contentSize());
     }
 
@@ -270,7 +270,7 @@ class VerticalListLayoutTest {
         container.add(c1).add(c2).add(c3).add(c4);
 
         final Size containerSize = new Size(250, 500);
-        assertDoesNotThrow(() -> container.computeLayout(containerSize));
+        assertDoesNotThrow(() -> container.layout(containerSize));
 
         assertRectangleEquals(new Rectangle(0, 0, 250, 50), container.childBounds(c1));
         assertRectangleEquals(new Rectangle(0, 60, 250, 60), container.childBounds(c2));
@@ -360,7 +360,7 @@ class VerticalListLayoutTest {
         }
 
         @Override
-        public Size computeIdealSize(final Size constraints) {
+        protected Size idealSizeInternal(final Size constraints) {
             return this.idealSize;
         }
     }

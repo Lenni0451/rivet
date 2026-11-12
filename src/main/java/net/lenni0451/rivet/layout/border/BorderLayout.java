@@ -29,7 +29,7 @@ public record BorderLayout(TopLeftPriority topLeftPriority, BottomLeftPriority b
         Size center = Size.EMPTY;
         for (Component component : components) {
             BorderPosition position = component.layoutOptions() instanceof BorderPosition pos ? pos : BorderPosition.CENTER;
-            Size idealSize = component.computeIdealSize(constraints);
+            Size idealSize = component.idealSize(constraints);
             float idealWidth = this.widthOf(component, idealSize);
             float idealHeight = this.heightOf(component, idealSize);
             switch (position) {
@@ -61,7 +61,7 @@ public record BorderLayout(TopLeftPriority topLeftPriority, BottomLeftPriority b
         float rightWidth = 0;
         for (Component component : components) {
             BorderPosition position = component.layoutOptions() instanceof BorderPosition pos ? pos : BorderPosition.CENTER;
-            Size idealSize = component.computeIdealSize(containerSize);
+            Size idealSize = component.idealSize(containerSize);
             float idealWidth = this.widthOf(component, idealSize);
             float idealHeight = this.heightOf(component, idealSize);
             switch (position) {
