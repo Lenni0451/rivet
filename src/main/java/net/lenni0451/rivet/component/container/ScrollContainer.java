@@ -392,26 +392,40 @@ public class ScrollContainer extends ParentContainer {
                     MathUtils.clamp(this.verticalScrolling ? Math.max(idealChildSize.height(), availableHeight) : availableHeight, this.child.minSize().height(), this.child.maxSize().height())
             );
             this.child.layout(childSize);
+            // The size the child actually requires, ignoring the stretching to fill the available space
+            float requiredWidth = idealChildSize.width();
+            float requiredHeight = idealChildSize.height();
             if (this.child instanceof Parent parent) {
                 Size parentContentSize = parent.contentSize();
                 if (!parentContentSize.equals(Size.EMPTY)) {
+                    if (isGreaterThan(parentContentSize.width(), childSize.width())) requiredWidth = Math.max(requiredWidth, parentContentSize.width());
+                    if (isGreaterThan(parentContentSize.height(), childSize.height())) requiredHeight = Math.max(requiredHeight, parentContentSize.height());
                     childSize = new Size(
                             this.horizontalScrolling ? MathUtils.clamp(Math.max(childSize.width(), parentContentSize.width()), this.child.minSize().width(), this.child.maxSize().width()) : childSize.width(),
                             this.verticalScrolling ? MathUtils.clamp(Math.max(childSize.height(), parentContentSize.height()), this.child.minSize().height(), this.child.maxSize().height()) : childSize.height()
                     );
                 }
             }
+            requiredWidth = MathUtils.clamp(requiredWidth, this.child.minSize().width(), this.child.maxSize().width());
+            requiredHeight = MathUtils.clamp(requiredHeight, this.child.minSize().height(), this.child.maxSize().height());
             this.childSize = childSize;
 
             if (hBarNormal || vBarNormal) {
-                boolean newHScrollVisible = this.horizontalScrolling && isGreaterThan(this.childSize.width(), availableWidth);
-                boolean newVScrollVisible = this.verticalScrolling && isGreaterThan(this.childSize.height(), availableHeight);
+                // Always compare against the full size to avoid the scroll bars keeping each other visible
+                boolean newHScrollVisible = this.horizontalScrolling && isGreaterThan(requiredWidth, size.width());
+                boolean newVScrollVisible = this.verticalScrolling && isGreaterThan(requiredHeight, size.height());
 
                 if (newHScrollVisible && !newVScrollVisible && hBarNormal) {
-                    newVScrollVisible = this.verticalScrolling && isGreaterThan(this.childSize.height(), availableHeight - this.hScrollBar.barWidth().get());
+                    newVScrollVisible = this.verticalScrolling && isGreaterThan(requiredHeight, size.height() - this.hScrollBar.barWidth().get());
                 }
                 if (newVScrollVisible && !newHScrollVisible && vBarNormal) {
-                    newHScrollVisible = this.horizontalScrolling && isGreaterThan(this.childSize.width(), availableWidth - this.vScrollBar.barWidth().get());
+                    newHScrollVisible = this.horizontalScrolling && isGreaterThan(requiredWidth, size.width() - this.vScrollBar.barWidth().get());
+                }
+                if (iterations >= 3) {
+                    // The layout didn't settle because the child only fits with a bar, which would hide the bar again
+                    // From now on bars are only added to end up with a layout matching the visible bars
+                    newHScrollVisible |= this.hScrollVisible;
+                    newVScrollVisible |= this.vScrollVisible;
                 }
 
                 if (newHScrollVisible != this.hScrollVisible || newVScrollVisible != this.vScrollVisible) {
@@ -420,7 +434,7 @@ public class ScrollContainer extends ParentContainer {
                     checkAgain = true;
                 }
             }
-        } while (checkAgain && iterations < 3);
+        } while (checkAgain && iterations < 5);
 
         float oldScrollX = this.scrollX.get();
         float oldScrollY = this.scrollY.get();
