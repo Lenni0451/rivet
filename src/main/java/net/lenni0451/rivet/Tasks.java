@@ -2,11 +2,11 @@ package net.lenni0451.rivet;
 
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public final class Tasks {
 
-    private final Queue<Runnable> tasks = new LinkedBlockingQueue<>();
+    private final Queue<Runnable> tasks = new LinkedBlockingDeque<>();
 
     public void beforeNextFrame(final Runnable task) {
         this.tasks.offer(task);

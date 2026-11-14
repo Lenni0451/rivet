@@ -1,6 +1,6 @@
-package net.lenni0451.rivet.backend.thingl.render.batched;
+package net.lenni0451.rivet.backend.render.batched;
 
-import org.joml.primitives.Rectanglef;
+import net.lenni0451.rivet.math.Aabb;
 
 import java.util.Arrays;
 
@@ -10,16 +10,16 @@ public class RectangleQuadTree {
 
     private Node root;
 
-    public void add(final Rectanglef bounds) {
+    public void add(final Aabb bounds) {
         if (this.root == null) {
-            this.createRoot(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+            this.createRoot(bounds.minX(), bounds.minY(), bounds.maxX(), bounds.maxY());
         } else {
-            this.ensureRootContains(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+            this.ensureRootContains(bounds.minX(), bounds.minY(), bounds.maxX(), bounds.maxY());
         }
         this.root.add(bounds, 0);
     }
 
-    public boolean intersects(final Rectanglef bounds) {
+    public boolean intersects(final Aabb bounds) {
         return this.root != null && this.root.intersects(bounds);
     }
 
@@ -59,7 +59,7 @@ public class RectangleQuadTree {
         private float x;
         private float y;
         private float size;
-        private Rectanglef[] entries;
+        private Aabb[] entries;
         private int entryCount;
         private Node[] children;
 
@@ -69,7 +69,7 @@ public class RectangleQuadTree {
             this.size = size;
         }
 
-        private void add(final Rectanglef bounds, int depth) {
+        private void add(final Aabb bounds, int depth) {
             Node node = this;
             while (node.children != null || node.shouldSplit(depth)) {
                 if (node.children == null) {
@@ -92,7 +92,7 @@ public class RectangleQuadTree {
         private void split(final int depth) {
             this.children = new Node[CHILD_COUNT];
             for (int i = this.entryCount - 1; i >= 0; i--) {
-                final Rectanglef entry = this.entries[i];
+                final Aabb entry = this.entries[i];
                 final int quadrant = this.getContainingQuadrant(entry);
                 if (quadrant >= 0) {
                     this.getOrCreateChild(quadrant).add(entry, depth + 1);
@@ -102,21 +102,21 @@ public class RectangleQuadTree {
             }
         }
 
-        private void addEntry(final Rectanglef bounds) {
+        private void addEntry(final Aabb bounds) {
             if (this.entries == null) {
-                this.entries = new Rectanglef[LEAF_CAPACITY];
+                this.entries = new Aabb[LEAF_CAPACITY];
             } else if (this.entryCount == this.entries.length) {
                 this.entries = Arrays.copyOf(this.entries, this.entryCount * 2);
             }
             this.entries[this.entryCount++] = bounds;
         }
 
-        private boolean intersects(final Rectanglef bounds) {
-            if (bounds.minX >= this.x + this.size || bounds.maxX <= this.x || bounds.minY >= this.y + this.size || bounds.maxY <= this.y) {
+        private boolean intersects(final Aabb bounds) {
+            if (bounds.minX() >= this.x + this.size || bounds.maxX() <= this.x || bounds.minY() >= this.y + this.size || bounds.maxY() <= this.y) {
                 return false; // Skip the entire subtree
             }
             for (int i = 0; i < this.entryCount; i++) {
-                if (this.entries[i].intersectsRectangle(bounds)) {
+                if (this.entries[i].intersects(bounds)) {
                     return true;
                 }
             }
@@ -138,11 +138,11 @@ public class RectangleQuadTree {
             return this.children[quadrant];
         }
 
-        private int getContainingQuadrant(final Rectanglef bounds) {
+        private int getContainingQuadrant(final Aabb bounds) {
             final float midX = this.x + this.size / 2;
             final float midY = this.y + this.size / 2;
-            final int column = bounds.maxX <= midX ? 0 : bounds.minX >= midX ? 1 : -1;
-            final int row = bounds.maxY <= midY ? 0 : bounds.minY >= midY ? 2 : -1;
+            final int column = bounds.maxX() <= midX ? 0 : bounds.minX() >= midX ? 1 : -1;
+            final int row = bounds.maxY() <= midY ? 0 : bounds.minY() >= midY ? 2 : -1;
             return column < 0 || row < 0 ? -1 : column | row;
         }
 

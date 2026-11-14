@@ -3,9 +3,9 @@ package net.lenni0451.rivet.backend.awt.text;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lenni0451.commons.color.Color;
-import net.lenni0451.rivet.backend.awt.render.AWTRenderer;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.backend.text.TextDecorations;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.text.model.TextFormat;
 import net.lenni0451.rivet.text.model.TextLine;
@@ -66,10 +66,7 @@ public class AWTFont implements Font {
 
     @Override
     public ShapedText shapeText(final TextLine line) {
-        float minVisualX = Float.POSITIVE_INFINITY;
-        float minVisualY = Float.POSITIVE_INFINITY;
-        float maxVisualX = Float.NEGATIVE_INFINITY;
-        float maxVisualY = Float.NEGATIVE_INFINITY;
+        TextDecorations.VisualBounds visualBounds = new TextDecorations.VisualBounds();
         float minLogicalY = -this.lineMetrics.getAscent();
         float maxLogicalY = this.lineMetrics.getDescent() + this.lineMetrics.getLeading();
 
@@ -91,47 +88,34 @@ public class AWTFont implements Font {
                 LineMetrics sectionLineMetrics = sectionFont.getLineMetrics(runText.isEmpty() ? " " : runText, CONTEXT);
                 float advance = (float) glyphVector.getLogicalBounds().getWidth();
 
-                float outlineWidth = format.outlineColor().getAlpha() > 0 ? AWTRenderer.OUTLINE_WIDTH_FACTOR * sectionFont.getSize() : 0;
-                float outlineOffset = outlineWidth / 2;
-                float shadowOffset = format.shadow() ? AWTRenderer.SHADOW_OFFSET_FACTOR * sectionFont.getSize() : 0;
+                float fontSize = sectionFont.getSize();
+                float outlineWidth = TextDecorations.outlineWidth(format, fontSize);
 
                 Shape outlineShape = null;
                 Stroke outlineStroke = null;
                 if (glyphVector.getNumGlyphs() > 0) {
-                    if (format.outlineColor().getAlpha() > 0) {
+                    if (outlineWidth > 0) {
                         outlineShape = glyphVector.getOutline();
                         outlineStroke = new BasicStroke(outlineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
                     }
 
-                    Rectangle2D visualBounds = glyphVector.getVisualBounds();
-                    if (visualBounds.getWidth() > 0 && visualBounds.getHeight() > 0) {
-                        float minX = currentX + (float) visualBounds.getX() - outlineOffset;
-                        float minY = (float) visualBounds.getY() - outlineOffset;
-                        float maxX = currentX + (float) (visualBounds.getX() + visualBounds.getWidth()) + shadowOffset + outlineOffset;
-                        float maxY = (float) (visualBounds.getY() + visualBounds.getHeight()) + shadowOffset + outlineOffset;
-
-                        minVisualX = Math.min(minVisualX, minX);
-                        minVisualY = Math.min(minVisualY, minY);
-                        maxVisualX = Math.max(maxVisualX, maxX);
-                        maxVisualY = Math.max(maxVisualY, maxY);
+                    Rectangle2D glyphBounds = glyphVector.getVisualBounds();
+                    if (glyphBounds.getWidth() > 0 && glyphBounds.getHeight() > 0) {
+                        visualBounds.addGlyphs(
+                                currentX + (float) glyphBounds.getX(), (float) glyphBounds.getY(),
+                                currentX + (float) (glyphBounds.getX() + glyphBounds.getWidth()), (float) (glyphBounds.getY() + glyphBounds.getHeight()),
+                                format, fontSize
+                        );
                     }
                 }
                 if (advance > 0) {
                     if (format.underlined()) {
-                        float y = sectionLineMetrics.getUnderlineOffset();
-                        float thickness = sectionLineMetrics.getUnderlineThickness() * (format.bold() ? 1.5F : 1F);
-                        minVisualX = Math.min(minVisualX, currentX - outlineOffset);
-                        minVisualY = Math.min(minVisualY, y - thickness / 2 - outlineOffset);
-                        maxVisualX = Math.max(maxVisualX, currentX + advance + shadowOffset + outlineOffset);
-                        maxVisualY = Math.max(maxVisualY, y + thickness / 2 + shadowOffset + outlineOffset);
+                        float thickness = TextDecorations.lineThickness(sectionLineMetrics.getUnderlineThickness(), format);
+                        visualBounds.addLine(currentX, advance, sectionLineMetrics.getUnderlineOffset(), thickness, format, fontSize);
                     }
                     if (format.strikethrough()) {
-                        float y = sectionLineMetrics.getStrikethroughOffset();
-                        float thickness = sectionLineMetrics.getStrikethroughThickness() * (format.bold() ? 1.5F : 1F);
-                        minVisualX = Math.min(minVisualX, currentX - outlineOffset);
-                        minVisualY = Math.min(minVisualY, y - thickness / 2 - outlineOffset);
-                        maxVisualX = Math.max(maxVisualX, currentX + advance + shadowOffset + outlineOffset);
-                        maxVisualY = Math.max(maxVisualY, y + thickness / 2 + shadowOffset + outlineOffset);
+                        float thickness = TextDecorations.lineThickness(sectionLineMetrics.getStrikethroughThickness(), format);
+                        visualBounds.addLine(currentX, advance, sectionLineMetrics.getStrikethroughOffset(), thickness, format, fontSize);
                     }
                 }
 
@@ -151,15 +135,7 @@ public class AWTFont implements Font {
             }
         }
 
-        Rectangle visualBounds;
-        if (minVisualX <= maxVisualX && minVisualY <= maxVisualY) {
-            visualBounds = new Rectangle(minVisualX, minVisualY, maxVisualX - minVisualX, maxVisualY - minVisualY);
-        } else {
-            visualBounds = new Rectangle(0, 0, 0, 0);
-        }
-        Rectangle logicalBounds = new Rectangle(0, minLogicalY, currentX, maxLogicalY - minLogicalY);
-
-        return new AWTShapedText(shapedSections, visualBounds, logicalBounds);
+        return new AWTShapedText(shapedSections, visualBounds.build(), new Rectangle(0, minLogicalY, currentX, maxLogicalY - minLogicalY));
     }
 
     private List<FontRun> splitIntoRuns(final String text, final int style) {

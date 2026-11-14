@@ -1,6 +1,9 @@
+import org.teavm.gradle.api.OptimizationLevel
+
 plugins {
     id "project.defaults"
     id "configuration.include"
+    alias(libs.plugins.teavm)
 }
 
 dependencies {
@@ -8,6 +11,7 @@ dependencies {
     include project(":backend-awt")
     include project(":backend-thingl-glfw")
     include project(":backend-thingl-sdl")
+    include project(":backend-teavm")
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each { natives ->
         include(variantOf(libs.lwjgl) { classifier(natives) })
         include(variantOf(libs.lwjgl.opengl) { classifier(natives) })
@@ -16,4 +20,25 @@ dependencies {
         include(variantOf(libs.lwjgl.glfw) { classifier(natives) })
         include(variantOf(libs.lwjgl.sdl) { classifier(natives) })
     }
+}
+
+teavm {
+    js {
+        mainClass = "test.web.WebMain"
+
+        def production = providers.gradleProperty("environment").map { it == "prod" }.orElse(false)
+        optimization = production.map { it ? OptimizationLevel.AGGRESSIVE : OptimizationLevel.NONE }
+        obfuscated = production
+    }
+}
+
+tasks.register("assembleWeb", Sync) {
+    group = "build"
+    description = "Assembles a servable web directory containing the compiled demo"
+    from(tasks.named("generateJavaScript"))
+    from("src/main/web")
+    from("src/main/resources") {
+        include "NotoSans-Regular.ttf", "lucide.ttf", "image.jpg"
+    }
+    into(layout.buildDirectory.dir("web"))
 }

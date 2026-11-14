@@ -104,7 +104,7 @@ public sealed interface RenderCommand extends RenderElement permits
                 min = min.min(point);
                 max = max.max(point);
             }
-            return new Rectangle(min, max);
+            return new Rectangle(min.x() - this.width / 2F, min.y() - this.width / 2F, max.x() - min.x() + this.width, max.y() - min.y() + this.width);
         }
     }
 

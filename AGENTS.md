@@ -12,14 +12,16 @@ This document outlines the project-specific engineering standards, architectural
     - `backend-thingl-glfw`: GLFW windowing & input integration for ThinGL
     - `backend-thingl-sdl`: SDL windowing & input integration for ThinGL
     - `backend-awt`: Java AWT / Swing backend and application runner
-    - `examples`: Demo applications and manual UI validation test runners
-- **Graphics Backend:** Interchangeable by the user (ThinGL OpenGL via GLFW/SDL, Java AWT)
+    - `backend-teavm`: Browser backend (WebGL 2) for UIs compiled to JavaScript with TeaVM
+    - `examples`: Demo applications, manual UI validation test runners, and TeaVM browser demo (`./gradlew :examples:assembleWeb`, then serve `examples/build/web`)
+- **Graphics Backend:** Interchangeable by the user (ThinGL OpenGL via GLFW/SDL, Java AWT, WebGL 2 via TeaVM)
 - **Boilerplate Reduction:** Project Lombok (Required)
 
 ### Graphics Backends
 The graphics backend is designed to be interchangeable, allowing users to choose their preferred rendering technology:
 - **ThinGL (OpenGL):** Abstracted through `backend-thingl` with platform integrations in `backend-thingl-glfw` (GLFW) and `backend-thingl-sdl` (SDL).
 - **AWT / Swing:** Implemented in `backend-awt` (`AWTBackend`, `AWTApplication`, `AWTRenderer`, `RivetCanvas`).
+- **TeaVM (WebGL 2):** Implemented in `backend-teavm` (`TeaVMApplication`, `TeaVMBackend`, `WebGLRenderer`). Core code must stay TeaVM compatible: reflection only works for members made reflectable by a TeaVM `ReflectionPolicy` in `backend-teavm` (registered via `META-INF/services`, e.g. `ThemeReflectionPolicy`), `Class.forName` does not initialize classes, and only JDK classes available in TeaVM's classlib (e.g. no `ConcurrentLinkedQueue`/`LinkedBlockingQueue`).
 - **ThinGL Reference Directory:** For reference, the ThinGL library is cloned into the `ThinGL` directory at the project root. **Do not modify the `ThinGL` directory under any circumstances**, as it is a third-party library.
 
 ## Engineering Standards

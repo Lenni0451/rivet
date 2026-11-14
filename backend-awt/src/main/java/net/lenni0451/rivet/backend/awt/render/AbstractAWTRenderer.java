@@ -5,6 +5,7 @@ import net.lenni0451.rivet.backend.awt.shape.RoundedRect;
 import net.lenni0451.rivet.backend.awt.text.AWTShapedText;
 import net.lenni0451.rivet.backend.render.CheckedRenderer;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.backend.text.TextDecorations;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextFormat;
 import net.lenni0451.rivet.text.model.TextOrigin;
@@ -18,10 +19,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
 public abstract class AbstractAWTRenderer extends CheckedRenderer {
-
-    public static final float SHADOW_OFFSET_FACTOR = 0.075F;
-    public static final float SHADOW_COLOR_MULTIPLIER = 0.25F;
-    public static final float OUTLINE_WIDTH_FACTOR = 0.125F;
 
     @Override
     public void doComponentBounds(final float x, final float y, final float width, final float height, final Runnable renderer) {
@@ -133,56 +130,36 @@ public abstract class AbstractAWTRenderer extends CheckedRenderer {
     protected void renderShapedText(final AWTShapedText shapedText, final float originX, final float originY) {
         for (AWTShapedText.Section section : shapedText.sections()) {
             if (section.glyphVector().getNumGlyphs() == 0) continue;
-
-            float sectionX = originX + section.xOffset();
-            float sectionY = originY;
-            TextFormat format = section.format();
-            GlyphVector glyphVector = section.glyphVector();
-            Shape outlineShape = section.outlineShape();
-            LineMetrics lineMetrics = section.lineMetrics();
-            float advance = section.advanceWidth();
-
-            if (format.shadow()) {
-                float shadowOffset = SHADOW_OFFSET_FACTOR * section.font().getSize();
-                float shadowX = sectionX + shadowOffset;
-                float shadowY = sectionY + shadowOffset;
-
-                if (format.outlineColor().getAlpha() > 0 && outlineShape != null && section.outlineStroke() != null) {
-                    Color shadowOutline = format.outlineColor().multiply(SHADOW_COLOR_MULTIPLIER);
-                    this.strokeTextOutline(outlineShape, section.outlineStroke(), shadowX, shadowY, shadowOutline);
+            TextDecorations.render(section.format(), section.font().getSize(), originX + section.xOffset(), originY, new TextDecorations.Painter() {
+                @Override
+                public void outline(final float x, final float y, final Color color) {
+                    if (section.outlineShape() != null && section.outlineStroke() != null) {
+                        AbstractAWTRenderer.this.strokeTextOutline(section.outlineShape(), section.outlineStroke(), x, y, color);
+                    }
                 }
 
-                Color shadowColor = format.color().multiply(SHADOW_COLOR_MULTIPLIER);
-                this.drawGlyphs(glyphVector, shadowX, shadowY, shadowColor);
-
-                if (format.underlined()) {
-                    float lineY = shadowY + lineMetrics.getUnderlineOffset();
-                    float thickness = lineMetrics.getUnderlineThickness() * (format.bold() ? 1.5F : 1F);
-                    this.fillShape(new Rectangle2D.Float(shadowX, lineY - thickness / 2, advance, thickness), shadowColor);
+                @Override
+                public void glyphs(final float x, final float y, final Color color) {
+                    AbstractAWTRenderer.this.drawGlyphs(section.glyphVector(), x, y, color);
                 }
-                if (format.strikethrough()) {
-                    float lineY = shadowY + lineMetrics.getStrikethroughOffset();
-                    float thickness = lineMetrics.getStrikethroughThickness() * (format.bold() ? 1.5F : 1F);
-                    this.fillShape(new Rectangle2D.Float(shadowX, lineY - thickness / 2, advance, thickness), shadowColor);
+
+                @Override
+                public void lines(final float x, final float y, final Color color) {
+                    TextFormat format = section.format();
+                    LineMetrics lineMetrics = section.lineMetrics();
+                    float advance = section.advanceWidth();
+                    if (format.underlined()) {
+                        float lineY = y + lineMetrics.getUnderlineOffset();
+                        float thickness = TextDecorations.lineThickness(lineMetrics.getUnderlineThickness(), format);
+                        AbstractAWTRenderer.this.fillShape(new Rectangle2D.Float(x, lineY - thickness / 2, advance, thickness), color);
+                    }
+                    if (format.strikethrough()) {
+                        float lineY = y + lineMetrics.getStrikethroughOffset();
+                        float thickness = TextDecorations.lineThickness(lineMetrics.getStrikethroughThickness(), format);
+                        AbstractAWTRenderer.this.fillShape(new Rectangle2D.Float(x, lineY - thickness / 2, advance, thickness), color);
+                    }
                 }
-            }
-
-            if (format.outlineColor().getAlpha() > 0 && outlineShape != null && section.outlineStroke() != null) {
-                this.strokeTextOutline(outlineShape, section.outlineStroke(), sectionX, sectionY, format.outlineColor());
-            }
-
-            this.drawGlyphs(glyphVector, sectionX, sectionY, format.color());
-
-            if (format.underlined()) {
-                float lineY = sectionY + lineMetrics.getUnderlineOffset();
-                float thickness = lineMetrics.getUnderlineThickness() * (format.bold() ? 1.5F : 1F);
-                this.fillShape(new Rectangle2D.Float(sectionX, lineY - thickness / 2, advance, thickness), format.color());
-            }
-            if (format.strikethrough()) {
-                float lineY = sectionY + lineMetrics.getStrikethroughOffset();
-                float thickness = lineMetrics.getStrikethroughThickness() * (format.bold() ? 1.5F : 1F);
-                this.fillShape(new Rectangle2D.Float(sectionX, lineY - thickness / 2, advance, thickness), format.color());
-            }
+            });
         }
     }
 

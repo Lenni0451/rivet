@@ -1,15 +1,21 @@
 [versions]
 lwjgl = "3.4.3"
 commons = "1.9.3-SNAPSHOT"
+teavm = "0.16.0"
 
 [libraries]
 findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.1.0" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.48" }
 thingl = { module = "net.raphimc:thingl", version = "0.2.0-20261015.150508-14" }
+earcut4j = { module = "org.maplibre:earcut4j", version = "3.0.0" }
 
 commons-core = { module = "net.lenni0451.commons:core", version.ref = "commons" }
 commons-animation = { module = "net.lenni0451.commons:animation", version.ref = "commons" }
+
+teavm-jso = { module = "org.teavm:teavm-jso", version.ref = "teavm" }
+teavm-jso-apis = { module = "org.teavm:teavm-jso-apis", version.ref = "teavm" }
+teavm-extension-spi = { module = "org.teavm:teavm-extension-spi", version.ref = "teavm" }
 
 junit-bom = { module = "org.junit:junit-bom", version = "6.1.3" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
@@ -25,6 +31,8 @@ lwjgl-sdl = { module = "org.lwjgl:lwjgl-sdl", version.ref = "lwjgl" }
 [bundles]
 commons = ["commons-core", "commons-animation"]
 lwjgl = ["lwjgl", "lwjgl-opengl", "lwjgl-stb", "lwjgl-freetype"]
+teavm = ["teavm-jso", "teavm-jso-apis"]
 
 [plugins]
+teavm = { id = "org.teavm", version.ref = "teavm" }
 templateProcessor = { id = "net.lenni0451.template-processor", version = "1.0.1" }

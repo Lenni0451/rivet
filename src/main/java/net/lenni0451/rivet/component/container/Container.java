@@ -70,7 +70,7 @@ public class Container extends ParentContainer {
         return this.children.stream().map(c -> c.component).toList();
     }
 
-    // Can return Bounds.EMPTY if the component isn't layouted yet or is not a child of this container
+    // Can return Rectangle.EMPTY if the component isn't layouted yet or is not a child of this container
     @Override
     public final Rectangle childBounds(final Component component) {
         Child child = this.childIndex.get(component);

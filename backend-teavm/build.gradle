@@ -1,0 +1,10 @@
+plugins {
+    id "project.defaults_and_publish"
+}
+
+dependencies {
+    api project(":")
+    api libs.earcut4j
+    api libs.bundles.teavm
+    compileOnly libs.teavm.extension.spi
+}

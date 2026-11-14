@@ -21,6 +21,8 @@ import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Padding;
 import net.lenni0451.rivet.text.diagnostic.UnderlineStyle;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +39,16 @@ public abstract class Theme {
 
     static {
         try {
-            for (Class<?> declaredClass : Theme.class.getDeclaredClasses()) {
-                Class.forName(declaredClass.getName(), true, declaredClass.getClassLoader());
+            for (Class<?> holderClass : Theme.class.getDeclaredClasses()) {
+                for (Field field : holderClass.getDeclaredFields()) {
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        field.get(null); // Get a random field to ensure the class is initialized
+                        break;
+                    }
+                }
             }
-        } catch (Throwable t) {
-            throw new ExceptionInInitializerError("Failed to initialize theme keys: " + t.getMessage());
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to initialize theme keys", e);
         }
     }
 
