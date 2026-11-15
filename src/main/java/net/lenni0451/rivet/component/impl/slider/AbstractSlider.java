@@ -129,7 +129,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
             this.invalidateLayout();
         });
 
-        this.positionUpdateListener().add(new PositionUpdateListener(this::updateTooltipPositions));
+        this.positionUpdateListener().add(new PositionUpdateListener(() -> this.draggedThumb != null, this::updateTooltipPositions));
         this.tooltipFormat.changeListener().add(f -> this.cachedFormatString = null);
     }
 

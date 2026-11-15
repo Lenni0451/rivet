@@ -26,8 +26,12 @@ public final class Tasks {
     }
 
     void runTasks() {
-        Runnable task;
-        while ((task = this.tasks.poll()) != null) task.run();
+        int count = this.tasks.size();
+        for (int i = 0; i < count; i++) {
+            Runnable task = this.tasks.poll();
+            if (task == null) break;
+            task.run();
+        }
     }
 
 }

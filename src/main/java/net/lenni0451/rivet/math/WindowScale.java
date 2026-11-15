@@ -10,6 +10,10 @@ public final class WindowScale {
     private float manualScale = 1;
     private float automaticScale = 1;
 
+    public WindowScale(final Runnable changeListener) {
+        this.changeListener = changeListener;
+    }
+
     public boolean manual() {
         return this.manual;
     }

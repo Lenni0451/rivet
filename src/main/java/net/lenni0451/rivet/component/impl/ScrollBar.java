@@ -107,6 +107,13 @@ public class ScrollBar extends Component {
         return this;
     }
 
+    public final ScrollBar size(final float contentSize, final float visibleSize) {
+        this.contentSize = contentSize;
+        this.visibleSize = visibleSize;
+        this.scroll.revalidate();
+        return this;
+    }
+
     public final float maxScroll() {
         float max = this.contentSize - this.visibleSize;
         return max <= EPSILON ? 0 : max;

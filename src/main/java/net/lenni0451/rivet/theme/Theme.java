@@ -87,8 +87,8 @@ public abstract class Theme {
     private final Map<ThemeKey<?>, Object> values = new ConcurrentHashMap<>();
 
     public final void apply(final Rivet rivet) {
-        if (this.rivet != null) {
-            throw new IllegalStateException("Theme has already been applied");
+        if (this.rivet != null && this.rivet != rivet) {
+            throw new IllegalStateException("Theme has already been applied to another Rivet instance");
         }
         this.rivet = rivet;
         this.values.clear();

@@ -203,8 +203,8 @@ public class Button extends Component implements Parent {
 
     @Override
     protected boolean onMouseUpInternal(final MouseButtonEvent event, final Size size) {
-        this.pressed.remove(event.button());
-        if (this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.get().equals(ClickOn.UP) || this.clickOn.get().equals(ClickOn.BOTH))) {
+        boolean wasPressed = this.pressed.remove(event.button());
+        if (wasPressed && this.hovered && this.handledButtons.contains(event.button()) && (this.clickOn.get().equals(ClickOn.UP) || this.clickOn.get().equals(ClickOn.BOTH))) {
             this.clickListener.call(listener -> listener.onClick(event));
         }
         return true;

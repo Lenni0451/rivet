@@ -53,12 +53,12 @@ public final class AnimationConfigParser implements StringParser<AnimationConfig
 
         String[] options = s.split(" ");
         if (options.length == 6 && !s.contains("=")) {
-            easingFunction = this.easingFunctionParser.parse(options[0]);
-            easingMode = this.easingModeParser.parse(options[1]);
+            easingFunction = this.require(this.easingFunctionParser.parse(options[0]), "easing function", options[0]);
+            easingMode = this.require(this.easingModeParser.parse(options[1]), "easing mode", options[1]);
             startValue = Float.parseFloat(options[2]);
             endValue = Float.parseFloat(options[3]);
             duration = Integer.parseInt(options[4]);
-            easingBehavior = this.behaviorParser.parse(options[5]);
+            easingBehavior = this.require(this.behaviorParser.parse(options[5]), "easing behavior", options[5]);
         } else {
             for (String option : options) {
                 String[] keyValue = option.split("=", 2);
@@ -67,12 +67,12 @@ public final class AnimationConfigParser implements StringParser<AnimationConfig
                 String key = keyValue[0].trim();
                 String value = keyValue[1].trim();
                 switch (key.toLowerCase(Locale.ROOT)) {
-                    case "easingfunction", "easing_function", "function", "ef" -> easingFunction = this.easingFunctionParser.parse(value);
-                    case "easingmode", "easing_mode", "mode", "em" -> easingMode = this.easingModeParser.parse(value);
+                    case "easingfunction", "easing_function", "function", "ef" -> easingFunction = this.require(this.easingFunctionParser.parse(value), "easing function", value);
+                    case "easingmode", "easing_mode", "mode", "em" -> easingMode = this.require(this.easingModeParser.parse(value), "easing mode", value);
                     case "startvalue", "start_value", "start", "s" -> startValue = Float.parseFloat(value);
                     case "endvalue", "end_value", "end", "e" -> endValue = Float.parseFloat(value);
                     case "duration", "d" -> duration = Integer.parseInt(value);
-                    case "easingbehavior", "easing_behavior", "behavior", "eb" -> easingBehavior = this.behaviorParser.parse(value);
+                    case "easingbehavior", "easing_behavior", "behavior", "eb" -> easingBehavior = this.require(this.behaviorParser.parse(value), "easing behavior", value);
                     default -> throw new IllegalArgumentException("Unknown option: " + key);
                 }
             }
@@ -95,6 +95,11 @@ public final class AnimationConfigParser implements StringParser<AnimationConfig
             lines.add(String.join(" ", parts));
         }
         return String.join("; ", lines);
+    }
+
+    private <T> T require(final T value, final String type, final String input) {
+        if (value == null) throw new IllegalArgumentException("Unknown " + type + ": " + input);
+        return value;
     }
 
 }

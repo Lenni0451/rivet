@@ -309,6 +309,10 @@ public final class {{prefix}}Property{{var "generic"}} {
             Runnable listener = this::sync;
             parent.addedListener().add(() -> parent.rivet().renderListener().add(listener));
             parent.removedListener().add(() -> parent.rivet().renderListener().remove(listener));
+            if (parent.rivet() != null) {
+                // The added listener isn't called if the component is already attached
+                parent.rivet().renderListener().add(listener);
+            }
         }
 
         @Override

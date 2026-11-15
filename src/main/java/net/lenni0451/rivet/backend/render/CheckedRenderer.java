@@ -187,7 +187,7 @@ public abstract class CheckedRenderer implements Renderer {
     public final void polyLine(final Point[] points, final float width, final Color color) {
         if (points.length == 1) {
             throw new IllegalArgumentException("Polyline must have at least 2 points");
-        } else if (points.length >= 2 && color.getAlpha() > 0) {
+        } else if (points.length >= 2 && width > 0 && color.getAlpha() > 0) {
             this.doPolyLine(points, width, color);
         }
     }

@@ -52,6 +52,12 @@ public class ReorderableContainer extends Container {
     }
 
     @Override
+    protected void onRemovedInternal() {
+        this.currentTarget = null;
+        super.onRemovedInternal();
+    }
+
+    @Override
     protected void onDisabledInternal() {
         this.currentTarget = null;
         super.onDisabledInternal();

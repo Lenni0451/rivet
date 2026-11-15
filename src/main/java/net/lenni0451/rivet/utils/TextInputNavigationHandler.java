@@ -67,6 +67,25 @@ public abstract class TextInputNavigationHandler {
         return this.textBuffer().charAt(index);
     }
 
+    // The offset before the character in front of the given offset, without splitting surrogate pairs
+    public final int previousOffset(final int offset) {
+        if (offset <= 0) return 0;
+        if (offset >= 2 && Character.isLowSurrogate(this.charAt(offset - 1)) && Character.isHighSurrogate(this.charAt(offset - 2))) {
+            return offset - 2;
+        }
+        return offset - 1;
+    }
+
+    // The offset after the character at the given offset, without splitting surrogate pairs
+    public final int nextOffset(final int offset) {
+        int length = this.textLength();
+        if (offset >= length) return length;
+        if (offset + 1 < length && Character.isHighSurrogate(this.charAt(offset)) && Character.isLowSurrogate(this.charAt(offset + 1))) {
+            return offset + 2;
+        }
+        return offset + 1;
+    }
+
     public final boolean isWordBoundary(final char c) {
         String boundaries = this.wordBoundaries();
         return boundaries != null && boundaries.indexOf(c) != -1;
@@ -291,6 +310,8 @@ public abstract class TextInputNavigationHandler {
     public final boolean onKeyDown(final KeyEvent event) {
         boolean shift = event.modifiers().contains(ModifierKey.SHIFT);
         boolean ctrl = event.modifiers().contains(ModifierKey.CONTROL);
+        // AltGr is reported as control + alt on some platforms and is used to type characters (e.g. "ą" using AltGr + A)
+        boolean shortcut = ctrl && !event.modifiers().contains(ModifierKey.ALT);
 
         int cursor = this.cursor();
         int selection = this.selection();
@@ -304,7 +325,7 @@ public abstract class TextInputNavigationHandler {
                 if (ctrl) {
                     cursor = this.findWordStart(cursor);
                 } else {
-                    cursor = Math.max(0, cursor - 1);
+                    cursor = this.previousOffset(cursor);
                 }
                 if (!shift) selection = cursor;
             }
@@ -318,7 +339,7 @@ public abstract class TextInputNavigationHandler {
                 if (ctrl) {
                     cursor = this.findWordEnd(cursor);
                 } else {
-                    cursor = Math.min(length, cursor + 1);
+                    cursor = this.nextOffset(cursor);
                 }
                 if (!shift) selection = cursor;
             }
@@ -423,8 +444,9 @@ public abstract class TextInputNavigationHandler {
                 this.selection(this.findWordStart(cursor));
                 this.deleteSelection();
             } else if (cursor > 0) {
-                this.textBuffer().deleteCharAt(cursor - 1);
-                cursor--;
+                int previous = this.previousOffset(cursor);
+                this.textBuffer().delete(previous, cursor);
+                cursor = previous;
                 this.cursor(cursor);
                 this.selection(cursor);
                 this.onTextModified(true);
@@ -436,19 +458,19 @@ public abstract class TextInputNavigationHandler {
                 this.selection(this.findWordEnd(cursor));
                 this.deleteSelection();
             } else if (cursor < length) {
-                this.textBuffer().deleteCharAt(cursor);
+                this.textBuffer().delete(cursor, this.nextOffset(cursor));
                 this.onTextModified(true);
             }
-        } else if (ctrl && event.key().isEquivalent(Key.A)) {
+        } else if (shortcut && event.key().isEquivalent(Key.A)) {
             this.selectAll();
             return true;
-        } else if (ctrl && event.key().isEquivalent(Key.C)) {
+        } else if (shortcut && event.key().isEquivalent(Key.C)) {
             this.copy();
             return true;
-        } else if (ctrl && event.key().isEquivalent(Key.V)) {
+        } else if (shortcut && event.key().isEquivalent(Key.V)) {
             this.paste();
             return true;
-        } else if (ctrl && event.key().isEquivalent(Key.X)) {
+        } else if (shortcut && event.key().isEquivalent(Key.X)) {
             this.cut();
             return true;
         } else {

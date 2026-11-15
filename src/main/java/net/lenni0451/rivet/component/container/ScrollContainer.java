@@ -471,16 +471,14 @@ public class ScrollContainer extends ParentContainer {
 
         float currentScrollX = this.scrollX.get();
         float currentScrollY = this.scrollY.get();
-        this.hScrollBar.contentSize(this.childSize.width());
-        this.hScrollBar.visibleSize(availableWidth);
+        this.hScrollBar.size(this.childSize.width(), availableWidth);
         this.hScrollBar.scroll().set(currentScrollX, false);
         Rectangle hArea = this.getHScrollArea(size);
         if (hArea != null) {
             this.hScrollBar.layout(hArea.size());
         }
 
-        this.vScrollBar.contentSize(this.childSize.height());
-        this.vScrollBar.visibleSize(availableHeight);
+        this.vScrollBar.size(this.childSize.height(), availableHeight);
         this.vScrollBar.scroll().set(currentScrollY, false);
         Rectangle vArea = this.getVScrollArea(size);
         if (vArea != null) {

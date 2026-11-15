@@ -103,6 +103,16 @@ public class TabBackground extends Component {
     }
 
     @Override
+    protected void onRemovedInternal() {
+        this.hovered = false;
+    }
+
+    @Override
+    protected void onDisabledInternal() {
+        this.hovered = false;
+    }
+
+    @Override
     protected void onMouseEnterInternal() {
         this.hovered = true;
     }

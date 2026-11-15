@@ -80,7 +80,10 @@ public class TextWrapper {
                         lines.add(new TextLine(currentLine));
                     }
                     currentLine = new ArrayList<>();
-                    i--;
+                    if (word.sections().size() != 1 || !word.sections().get(0).text().equals(" ")) {
+                        // The space is replaced by the line break
+                        i--;
+                    }
                 }
             }
         }

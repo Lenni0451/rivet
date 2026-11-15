@@ -319,7 +319,9 @@ public class TextField extends Component {
 
     @Override
     protected void onEnabledInternal() {
-        this.updateShapedText();
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
     }
 
     @Override
@@ -487,7 +489,9 @@ public class TextField extends Component {
         @Override
         public void onTextModified(final boolean fireListeners) {
             if (fireListeners) {
-                TextField.this.updateShapedText();
+                if (TextField.this.rivet() != null) {
+                    TextField.this.updateShapedText();
+                }
                 TextField.this.onTextChange(true);
             }
         }

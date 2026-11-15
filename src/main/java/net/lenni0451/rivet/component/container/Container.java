@@ -47,6 +47,9 @@ public class Container extends ParentContainer {
         initializer.accept(component);
         this.addChildListener.callVoid((l, c) -> l.accept(c, component), () -> {
             this.remove(component);
+            if (component.attached()) {
+                throw new IllegalStateException("Component is already attached to another parent");
+            }
             Child child = new Child(component);
             this.children.add(child);
             this.childIndex.put(component, child);

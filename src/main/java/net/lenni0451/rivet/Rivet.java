@@ -136,7 +136,10 @@ public final class Rivet {
     }
 
     public Rivet focusedComponent(final Component component) {
-        if (component != null && component.disabled().get()) return this;
+        if (component != null) {
+            if (component.disabled().get()) return this;
+            if (component.rivet() != this) return this;
+        }
         if (this.focusedComponent == component) return this;
         this.focusChangeListener.callVoid(
                 (listener, ctx) -> listener.accept(ctx, this.focusedComponent, component),
@@ -186,6 +189,9 @@ public final class Rivet {
         this.lastMouseX = -Float.MAX_VALUE;
         this.lastMouseY = -Float.MAX_VALUE;
         this.mouseHandler.clear();
+        if (this.dragAndDropManager.isDragging()) {
+            this.dragAndDropManager.cancelDrag();
+        }
         return this;
     }
 

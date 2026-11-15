@@ -203,6 +203,7 @@ public class TextArea extends Component {
         if (this.rivet() != null) {
             this.updateShapedText();
         }
+        this.invalidateLayout(); // The hint defines the ideal size while the text is empty
         return this;
     }
 
@@ -244,7 +245,7 @@ public class TextArea extends Component {
     }
 
     public final TextArea scrollCursorIntoView(final boolean immediate) {
-        if (!this.autoScrollToCursor || this.shapedTextBlock == null) return this;
+        if (!this.autoScrollToCursor || this.shapedTextBlock == null || this.rivet() == null) return this;
         int currentLine = MathUtils.clamp(this.lineIndexAt(this.cursor), 0, this.lineCount() - 1);
         int currentColumn = Math.max(0, this.cursor - this.lineStarts[currentLine]);
         ShapedText shapedLine = this.getShapedLine(currentLine);
@@ -513,7 +514,9 @@ public class TextArea extends Component {
 
     @Override
     protected void onEnabledInternal() {
-        this.updateShapedText();
+        if (this.rivet() != null) {
+            this.updateShapedText();
+        }
     }
 
     @Override
@@ -568,7 +571,7 @@ public class TextArea extends Component {
             float localY = event.y() - this.innerPadding.get().top();
             int lineId = MathUtils.clamp((int) (localY / this.lineHeight()), 0, this.lineCount() - 1);
             ShapedText lineShaped = this.getShapedLine(lineId);
-            int column = lineShaped.index(localX, 0);
+            int column = Math.min(lineShaped.index(localX, 0), this.lineLength(lineId));
             this.cursor = this.lineStarts[lineId] + column;
 
             if (!event.modifiers().contains(ModifierKey.SHIFT)) {
@@ -603,7 +606,7 @@ public class TextArea extends Component {
             float localY = event.y() - this.innerPadding.get().top();
             int lineId = MathUtils.clamp((int) (localY / this.lineHeight()), 0, this.lineCount() - 1);
             ShapedText lineShaped = this.getShapedLine(lineId);
-            int column = lineShaped.index(localX, 0);
+            int column = Math.min(lineShaped.index(localX, 0), this.lineLength(lineId));
             this.cursor = this.lineStarts[lineId] + column;
             this.cursorAnimation.reset().start();
             this.scrollCursorIntoView();
@@ -824,7 +827,9 @@ public class TextArea extends Component {
             TextArea.this.updateLineStarts();
             TextArea.this.clearDiagnostics();
             if (fireListeners) {
-                TextArea.this.updateShapedText();
+                if (TextArea.this.rivet() != null) {
+                    TextArea.this.updateShapedText();
+                }
                 TextArea.this.onTextChange(true);
             }
         }

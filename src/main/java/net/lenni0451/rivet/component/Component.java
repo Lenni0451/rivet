@@ -200,7 +200,7 @@ public abstract class Component {
     }
 
     public final Component layoutOptions(final LayoutOptions layoutOptions) {
-        if (this.layoutOptions == null || !this.layoutOptions.equals(layoutOptions)) {
+        if (!Objects.equals(this.layoutOptions, layoutOptions)) {
             this.layoutOptions = layoutOptions;
             this.invalidateLayout();
         }

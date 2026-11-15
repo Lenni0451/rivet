@@ -228,7 +228,10 @@ public abstract class ContainerMouseHandler<E> {
 
     public final EventState onDragOver(final DragOverEvent event, final Size containerBounds) {
         List<E> hoveredElements = this.elementsAt(event.x(), event.y(), containerBounds);
-        if (hoveredElements.isEmpty()) return EventState.MISS;
+        if (hoveredElements.isEmpty()) {
+            this.onDragLeave();
+            return EventState.MISS;
+        }
 
         for (E hoveredElement : hoveredElements) {
             Component hoveredComponent = this.map(hoveredElement);

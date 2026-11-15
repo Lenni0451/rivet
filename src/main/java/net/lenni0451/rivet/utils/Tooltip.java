@@ -3,6 +3,7 @@ package net.lenni0451.rivet.utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.container.Container;
 import net.lenni0451.rivet.event.listener.BiReturnableListener;
@@ -102,18 +103,23 @@ public class Tooltip {
 
     private void remove() {
         if (this.layer != null) {
-            this.component.rivet().removeLayer(this.layer);
+            this.layer.container().rivet().removeLayer(this.layer);
             this.layer = null;
             this.currentTooltip = null;
         }
     }
 
     private void startRenderTick() {
-        this.component.rivet().renderListener().add(this.renderListener);
+        Rivet rivet = this.component.rivet();
+        rivet.renderListener().remove(this.renderListener);
+        rivet.renderListener().add(this.renderListener);
     }
 
     private void stopRenderTick() {
-        this.component.rivet().renderListener().remove(this.renderListener);
+        Rivet rivet = this.component.rivet();
+        if (rivet != null) {
+            rivet.renderListener().remove(this.renderListener);
+        }
     }
 
 

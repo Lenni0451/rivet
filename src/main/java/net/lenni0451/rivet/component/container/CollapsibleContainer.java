@@ -192,7 +192,11 @@ public class CollapsibleContainer extends ParentContainer {
         if (component == this.clickableHeader) {
             return new Rectangle(this.headerSize);
         } else if (component == this.content) {
-            return new Rectangle(0, this.headerSize.height(), this.contentSize);
+            if (this.collapseProgress.get() <= 0) {
+                return new Rectangle(0, this.headerSize.height(), this.contentSize.width(), 0);
+            } else {
+                return new Rectangle(0, this.headerSize.height(), this.contentSize);
+            }
         }
         return Rectangle.EMPTY;
     }
@@ -233,12 +237,25 @@ public class CollapsibleContainer extends ParentContainer {
         }
 
         @Override
+        protected void onRemovedInternal() {
+            super.onRemovedInternal();
+            this.hovered = false;
+        }
+
+        @Override
+        protected void onDisabledInternal() {
+            super.onDisabledInternal();
+            this.hovered = false;
+        }
+
+        @Override
         protected void onMouseEnterInternal() {
             this.hovered = true;
         }
 
         @Override
         protected void onMouseLeaveInternal() {
+            super.onMouseLeaveInternal();
             this.hovered = false;
         }
 
