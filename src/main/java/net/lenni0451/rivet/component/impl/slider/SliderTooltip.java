@@ -130,7 +130,7 @@ public class SliderTooltip extends Component {
 
         switch (this.position) {
             case ABOVE -> {
-                renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height() - triangleSize, cornerRadius, backgroundColor);
+                renderer.fillRoundedRect(0, 0, size.width(), size.height() - triangleSize, cornerRadius, backgroundColor);
                 renderer.fillTriangle(
                         size.width() / 2F - triangleSize - this.pointerOffset, size.height() - triangleSize,
                         size.width() / 2F - this.pointerOffset, size.height(),
@@ -140,7 +140,7 @@ public class SliderTooltip extends Component {
                 renderer.text(this.shapedText, padding.left(), padding.top(), TextOrigin.Horizontal.VISUAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP);
             }
             case BELOW -> {
-                renderer.optimizedFillRoundedRect(0, triangleSize, size.width(), size.height() - triangleSize, cornerRadius, backgroundColor);
+                renderer.fillRoundedRect(0, triangleSize, size.width(), size.height() - triangleSize, cornerRadius, backgroundColor);
                 renderer.fillTriangle(
                         size.width() / 2F - triangleSize - this.pointerOffset, triangleSize,
                         size.width() / 2F + triangleSize - this.pointerOffset, triangleSize,

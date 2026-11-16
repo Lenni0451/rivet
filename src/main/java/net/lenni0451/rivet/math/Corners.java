@@ -28,4 +28,13 @@ public record Corners(float topLeft, float bottomLeft, float bottomRight, float 
         return Math.max(Math.max(this.topLeft, this.bottomLeft), Math.max(this.bottomRight, this.topRight));
     }
 
+    public boolean isCircle(final float width, final float height) {
+        float radius = width / 2;
+        return width == height && this.topLeft == radius && this.bottomLeft == radius && this.bottomRight == radius && this.topRight == radius;
+    }
+
+    public boolean isEmpty() {
+        return this.topLeft <= 0 && this.bottomLeft <= 0 && this.bottomRight <= 0 && this.topRight <= 0;
+    }
+
 }

@@ -9,7 +9,6 @@ import net.lenni0451.rivet.backend.text.ShapedTextBlock;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
-import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.function.Consumer;
 
@@ -54,89 +53,21 @@ public interface Renderer {
         this.fillRoundedRect(x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius, color);
     }
 
+    default void fillRoundedRect(final float x, final float y, final float width, final float height, final Corners corners, final Color color) {
+        this.fillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
+    }
+
     void fillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color);
 
     default void outlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
         this.outlineRoundedRect(x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius, outlineWidth, color);
     }
 
+    default void outlineRoundedRect(final float x, final float y, final float width, final float height, final Corners corners, final float outlineWidth, final Color color) {
+        this.outlineRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), outlineWidth, color);
+    }
+
     void outlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color);
-
-    default void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final Corners corners, final Color color) {
-        this.optimizedFillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
-    }
-
-    default void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final Color color) {
-        if (width > 0 && height > 0 && color.getAlpha() > 0) {
-            float maxRadius = Math.min(width, height) / 2F;
-            float radius = Math.min(cornerRadius, maxRadius);
-            if (radius <= 0) {
-                this.fillRect(x, y, width, height, color);
-            } else if (width == height && radius == maxRadius) {
-                this.fillCircle(x + radius, y + radius, radius, color);
-            } else {
-                this.fillRoundedRect(x, y, width, height, radius, color);
-            }
-        }
-    }
-
-    default void optimizedFillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
-        if (width > 0 && height > 0 && color.getAlpha() > 0) {
-            if (rtl == rbl && rtl == rbr && rtl == rtr) {
-                this.optimizedFillRoundedRect(x, y, width, height, rtl, color);
-            } else {
-                Corners corners = MathUtils.clampCorners(width, height, rtl, rbl, rbr, rtr);
-                if (corners.topLeft() <= 0 && corners.bottomLeft() <= 0 && corners.bottomRight() <= 0 && corners.topRight() <= 0) {
-                    this.fillRect(x, y, width, height, color);
-                } else if (width == height && corners.topLeft() == width / 2 && corners.bottomLeft() == width / 2 && corners.bottomRight() == width / 2 && corners.topRight() == width / 2) {
-                    this.fillCircle(x + corners.topLeft(), y + corners.topLeft(), corners.topLeft(), color);
-                } else {
-                    this.fillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
-                }
-            }
-        }
-    }
-
-    default void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final Corners corners, final float outlineWidth, final Color color) {
-        this.optimizedOutlineRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), outlineWidth, color);
-    }
-
-    default void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final float cornerRadius, final float outlineWidth, final Color color) {
-        if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            if (outlineWidth >= width || outlineWidth >= height) {
-                this.optimizedFillRoundedRect(x, y, width, height, cornerRadius, color);
-            } else {
-                float maxRadius = Math.min(width, height) / 2F;
-                float radius = Math.min(cornerRadius, maxRadius);
-                if (radius <= 0) {
-                    this.outlineRect(x, y, width, height, outlineWidth, color);
-                } else if (width == height && radius == maxRadius) {
-                    this.outlineCircle(x + radius, y + radius, radius, outlineWidth, color);
-                } else {
-                    this.outlineRoundedRect(x, y, width, height, radius, outlineWidth, color);
-                }
-            }
-        }
-    }
-
-    default void optimizedOutlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
-        if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            if (rtl == rbl && rtl == rbr && rtl == rtr) {
-                this.optimizedOutlineRoundedRect(x, y, width, height, rtl, outlineWidth, color);
-            } else {
-                Corners corners = MathUtils.clampCorners(width, height, rtl, rbl, rbr, rtr);
-                if (outlineWidth >= width || outlineWidth >= height) {
-                    this.optimizedFillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
-                } else if (corners.topLeft() <= 0 && corners.bottomLeft() <= 0 && corners.bottomRight() <= 0 && corners.topRight() <= 0) {
-                    this.outlineRect(x, y, width, height, outlineWidth, color);
-                } else if (width == height && corners.topLeft() == width / 2 && corners.bottomLeft() == width / 2 && corners.bottomRight() == width / 2 && corners.topRight() == width / 2) {
-                    this.outlineCircle(x + width / 2, y + width / 2, width / 2, outlineWidth, color);
-                } else {
-                    this.outlineRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), outlineWidth, color);
-                }
-            }
-        }
-    }
 
     void fillPolygon(final Point[] points, final Color color);
 

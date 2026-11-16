@@ -82,10 +82,10 @@ public class SolidColor extends Component {
         Corners cornerRadius = this.cornerRadius.get();
 
         if (color.getAlpha() > 0) {
-            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, color);
+            renderer.fillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, color);
         }
         if (outlineColor.getAlpha() > 0 && outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
+            renderer.outlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
         }
     }
 

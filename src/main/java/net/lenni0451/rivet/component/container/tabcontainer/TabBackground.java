@@ -137,19 +137,10 @@ public class TabBackground extends Component {
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Corners corners = this.cornerRadius.get();
-        renderer.fillRoundedRect(
-                0, 0, size.width(), size.height(),
-                corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(),
-                this.backgroundColor.value()
-        );
+        renderer.fillRoundedRect(0, 0, size.width(), size.height(), corners, this.backgroundColor.value());
         float outlineWidth = this.outlineWidth.get();
         if (outlineWidth > 0) {
-            renderer.outlineRoundedRect(
-                    0, 0, size.width(), size.height(),
-                    corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(),
-                    outlineWidth,
-                    this.outlineColor.value()
-            );
+            renderer.outlineRoundedRect(0, 0, size.width(), size.height(), corners, outlineWidth, this.outlineColor.value());
         }
     }
 

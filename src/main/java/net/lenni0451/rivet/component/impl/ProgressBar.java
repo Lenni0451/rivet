@@ -97,20 +97,20 @@ public class ProgressBar extends Component {
             drawIndicatorAndStripes.run();
         } else {
             renderer.stencil(maskRenderer -> {
-                maskRenderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), Color.RED);
+                maskRenderer.fillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), Color.RED);
             }, drawIndicatorAndStripes);
         }
-        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), this.borderWidth.get(), this.borderColor.get());
+        renderer.outlineRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), this.borderWidth.get(), this.borderColor.get());
 
         this.renderText(renderer, size);
     }
 
     protected void renderTrack(final Renderer renderer, final Size size) {
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), this.trackColor.get());
+        renderer.fillRoundedRect(0, 0, size.width(), size.height(), this.trackCornerRadius.get(), this.trackColor.get());
     }
 
     protected void renderIndicator(final Renderer renderer, final Size size, final Color color) {
-        renderer.optimizedFillRoundedRect(0, 0, size.width() * this.progress.get(), size.height(), this.indicatorCornerRadius.get(), color);
+        renderer.fillRoundedRect(0, 0, size.width() * this.progress.get(), size.height(), this.indicatorCornerRadius.get(), color);
     }
 
     protected void renderStripes(final Renderer renderer, final Size size) {

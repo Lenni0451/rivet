@@ -258,9 +258,9 @@ public class ScrollBar extends Component {
             outlineColor = this.barOutlineColor.get();
         }
 
-        renderer.optimizedFillRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.get(), color);
+        renderer.fillRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.get(), color);
         if (this.barOutlineWidth.get() > 0) {
-            renderer.optimizedOutlineRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.get(), this.barOutlineWidth.get(), outlineColor);
+            renderer.outlineRoundedRect(bounds.x(), bounds.y(), bounds.width(), bounds.height(), this.barCornerRadius.get(), this.barOutlineWidth.get(), outlineColor);
         }
     }
 

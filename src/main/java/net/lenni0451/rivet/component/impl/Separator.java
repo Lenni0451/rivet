@@ -41,12 +41,12 @@ public class Separator extends Component {
         Color color = this.color.get();
         float thickness = this.thickness.get();
         switch (this.orientation) {
-            case HORIZONTAL -> renderer.optimizedFillRoundedRect(
+            case HORIZONTAL -> renderer.fillRoundedRect(
                     0, (size.height() - thickness) / 2F,
                     size.width(), thickness,
                     0, color
             );
-            case VERTICAL -> renderer.optimizedFillRoundedRect(
+            case VERTICAL -> renderer.fillRoundedRect(
                     (size.width() - thickness) / 2F, 0,
                     thickness, size.height(),
                     0, color

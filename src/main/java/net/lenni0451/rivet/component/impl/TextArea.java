@@ -620,8 +620,8 @@ public class TextArea extends Component {
         Corners cornerRadius = this.cornerRadius.get();
         float outlineWidth = this.outlineWidth.get();
         Color outlineColor = this.outlineColorTransition.value();
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, backgroundColor);
-        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
+        renderer.fillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, backgroundColor);
+        renderer.outlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outlineColor);
 
         Padding padding = this.innerPadding.get();
         float contentVisibleY1 = effectiveVisibleArea.y() - padding.top();
@@ -774,7 +774,7 @@ public class TextArea extends Component {
         @Override
         protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
             Padding padding = TextArea.this.diagnosticTooltipPadding.get();
-            renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), TextArea.this.diagnosticTooltipCornerRadius.get(), TextArea.this.diagnosticTooltipBackgroundColor.get());
+            renderer.fillRoundedRect(0, 0, size.width(), size.height(), TextArea.this.diagnosticTooltipCornerRadius.get(), TextArea.this.diagnosticTooltipBackgroundColor.get());
             renderer.text(this.shapedMessage, padding.left(), padding.top(), TextOrigin.Horizontal.LOGICAL_LEFT, TextOrigin.Vertical.LOGICAL_TOP, ShapedTextBlock.LineAlignment.LEFT);
         }
 

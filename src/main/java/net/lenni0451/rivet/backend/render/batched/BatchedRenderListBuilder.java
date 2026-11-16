@@ -68,7 +68,7 @@ public class BatchedRenderListBuilder {
                 } else if (modifierCommand instanceof ModifierCommand.Scale scale) {
                     matrix = matrix.scale(scale.x(), scale.y());
                 } else if (modifierCommand instanceof ModifierCommand.Rotate rotate) {
-                    matrix = matrix.rotate((float) Math.toRadians(rotate.degrees()));
+                    matrix = matrix.rotateDegrees(rotate.degrees());
                 } else if (modifierCommand instanceof ModifierCommand.Stencil stencil) {
                     stencilMode = stencil.inverse() ? StencilMode.NOT_EQUAL : StencilMode.EQUAL_INTERSECTION;
                     stencilMaskLayers = new Layers(this.customModifierHandler);

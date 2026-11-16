@@ -400,8 +400,8 @@ public class TextField extends Component {
         this.ensureCursorVisible(visibleWidth);
 
         Color backgroundColor = this.disabled().get() ? this.disabledBackgroundColor.get() : this.backgroundColor.get();
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.get(), backgroundColor);
-        renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.get(), this.outlineWidth.get(), this.outlineColorTransition.value());
+        renderer.fillRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.get(), backgroundColor);
+        renderer.outlineRoundedRect(0, 0, size.width(), size.height(), this.cornerRadius.get(), this.outlineWidth.get(), this.outlineColorTransition.value());
 
         renderer.scissor(this.innerPadding.get().left(), this.innerPadding.get().top(), visibleWidth, size.height() - this.innerPadding.get().top() - this.innerPadding.get().bottom(), () -> {
             renderer.translate(this.innerPadding.get().left(), this.innerPadding.get().top() + (size.height() - this.innerPadding.get().top() - this.innerPadding.get().bottom()) / 2F, () -> {

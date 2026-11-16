@@ -275,9 +275,9 @@ public class ToggleSwitch extends Component {
         float railX = encased ? 0 : thumbRadius - railHeight / 2;
         float railY = encased ? 0 : (size.height() - railHeight) / 2;
 
-        renderer.optimizedFillRoundedRect(railX, railY, railWidth, railHeight, cornerRadius, this.backgroundColorTransition.value());
+        renderer.fillRoundedRect(railX, railY, railWidth, railHeight, cornerRadius, this.backgroundColorTransition.value());
         if (outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(railX, railY, railWidth, railHeight, cornerRadius, outlineWidth, this.outlineColorTransition.value());
+            renderer.outlineRoundedRect(railX, railY, railWidth, railHeight, cornerRadius, outlineWidth, this.outlineColorTransition.value());
         }
 
         renderer.fillCircle(thumbX, thumbY, thumbRadius, this.thumbColorTransition.value());

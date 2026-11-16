@@ -303,9 +303,9 @@ public class DragNumberInput extends ParentContainer {
         float outlineWidth = this.outlineWidth.get();
         Corners cornerRadius = this.cornerRadius.get();
 
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, background);
+        renderer.fillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, background);
         if (outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outline);
+            renderer.outlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, outline);
         }
 
         renderer.translate(padding.left(), padding.top(), () -> {

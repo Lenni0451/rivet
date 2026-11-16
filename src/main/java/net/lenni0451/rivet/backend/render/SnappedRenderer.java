@@ -14,6 +14,7 @@ import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.math.Rectangle;
+import net.lenni0451.rivet.math.Transform2D;
 import net.lenni0451.rivet.text.model.TextOrigin;
 import net.lenni0451.rivet.utils.MathUtils;
 
@@ -26,50 +27,48 @@ public class SnappedRenderer<R extends Renderer> implements Renderer {
 
     @Getter
     private final R delegate;
-    private float xOffset = 0;
-    private float yOffset = 0;
-    private float m00 = 1;
-    private float m01 = 0;
-    private float m10 = 0;
-    private float m11 = 1;
+    private Transform2D transform = Transform2D.IDENTITY;
     private boolean snap = true;
 
     public SnappedRenderer(final R delegate, final Component baseComponent) {
         this.delegate = delegate;
 
         Rectangle absoluteBounds = baseComponent.absoluteBounds();
-        this.xOffset = absoluteBounds.x();
-        this.yOffset = absoluteBounds.y();
+        this.transform = Transform2D.IDENTITY.translate(absoluteBounds.x(), absoluteBounds.y());
     }
 
     private float snapX(final float x) {
         if (!this.snap) return x;
-        float offset = this.m00 != 0 ? this.xOffset : this.yOffset;
-        float scale = this.m00 != 0 ? this.m00 : this.m10;
+        Transform2D transform = this.transform;
+        float offset = transform.m00() != 0 ? transform.m02() : transform.m12();
+        float scale = transform.m00() != 0 ? transform.m00() : transform.m10();
         if (scale == 0) return x;
         return (Math.round(offset + x * scale) - offset) / scale;
     }
 
     private float snapY(final float y) {
         if (!this.snap) return y;
-        float offset = this.m11 != 0 ? this.yOffset : this.xOffset;
-        float scale = this.m11 != 0 ? this.m11 : this.m01;
+        Transform2D transform = this.transform;
+        float offset = transform.m11() != 0 ? transform.m12() : transform.m02();
+        float scale = transform.m11() != 0 ? transform.m11() : transform.m01();
         if (scale == 0) return y;
         return (Math.round(offset + y * scale) - offset) / scale;
     }
 
     private float snapWidth(final float x, final float width) {
         if (!this.snap) return width;
-        float offset = this.m00 != 0 ? this.xOffset : this.yOffset;
-        float scale = this.m00 != 0 ? this.m00 : this.m10;
+        Transform2D transform = this.transform;
+        float offset = transform.m00() != 0 ? transform.m02() : transform.m12();
+        float scale = transform.m00() != 0 ? transform.m00() : transform.m10();
         if (scale == 0) return width;
         return Math.abs(Math.round(offset + (x + width) * scale) - Math.round(offset + x * scale)) / Math.abs(scale);
     }
 
     private float snapHeight(final float y, final float height) {
         if (!this.snap) return height;
-        float offset = this.m11 != 0 ? this.yOffset : this.xOffset;
-        float scale = this.m11 != 0 ? this.m11 : this.m01;
+        Transform2D transform = this.transform;
+        float offset = transform.m11() != 0 ? transform.m12() : transform.m02();
+        float scale = transform.m11() != 0 ? transform.m11() : transform.m01();
         if (scale == 0) return height;
         return Math.abs(Math.round(offset + (y + height) * scale) - Math.round(offset + y * scale)) / Math.abs(scale);
     }
@@ -81,13 +80,10 @@ public class SnappedRenderer<R extends Renderer> implements Renderer {
 
     @Override
     public void translate(final float x, final float y, final Runnable renderer) {
-        float previousXOffset = this.xOffset;
-        float previousYOffset = this.yOffset;
-        this.xOffset += this.m00 * x + this.m01 * y;
-        this.yOffset += this.m10 * x + this.m11 * y;
+        Transform2D previousTransform = this.transform;
+        this.transform = previousTransform.translate(x, y);
         this.delegate.translate(x, y, renderer);
-        this.xOffset = previousXOffset;
-        this.yOffset = previousYOffset;
+        this.transform = previousTransform;
     }
 
     @Override
@@ -102,70 +98,34 @@ public class SnappedRenderer<R extends Renderer> implements Renderer {
 
     @Override
     public void scale(final float x, final float y, final Runnable renderer) {
-        float previousM00 = this.m00;
-        float previousM01 = this.m01;
-        float previousM10 = this.m10;
-        float previousM11 = this.m11;
-        this.m00 *= x;
-        this.m10 *= x;
-        this.m01 *= y;
-        this.m11 *= y;
+        Transform2D previousTransform = this.transform;
+        this.transform = previousTransform.scale(x, y);
         this.delegate.scale(x, y, renderer);
-        this.m00 = previousM00;
-        this.m01 = previousM01;
-        this.m10 = previousM10;
-        this.m11 = previousM11;
+        this.transform = previousTransform;
     }
 
     @Override
     public void rotate(final float degrees, final Runnable renderer) {
+        Transform2D previousTransform = this.transform;
         boolean previousSnap = this.snap;
-        float previousM00 = this.m00;
-        float previousM01 = this.m01;
-        float previousM10 = this.m10;
-        float previousM11 = this.m11;
-
         if (this.snap && degrees % 90F == 0) {
-            int k = Math.floorMod(Math.round(degrees / 90F), 4);
-            int cos = switch (k) {
-                case 0 -> 1;
-                case 1 -> 0;
-                case 2 -> -1;
-                case 3 -> 0;
-                default -> 1;
-            };
-            int sin = switch (k) {
-                case 0 -> 0;
-                case 1 -> 1;
-                case 2 -> 0;
-                case 3 -> -1;
-                default -> 0;
-            };
-            this.m00 = previousM00 * cos + previousM01 * sin;
-            this.m01 = -previousM00 * sin + previousM01 * cos;
-            this.m10 = previousM10 * cos + previousM11 * sin;
-            this.m11 = -previousM10 * sin + previousM11 * cos;
+            this.transform = previousTransform.rotateQuarterTurns(Math.round(degrees / 90F));
         } else {
             this.snap = false;
         }
-
         this.delegate.rotate(degrees, renderer);
-
+        this.transform = previousTransform;
         this.snap = previousSnap;
-        this.m00 = previousM00;
-        this.m01 = previousM01;
-        this.m10 = previousM10;
-        this.m11 = previousM11;
     }
 
     @Override
     public void stencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
-        this.delegate.stencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr, this.xOffset, this.yOffset, this.m00, this.m01, this.m10, this.m11, this.snap)), renderer);
+        this.delegate.stencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr, this.transform, this.snap)), renderer);
     }
 
     @Override
     public void inverseStencil(final Consumer<Renderer> maskRenderer, final Runnable renderer) {
-        this.delegate.inverseStencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr, this.xOffset, this.yOffset, this.m00, this.m01, this.m10, this.m11, this.snap)), renderer);
+        this.delegate.inverseStencil(mr -> maskRenderer.accept(new SnappedRenderer<>(mr, this.transform, this.snap)), renderer);
     }
 
     @Override

@@ -111,9 +111,9 @@ public final class SliderThumb {
                 }
             }
             case RECTANGLE -> {
-                renderer.optimizedFillRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, color);
+                renderer.fillRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, color);
                 if (outlineWidth > 0) {
-                    renderer.optimizedOutlineRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, outlineWidth, outlineColor);
+                    renderer.outlineRoundedRect(thumbX - thumbWidth / 2F, sliderCenter - thumbHeight / 2F, thumbWidth, thumbHeight, cornerRadius, outlineWidth, outlineColor);
                 }
             }
             case PIN -> {

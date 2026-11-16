@@ -3,8 +3,10 @@ package net.lenni0451.rivet.backend.render;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.rivet.backend.Texture;
 import net.lenni0451.rivet.backend.text.ShapedText;
+import net.lenni0451.rivet.math.Corners;
 import net.lenni0451.rivet.math.Point;
 import net.lenni0451.rivet.text.model.TextOrigin;
+import net.lenni0451.rivet.utils.MathUtils;
 
 import java.util.function.Consumer;
 
@@ -128,7 +130,14 @@ public abstract class CheckedRenderer implements Renderer {
     @Override
     public final void fillRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final Color color) {
         if (width > 0 && height > 0 && color.getAlpha() > 0) {
-            this.doFillRoundedRect(x, y, width, height, Math.max(0, rtl), Math.max(0, rbl), Math.max(0, rbr), Math.max(0, rtr), color);
+            Corners corners = MathUtils.clampCorners(width, height, Math.max(0, rtl), Math.max(0, rbl), Math.max(0, rbr), Math.max(0, rtr));
+            if (corners.isEmpty()) {
+                this.doFillRect(x, y, width, height, color);
+            } else if (corners.isCircle(width, height)) {
+                this.fillCircle(x + width / 2, y + width / 2, width / 2, color);
+            } else {
+                this.doFillRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), color);
+            }
         }
     }
 
@@ -137,7 +146,18 @@ public abstract class CheckedRenderer implements Renderer {
     @Override
     public final void outlineRoundedRect(final float x, final float y, final float width, final float height, final float rtl, final float rbl, final float rbr, final float rtr, final float outlineWidth, final Color color) {
         if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
-            this.doOutlineRoundedRect(x, y, width, height, Math.max(0, rtl), Math.max(0, rbl), Math.max(0, rbr), Math.max(0, rtr), outlineWidth, color);
+            if (outlineWidth >= width || outlineWidth >= height) {
+                this.fillRoundedRect(x, y, width, height, rtl, rbl, rbr, rtr, color);
+            } else {
+                Corners corners = MathUtils.clampCorners(width, height, Math.max(0, rtl), Math.max(0, rbl), Math.max(0, rbr), Math.max(0, rtr));
+                if (corners.isEmpty()) {
+                    this.outlineRect(x, y, width, height, outlineWidth, color);
+                } else if (corners.isCircle(width, height)) {
+                    this.outlineCircle(x + width / 2, y + width / 2, width / 2, outlineWidth, color);
+                } else {
+                    this.doOutlineRoundedRect(x, y, width, height, corners.topLeft(), corners.bottomLeft(), corners.bottomRight(), corners.topRight(), outlineWidth, color);
+                }
+            }
         }
     }
 

@@ -209,9 +209,9 @@ public class Checkbox extends Component {
         float boxSize = size.height() * 0.8F;
         float offset = (size.height() - boxSize) / 2F;
 
-        renderer.optimizedFillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.get(), this.backgroundColorTransition.value());
+        renderer.fillRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.get(), this.backgroundColorTransition.value());
         if (this.outlineWidth.get() > 0) {
-            renderer.optimizedOutlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.get(), this.outlineWidth.get(), this.outlineColorTransition.value());
+            renderer.outlineRoundedRect(offset, offset, boxSize, boxSize, this.cornerRadius.get(), this.outlineWidth.get(), this.outlineColorTransition.value());
         }
 
         float progress = this.checkProgress.value();

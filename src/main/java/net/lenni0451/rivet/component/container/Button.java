@@ -214,9 +214,9 @@ public class Button extends Component implements Parent {
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         Corners cornerRadius = this.cornerRadius.get();
         float outlineWidth = this.outlineWidth.get();
-        renderer.optimizedFillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
+        renderer.fillRoundedRect(0, 0, size.width(), size.height(), cornerRadius, this.backgroundColorTransition.value());
         if (outlineWidth > 0) {
-            renderer.optimizedOutlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColorTransition.value());
+            renderer.outlineRoundedRect(0, 0, size.width(), size.height(), cornerRadius, outlineWidth, this.outlineColorTransition.value());
         }
 
         Padding innerPadding = this.innerPadding.get();

@@ -27,12 +27,28 @@ public record Transform2D(float m00, float m01, float m02, float m10, float m11,
 
     public Transform2D rotate(final float radians) {
         if (radians == 0) return this;
-        final float cos = (float) Math.cos(radians);
-        final float sin = (float) Math.sin(radians);
+        float cos = (float) Math.cos(radians);
+        float sin = (float) Math.sin(radians);
         return new Transform2D(
                 this.m00 * cos + this.m01 * sin, -this.m00 * sin + this.m01 * cos, this.m02,
                 this.m10 * cos + this.m11 * sin, -this.m10 * sin + this.m11 * cos, this.m12
         );
+    }
+
+    public Transform2D rotateQuarterTurns(final int quarterTurns) {
+        int k = Math.floorMod(quarterTurns, 4);
+        if (k == 0) return this;
+        int cos = k == 2 ? -1 : 0;
+        int sin = k == 1 ? 1 : (k == 3 ? -1 : 0);
+        return new Transform2D(
+                this.m00 * cos + this.m01 * sin, -this.m00 * sin + this.m01 * cos, this.m02,
+                this.m10 * cos + this.m11 * sin, -this.m10 * sin + this.m11 * cos, this.m12
+        );
+    }
+
+    public Transform2D rotateDegrees(final float degrees) {
+        if (degrees % 90F == 0) return this.rotateQuarterTurns(Math.round(degrees / 90F));
+        return this.rotate((float) Math.toRadians(degrees));
     }
 
     public float transformX(final float x, final float y) {
@@ -52,14 +68,14 @@ public record Transform2D(float m00, float m01, float m02, float m10, float m11,
     }
 
     public Aabb transformBounds(final float minX, final float minY, final float maxX, final float maxY) {
-        final float x1 = this.transformX(minX, minY);
-        final float y1 = this.transformY(minX, minY);
-        final float x2 = this.transformX(maxX, minY);
-        final float y2 = this.transformY(maxX, minY);
-        final float x3 = this.transformX(maxX, maxY);
-        final float y3 = this.transformY(maxX, maxY);
-        final float x4 = this.transformX(minX, maxY);
-        final float y4 = this.transformY(minX, maxY);
+        float x1 = this.transformX(minX, minY);
+        float y1 = this.transformY(minX, minY);
+        float x2 = this.transformX(maxX, minY);
+        float y2 = this.transformY(maxX, minY);
+        float x3 = this.transformX(maxX, maxY);
+        float y3 = this.transformY(maxX, maxY);
+        float x4 = this.transformX(minX, maxY);
+        float y4 = this.transformY(minX, maxY);
         return new Aabb(
                 Math.min(Math.min(x1, x2), Math.min(x3, x4)),
                 Math.min(Math.min(y1, y2), Math.min(y3, y4)),

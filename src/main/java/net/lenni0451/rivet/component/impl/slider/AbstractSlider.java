@@ -411,9 +411,9 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
         boolean disabled = this.disabled().get();
         Color barColor = disabled ? this.disabledBarColor.get() : this.barColor.get();
         if (this.thumbEncased.get()) {
-            renderer.optimizedFillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.get(), barColor);
+            renderer.fillRoundedRect(0, sliderCenter - barHeight / 2F, size.width(), barHeight, this.barCornerRadius.get(), barColor);
         } else {
-            renderer.optimizedFillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.get(), barColor);
+            renderer.fillRoundedRect(thumbWidth / 2F, sliderCenter - barHeight / 2F, size.width() - thumbWidth, barHeight, this.barCornerRadius.get(), barColor);
         }
 
         Color barFillColor = disabled ? this.disabledBarFillColor().get() : this.barFillColor().get();
@@ -425,7 +425,7 @@ public abstract class AbstractSlider<S extends AbstractSlider<S>> extends Compon
     protected void renderFill(final Renderer renderer, final float startX, final float endX, final float sliderCenter, final float barHeight, final Color color) {
         float x = Math.min(startX, endX);
         float width = Math.abs(endX - startX);
-        renderer.optimizedFillRoundedRect(x, sliderCenter - barHeight / 2F, width, barHeight, this.barCornerRadius.get(), color);
+        renderer.fillRoundedRect(x, sliderCenter - barHeight / 2F, width, barHeight, this.barCornerRadius.get(), color);
     }
 
     protected void renderThumbs(final Renderer renderer, final Size size, final float sliderCenter, final float thumbWidth, final float thumbHeight, final float barWidth) {
