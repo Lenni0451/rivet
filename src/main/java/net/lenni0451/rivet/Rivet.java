@@ -45,7 +45,7 @@ public final class Rivet {
     @Getter
     private Size size;
     @Getter
-    private final WindowScale scale = new WindowScale();
+    private final WindowScale scale = new WindowScale(this::invalidateLayouts);
     @Getter
     private Component focusedComponent;
     @Getter
@@ -120,11 +120,15 @@ public final class Rivet {
     public Rivet size(final Size size) {
         if (!this.size.equals(size)) {
             this.size = size;
-            for (Layer layer : this.layers.get()) {
-                layer.invalidateLayout();
-            }
+            this.invalidateLayouts();
         }
         return this;
+    }
+
+    private void invalidateLayouts() {
+        for (Layer layer : this.layers.get()) {
+            layer.invalidateLayout();
+        }
     }
 
     public Size scaledSize() {

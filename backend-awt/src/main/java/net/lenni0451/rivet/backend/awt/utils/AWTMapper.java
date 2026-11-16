@@ -16,7 +16,7 @@ import java.util.Set;
 public class AWTMapper {
 
     @Nullable
-    public static net.lenni0451.rivet.input.keyboard.KeyEvent mapKeycode(final int keycode, final int modifier) {
+    public static net.lenni0451.rivet.input.keyboard.KeyEvent mapKeycode(final int keycode, final int location, final int modifier) {
         Key key = switch (keycode) {
             case KeyEvent.VK_ENTER -> Key.ENTER;
             case KeyEvent.VK_BACK_SPACE -> Key.BACKSPACE;
@@ -210,6 +210,18 @@ public class AWTMapper {
             default -> null;
         };
         if (key == null) return null;
+
+        if (location == KeyEvent.KEY_LOCATION_RIGHT) {
+            key = switch (key) {
+                case LEFT_SHIFT -> Key.RIGHT_SHIFT;
+                case LEFT_CONTROL -> Key.RIGHT_CONTROL;
+                case LEFT_ALT -> Key.RIGHT_ALT;
+                case LEFT_SUPER -> Key.RIGHT_SUPER;
+                default -> key;
+            };
+        } else if (location == KeyEvent.KEY_LOCATION_NUMPAD && key == Key.ENTER) {
+            key = Key.KP_ENTER;
+        }
         return new net.lenni0451.rivet.input.keyboard.KeyEvent(key, mapModifiers(modifier));
     }
 

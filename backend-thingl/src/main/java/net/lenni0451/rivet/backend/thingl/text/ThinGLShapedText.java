@@ -9,25 +9,33 @@ import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import net.raphimc.thingl.text.shaping.TextShaper;
 
-public record ThinGLShapedText(ShapedTextLine shapedTextLine, Rectangle visualBounds, Rectangle logicalBounds) implements ShapedText {
+public record ThinGLShapedText(ShapedTextLine shapedTextLine, String text, Rectangle visualBounds, Rectangle logicalBounds) implements ShapedText {
 
-    public ThinGLShapedText(final ShapedTextLine shapedTextLine) {
+    public ThinGLShapedText(final ShapedTextLine shapedTextLine, final String text, final FontInstance font) {
+        Rectangle lineBounds;
+        if (shapedTextLine.runs().isEmpty()) {
+            lineBounds = new Rectangle(0, -font.getAscent(), 0, font.getAscent() + font.getDescent());
+        } else {
+            lineBounds = new Rectangle(shapedTextLine.logicalBounds().minX, shapedTextLine.logicalBounds().minY, shapedTextLine.logicalBounds().lengthX(), shapedTextLine.logicalBounds().lengthY());
+        }
         this(
                 shapedTextLine,
+                text,
                 new Rectangle(shapedTextLine.visualBounds().minX, shapedTextLine.visualBounds().minY, shapedTextLine.visualBounds().lengthX(), shapedTextLine.visualBounds().lengthY()),
-                new Rectangle(shapedTextLine.logicalBounds().minX, shapedTextLine.logicalBounds().minY, shapedTextLine.logicalBounds().lengthX(), shapedTextLine.logicalBounds().lengthY())
+                lineBounds
         );
     }
 
     @Override
     public Point cursorPosition(final int index) {
         if (index <= 0) return new Point(0, 0);
+        int glyphIndex = this.text.codePointCount(0, Math.min(index, this.text.length()));
         int currentIndex = 0;
         float runX = 0;
         for (ShapedTextRun run : this.shapedTextLine.runs()) {
             for (ShapedTextSegment segment : run.segments()) {
                 for (TextShaper.Glyph glyph : segment.glyphs()) {
-                    if (currentIndex == index) return new Point(runX + glyph.x(), 0);
+                    if (currentIndex == glyphIndex) return new Point(runX + glyph.x(), 0);
                     currentIndex++;
                 }
             }
@@ -39,10 +47,13 @@ public record ThinGLShapedText(ShapedTextLine shapedTextLine, Rectangle visualBo
     @Override
     public int index(final float x, final float y) {
         if (x <= 0) return 0;
+        return this.text.offsetByCodePoints(0, this.glyphIndex(x));
+    }
+
+    private int glyphIndex(final float x) {
         int currentIndex = 0;
         float runX = 0;
-        for (int i = 0; i < this.shapedTextLine.runs().size(); i++) {
-            ShapedTextRun run = this.shapedTextLine.runs().get(i);
+        for (ShapedTextRun run : this.shapedTextLine.runs()) {
             FontInstance font = run.font();
             for (ShapedTextSegment segment : run.segments()) {
                 for (TextShaper.Glyph glyph : segment.glyphs()) {

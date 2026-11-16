@@ -72,6 +72,7 @@ public class AWTRenderer extends AbstractAWTRenderer {
 
     @Override
     public void custom(final ModifierCommand.Custom command, final Runnable renderer) {
+        throw new UnsupportedOperationException("Unsupported custom modifier command: " + command.getClass().getName());
     }
 
     private void clip(final Shape shape, final Runnable renderer) {
@@ -91,7 +92,7 @@ public class AWTRenderer extends AbstractAWTRenderer {
         Shape clip = this.graphics.getClip();
         Area clipArea;
         if (clip == null) {
-            clipArea = new Area(new Rectangle2D.Float(-INVERSE_CLIP_SIZE, -INVERSE_CLIP_SIZE, INVERSE_CLIP_SIZE, INVERSE_CLIP_SIZE));
+            clipArea = new Area(new Rectangle2D.Float(-INVERSE_CLIP_SIZE, -INVERSE_CLIP_SIZE, INVERSE_CLIP_SIZE * 2, INVERSE_CLIP_SIZE * 2));
         } else {
             clipArea = new Area(clip);
         }
@@ -183,6 +184,7 @@ public class AWTRenderer extends AbstractAWTRenderer {
 
     @Override
     public void custom(final RenderCommand.Custom renderCommand) {
+        throw new UnsupportedOperationException("Unsupported custom render command: " + renderCommand.getClass().getName());
     }
 
     @Override

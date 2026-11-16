@@ -20,7 +20,6 @@ import net.lenni0451.rivet.input.mouse.MouseButton;
 import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
-import net.lenni0451.rivet.layer.Layer;
 import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
 import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
@@ -196,16 +195,9 @@ public abstract class TeaVMApplication implements Application<TeaVMBackend> {
         if (!this.running) return;
         this.animationFrame = Window.requestAnimationFrame(this::frame);
         try {
-            float previousScale = this.rivet.scale().scaleFactor();
             if (this.updateCanvasSize()) {
                 this.rivet.size(new Size(this.pixelWidth, this.pixelHeight));
                 this.rivet.scale().automaticScale((float) this.pixelRatio);
-                if (this.rivet.scale().scaleFactor() != previousScale) {
-                    // Zooming the page changes the scale without changing the pixel size of the canvas, so the size check of Rivet does not catch it
-                    for (Layer layer : this.rivet.layers()) {
-                        layer.invalidateLayout();
-                    }
-                }
             }
             this.renderFrame();
         } catch (Throwable t) {

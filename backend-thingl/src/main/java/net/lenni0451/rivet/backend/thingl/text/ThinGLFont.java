@@ -45,12 +45,16 @@ public class ThinGLFont implements Font {
     public ShapedText shapeText(final String text, final Color color) {
         TextStyle style = new TextStyle(color, 0, Color.TRANSPARENT);
         ShapedTextLine shapedTextLine = net.raphimc.thingl.text.TextLine.fromString(this.fontInstanceSet, text, style).shape();
-        return new ThinGLShapedText(shapedTextLine);
+        return new ThinGLShapedText(shapedTextLine, text, this.fontInstanceSet.getMainInstance());
     }
 
     @Override
     public ShapedText shapeText(final net.lenni0451.rivet.text.model.TextLine line) {
-        return new ThinGLShapedText(this.toThinGL(line).shape());
+        StringBuilder text = new StringBuilder();
+        for (TextSection section : line.sections()) {
+            text.append(section.text());
+        }
+        return new ThinGLShapedText(this.toThinGL(line).shape(), text.toString(), this.fontInstanceSet.getMainInstance());
     }
 
     @Override

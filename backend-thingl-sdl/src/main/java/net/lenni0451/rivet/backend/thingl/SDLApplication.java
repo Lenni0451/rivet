@@ -19,6 +19,7 @@ import net.lenni0451.rivet.input.mouse.MouseButtonEvent;
 import net.lenni0451.rivet.input.mouse.MouseMoveEvent;
 import net.lenni0451.rivet.input.mouse.MouseScrollEvent;
 import net.lenni0451.rivet.layout.fullsize.FullSizeLayout;
+import net.lenni0451.rivet.math.Rectangle;
 import net.lenni0451.rivet.math.Size;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.SDLApplicationRunner;
@@ -60,7 +61,7 @@ public abstract class SDLApplication extends SDLApplicationRunner implements App
         super.init();
 
         ThinGLAssetLoader assetLoader = new ThinGLAssetLoader();
-        this.backend = new SDLBackend(this.window, this.createFont(assetLoader), assetLoader);
+        this.backend = new SDLBackend(this.window, this.createFont(assetLoader), assetLoader, new SDLTextInput(this.window, this::toWindowRect));
         this.rivet = new Rivet(this.backend, FullSizeLayout.INSTANCE, new Size(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight()));
         ThinGL.windowInterface().addFramebufferResizeCallback((width, height) -> this.rivet.size(new Size(width, height)));
 
@@ -105,13 +106,7 @@ public abstract class SDLApplication extends SDLApplicationRunner implements App
             case SDLEvents.SDL_EVENT_MOUSE_WHEEL -> {
                 SDL_MouseWheelEvent mouseWheel = event.wheel();
                 float[] mouseScale = this.getMouseScale();
-                float x = mouseWheel.x();
-                float y = mouseWheel.y();
-                if (mouseWheel.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED) {
-                    x = -x;
-                    y = -y;
-                }
-                this.rivet.onMouseScroll(new MouseScrollEvent(mouseWheel.mouse_x() * mouseScale[0], mouseWheel.mouse_y() * mouseScale[1], x, y));
+                this.rivet.onMouseScroll(new MouseScrollEvent(mouseWheel.mouse_x() * mouseScale[0], mouseWheel.mouse_y() * mouseScale[1], mouseWheel.x(), mouseWheel.y()));
             }
             case SDLEvents.SDL_EVENT_KEY_DOWN -> {
                 SDL_KeyboardEvent keyboard = event.key();
@@ -190,11 +185,17 @@ public abstract class SDLApplication extends SDLApplicationRunner implements App
 
     private void updateWindowScale() {
         float scale = SDLVideo.SDL_GetWindowDisplayScale(this.window);
-        if (scale > 0) {
-            this.rivet.scale().automaticScale(scale);
-        } else {
-            SdlException.check(false, "Failed to get window display scale");
-        }
+        SdlException.check(scale > 0, "Failed to get window display scale");
+        this.rivet.scale().automaticScale(scale);
+    }
+
+    private Rectangle toWindowRect(final Rectangle rectangle) {
+        float scaleFactor = this.rivet.scale().scaleFactor();
+        float[] mouseScale = this.getMouseScale();
+        return new Rectangle(
+                rectangle.x() * scaleFactor / mouseScale[0], rectangle.y() * scaleFactor / mouseScale[1],
+                rectangle.width() * scaleFactor / mouseScale[0], rectangle.height() * scaleFactor / mouseScale[1]
+        );
     }
 
     private float[] getMouseScale() {

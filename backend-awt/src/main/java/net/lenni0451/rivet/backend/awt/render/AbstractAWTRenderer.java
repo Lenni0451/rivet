@@ -32,12 +32,10 @@ public abstract class AbstractAWTRenderer extends CheckedRenderer {
     }
 
     @Override
-    public void doOutlineCircle(final float x, final float y, float radius, final float outlineWidth, final Color color) {
-        radius -= outlineWidth / 2F;
-        if (radius > 0) {
-            Ellipse2D.Float circle = new Ellipse2D.Float(x - radius, y - radius, radius * 2, radius * 2);
-            this.strokeShape(circle, new BasicStroke(outlineWidth), color);
-        }
+    public void doOutlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
+        float strokeRadius = radius - outlineWidth / 2F;
+        Ellipse2D.Float circle = new Ellipse2D.Float(x - strokeRadius, y - strokeRadius, strokeRadius * 2, strokeRadius * 2);
+        this.strokeShape(circle, new BasicStroke(outlineWidth), color);
     }
 
     @Override
@@ -59,10 +57,8 @@ public abstract class AbstractAWTRenderer extends CheckedRenderer {
     @Override
     public void doOutlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
         float halfOutline = outlineWidth / 2F;
-        if (width >= outlineWidth && height >= outlineWidth) {
-            Rectangle2D rectangle = new Rectangle2D.Float(x + halfOutline, y + halfOutline, width - outlineWidth, height - outlineWidth);
-            this.strokeShape(rectangle, new BasicStroke(outlineWidth), color);
-        }
+        Rectangle2D rectangle = new Rectangle2D.Float(x + halfOutline, y + halfOutline, width - outlineWidth, height - outlineWidth);
+        this.strokeShape(rectangle, new BasicStroke(outlineWidth), color);
     }
 
     @Override

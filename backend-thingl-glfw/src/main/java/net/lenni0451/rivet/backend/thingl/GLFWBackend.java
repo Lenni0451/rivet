@@ -37,7 +37,9 @@ public class GLFWBackend extends ThinGLBackend {
 
     @Override
     public boolean isKeyDown(final Key key) {
-        return GLFW.glfwGetKey(this.window(), GLFWMapper.mapKey(key)) == GLFW.GLFW_PRESS;
+        int keyCode = GLFWMapper.mapKey(key);
+        if (keyCode == GLFW.GLFW_KEY_UNKNOWN) return false;
+        return GLFW.glfwGetKey(this.window(), keyCode) == GLFW.GLFW_PRESS;
     }
 
 }

@@ -11,7 +11,7 @@ public class ThinGLCPUTexture implements Texture {
 
     private final ByteImage2D texture;
     private final Rectanglei view;
-    private final Lazy<ThinGLGPUTexture> gpuTexture;
+    private final Lazy<Texture2D> gpuTexture;
 
     public ThinGLCPUTexture(final ByteImage2D texture, final int filter) {
         this(texture, filter, new Rectanglei(0, 0, texture.getWidth(), texture.getHeight()));
@@ -21,11 +21,11 @@ public class ThinGLCPUTexture implements Texture {
         this(texture, view, Lazy.of(() -> {
             Texture2D gpuTexture = Texture2D.fromImage(GL11C.GL_RGBA8, texture, false);
             gpuTexture.setFilter(filter);
-            return new ThinGLGPUTexture(gpuTexture, view);
+            return gpuTexture;
         }));
     }
 
-    private ThinGLCPUTexture(final ByteImage2D texture, final Rectanglei view, final Lazy<ThinGLGPUTexture> gpuTexture) {
+    private ThinGLCPUTexture(final ByteImage2D texture, final Rectanglei view, final Lazy<Texture2D> gpuTexture) {
         this.texture = texture;
         this.view = view;
         this.gpuTexture = gpuTexture;
@@ -45,28 +45,21 @@ public class ThinGLCPUTexture implements Texture {
 
     @Override
     public Texture subTexture(final int x, final int y, final int width, final int height) {
-        return new ThinGLCPUTexture(
-                this.texture,
-                new Rectanglei(
-                        this.view.minX + x,
-                        this.view.minY + y,
-                        this.view.maxX - (this.view.lengthX() - (x + width)),
-                        this.view.maxY - (this.view.lengthY() - (y + height))
-                ),
-                this.gpuTexture
-        );
+        int minX = this.view.minX + x;
+        int minY = this.view.minY + y;
+        return new ThinGLCPUTexture(this.texture, new Rectanglei(minX, minY, minX + width, minY + height), this.gpuTexture);
     }
 
     @Override
     public void close() {
         this.texture.free();
         if (this.gpuTexture.isInitialized()) {
-            this.gpuTexture.get().close();
+            this.uploadIfNeeded().close();
         }
     }
 
     public ThinGLGPUTexture uploadIfNeeded() {
-        return this.gpuTexture.get();
+        return new ThinGLGPUTexture(this.gpuTexture.get(), this.view);
     }
 
 }

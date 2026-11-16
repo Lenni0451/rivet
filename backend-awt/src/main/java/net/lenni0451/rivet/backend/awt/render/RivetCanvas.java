@@ -1,7 +1,6 @@
 package net.lenni0451.rivet.backend.awt.render;
 
 import lombok.experimental.Accessors;
-import net.lenni0451.commons.threading.ThreadUtils;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.awt.AWTApplication;
 
@@ -58,7 +57,7 @@ public class RivetCanvas extends Canvas implements Runnable {
             try {
                 this.renderThread.join(1000);
             } catch (InterruptedException e) {
-                throw new RuntimeException("Render thread did not exit after 1s", e);
+                Thread.currentThread().interrupt();
             }
             this.renderThread = null;
         }
@@ -67,11 +66,6 @@ public class RivetCanvas extends Canvas implements Runnable {
     @Override
     public void run() {
         while (!Thread.interrupted()) {
-            if (this.bufferStrategy == null) {
-                if (!ThreadUtils.sleep(10)) break;
-                continue;
-            }
-
             long startTime = System.nanoTime();
             do {
                 do {

@@ -8,10 +8,13 @@ import org.lwjgl.sdl.SDLKeyboard;
 import org.lwjgl.sdl.SDL_Rect;
 import org.lwjgl.system.MemoryStack;
 
+import java.util.function.Function;
+
 @RequiredArgsConstructor
 public class SDLTextInput implements TextInput {
 
     private final long window;
+    private final Function<Rectangle, Rectangle> toWindowRect;
 
     @Override
     public void start() {
@@ -30,9 +33,10 @@ public class SDLTextInput implements TextInput {
     @Override
     public void area(final Rectangle rectangle) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
+            Rectangle windowRect = this.toWindowRect.apply(rectangle);
             SDL_Rect.Buffer rect = SDL_Rect.malloc(1, stack);
-            rect.x((int) rectangle.x()).y((int) rectangle.y());
-            rect.w((int) rectangle.width()).h((int) rectangle.height());
+            rect.x((int) windowRect.x()).y((int) windowRect.y());
+            rect.w((int) windowRect.width()).h((int) windowRect.height());
             SdlException.check(SDLKeyboard.SDL_SetTextInputArea(this.window, rect, 0), "Failed to set text input area");
         }
     }

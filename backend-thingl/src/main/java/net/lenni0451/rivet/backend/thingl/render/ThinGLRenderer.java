@@ -109,6 +109,8 @@ public class ThinGLRenderer extends CheckedRenderer {
                     ThinGL.programs().getGaussianBlur().clearInput();
                 }
             }
+        } else {
+            throw new UnsupportedOperationException("Unsupported custom modifier command: " + command.getClass().getName());
         }
     }
 
@@ -205,6 +207,8 @@ public class ThinGLRenderer extends CheckedRenderer {
             switch (thinGlRenderCommand) {
                 case ThinGLRenderCommand.Custom custom -> custom.renderFunction().accept(this.positionMatrix);
             }
+        } else {
+            throw new UnsupportedOperationException("Unsupported custom render command: " + renderCommand.getClass().getName());
         }
     }
 

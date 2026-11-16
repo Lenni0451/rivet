@@ -140,8 +140,7 @@ public class AWTFont implements Font {
 
     private List<FontRun> splitIntoRuns(final String text, final int style) {
         if (this.fonts.size() <= 1 || text.isEmpty()) {
-            java.awt.Font sectionFont = (style == this.font.getStyle()) ? this.font : this.font.deriveFont(style);
-            return List.of(new FontRun(sectionFont, text));
+            return List.of(new FontRun(this.withStyle(this.font, style), text));
         }
 
         List<FontRun> runs = new ArrayList<>();
@@ -150,26 +149,29 @@ public class AWTFont implements Font {
         while (i < length) {
             int codePoint = text.codePointAt(i);
             int charCount = Character.charCount(codePoint);
-            java.awt.Font matchingFont = this.findFont(codePoint, style);
+            java.awt.Font matchingFont = this.findFont(codePoint);
             int runStart = i;
             i += charCount;
             while (i < length) {
                 int nextCodePoint = text.codePointAt(i);
-                if (this.findFont(nextCodePoint, style) != matchingFont) break;
+                if (this.findFont(nextCodePoint) != matchingFont) break;
                 i += Character.charCount(nextCodePoint);
             }
-            runs.add(new FontRun(matchingFont, text.substring(runStart, i)));
+            runs.add(new FontRun(this.withStyle(matchingFont, style), text.substring(runStart, i)));
         }
         return runs;
     }
 
-    private java.awt.Font findFont(final int codePoint, final int style) {
+    private java.awt.Font findFont(final int codePoint) {
         for (java.awt.Font f : this.fonts) {
-            if (f.canDisplay(codePoint)) {
-                return (style == f.getStyle()) ? f : f.deriveFont(style);
-            }
+            if (f.canDisplay(codePoint)) return f;
         }
-        return (style == this.font.getStyle()) ? this.font : this.font.deriveFont(style);
+        return this.font;
+    }
+
+    private java.awt.Font withStyle(final java.awt.Font font, final int style) {
+        if (style == font.getStyle()) return font;
+        return font.deriveFont(style);
     }
 
 

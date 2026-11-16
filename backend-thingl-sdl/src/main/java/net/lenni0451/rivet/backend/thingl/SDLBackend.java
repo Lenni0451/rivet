@@ -15,11 +15,11 @@ import java.nio.ByteBuffer;
 
 public class SDLBackend extends ThinGLBackend {
 
-    private final SDLTextInput textInput;
+    private final TextInput textInput;
 
-    public SDLBackend(final long window, final Font font, final AssetLoader assetLoader) {
+    public SDLBackend(final long window, final Font font, final AssetLoader assetLoader, final TextInput textInput) {
         super(window, font, assetLoader);
-        this.textInput = new SDLTextInput(window);
+        this.textInput = textInput;
     }
 
     @Override

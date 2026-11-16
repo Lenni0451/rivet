@@ -91,16 +91,17 @@ public abstract class AWTApplication implements Application<AWTBackend> {
 
     @Override
     public void close(final boolean waitForClose) {
-        if (this.frame != null) {
-            EventQueue.invokeLater(() -> {
-                if (this.canvas != null) {
-                    this.canvas.stop();
-                }
+        Runnable closer = () -> {
+            if (this.frame != null) {
+                this.canvas.stop();
                 this.frame.dispose();
-                this.closeFuture.complete(null);
-            });
-        } else {
+            }
             this.closeFuture.complete(null);
+        };
+        if (EventQueue.isDispatchThread()) {
+            closer.run();
+        } else {
+            EventQueue.invokeLater(closer);
         }
         if (waitForClose) {
             try {
@@ -195,7 +196,7 @@ public abstract class AWTApplication implements Application<AWTBackend> {
         component.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(final KeyEvent e) {
-                net.lenni0451.rivet.input.keyboard.KeyEvent event = AWTMapper.mapKeycode(e.getExtendedKeyCode(), e.getModifiersEx());
+                net.lenni0451.rivet.input.keyboard.KeyEvent event = AWTMapper.mapKeycode(e.getExtendedKeyCode(), e.getKeyLocation(), e.getModifiersEx());
                 if (event != null) {
                     AWTApplication.this.backend.heldKeys().add(event.key());
                     AWTApplication.this.rivet.onKeyDown(event);
@@ -205,8 +206,7 @@ public abstract class AWTApplication implements Application<AWTBackend> {
 
             @Override
             public void keyReleased(final KeyEvent e) {
-                net.lenni0451.rivet.input.keyboard.KeyEvent event = AWTMapper.mapKeycode(e.getExtendedKeyCode(), e.getModifiersEx());
-                e.consume();
+                net.lenni0451.rivet.input.keyboard.KeyEvent event = AWTMapper.mapKeycode(e.getExtendedKeyCode(), e.getKeyLocation(), e.getModifiersEx());
                 if (event != null) {
                     AWTApplication.this.backend.heldKeys().remove(event.key());
                     AWTApplication.this.rivet.onKeyUp(event);

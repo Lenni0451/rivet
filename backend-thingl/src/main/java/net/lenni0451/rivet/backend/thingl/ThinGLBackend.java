@@ -16,14 +16,4 @@ public abstract class ThinGLBackend implements Backend {
     private final Font font;
     private final AssetLoader assetLoader;
 
-    @Override
-    public Font font() {
-        return this.font;
-    }
-
-    @Override
-    public AssetLoader assetLoader() {
-        return this.assetLoader;
-    }
-
 }

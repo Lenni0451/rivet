@@ -31,11 +31,11 @@ public class AWTBackend implements Backend {
     @Override
     public String getClipboard() {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
-            try {
-                return String.valueOf(clipboard.getData(DataFlavor.stringFlavor));
-            } catch (Throwable ignored) {
+        try {
+            if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+                return (String) clipboard.getData(DataFlavor.stringFlavor);
             }
+        } catch (Throwable ignored) {
         }
         return null;
     }

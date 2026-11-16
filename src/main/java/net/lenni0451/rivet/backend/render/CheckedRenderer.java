@@ -87,7 +87,9 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void outlineCircle(final float x, final float y, final float radius, final float outlineWidth, final Color color) {
-        if (radius > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
+        if (outlineWidth >= radius) {
+            this.fillCircle(x, y, radius, color);
+        } else if (radius > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
             this.doOutlineCircle(x, y, radius, outlineWidth, color);
         }
     }
@@ -114,7 +116,9 @@ public abstract class CheckedRenderer implements Renderer {
 
     @Override
     public final void outlineRect(final float x, final float y, final float width, final float height, final float outlineWidth, final Color color) {
-        if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
+        if (outlineWidth * 2 >= width || outlineWidth * 2 >= height) {
+            this.fillRect(x, y, width, height, color);
+        } else if (width > 0 && height > 0 && outlineWidth > 0 && color.getAlpha() > 0) {
             this.doOutlineRect(x, y, width, height, outlineWidth, color);
         }
     }

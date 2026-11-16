@@ -25,15 +25,9 @@ public record ThinGLGPUTexture(Texture2D texture, Rectanglei view) implements Te
 
     @Override
     public Texture subTexture(final int x, final int y, final int width, final int height) {
-        return new ThinGLGPUTexture(
-                this.texture,
-                new Rectanglei(
-                        this.view.minX + x,
-                        this.view.minY + y,
-                        this.view.maxX - (this.view.lengthX() - (x + width)),
-                        this.view.maxY - (this.view.lengthY() - (y + height))
-                )
-        );
+        int minX = this.view.minX + x;
+        int minY = this.view.minY + y;
+        return new ThinGLGPUTexture(this.texture, new Rectanglei(minX, minY, minX + width, minY + height));
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.lenni0451.rivet.backend.text.Font;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -30,7 +31,9 @@ public class AWTAssetLoader implements AssetLoader {
 
     @Override
     public Texture loadTexture(final InputStream inputStream) throws IOException {
-        return new AWTTexture(ImageIO.read(inputStream));
+        BufferedImage image = ImageIO.read(inputStream);
+        if (image == null) throw new IOException("Unsupported image format");
+        return new AWTTexture(image);
     }
 
 }

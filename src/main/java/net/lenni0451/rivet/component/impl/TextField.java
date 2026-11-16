@@ -396,8 +396,7 @@ public class TextField extends Component {
     @Override
     protected void renderInternal(final Renderer renderer, final Size size, final Rectangle visibleArea) {
         float visibleWidth = size.width() - this.innerPadding.get().horizontal();
-        float textHeight = this.shapedText.logicalBounds().height();
-        float cursorHeight = textHeight == 0 ? this.usedFont().height() : textHeight;
+        float cursorHeight = this.shapedText.logicalBounds().height();
         this.ensureCursorVisible(visibleWidth);
 
         Color backgroundColor = this.disabled().get() ? this.disabledBackgroundColor.get() : this.backgroundColor.get();
