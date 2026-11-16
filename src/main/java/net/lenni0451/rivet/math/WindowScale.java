@@ -1,26 +1,20 @@
 package net.lenni0451.rivet.math;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 @RequiredArgsConstructor
+@Accessors(fluent = true, chain = true, makeFinal = true)
 public final class WindowScale {
 
     private final Runnable changeListener;
+    @Getter
     private boolean manual = false;
+    @Getter
     private float manualScale = 1;
+    @Getter
     private float automaticScale = 1;
-
-    public WindowScale(final Runnable changeListener) {
-        this.changeListener = changeListener;
-    }
-
-    public boolean manual() {
-        return this.manual;
-    }
-
-    public float manualScale() {
-        return this.manualScale;
-    }
 
     public WindowScale manualScale(final float scale) {
         float previousScaleFactor = this.scaleFactor();
@@ -36,10 +30,6 @@ public final class WindowScale {
         this.manualScale = 1;
         this.notifyChange(previousScaleFactor);
         return this;
-    }
-
-    public float automaticScale() {
-        return this.automaticScale;
     }
 
     public WindowScale automaticScale(final float scale) {
