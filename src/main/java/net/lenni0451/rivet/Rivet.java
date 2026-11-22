@@ -250,6 +250,7 @@ public final class Rivet {
     }
 
     public boolean onCharTyped(final CharEvent event) {
+        if (!this.backend.textInput().active()) return false;
         return this.charTypedListener.<Boolean>callWithReturnValue(
                 (listener, ctx) -> listener.accept(ctx, event),
                 listener -> listener.accept(event),

@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.backend.thingl;
 
 import net.lenni0451.rivet.backend.AssetLoader;
-import net.lenni0451.rivet.backend.TextInput;
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.utils.SDLMapper;
 import net.lenni0451.rivet.input.keyboard.Key;

@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.AssetLoader;
 import net.lenni0451.rivet.backend.Backend;
-import net.lenni0451.rivet.backend.TextInput;
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.backend.teavm.utils.JsUtils;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.input.keyboard.Key;

@@ -1,5 +1,6 @@
 package net.lenni0451.rivet.backend;
 
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.input.keyboard.Key;
 import net.lenni0451.rivet.input.keyboard.ModifierKey;
@@ -26,9 +27,7 @@ public interface Backend {
 
     boolean isKeyDown(final Key key);
 
-    default TextInput textInput() {
-        return TextInput.NOOP;
-    }
+    TextInput textInput();
 
     AssetLoader assetLoader();
 

@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.AssetLoader;
 import net.lenni0451.rivet.backend.Backend;
+import net.lenni0451.rivet.backend.input.NoOpTextInput;
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.input.keyboard.Key;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,6 +27,7 @@ public class AWTBackend implements Backend {
 
     private final Font font;
     private final AssetLoader assetLoader;
+    private final TextInput textInput = new NoOpTextInput();
     private final Set<Key> heldKeys = EnumSet.noneOf(Key.class);
 
     @Nullable

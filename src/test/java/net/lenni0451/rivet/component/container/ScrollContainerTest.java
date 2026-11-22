@@ -3,6 +3,8 @@ package net.lenni0451.rivet.component.container;
 import net.lenni0451.rivet.Rivet;
 import net.lenni0451.rivet.backend.AssetLoader;
 import net.lenni0451.rivet.backend.Backend;
+import net.lenni0451.rivet.backend.input.NoOpTextInput;
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.component.Component;
 import net.lenni0451.rivet.component.impl.ScrollBar.ScrollBarType;
@@ -329,6 +331,8 @@ class ScrollContainerTest {
     }
 
     private static final class TestBackend implements Backend {
+        private final TextInput textInput = new NoOpTextInput();
+
         @Override
         public Font font() {
             return null;
@@ -346,6 +350,11 @@ class ScrollContainerTest {
         @Override
         public boolean isKeyDown(final Key key) {
             return false;
+        }
+
+        @Override
+        public TextInput textInput() {
+            return this.textInput;
         }
 
         @Override

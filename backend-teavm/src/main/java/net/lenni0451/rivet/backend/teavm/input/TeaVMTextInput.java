@@ -3,7 +3,7 @@ package net.lenni0451.rivet.backend.teavm.input;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import net.lenni0451.rivet.backend.TextInput;
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.backend.teavm.utils.JsUtils;
 import net.lenni0451.rivet.math.Rectangle;
 import org.teavm.jso.dom.css.CSSStyleDeclaration;

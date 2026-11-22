@@ -1,6 +1,10 @@
 package net.lenni0451.rivet.backend.thingl;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.lenni0451.rivet.backend.AssetLoader;
+import net.lenni0451.rivet.backend.input.NoOpTextInput;
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.backend.text.Font;
 import net.lenni0451.rivet.backend.thingl.util.GLFWMapper;
 import net.lenni0451.rivet.input.keyboard.Key;
@@ -10,7 +14,11 @@ import org.lwjgl.system.MemoryUtil;
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
+@Getter
+@Accessors(fluent = true, chain = true)
 public class GLFWBackend extends ThinGLBackend {
+
+    private final TextInput textInput = new NoOpTextInput();
 
     public GLFWBackend(final long window, final Font font, final AssetLoader assetLoader) {
         super(window, font, assetLoader);

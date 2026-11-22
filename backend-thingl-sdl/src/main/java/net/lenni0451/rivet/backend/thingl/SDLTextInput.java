@@ -1,7 +1,7 @@
 package net.lenni0451.rivet.backend.thingl;
 
 import lombok.RequiredArgsConstructor;
-import net.lenni0451.rivet.backend.TextInput;
+import net.lenni0451.rivet.backend.input.TextInput;
 import net.lenni0451.rivet.math.Rectangle;
 import net.raphimc.thingl.implementation.util.sdl.SdlException;
 import org.lwjgl.sdl.SDLKeyboard;
@@ -39,6 +39,11 @@ public class SDLTextInput implements TextInput {
             rect.w((int) windowRect.width()).h((int) windowRect.height());
             SdlException.check(SDLKeyboard.SDL_SetTextInputArea(this.window, rect, 0), "Failed to set text input area");
         }
+    }
+
+    @Override
+    public boolean active() {
+        return SDLKeyboard.SDL_TextInputActive(this.window);
     }
 
 }
